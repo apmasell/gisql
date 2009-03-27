@@ -51,7 +51,8 @@ public abstract class ArithmeticInteractome extends Interactome {
 				addInteraction(processLoneInteraction(j1, true));
 			} else {
 				double membership = calculateMembership(j1, j2);
-				Interaction i = new CompositeInteraction(this, j1, j2, membership);
+				Interaction i = new CompositeInteraction(this, j1, j2,
+						membership);
 				addInteraction(i);
 
 			}

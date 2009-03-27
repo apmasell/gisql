@@ -1,2 +1,4 @@
 *.class
 gisql.properties
+bin
+dist

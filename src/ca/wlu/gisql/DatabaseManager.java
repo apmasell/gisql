@@ -1,7 +1,8 @@
 package ca.wlu.gisql;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,9 +17,20 @@ import org.apache.log4j.Logger;
 import ca.wlu.gisql.interactome.Database;
 
 public class DatabaseManager {
-	Connection conn;
 
 	static final Logger log = Logger.getLogger(DatabaseManager.class);
+
+	public static Object executeScalar(PreparedStatement statement)
+			throws SQLException {
+		ResultSet rs = statement.executeQuery();
+		if (rs.next()) {
+			return rs.getObject(1);
+		} else {
+			return null;
+		}
+	}
+
+	Connection conn;
 
 	private Map<String, Database> loadedSpecies = new HashMap<String, Database>();
 
@@ -26,8 +38,12 @@ public class DatabaseManager {
 			IOException {
 		Class.forName("org.postgresql.Driver");
 		Properties props = new Properties();
-		URL url = ClassLoader.getSystemResource("gisql.properties");
-		props.load(url.openStream());
+		InputStream is = new FileInputStream("gisql.properties");
+		if (is == null) {
+			log.fatal("Cannot find gisql.properties.");
+			throw new RuntimeException("Failed to connect to database.");
+		}
+		props.load(is);
 
 		conn = DriverManager.getConnection("jdbc:postgresql:"
 				+ props.getProperty("url"), props);
@@ -40,8 +56,12 @@ public class DatabaseManager {
 				PreparedStatement idStatement = conn
 						.prepareStatement("SELECT id FROM species WHERE name = ?");
 				idStatement.setString(1, species);
-				int species_id = (Integer) DatabaseManager
+				Integer species_id = (Integer) DatabaseManager
 						.executeScalar(idStatement);
+				if (species_id == null) {
+					log.error("Unknown species " + species);
+					return null;
+				}
 				log.info("Species " + species + " has id " + species_id);
 
 				s = new Database(species, species_id, conn);
@@ -54,13 +74,17 @@ public class DatabaseManager {
 		}
 	}
 
-	public static Object executeScalar(PreparedStatement statement)
-			throws SQLException {
-		ResultSet rs = statement.executeQuery();
-		if (rs.next()) {
-			return rs.getObject(1);
-		} else {
-			return null;
+	public String getSpeciesName(int index) {
+		for (String name : loadedSpecies.keySet()) {
+			if (index == 0) {
+				return name;
+			}
+			index--;
 		}
+		return null;
+	}
+
+	public int sizeSpecies() {
+		return loadedSpecies.size();
 	}
 }
