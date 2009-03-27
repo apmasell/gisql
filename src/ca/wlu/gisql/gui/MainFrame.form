@@ -114,6 +114,8 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="commandActionPerformed"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JToolBar$Separator" name="toolbarSeperator">
+        </Component>
         <Component class="javax.swing.JButton" name="run">
           <Properties>
             <Property name="text" type="java.lang.String" value="Run"/>
@@ -135,9 +137,6 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
       <SubComponents>
         <Component class="javax.swing.JLabel" name="rowslabel">
-          <BindingProperties>
-            <BindingProperty name="text" source="results" sourcePath="${rowCount}" target="rowslabel" targetPath="text" updateStrategy="0" immediately="false"/>
-          </BindingProperties>
         </Component>
         <Component class="javax.swing.JLabel" name="interactionslabel">
           <Properties>
@@ -209,6 +208,9 @@
                   <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="resultsPropertyChange"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

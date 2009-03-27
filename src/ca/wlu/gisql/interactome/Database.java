@@ -80,6 +80,7 @@ public class Database extends Interactome {
 						membership);
 				addInteraction(i);
 			}
+			rs.close();
 			log.info("Load complete.");
 		} catch (SQLException e) {
 			log.fatal("Failed to load species " + species, e);
