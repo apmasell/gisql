@@ -1,352 +1,320 @@
 package ca.wlu.gisql.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
+import javax.swing.WindowConstants;
+import javax.swing.JToolBar.Separator;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
-import ca.wlu.gisql.Environment;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interation.Interaction;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import javax.swing.JFileChooser;
 import org.apache.log4j.Logger;
 
-public class MainFrame extends javax.swing.JFrame implements TreeCellRenderer {
+import ca.wlu.gisql.Environment;
+import ca.wlu.gisql.interaction.Interaction;
+import ca.wlu.gisql.interactome.Interactome;
+
+public class MainFrame extends JFrame implements ActionListener, KeyListener,
+	TableModelListener, TreeCellRenderer, TreeSelectionListener {
 
     class InteractomeTask extends SwingWorker<Interactome, Interactome> {
 
-        Interactome i;
+	Interactome i;
 
-        InteractomeTask(Interactome i) {
-            this.i = i;
-        }
+	InteractomeTask(Interactome i) {
+	    this.i = i;
+	}
 
-        public Interactome doInBackground() {
-            i.process();
-            return i;
-        }
+	public Interactome doInBackground() {
+	    i.process();
+	    return i;
+	}
 
-        public void done() {
-            results.setModel(i);
-            command.setSelectedItem("");
-            progress.setVisible(false);
-            task = null;
-        }
+	public void done() {
+	    setTable(i);
+	    command.setText("");
+	    progress.setVisible(false);
+	    task = null;
+	}
     }
+
+    static final TableModel emptyModel = new DefaultTableModel();
+
     static final Logger log = Logger.getLogger(MainFrame.class);
+
+    private JTextField command = new JTextField();
+
     private Environment env;
+
+    private JSplitPane innersplitpane = new JSplitPane();
+
+    private JLabel interactionslabel = new JLabel(" interactions.");
+
+    private JMenuBar menu = new JMenuBar();
+
+    private JMenuItem menuClear = new JMenuItem("Clear Variables");
+
+    private JMenu menuMain = new JMenu("Main");
+
+    private JMenuItem menuName = new JMenuItem(
+	    "Assign Last Result to Variable...");
+
+    private JMenuItem menuQuit = new JMenuItem("Quit");
+
+    private JMenuItem menuSave = new JMenuItem("Save Results As...");
+
+    private int numCommands = 1;
+
     private BusyDialog progress = new BusyDialog(this);
+
+    private JSeparator quitseparator = new JSeparator();
+
+    private JTable results = new JTable();
+
+    private JScrollPane resultspane = new JScrollPane(results);
+
+    private JLabel rowslabel = new JLabel("No");
+
+    private javax.swing.JButton run = new JButton("Run");
+
+    private JLabel status = new JLabel();
+
+    private JToolBar statusbar = new JToolBar();
+
+    private Separator statusseparator = new Separator();
+
     private InteractomeTask task = null;
-    DefaultTreeCellRenderer treerenderer = new DefaultTreeCellRenderer();
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox command;
-    private javax.swing.JSplitPane innersplitpane;
-    private javax.swing.JLabel interactionslabel;
-    private javax.swing.JMenuBar menu;
-    private javax.swing.JMenuItem menuClear;
-    private javax.swing.JMenu menuMain;
-    private javax.swing.JMenuItem menuName;
-    private javax.swing.JMenuItem menuQuit;
-    private javax.swing.JMenuItem menuSave;
-    private javax.swing.JSeparator quitseparator;
-    private javax.swing.JTable results;
-    private javax.swing.JScrollPane resultspane;
-    private javax.swing.JLabel rowslabel;
-    private javax.swing.JButton run;
-    private javax.swing.JLabel status;
-    private javax.swing.JToolBar statusbar;
-    private javax.swing.JToolBar.Separator statusseparator;
-    private javax.swing.JToolBar toolbar;
-    private javax.swing.JToolBar.Separator toolbarSeperator;
-    private javax.swing.JTree variablelist;
-    private javax.swing.JScrollPane variablelistPane;
-    // End of variables declaration//GEN-END:variables
+    private JToolBar toolbar = new JToolBar();
 
-    /** Creates new form MainFrame */
+    private Separator toolbarSeperator = new Separator();
+
+    private DefaultTreeCellRenderer treerenderer = new DefaultTreeCellRenderer();
+
+    private JTree variablelist = new JTree();
+
+    private JScrollPane variablelistPane = new JScrollPane(variablelist);
+
     public MainFrame(Environment env) {
-        this.env = env;
-        initComponents();
+	super("gisQL");
+	this.env = env;
 
-        innersplitpane.setDividerLocation(0.75);
+	setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	getContentPane().setLayout(new BorderLayout());
 
-        ToolTipManager.sharedInstance().registerComponent(variablelist);
-        variablelist.setCellRenderer(this);
+	toolbar.setFloatable(false);
+	toolbar.setRollover(true);
+
+	toolbar.add(new JLabel("Query: "));
+	command.addKeyListener(this);
+	toolbar.add(command);
+	toolbar.add(toolbarSeperator);
+
+	run.setFocusable(false);
+	run.addActionListener(this);
+	toolbar.add(run);
+	getContentPane().add(toolbar, BorderLayout.NORTH);
+
+	results.setAutoCreateRowSorter(true);
+	innersplitpane.setLeftComponent(resultspane);
+
+	statusbar.setFloatable(false);
+	statusbar.setRollover(true);
+	statusbar.add(rowslabel);
+	statusbar.add(interactionslabel);
+	statusbar.add(statusseparator);
+	statusbar.add(status);
+	getContentPane().add(statusbar, BorderLayout.SOUTH);
+
+	variablelist.setModel(env);
+	variablelist.addTreeSelectionListener(this);
+	ToolTipManager.sharedInstance().registerComponent(variablelist);
+	variablelist.setCellRenderer(this);
+	innersplitpane.setRightComponent(variablelistPane);
+	getContentPane().add(innersplitpane, BorderLayout.CENTER);
+
+	menuName.setAccelerator(KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_N,
+		java.awt.event.InputEvent.CTRL_MASK));
+	menuName.addActionListener(this);
+	menuMain.add(menuName);
+
+	menuSave.setAccelerator(KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_S,
+		java.awt.event.InputEvent.CTRL_MASK));
+	menuSave.setText("Save Data As...");
+	menuSave.addActionListener(this);
+	menuMain.add(menuSave);
+
+	menuClear.setText("Clear Variables");
+	menuClear.addActionListener(this);
+	menuMain.add(menuClear);
+	menuMain.add(quitseparator);
+
+	menuQuit.setAccelerator(KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_Q,
+		java.awt.event.InputEvent.CTRL_MASK));
+	menuQuit.setText("Quit");
+	menuQuit.addActionListener(this);
+	menuMain.add(menuQuit);
+
+	menu.add(menuMain);
+
+	setJMenuBar(menu);
+
+	pack();
     }
 
-    private void commandActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_commandActionPerformed
+    public void actionPerformed(ActionEvent evt) {
+	if (evt.getSource() == run) {
+	    executeCurrentCommand();
+	} else if (evt.getSource() == menuName) {
 
-        executeCurrentCommand();
-    }// GEN-LAST:event_commandActionPerformed
+	    String name = JOptionPane.showInputDialog(this,
+		    "Enter a variable name:");
+	    if (name == null) {
+		return;
+	    }
+	    for (int i = 0; i < name.length(); i++) {
+		if (!Character.isJavaIdentifierPart(name.charAt(i))) {
+		    JOptionPane.showMessageDialog(this, "Inavlid name.",
+			    "Name - gisQL", JOptionPane.ERROR_MESSAGE);
+		    return;
+		}
+	    }
+	    env.setVariable(name, env.getLast());
+
+	} else if (evt.getSource() == menuSave) {
+	    JFileChooser fc = new JFileChooser();
+	    if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+		try {
+		    File file = fc.getSelectedFile();
+		    PrintStream print = new PrintStream(file);
+
+		    Interactome i = (Interactome) results.getModel();
+		    StringBuilder sb = new StringBuilder();
+		    sb.append("# ");
+		    print.println(i.show(sb));
+		    for (Interaction n : i) {
+			sb.setLength(0);
+			print.println(n.show(sb));
+		    }
+		} catch (IOException e) {
+		    log.error("Could not write to file.", e);
+		    JOptionPane.showMessageDialog(this,
+			    "Error writing to file.", "gisQL",
+			    JOptionPane.WARNING_MESSAGE);
+		}
+	    }
+	} else if (evt.getSource() == menuClear) {
+	    env.clearVariables();
+	} else if (evt.getSource() == menuQuit) {
+	    System.exit(0);
+	}
+    }
 
     public void executeCurrentCommand() {
-        String expression = (String) command.getSelectedItem();
-        if (expression == null || expression.isEmpty()) {
-            return;
-        }
-        Interactome i = env.parse(expression);
-        if (i == null) {
-            JOptionPane.showMessageDialog(this, "Invalid expression.", "gisQL",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        command.addItem(i.show(new StringBuilder()).toString());
-        progress.setVisible(true);
-        task = new InteractomeTask(i);
-        task.execute();
+	String expression = command.getText();
+	if (expression == null || expression.isEmpty()) {
+	    return;
+	}
+	Interactome i = env.parse(expression);
+	if (i == null) {
+	    JOptionPane.showMessageDialog(this, "Invalid expression.", "gisQL",
+		    JOptionPane.ERROR_MESSAGE);
+	    return;
+	}
+	results.setModel(emptyModel);
+	command.setText(i.show(new StringBuilder()).toString());
+	env.setVariable("_" + numCommands++, i);
+	progress.setVisible(true);
+	task = new InteractomeTask(i);
+	task.execute();
     }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value,
-            boolean selected, boolean expanded, boolean leaf, int row,
-            boolean hasFocus) {
-        treerenderer.getTreeCellRendererComponent(tree, value, selected,
-                expanded, leaf, row, hasFocus);
-        if (value != null) {
-            TreePath tp = tree.getPathForRow(row);
-            Interactome i = env.getInteractome(tp);
-            if (i != null) {
-                treerenderer.setToolTipText(i.show(new StringBuilder()).toString());
-            } else {
-                treerenderer.setToolTipText(null);
-            }
-        }
-        return treerenderer;
+	    boolean selected, boolean expanded, boolean leaf, int row,
+	    boolean hasFocus) {
+	treerenderer.getTreeCellRendererComponent(tree, value, selected,
+		expanded, leaf, row, hasFocus);
+	if (value != null) {
+	    TreePath tp = tree.getPathForRow(row);
+	    Interactome i = env.getInteractome(tp);
+	    if (i != null) {
+		treerenderer.setToolTipText(i.show(new StringBuilder())
+			.toString());
+	    } else {
+		treerenderer.setToolTipText(null);
+	    }
+	}
+	return treerenderer;
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+    public void keyPressed(KeyEvent evt) {
+	if (evt.getSource() == command && evt.getKeyCode() == KeyEvent.VK_ENTER) {
+	    executeCurrentCommand();
+	}
+    }
 
-        toolbar = new javax.swing.JToolBar();
-        command = new javax.swing.JComboBox();
-        toolbarSeperator = new javax.swing.JToolBar.Separator();
-        run = new javax.swing.JButton();
-        statusbar = new javax.swing.JToolBar();
-        rowslabel = new javax.swing.JLabel();
-        interactionslabel = new javax.swing.JLabel();
-        statusseparator = new javax.swing.JToolBar.Separator();
-        status = new javax.swing.JLabel();
-        innersplitpane = new javax.swing.JSplitPane();
-        variablelistPane = new javax.swing.JScrollPane();
-        variablelist = new javax.swing.JTree();
-        resultspane = new javax.swing.JScrollPane();
-        results = new javax.swing.JTable();
-        menu = new javax.swing.JMenuBar();
-        menuMain = new javax.swing.JMenu();
-        menuName = new javax.swing.JMenuItem();
-        menuSave = new javax.swing.JMenuItem();
-        menuClear = new javax.swing.JMenuItem();
-        quitseparator = new javax.swing.JSeparator();
-        menuQuit = new javax.swing.JMenuItem();
+    public void keyReleased(KeyEvent evt) {
+    }
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    public void keyTyped(KeyEvent evt) {
+    }
 
-        toolbar.setRollover(true);
+    private void setTable(TableModel tm) {
+	TableModel old = results.getModel();
+	if (old != null) {
+	    old.removeTableModelListener(this);
+	}
+	results.setModel(tm);
+	if (tm != null) {
+	    tm.addTableModelListener(this);
+	    tableChanged(null);
+	}
+    }
 
-        command.setEditable(true);
-        command.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                commandActionPerformed(evt);
-            }
-        });
-        toolbar.add(command);
-        toolbar.add(toolbarSeperator);
+    public void tableChanged(TableModelEvent evt) {
+	rowslabel.setText(Integer.toString(results.getRowCount()));
+    }
 
-        run.setText("Run");
-        run.setFocusable(false);
-        run.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        run.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        run.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                runActionPerformed(evt);
-            }
-        });
-        toolbar.add(run);
-
-        statusbar.setRollover(true);
-        statusbar.add(rowslabel);
-
-        interactionslabel.setText(" interactions.");
-        statusbar.add(interactionslabel);
-        statusbar.add(statusseparator);
-
-        status.setText("No selected item.");
-        statusbar.add(status);
-
-        variablelist.setModel(env);
-        variablelist.setPreferredSize(new java.awt.Dimension(79, 72));
-        variablelist.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
-            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-                variablelistValueChanged(evt);
-            }
-        });
-        variablelistPane.setViewportView(variablelist);
-
-        innersplitpane.setRightComponent(variablelistPane);
-
-        results.setAutoCreateRowSorter(true);
-        results.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
-        results.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                resultsPropertyChange(evt);
-            }
-        });
-        resultspane.setViewportView(results);
-
-        innersplitpane.setLeftComponent(resultspane);
-
-        menuMain.setText("Main");
-
-        menuName.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        menuName.setText("Assign Last Result to Variable...");
-        menuName.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuNameActionPerformed(evt);
-            }
-        });
-        menuMain.add(menuName);
-
-        menuSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        menuSave.setText("Save Data As...");
-        menuSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuSaveActionPerformed(evt);
-            }
-        });
-        menuMain.add(menuSave);
-
-        menuClear.setText("Clear Variables");
-        menuClear.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuClearActionPerformed(evt);
-            }
-        });
-        menuMain.add(menuClear);
-        menuMain.add(quitseparator);
-
-        menuQuit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
-        menuQuit.setText("Quit");
-        menuQuit.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuQuitActionPerformed(evt);
-            }
-        });
-        menuMain.add(menuQuit);
-
-        menu.add(menuMain);
-
-        setJMenuBar(menu);
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(toolbar, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-            .addComponent(statusbar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-            .addComponent(innersplitpane, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(toolbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(innersplitpane, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(statusbar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void menuClearActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuClearActionPerformed
-
-        env.clearVariables();
-    }// GEN-LAST:event_menuClearActionPerformed
-
-    private void menuNameActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuNameActionPerformed
-
-        String name = JOptionPane.showInputDialog(this,
-                "Enter a variable name:");
-        if (name == null) {
-            return;
-        }
-        for (int i = 0; i < name.length(); i++) {
-            if (!Character.isJavaIdentifierPart(name.charAt(i))) {
-                JOptionPane.showMessageDialog(this, "Inavlid name.",
-                        "Name - gisQL", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        }
-        env.setVariable(name, env.getLast());
-
-    }// GEN-LAST:event_menuNameActionPerformed
-
-    private void menuQuitActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuQuitActionPerformed
-
-        System.exit(0);
-    }// GEN-LAST:event_menuQuitActionPerformed
-
-    private void menuSaveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_menuSaveActionPerformed
-
-        JFileChooser fc = new JFileChooser();
-        if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-            try {
-                File file = fc.getSelectedFile();
-                PrintStream print = new PrintStream(file);
-
-                Interactome i = (Interactome) results.getModel();
-                StringBuilder sb = new StringBuilder();
-                sb.append("# ");
-                print.println(i.show(sb));
-                for (Interaction n : i) {
-                    sb.setLength(0);
-                    print.println(n.show(sb));
-                }
-            } catch (IOException e) {
-                log.error("Could not write to file.", e);
-                JOptionPane.showMessageDialog(this, "Error writing to file.", "gisQL", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-
-    }// GEN-LAST:event_menuSaveActionPerformed
-    private void resultsPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_resultsPropertyChange
-        if ("rowCount".equals(evt.getPropertyName())) {
-            rowslabel.setText(evt.getNewValue().toString());
-        }
-	}//GEN-LAST:event_resultsPropertyChange
-    private void runActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_runActionPerformed
-
-        executeCurrentCommand();
-    }// GEN-LAST:event_runActionPerformed
-
-    private void variablelistValueChanged(
-            javax.swing.event.TreeSelectionEvent evt) {// GEN-FIRST:event_variablelistValueChanged
-
-        Interactome i = env.getInteractome(variablelist.getSelectionPath());
-        if (i != null) {
-            results.setModel(i);
-            status.setText(i.show(new StringBuilder()).toString());
-        }
-    }// GEN-LAST:event_variablelistValueChanged
+    public void valueChanged(TreeSelectionEvent evt) {
+	Interactome i = env.getInteractome(variablelist.getSelectionPath());
+	if (i != null) {
+	    setTable(i);
+	    status.setText(i.show(new StringBuilder()).toString());
+	}
+    }
 }

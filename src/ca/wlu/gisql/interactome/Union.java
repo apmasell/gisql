@@ -1,6 +1,6 @@
 package ca.wlu.gisql.interactome;
 
-import ca.wlu.gisql.interation.Interaction;
+import ca.wlu.gisql.interaction.Interaction;
 
 public class Union extends ArithmeticInteractome {
 

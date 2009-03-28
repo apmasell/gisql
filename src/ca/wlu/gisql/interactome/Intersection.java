@@ -1,7 +1,7 @@
 package ca.wlu.gisql.interactome;
 
-import ca.wlu.gisql.interation.ComplementaryInteraction;
-import ca.wlu.gisql.interation.Interaction;
+import ca.wlu.gisql.interaction.ComplementaryInteraction;
+import ca.wlu.gisql.interaction.Interaction;
 
 public class Intersection extends ArithmeticInteractome {
 

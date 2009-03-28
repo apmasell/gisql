@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interation;
+package ca.wlu.gisql.interaction;
 
 import ca.wlu.gisql.interactome.Interactome;
 

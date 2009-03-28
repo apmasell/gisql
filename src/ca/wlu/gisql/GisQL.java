@@ -7,8 +7,8 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interation.Interaction;
 
 public class GisQL {
 

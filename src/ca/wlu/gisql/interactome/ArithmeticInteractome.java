@@ -4,9 +4,9 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.interation.CompositeInteraction;
-import ca.wlu.gisql.interation.Interaction;
-import ca.wlu.gisql.interation.TranslatedInteraction;
+import ca.wlu.gisql.interaction.CompositeInteraction;
+import ca.wlu.gisql.interaction.Interaction;
+import ca.wlu.gisql.interaction.TranslatedInteraction;
 
 public abstract class ArithmeticInteractome extends Interactome {
 	static final Logger log = Logger.getLogger(ArithmeticInteractome.class);

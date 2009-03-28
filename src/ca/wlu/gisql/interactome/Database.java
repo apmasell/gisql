@@ -10,8 +10,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.DatabaseManager;
-import ca.wlu.gisql.interation.Interaction;
-import ca.wlu.gisql.interation.NebulonInteraction;
+import ca.wlu.gisql.interaction.Interaction;
+import ca.wlu.gisql.interaction.NebulonInteraction;
 
 public class Database extends Interactome {
 	static final Logger log = Logger.getLogger(Database.class);
