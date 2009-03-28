@@ -1,5 +1,5 @@
 package ca.wlu.gisql.util;
 
 public interface Show {
-	public StringBuilder show (StringBuilder sb);
+    public StringBuilder show(StringBuilder sb);
 }

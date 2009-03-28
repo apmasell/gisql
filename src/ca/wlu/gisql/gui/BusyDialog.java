@@ -22,7 +22,7 @@ public class BusyDialog extends JDialog implements ActionListener {
     private JProgressBar progress = new JProgressBar();
 
     public BusyDialog(JFrame parent) {
-	super(parent, "Working - gisQL", ModalityType.APPLICATION_MODAL);
+	super(parent, "Working - gisQL", true);
 	setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 	setCursor(new Cursor(Cursor.WAIT_CURSOR));
 	setResizable(false);

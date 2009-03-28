@@ -247,7 +247,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
     public void executeCurrentCommand() {
 	String expression = command.getText();
-	if (expression == null || expression.isEmpty()) {
+	if (expression == null || expression.trim().length() == 0) {
 	    return;
 	}
 	Interactome i = env.parse(expression);

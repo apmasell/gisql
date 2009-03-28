@@ -244,48 +244,48 @@ public class Environment implements TreeModel {
     }
 
     public Interactome parseIdentifier() {
-		consumeWhitespace();
+	consumeWhitespace();
 
-		while (position < input.length()) {
-			char codepoint = input.charAt(position);
+	while (position < input.length()) {
+	    char codepoint = input.charAt(position);
 
-			if (codepoint == '(') {
-				position++;
-				return parseExpression(false);
-			} else if (codepoint == '!' || codepoint == '¬') {
-			    position ++;
-			    Interactome value = parseIdentifier();
-			    if (value == null) {
-				return null;
-			    }
-			    return new Complement(value);
-			} else if (codepoint == '$') {
-				position++;
-				String variable = parseName();
-				if (variable == null || variable.isEmpty()) {
-					log.fatal("Expected variable name after $. Position: "
-							+ position);
-					return null;
-				}
-				Interactome value = variables.get(variable);
-				if (value == null) {
-					log.fatal("Variable " + variable + " is undefined.");
-					return null;
-				}
-				return value;
-			} else {
-				String species = parseName();
-				Interactome i = dm.getSpeciesInteractome(species);
-				if (i == null) {
-					log.fatal("The species " + species
-							+ " does not exist in the database.");
-					return null;
-				}
-				return i;
-			}
+	    if (codepoint == '(') {
+		position++;
+		return parseExpression(false);
+	    } else if (codepoint == '!' || codepoint == '¬') {
+		position++;
+		Interactome value = parseIdentifier();
+		if (value == null) {
+		    return null;
 		}
-		return null;
+		return new Complement(value);
+	    } else if (codepoint == '$') {
+		position++;
+		String variable = parseName();
+		if (variable == null || variable.trim().length() == 0) {
+		    log.fatal("Expected variable name after $. Position: "
+			    + position);
+		    return null;
+		}
+		Interactome value = variables.get(variable);
+		if (value == null) {
+		    log.fatal("Variable " + variable + " is undefined.");
+		    return null;
+		}
+		return value;
+	    } else {
+		String species = parseName();
+		Interactome i = dm.getSpeciesInteractome(species);
+		if (i == null) {
+		    log.fatal("The species " + species
+			    + " does not exist in the database.");
+		    return null;
+		}
+		return i;
+	    }
 	}
+	return null;
+    }
 
     private String parseName() {
 	StringBuilder sb = new StringBuilder();

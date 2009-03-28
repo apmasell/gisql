@@ -4,17 +4,17 @@ import ca.wlu.gisql.interaction.Interaction;
 
 public class Union extends ArithmeticInteractome {
 
-	public Union(Interactome left, Interactome right) {
-		super(left, right);
-		symbol = "\u222A";
-	}
+    public Union(Interactome left, Interactome right) {
+	super(left, right);
+	symbol = "\u222A";
+    }
 
-	protected double calculateMembership(Interaction j1, Interaction j2) {
-		return Math.max(j1.getMembership(), j2.getMembership());
-	}
+    protected double calculateMembership(Interaction j1, Interaction j2) {
+	return Math.max(j1.getMembership(), j2.getMembership());
+    }
 
-	protected Interaction processLoneInteraction(Interaction j1, boolean left) {
-		return j1;
-	}
+    protected Interaction processLoneInteraction(Interaction j1, boolean left) {
+	return j1;
+    }
 
 }
