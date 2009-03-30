@@ -13,7 +13,7 @@ import ca.wlu.gisql.DatabaseManager;
 import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interaction.NebulonInteraction;
 
-public class Database extends Interactome {
+public class Database extends AbstractInteractome {
     static final Logger log = Logger.getLogger(Database.class);
 
     private Connection conn;

@@ -8,7 +8,7 @@ import ca.wlu.gisql.interaction.CompositeInteraction;
 import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interaction.TranslatedInteraction;
 
-public abstract class ArithmeticInteractome extends Interactome {
+public abstract class ArithmeticInteractome extends AbstractInteractome {
     static final Logger log = Logger.getLogger(ArithmeticInteractome.class);
 
     protected Interactome i1, i2;

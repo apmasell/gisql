@@ -3,7 +3,7 @@ package ca.wlu.gisql.interactome;
 import ca.wlu.gisql.interaction.ComplementaryInteraction;
 import ca.wlu.gisql.interaction.Interaction;
 
-public class Complement extends Interactome {
+public class Complement extends AbstractInteractome {
 
     Interactome i;
 

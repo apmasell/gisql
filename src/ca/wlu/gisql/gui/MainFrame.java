@@ -6,9 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -43,15 +41,15 @@ import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.Environment;
-import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.ToFile;
 
 public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	TableModelListener, TreeCellRenderer, TreeSelectionListener {
 
     class InteractomeTask extends SwingWorker<Interactome, Interactome> {
 
-	Interactome i;
+	private Interactome i;
 
 	InteractomeTask(Interactome i) {
 	    this.i = i;
@@ -73,6 +71,8 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
     static final TableModel emptyModel = new DefaultTableModel();
 
     static final Logger log = Logger.getLogger(MainFrame.class);
+
+    private static final long serialVersionUID = -1767901719339978452L;
 
     private JTextField command = new JTextField();
 
@@ -217,25 +217,19 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	    env.setVariable(name, env.getLast());
 
 	} else if (evt.getSource() == menuSave) {
-	    JFileChooser fc = new JFileChooser();
-	    if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-		try {
-		    File file = fc.getSelectedFile();
-		    PrintStream print = new PrintStream(file);
+	    if (results.getModel() instanceof Interactome) {
+		JFileChooser fc = new JFileChooser();
+		if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+		    try {
 
-		    Interactome i = (Interactome) results.getModel();
-		    StringBuilder sb = new StringBuilder();
-		    sb.append("# ");
-		    print.println(i.show(sb));
-		    for (Interaction n : i) {
-			sb.setLength(0);
-			print.println(n.show(sb));
+			ToFile.writeInteractomeToFile((Interactome) results
+				.getModel(), fc.getSelectedFile());
+		    } catch (IOException e) {
+			log.error("Could not write to file.", e);
+			JOptionPane.showMessageDialog(this,
+				"Error writing to file.", "gisQL",
+				JOptionPane.WARNING_MESSAGE);
 		    }
-		} catch (IOException e) {
-		    log.error("Could not write to file.", e);
-		    JOptionPane.showMessageDialog(this,
-			    "Error writing to file.", "gisQL",
-			    JOptionPane.WARNING_MESSAGE);
 		}
 	    }
 	} else if (evt.getSource() == menuClear) {
@@ -259,9 +253,9 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	results.setModel(emptyModel);
 	command.setText(i.show(new StringBuilder()).toString());
 	env.setVariable("_" + numCommands++, i);
-	progress.setVisible(true);
 	task = new InteractomeTask(i);
 	task.execute();
+	progress.setVisible(true);
     }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value,

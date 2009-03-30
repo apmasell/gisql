@@ -15,6 +15,8 @@ import javax.swing.WindowConstants;
 
 public class BusyDialog extends JDialog implements ActionListener {
 
+    private static final long serialVersionUID = -3519155352196497820L;
+
     private JButton cancel = new JButton("Abort");
 
     private JLabel label = new JLabel("Computing result set...");

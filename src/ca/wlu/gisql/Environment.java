@@ -17,6 +17,7 @@ import ca.wlu.gisql.interactome.Difference;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Intersection;
 import ca.wlu.gisql.interactome.SymmetricDifference;
+import ca.wlu.gisql.interactome.ToFile;
 import ca.wlu.gisql.interactome.Union;
 
 public class Environment implements TreeModel {
@@ -217,7 +218,7 @@ public class Environment implements TreeModel {
     }
 
     private Interactome parseExpression(boolean toplevel) {
-	Interactome e = parseDiffExpression();
+	Interactome e = parseFileExpression();
 
 	if (e == null) {
 	    return null;
@@ -241,6 +242,59 @@ public class Environment implements TreeModel {
 	    log.fatal("Unexpected end of input.");
 	    return null;
 	}
+    }
+
+    private Interactome parseFileExpression() {
+	Interactome left = parseDiffExpression();
+
+	if (left == null) {
+	    return null;
+	}
+	while (position < input.length()) {
+	    consumeWhitespace();
+
+	    char codepoint = input.charAt(position);
+
+	    if (codepoint == '>' || codepoint == '→') {
+		position++;
+		String filename = parseFilename();
+		if (filename == null) {
+		    return null;
+		}
+		left = new ToFile(left, filename);
+	    } else {
+		return left;
+	    }
+	}
+	return left;
+    }
+
+    private String parseFilename() {
+	consumeWhitespace();
+	StringBuilder sb = null;
+
+	while (position < input.length()) {
+	    char codepoint = input.charAt(position);
+
+	    if (codepoint == '"') {
+		position++;
+		if (sb == null) {
+		    /* first quote. */
+		    sb = new StringBuilder();
+		} else {
+		    /* found final quote. */
+		    return sb.toString();
+		}
+	    } else if (codepoint == '\\') {
+		position++;
+		sb.append(input.charAt(position));
+		position++;
+	    } else {
+		position++;
+		sb.append(codepoint);
+	    }
+	}
+	return null;
     }
 
     public Interactome parseIdentifier() {

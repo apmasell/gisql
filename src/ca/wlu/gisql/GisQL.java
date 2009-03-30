@@ -1,5 +1,6 @@
 package ca.wlu.gisql;
 
+import java.awt.EventQueue;
 import java.sql.SQLException;
 
 import org.apache.log4j.ConsoleAppender;
@@ -7,8 +8,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import ca.wlu.gisql.gui.MainFrame;
-import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.ToFile;
 
 public class GisQL {
 
@@ -35,28 +36,9 @@ public class GisQL {
 		log.error("Failed to parse query.");
 		return;
 	    }
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("# query: ");
-	    log.info(interactome.show(sb));
-
-	    long start = System.currentTimeMillis();
-	    int count = 0;
-	    for (Interaction i : interactome) {
-		sb.setLength(0);
-		i.show(sb);
-		System.out.println(sb);
-		count++;
-	    }
-	    sb.setLength(0);
-	    sb.append(count);
-	    sb.append(" interactions in ");
-	    sb.append((System.currentTimeMillis() - start) / 1000.0);
-	    sb.append(" seconds.");
-	    log.info(sb);
+	    ToFile.writeInteractomeToFile(interactome, System.out);
 	} else {
-
-	    java.awt.EventQueue.invokeLater(new Runnable() {
-
+	    EventQueue.invokeLater(new Runnable() {
 		public void run() {
 		    new MainFrame(env).setVisible(true);
 		}
