@@ -18,6 +18,7 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Intersection;
 import ca.wlu.gisql.interactome.SymmetricDifference;
 import ca.wlu.gisql.interactome.ToFile;
+import ca.wlu.gisql.interactome.ToVar;
 import ca.wlu.gisql.interactome.Union;
 
 public class Environment implements TreeModel {
@@ -151,7 +152,7 @@ public class Environment implements TreeModel {
     public Interactome parse(String input) {
 	position = 0;
 	this.input = input;
-	Interactome result = parseExpression(true);
+	Interactome result = parseExpression(null);
 	this.input = null;
 	notifyListeners();
 	if (result != null) {
@@ -166,24 +167,29 @@ public class Environment implements TreeModel {
 	if (left == null) {
 	    return null;
 	}
+	int oldposition = position;
 	while (position < input.length()) {
 	    consumeWhitespace();
 
 	    char codepoint = input.charAt(position);
 
-	    if (codepoint == '^' || codepoint == 'Δ') {
+	    if (codepoint == '^' || codepoint == '∆') {
 		position++;
 		Interactome right = parseIdentifier();
 		if (right == null) {
-		    return null;
+		    position = oldposition;
+		    return left;
 		}
+		oldposition = position;
 		left = new SymmetricDifference(left, right);
 	    } else if (codepoint == '&' || codepoint == '\u2229') {
 		position++;
 		Interactome right = parseIdentifier();
 		if (right == null) {
-		    return null;
+		    position = oldposition;
+		    return left;
 		}
+		oldposition = position;
 		left = new Intersection(left, right);
 	    } else {
 		return left;
@@ -198,6 +204,7 @@ public class Environment implements TreeModel {
 	if (left == null) {
 	    return null;
 	}
+	int oldposition = position;
 	while (position < input.length()) {
 	    consumeWhitespace();
 
@@ -207,8 +214,10 @@ public class Environment implements TreeModel {
 		position++;
 		Interactome right = parseOrExpression();
 		if (right == null) {
-		    return null;
+		    position = oldposition;
+		    return left;
 		}
+		oldposition = position;
 		left = new Difference(left, right);
 	    } else {
 		return left;
@@ -217,28 +226,31 @@ public class Environment implements TreeModel {
 	return left;
     }
 
-    private Interactome parseExpression(boolean toplevel) {
+    private Interactome parseExpression(Character endofexpression) {
 	Interactome e = parseFileExpression();
 
 	if (e == null) {
 	    return null;
 	}
+	int oldposition = position;
 	while (position < input.length()) {
 	    consumeWhitespace();
 
 	    char codepoint = input.charAt(position);
 
-	    if (!toplevel && codepoint == ')') {
+	    if (codepoint == endofexpression) {
 		return e;
 	    } else {
+		position = oldposition;
 		log.fatal("Unexpected character " + codepoint + " at position "
 			+ position);
 		return null;
 	    }
 	}
-	if (toplevel && position == input.length()) {
+	if (endofexpression == null && position == input.length()) {
 	    return e;
 	} else {
+	    position = oldposition;
 	    log.fatal("Unexpected end of input.");
 	    return null;
 	}
@@ -250,6 +262,7 @@ public class Environment implements TreeModel {
 	if (left == null) {
 	    return null;
 	}
+	int oldposition = position;
 	while (position < input.length()) {
 	    consumeWhitespace();
 
@@ -257,11 +270,36 @@ public class Environment implements TreeModel {
 
 	    if (codepoint == '>' || codepoint == '→') {
 		position++;
+		Double lowerbound = parseMaybeDouble();
+		Double upperbound;
+
+		if (lowerbound != null) {
+		    upperbound = parseMaybeDouble();
+		    if (upperbound == null) {
+			position = oldposition;
+			return left;
+		    }
+		} else {
+		    lowerbound = 0.0;
+		    upperbound = 1.0;
+		}
+		
 		String filename = parseFilename();
 		if (filename == null) {
-		    return null;
+		    position = oldposition;
+		    return left;
 		}
-		left = new ToFile(left, filename);
+		oldposition = position;
+		left = new ToFile(left, filename, lowerbound, upperbound);
+	    } else if (codepoint == '@' || codepoint == '≝') {
+		position++;
+		String varname = parseName();
+		if (varname == null) {
+		    position = oldposition;
+		    return left;
+		}
+		oldposition = position;
+		left = new ToVar(this, left, varname);
 	    } else {
 		return left;
 	    }
@@ -272,6 +310,7 @@ public class Environment implements TreeModel {
     private String parseFilename() {
 	consumeWhitespace();
 	StringBuilder sb = null;
+	int oldposition = position;
 
 	while (position < input.length()) {
 	    char codepoint = input.charAt(position);
@@ -294,6 +333,7 @@ public class Environment implements TreeModel {
 		sb.append(codepoint);
 	    }
 	}
+	position = oldposition;
 	return null;
     }
 
@@ -305,7 +345,7 @@ public class Environment implements TreeModel {
 
 	    if (codepoint == '(') {
 		position++;
-		return parseExpression(false);
+		return parseExpression(')');
 	    } else if (codepoint == '!' || codepoint == '¬') {
 		position++;
 		Interactome value = parseIdentifier();
@@ -341,6 +381,30 @@ public class Environment implements TreeModel {
 	return null;
     }
 
+    public Double parseMaybeDouble() {
+	consumeWhitespace();
+	int oldposition = position;
+	while (position < input.length()
+		&& Character.isDigit(input.charAt(position))) {
+	    position++;
+	}
+	if (position < input.length() && input.charAt(position) == '.') {
+	    position++;
+	    while (position < input.length()
+		    && Character.isDigit(input.charAt(position))) {
+		position++;
+	    }
+	}
+
+	try {
+	    return new Double(input.substring(oldposition, position));
+	} catch (NumberFormatException e) {
+	    position = oldposition;
+	    return null;
+	}
+
+    }
+
     private String parseName() {
 	StringBuilder sb = new StringBuilder();
 
@@ -362,6 +426,7 @@ public class Environment implements TreeModel {
 	if (left == null) {
 	    return null;
 	}
+	int oldposition = position;
 	while (position < input.length()) {
 	    consumeWhitespace();
 
@@ -371,8 +436,10 @@ public class Environment implements TreeModel {
 		position++;
 		Interactome right = parseAndExpression();
 		if (right == null) {
-		    return null;
+		    position = oldposition;
+		    return left;
 		}
+		oldposition = position;
 		left = new Union(left, right);
 	    } else {
 		return left;

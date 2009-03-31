@@ -30,13 +30,15 @@ public class GisQL {
 
 	final Environment env = new Environment(dm);
 
-	if (args.length == 1) {
-	    Interactome interactome = env.parse(args[0]);
-	    if (interactome == null) {
-		log.error("Failed to parse query.");
-		return;
+	if (args.length > 0) {
+	    for (String argument : args) {
+		Interactome interactome = env.parse(argument);
+		if (interactome == null) {
+		    log.error("Failed to parse query.");
+		    return;
+		}
+		ToFile.writeInteractomeToFile(interactome, System.out);
 	    }
-	    ToFile.writeInteractomeToFile(interactome, System.out);
 	} else {
 	    EventQueue.invokeLater(new Runnable() {
 		public void run() {

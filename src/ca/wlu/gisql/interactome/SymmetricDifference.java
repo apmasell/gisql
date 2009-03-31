@@ -6,7 +6,7 @@ public class SymmetricDifference extends ArithmeticInteractome {
 
     public SymmetricDifference(Interactome left, Interactome right) {
 	super(left, right);
-	symbol = "Δ";
+	symbol = "∆";
     }
 
     protected double calculateMembership(Interaction j1, Interaction j2) {

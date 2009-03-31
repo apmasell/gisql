@@ -251,7 +251,9 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	    return;
 	}
 	results.setModel(emptyModel);
-	command.setText(i.show(new StringBuilder()).toString());
+	String expr = i.show(new StringBuilder()).toString();
+	command.setText(expr);
+	log.info(expr);
 	env.setVariable("_" + numCommands++, i);
 	task = new InteractomeTask(i);
 	task.execute();

@@ -13,36 +13,44 @@ import ca.wlu.gisql.interaction.Interaction;
 
 public class ToFile implements Interactome {
 
-    private Interactome i;
-
-    private File file;
-
-    public ToFile(Interactome i, String filename) {
-	super();
-	this.i = i;
-	this.file = new File(filename);
-    }
-
-    public long findOrtholog(long gene) {
-	return i.findOrtholog(gene);
-    }
+    static final Logger log = Logger.getLogger(ToFile.class);
 
     public static void writeInteractomeToFile(Interactome i, File file)
 	    throws IOException {
+	writeInteractomeToFile(i, file, 0, 1);
+    }
+
+    public static void writeInteractomeToFile(Interactome i, File file,
+	    double lowerbound, double upperbound) throws IOException {
 	PrintStream print = new PrintStream(file);
-	writeInteractomeToFile(i, print);
+	writeInteractomeToFile(i, print, lowerbound, upperbound);
     }
 
     public static void writeInteractomeToFile(Interactome i, PrintStream print)
 	    throws IOException {
+	writeInteractomeToFile(i, print, 0, 1);
+    }
+
+    public static void writeInteractomeToFile(Interactome i, PrintStream print,
+	    double lowerbound, double upperbound) throws IOException {
+
+	if (lowerbound > upperbound) {
+	    double temp = lowerbound;
+	    lowerbound = upperbound;
+	    upperbound = temp;
+	}
+
 	StringBuilder sb = new StringBuilder();
 	sb.append("# ");
 	print.println(i.show(sb));
 	int count = 0;
 	for (Interaction n : i) {
-	    sb.setLength(0);
-	    print.println(n.show(sb));
-	    count++;
+	    if (n.getMembership() >= lowerbound
+		    && n.getMembership() <= upperbound) {
+		sb.setLength(0);
+		print.println(n.show(sb));
+		count++;
+	    }
 	}
 	sb.setLength(0);
 	sb.append("# ");
@@ -54,42 +62,33 @@ public class ToFile implements Interactome {
 	print.close();
     }
 
-    public StringBuilder show(StringBuilder sb) {
-	i.show(sb);
-	sb.append(" → \"");
-	sb.append(file);
-	sb.append("\"");
-	return sb;
+    private File file;
+
+    private Interactome i;
+
+    private double lowerbound = 0;
+
+    private double upperbound = 1;
+
+    public ToFile(Interactome i, String filename) {
+	super();
+	this.i = i;
+	this.file = new File(filename);
     }
 
-    public long getComputationTime() {
-	return i.getComputationTime();
-    }
-
-    public Interaction getInteraction(long gene1, long gene2) {
-	this.process();
-	return i.getInteraction(gene1, gene2);
-    }
-
-    public boolean process() {
-	boolean parent = i.process();
-	if (parent) {
-	    try {
-		writeInteractomeToFile(i, file);
-	    } catch (IOException e) {
-		log.error("Could not write to file.", e);
-	    }
-	}
-	return parent;
-    }
-
-    public Iterator<Interaction> iterator() {
-	this.process();
-	return i.iterator();
+    public ToFile(Interactome i, String filename, double lowerbound,
+	    double upperbound) {
+	this(i, filename);
+	this.lowerbound = lowerbound;
+	this.upperbound = upperbound;
     }
 
     public void addTableModelListener(TableModelListener listener) {
 	i.addTableModelListener(listener);
+    }
+
+    public long findOrtholog(long gene) {
+	return i.findOrtholog(gene);
     }
 
     public Class<?> getColumnClass(int columnIndex) {
@@ -104,6 +103,15 @@ public class ToFile implements Interactome {
 	return i.getColumnName(columnIndex);
     }
 
+    public long getComputationTime() {
+	return i.getComputationTime();
+    }
+
+    public Interaction getInteraction(long gene1, long gene2) {
+	this.process();
+	return i.getInteraction(gene1, gene2);
+    }
+
     public int getRowCount() {
 	return i.getRowCount();
     }
@@ -116,6 +124,23 @@ public class ToFile implements Interactome {
 	return i.isCellEditable(arg0, arg1);
     }
 
+    public Iterator<Interaction> iterator() {
+	this.process();
+	return i.iterator();
+    }
+
+    public boolean process() {
+	boolean parent = i.process();
+	if (parent) {
+	    try {
+		writeInteractomeToFile(i, file);
+	    } catch (IOException e) {
+		log.error("Could not write to file.", e);
+	    }
+	}
+	return parent;
+    }
+
     public void removeTableModelListener(TableModelListener listener) {
 	i.removeTableModelListener(listener);
     }
@@ -125,6 +150,11 @@ public class ToFile implements Interactome {
 
     }
 
-    static final Logger log = Logger.getLogger(ToFile.class);
-
+    public StringBuilder show(StringBuilder sb) {
+	i.show(sb);
+	sb.append(" → ");
+	sb.append(lowerbound).append(" ").append(upperbound).append(" ");
+	sb.append("\"").append(file).append("\"");
+	return sb;
+    }
 }
