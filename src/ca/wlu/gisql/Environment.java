@@ -227,7 +227,7 @@ public class Environment implements TreeModel {
     }
 
     private Interactome parseExpression(Character endofexpression) {
-	Interactome e = parseFileExpression();
+	Interactome e = parseRedirectExpression();
 
 	if (e == null) {
 	    return null;
@@ -256,7 +256,7 @@ public class Environment implements TreeModel {
 	}
     }
 
-    private Interactome parseFileExpression() {
+    private Interactome parseRedirectExpression() {
 	Interactome left = parseDiffExpression();
 
 	if (left == null) {
