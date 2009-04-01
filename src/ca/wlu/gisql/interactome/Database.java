@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.DatabaseManager;
 import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interaction.NebulonInteraction;
 
@@ -32,35 +31,10 @@ public class Database extends AbstractInteractome {
 
     public long findOrtholog(long gene) {
 	Long ortholog = orthologs.get(gene);
-	if (ortholog != null) {
+	if (ortholog == null) {
+	    return -1L;
+	} else {
 	    return ortholog;
-	}
-
-	try {
-	    PreparedStatement orthologStatement = conn
-		    .prepareStatement("SELECT query_gene FROM ortholog WHERE match_gene = ? UNION SELECT match_gene FROM ortholog WHERE query_gene = ?");
-	    orthologStatement.setInt(1, species_id);
-	    orthologStatement.setInt(2, species_id);
-	    ortholog = (Long) DatabaseManager.executeScalar(orthologStatement);
-	    if (ortholog == null) {
-
-		PreparedStatement selfStatement = conn
-			.prepareStatement("SELECT COUNT(id) FROM gene WHERE species = ? AND id = ?");
-		selfStatement.setInt(1, species_id);
-		selfStatement.setLong(2, gene);
-		long self = (Long) DatabaseManager.executeScalar(selfStatement);
-		if (self == 0)
-		    ortholog = -1L;
-		else {
-		    ortholog = gene;
-		}
-	    }
-	    orthologs.put(gene, ortholog);
-	    return ortholog;
-
-	} catch (SQLException e) {
-	    log.error("SQL exception trying to match ortholog for " + gene, e);
-	    return -1;
 	}
     }
 
@@ -81,6 +55,23 @@ public class Database extends AbstractInteractome {
 		addInteraction(i);
 	    }
 	    rs.close();
+
+	    for (String query : new String[] {
+		    "SELECT id, id FROM gene WHERE species = ?",
+		    "SELECT match_gene, query_gene FROM ortholog JOIN gene ON match_gene = id WHERE species = ?",
+		    "SELECT query_gene, match_gene FROM ortholog JOIN gene ON query_gene = id WHERE species = ?" }) {
+		PreparedStatement orthologStatement = conn
+			.prepareStatement(query);
+		orthologStatement.setInt(1, species_id);
+		rs = orthologStatement.executeQuery();
+		while (rs.next()) {
+		    long localgene = rs.getLong(1);
+		    long remotegene = rs.getLong(2);
+		    orthologs.put(remotegene, localgene);
+		}
+		rs.close();
+	    }
+
 	    log.info("Load complete.");
 	} catch (SQLException e) {
 	    log.fatal("Failed to load species " + species, e);
