@@ -24,6 +24,7 @@ public class ToFile implements Interactome {
 	    double lowerbound, double upperbound) throws IOException {
 	PrintStream print = new PrintStream(file);
 	writeInteractomeToFile(i, print, lowerbound, upperbound);
+	print.close();
     }
 
     public static void writeInteractomeToFile(Interactome i, PrintStream print)
@@ -48,6 +49,9 @@ public class ToFile implements Interactome {
 	    if (n.getMembership() >= lowerbound
 		    && n.getMembership() <= upperbound) {
 		sb.setLength(0);
+		sb.append(n.getGene1()).append(", ");
+		sb.append(n.getGene2()).append(", ");
+		sb.append(n.getMembership()).append(", ");
 		print.println(n.show(sb));
 		count++;
 	    }
@@ -59,7 +63,6 @@ public class ToFile implements Interactome {
 	sb.append(i.getComputationTime() / 1000.0);
 	sb.append(" seconds.");
 	print.println(sb);
-	print.close();
     }
 
     private File file;
