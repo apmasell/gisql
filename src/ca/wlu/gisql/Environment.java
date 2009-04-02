@@ -168,8 +168,8 @@ public class Environment implements TreeModel {
 	    return null;
 	}
 	int oldposition = position;
+	consumeWhitespace();
 	while (position < input.length()) {
-	    consumeWhitespace();
 
 	    char codepoint = input.charAt(position);
 
@@ -194,6 +194,7 @@ public class Environment implements TreeModel {
 	    } else {
 		return left;
 	    }
+	    consumeWhitespace();
 	}
 	return left;
     }
@@ -205,8 +206,8 @@ public class Environment implements TreeModel {
 	    return null;
 	}
 	int oldposition = position;
+	consumeWhitespace();
 	while (position < input.length()) {
-	    consumeWhitespace();
 
 	    char codepoint = input.charAt(position);
 
@@ -222,6 +223,7 @@ public class Environment implements TreeModel {
 	    } else {
 		return left;
 	    }
+	    consumeWhitespace();
 	}
 	return left;
     }
@@ -232,26 +234,16 @@ public class Environment implements TreeModel {
 	if (e == null) {
 	    return null;
 	}
+
 	int oldposition = position;
-	while (position < input.length()) {
-	    consumeWhitespace();
-
-	    char codepoint = input.charAt(position);
-
-	    if (codepoint == endofexpression) {
-		return e;
-	    } else {
-		position = oldposition;
-		log.fatal("Unexpected character " + codepoint + " at position "
-			+ position);
-		return null;
-	    }
-	}
-	if (endofexpression == null && position == input.length()) {
+	consumeWhitespace();
+	boolean eoi = endofexpression == null;
+	if (position < input.length() ? (!eoi)
+		&& input.charAt(position) == endofexpression : eoi) {
+	    position++;
 	    return e;
 	} else {
 	    position = oldposition;
-	    log.fatal("Unexpected end of input.");
 	    return null;
 	}
     }
@@ -263,8 +255,8 @@ public class Environment implements TreeModel {
 	    return null;
 	}
 	int oldposition = position;
+	consumeWhitespace();
 	while (position < input.length()) {
-	    consumeWhitespace();
 
 	    char codepoint = input.charAt(position);
 
@@ -283,7 +275,6 @@ public class Environment implements TreeModel {
 		    lowerbound = 0.0;
 		    upperbound = 1.0;
 		}
-		
 		String filename = parseFilename();
 		if (filename == null) {
 		    position = oldposition;
@@ -293,6 +284,7 @@ public class Environment implements TreeModel {
 		left = new ToFile(left, filename, lowerbound, upperbound);
 	    } else if (codepoint == '@' || codepoint == '≝') {
 		position++;
+		consumeWhitespace();
 		String varname = parseName();
 		if (varname == null) {
 		    position = oldposition;
@@ -303,6 +295,7 @@ public class Environment implements TreeModel {
 	    } else {
 		return left;
 	    }
+	    consumeWhitespace();
 	}
 	return left;
     }
@@ -410,7 +403,9 @@ public class Environment implements TreeModel {
 
 	while (position < input.length()) {
 	    char codepoint = input.charAt(position);
-	    if (Character.isJavaIdentifierPart(codepoint)) {
+
+	    if (sb.length() == 0 ? Character.isJavaIdentifierStart(codepoint)
+		    : Character.isJavaIdentifierPart(codepoint)) {
 		position++;
 		sb.append(codepoint);
 	    } else {
