@@ -19,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -105,6 +106,8 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
     private JScrollPane resultspane = new JScrollPane(results);
 
+    private JTabbedPane resulttabs = new JTabbedPane();
+
     private JLabel rowslabel = new JLabel("No");
 
     private javax.swing.JButton run = new JButton("Run");
@@ -148,7 +151,8 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	getContentPane().add(toolbar, BorderLayout.NORTH);
 
 	results.setAutoCreateRowSorter(true);
-	innersplitpane.setLeftComponent(resultspane);
+	resulttabs.addTab("List", resultspane);
+	innersplitpane.setLeftComponent(resulttabs);
 
 	statusbar.setFloatable(false);
 	statusbar.setRollover(true);

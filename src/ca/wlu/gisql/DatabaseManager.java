@@ -48,6 +48,7 @@ public class DatabaseManager {
 	}
 	props.load(is);
 
+	log.info("Connecting to database.");
 	conn = DriverManager.getConnection("jdbc:postgresql:"
 		+ props.getProperty("url"), props);
     }
