@@ -62,7 +62,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	}
 
 	public void done() {
-	    setTable(i);
+	    setInteractome(i);
 	    command.setText("");
 	    progress.setVisible(false);
 	    task = null;
@@ -79,9 +79,23 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
     private Environment env;
 
+    private JTable genes = new JTable();
+
+    private JLabel geneslabel = new JLabel(" genes.");
+
+    private JLabel genesRowLabel = new JLabel("No");
+
+    private JScrollPane genesspane = new JScrollPane(genes);
+
     private JSplitPane innersplitpane = new JSplitPane();
 
-    private JLabel interactionslabel = new JLabel(" interactions.");
+    private JTable interactions = new JTable();
+
+    private JLabel interactionslabel = new JLabel(" interactions. ");
+
+    private JScrollPane interactionspane = new JScrollPane(interactions);
+
+    private JLabel interactionsRowLabel = new JLabel("No");
 
     private JMenuBar menu = new JMenuBar();
 
@@ -102,13 +116,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
     private JSeparator quitseparator = new JSeparator();
 
-    private JTable results = new JTable();
-
-    private JScrollPane resultspane = new JScrollPane(results);
-
     private JTabbedPane resulttabs = new JTabbedPane();
-
-    private JLabel rowslabel = new JLabel("No");
 
     private javax.swing.JButton run = new JButton("Run");
 
@@ -150,14 +158,18 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	toolbar.add(run);
 	getContentPane().add(toolbar, BorderLayout.NORTH);
 
-	results.setAutoCreateRowSorter(true);
-	resulttabs.addTab("List", resultspane);
+	interactions.setAutoCreateRowSorter(true);
+	genes.setAutoCreateRowSorter(true);
+	resulttabs.addTab("Interctions", interactionspane);
+	resulttabs.addTab("Genes", genesspane);
 	innersplitpane.setLeftComponent(resulttabs);
 
 	statusbar.setFloatable(false);
 	statusbar.setRollover(true);
-	statusbar.add(rowslabel);
+	statusbar.add(interactionsRowLabel);
 	statusbar.add(interactionslabel);
+	statusbar.add(genesRowLabel);
+	statusbar.add(geneslabel);
 	statusbar.add(statusseparator);
 	statusbar.add(status);
 	getContentPane().add(statusbar, BorderLayout.SOUTH);
@@ -221,13 +233,14 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	    env.setVariable(name, env.getLast());
 
 	} else if (evt.getSource() == menuSave) {
-	    if (results.getModel() instanceof Interactome) {
+	    if (interactions.getModel() instanceof Interactome) {
 		JFileChooser fc = new JFileChooser();
 		if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 		    try {
 
-			ToFile.writeInteractomeToFile((Interactome) results
-				.getModel(), fc.getSelectedFile());
+			ToFile.writeInteractomeToFile(
+				(Interactome) interactions.getModel(), fc
+					.getSelectedFile());
 		    } catch (IOException e) {
 			log.error("Could not write to file.", e);
 			JOptionPane.showMessageDialog(this,
@@ -254,7 +267,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 		    JOptionPane.ERROR_MESSAGE);
 	    return;
 	}
-	results.setModel(emptyModel);
+	interactions.setModel(emptyModel);
 	String expr = i.show(new StringBuilder()).toString();
 	command.setText(expr);
 	log.info(expr);
@@ -294,26 +307,32 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
     public void keyTyped(KeyEvent evt) {
     }
 
-    private void setTable(TableModel tm) {
-	TableModel old = results.getModel();
-	if (old != null) {
-	    old.removeTableModelListener(this);
+    private void setInteractome(Interactome i) {
+	for (JTable table : new JTable[] { interactions, genes }) {
+	    TableModel old = table.getModel();
+	    if (old != null) {
+		old.removeTableModelListener(this);
+	    }
 	}
-	results.setModel(tm);
-	if (tm != null) {
-	    tm.addTableModelListener(this);
+	interactions.setModel(i);
+	genes.setModel(i.genes());
+	if (i != null) {
+	    i.addTableModelListener(this);
+	    i.genes().addTableModelListener(this);
 	    tableChanged(null);
 	}
     }
 
     public void tableChanged(TableModelEvent evt) {
-	rowslabel.setText(Integer.toString(results.getRowCount()));
+	interactionsRowLabel.setText(Integer.toString(interactions
+		.getRowCount()));
+	genesRowLabel.setText(Integer.toString(genes.getRowCount()));
     }
 
     public void valueChanged(TreeSelectionEvent evt) {
 	Interactome i = env.getInteractome(variablelist.getSelectionPath());
 	if (i != null) {
-	    setTable(i);
+	    setInteractome(i);
 	    status.setText(i.show(new StringBuilder()).toString());
 	}
     }

@@ -1,45 +1,49 @@
 package ca.wlu.gisql.interaction;
 
+import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class TranslatedInteraction implements Interaction {
 
-    private long g1;
+    private Gene ortholog1;
 
-    private long g2;
+    private Gene ortholog2;
 
-    private Interactome i1;
+    private Interactome destination;
 
-    private Interaction j2;
+    private Interaction source;
 
-    public TranslatedInteraction(Interactome i1, Interaction j2, long g1,
-	    long g2) {
-	this.i1 = i1;
-	this.j2 = j2;
-	this.g1 = Math.min(g1, g2);
-	this.g2 = Math.max(g1, g2);
+    public TranslatedInteraction(Interactome destination, Interaction source,
+	    Gene ortholog1, Gene ortholog2) {
+	this.destination = destination;
+	this.source = source;
+	this.ortholog1 = ortholog1;
+	this.ortholog2 = ortholog2;
     }
 
-    public long getGene1() {
-	return g1;
+    public Gene getGene1() {
+	return ortholog1;
     }
 
-    public long getGene2() {
-	return g2;
+    public Gene getGene2() {
+	return ortholog2;
     }
 
     public double getMembership() {
-	return j2.getMembership();
+	return source.getMembership();
     }
 
     public Interactome getParent() {
-	return i1;
+	return destination;
     }
 
     public StringBuilder show(StringBuilder sb) {
-	j2.show(sb).append(" → ").append(g1).append(" ⇌ ").append(g2).append(
-		"[");
-	i1.show(sb).append("]");
+	source.show(sb).append(" → ");
+	ortholog1.show(sb);
+	sb.append(" ⇌ ");
+	ortholog2.show(sb);
+	sb.append("[");
+	destination.show(sb).append("]");
 	return sb;
     }
 }

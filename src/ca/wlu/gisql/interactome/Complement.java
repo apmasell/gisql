@@ -1,30 +1,39 @@
 package ca.wlu.gisql.interactome;
 
+import ca.wlu.gisql.gene.ComplementaryGene;
+import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.ComplementaryInteraction;
 import ca.wlu.gisql.interaction.Interaction;
 
 public class Complement extends AbstractInteractome {
 
-    Interactome i;
+    Interactome interactome;
 
     public Complement(Interactome i) {
-	this.i = i;
+	this.interactome = i;
     }
 
-    public long findOrtholog(long gene) {
-	return i.findOrtholog(gene);
+    public Gene findOrtholog(Gene gene) {
+	return interactome.findOrtholog(gene);
+    }
+
+    public int numGenomes() {
+	return interactome.numGenomes();
     }
 
     protected void prepareInteractions() {
-	for (Interaction n : i) {
-	    this.addInteraction(new ComplementaryInteraction(n));
+	for (Gene gene : interactome.genes()) {
+	    addGene(new ComplementaryGene(gene));
 	}
 
+	for (Interaction interaction : interactome) {
+	    this.addInteraction(new ComplementaryInteraction(interaction));
+	}
     }
 
     public StringBuilder show(StringBuilder sb) {
 	sb.append("¬(");
-	i.show(sb);
+	interactome.show(sb);
 	sb.append(")");
 	return sb;
     }

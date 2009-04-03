@@ -1,36 +1,37 @@
 package ca.wlu.gisql.interaction;
 
+import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class ComplementaryInteraction implements Interaction {
 
-    private Interaction i;
+    private Interaction interaction;
 
-    public ComplementaryInteraction(Interaction i) {
-	this.i = i;
+    public ComplementaryInteraction(Interaction interaction) {
+	this.interaction = interaction;
     }
 
-    public long getGene1() {
-	return i.getGene1();
+    public Gene getGene1() {
+	return interaction.getGene1();
     }
 
-    public long getGene2() {
-	return i.getGene2();
+    public Gene getGene2() {
+	return interaction.getGene2();
     }
 
     public double getMembership() {
-	return 1 - i.getMembership();
+	return 1 - interaction.getMembership();
     }
 
     public StringBuilder show(StringBuilder sb) {
 	sb.append("¬(");
-	i.show(sb);
+	interaction.show(sb);
 	sb.append(")");
 	return sb;
     }
 
     public Interactome getParent() {
-	return i.getParent();
+	return interaction.getParent();
     }
 
 }

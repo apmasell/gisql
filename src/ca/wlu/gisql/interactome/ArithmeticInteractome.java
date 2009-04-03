@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.gene.CompositeGene;
+import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.CompositeInteraction;
 import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interaction.TranslatedInteraction;
@@ -11,78 +13,102 @@ import ca.wlu.gisql.interaction.TranslatedInteraction;
 public abstract class ArithmeticInteractome extends AbstractInteractome {
     static final Logger log = Logger.getLogger(ArithmeticInteractome.class);
 
-    protected Interactome i1, i2;
+    protected Interactome left, right;
 
     protected String symbol = "?";
 
     public ArithmeticInteractome(Interactome left, Interactome right) {
-	i1 = left;
-	i2 = right;
+	this.left = left;
+	this.right = right;
     }
 
-    protected abstract double calculateMembership(Interaction j1, Interaction j2);
+    protected abstract double calculateGeneMembership(Gene gene, Gene ortholog);
 
-    public long findOrtholog(long gene) {
+    protected abstract double calculateMembership(Interaction interaction,
+	    Interaction orthoaction);
+
+    public Gene findOrtholog(Gene gene) {
 	/*
          * We seek to put orthlogs in the reference point of interactome #1 where possible. If there exists an orthlog in that genome, use it preferentially.
          */
-	long o1 = i1.findOrtholog(gene);
-	return (o1 != -1 ? o1 : i2.findOrtholog(gene));
+	Gene ortholog = left.findOrtholog(gene);
+	return (ortholog != null ? ortholog : right.findOrtholog(gene));
+    }
+
+    public int numGenomes() {
+	return left.numGenomes() + left.numGenomes();
     }
 
     protected void prepareInteractions() {
-	Iterator<Interaction> itI1 = i1.iterator();
-	Iterator<Interaction> itI2 = i2.iterator();
+	Iterator<Interaction> itLeftInteraction = left.iterator();
+	Iterator<Interaction> itRightInteraction = right.iterator();
+
+	log.info("Computing left genes");
+	for (Gene gene : left.genes()) {
+	    Gene ortholog = right.findOrtholog(gene);
+	    if (ortholog == null) {
+		addGene(processLoneGene(gene, true));
+	    } else {
+		double membership = calculateGeneMembership(gene, ortholog);
+		addGene(new CompositeGene(gene, ortholog, membership));
+	    }
+	}
+	log.info("Computing right genes");
+	for (Gene gene : right.genes()) {
+	    if (left.findOrtholog(gene) == null) {
+		addGene(processLoneGene(gene, false));
+	    }
+	}
 
 	log.info("Computing left interactions");
 
-	while (itI1.hasNext()) {
-	    Interaction j1 = itI1.next();
-	    long g1A = j1.getGene1();
-	    long g1B = j1.getGene2();
+	while (itLeftInteraction.hasNext()) {
+	    Interaction interaction = itLeftInteraction.next();
 
-	    long g2A = i2.findOrtholog(g1A);
-	    long g2B = i2.findOrtholog(g1B);
-
-	    Interaction j2 = i2.getInteraction(g2A, g2B);
-	    if (j2 == null) {
-		addInteraction(processLoneInteraction(j1, true));
+	    Interaction orthoaction = right.getInteraction(right
+		    .findOrtholog(interaction.getGene1()), right
+		    .findOrtholog(interaction.getGene2()));
+	    if (orthoaction == null) {
+		addInteraction(processLoneInteraction(interaction, true));
 	    } else {
-		double membership = calculateMembership(j1, j2);
-		Interaction i = new CompositeInteraction(this, j1, j2,
-			membership);
+		double membership = calculateMembership(interaction,
+			orthoaction);
+		Interaction i = new CompositeInteraction(this, interaction,
+			orthoaction, membership);
 		addInteraction(i);
 
 	    }
 	}
 	log.info("Computing right interactions");
-	while (itI2.hasNext()) {
-	    Interaction j2 = itI2.next();
-	    if (i2.getInteraction(j2.getGene1(), j2.getGene2()) == null) {
-		long g1A = i2.findOrtholog(j2.getGene1());
-		long g1B = i2.findOrtholog(j2.getGene2());
-		if (g1A != -1) {
-		    g1A = j2.getGene1();
-		}
-		if (g1B != -1) {
-		    g1B = j2.getGene2();
-		}
-		j2 = new TranslatedInteraction(i1, j2, g1A, g1B);
-
-		addInteraction(processLoneInteraction(j2, false));
+	while (itRightInteraction.hasNext()) {
+	    Interaction interaction = itRightInteraction.next();
+	    Gene ortholog1 = right.findOrtholog(interaction.getGene1());
+	    Gene ortholog2 = right.findOrtholog(interaction.getGene2());
+	    if (ortholog1 != null) {
+		ortholog1 = interaction.getGene1();
+	    }
+	    if (ortholog2 != null) {
+		ortholog2 = interaction.getGene2();
+	    }
+	    if (left.getInteraction(ortholog1, ortholog2) == null) {
+		interaction = new TranslatedInteraction(left, interaction,
+			ortholog1, ortholog2);
+		addInteraction(processLoneInteraction(interaction, false));
 	    }
 	}
 	log.info("Set operation complete");
     }
 
-    protected abstract Interaction processLoneInteraction(Interaction j1,
-	    boolean left);
+    protected abstract Gene processLoneGene(Gene gene, boolean left);
+
+    protected abstract Interaction processLoneInteraction(
+	    Interaction interaction, boolean left);
 
     public StringBuilder show(StringBuilder sb) {
 	sb.append("(");
-	i1.show(sb);
+	left.show(sb);
 	sb.append(" ").append(symbol).append(" ");
-	i2.show(sb);
+	right.show(sb);
 	sb.append(")");
 	return sb;
     }

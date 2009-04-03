@@ -1,5 +1,6 @@
 package ca.wlu.gisql.interactome;
 
+import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.Interaction;
 
 public class SymmetricDifference extends ArithmeticInteractome {
@@ -9,13 +10,27 @@ public class SymmetricDifference extends ArithmeticInteractome {
 	symbol = "∆";
     }
 
-    protected double calculateMembership(Interaction j1, Interaction j2) {
-	Double m1 = j1.getMembership();
-	Double m2 = j2.getMembership();
-	return Math.min(Math.min(m1, m2), 1 - Math.max(m1, m2));
+    protected double calculateGeneMembership(Gene gene, Gene ortholog) {
+	return symmetricMembership(gene.getMembership(), ortholog
+		.getMembership());
     }
 
-    protected Interaction processLoneInteraction(Interaction j1, boolean left) {
-	return j1;
+    protected double calculateMembership(Interaction interaction,
+	    Interaction orthoaction) {
+	return symmetricMembership(interaction.getMembership(), orthoaction
+		.getMembership());
+    }
+
+    protected Gene processLoneGene(Gene gene, boolean left) {
+	return gene;
+    }
+
+    protected Interaction processLoneInteraction(Interaction interaction,
+	    boolean left) {
+	return interaction;
+    }
+
+    private double symmetricMembership(double m1, double m2) {
+	return Math.min(Math.min(m1, m2), 1 - Math.max(m1, m2));
     }
 }

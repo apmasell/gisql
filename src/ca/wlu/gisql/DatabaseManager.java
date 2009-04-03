@@ -14,7 +14,7 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.interactome.Database;
+import ca.wlu.gisql.interactome.DbSpecies;
 
 public class DatabaseManager {
 
@@ -26,7 +26,6 @@ public class DatabaseManager {
 	ResultSet rs = statement.executeQuery();
 	if (rs.next()) {
 	    result = rs.getObject(1);
-
 	}
 	rs.close();
 	return result;
@@ -35,7 +34,9 @@ public class DatabaseManager {
 
     Connection conn;
 
-    private Map<String, Database> loadedSpecies = new HashMap<String, Database>();
+    private Map<String, DbSpecies> loadedSpecies = new HashMap<String, DbSpecies>();
+
+    private OrthologyMap orthologs;
 
     public DatabaseManager() throws SQLException, ClassNotFoundException,
 	    IOException {
@@ -51,11 +52,12 @@ public class DatabaseManager {
 	log.info("Connecting to database.");
 	conn = DriverManager.getConnection("jdbc:postgresql:"
 		+ props.getProperty("url"), props);
+	orthologs = new OrthologyMap(conn);
     }
 
-    public Database getSpeciesInteractome(String species) {
+    public DbSpecies getSpeciesInteractome(String species) {
 	try {
-	    Database s = loadedSpecies.get(species);
+	    DbSpecies s = loadedSpecies.get(species);
 	    if (s == null) {
 		PreparedStatement idStatement = conn
 			.prepareStatement("SELECT id FROM species WHERE name = ?");
@@ -68,7 +70,7 @@ public class DatabaseManager {
 		}
 		log.info("Species " + species + " has id " + species_id);
 
-		s = new Database(species, species_id, conn);
+		s = new DbSpecies(orthologs, species, species_id, conn);
 		loadedSpecies.put(species, s);
 	    }
 	    return s;

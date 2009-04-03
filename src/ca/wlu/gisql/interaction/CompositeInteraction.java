@@ -1,30 +1,31 @@
 package ca.wlu.gisql.interaction;
 
+import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class CompositeInteraction implements Interaction {
-    private Interaction a;
+    private Interaction interaction;
 
-    private Interaction b;
+    private Interaction orthoaction;
 
     double membership;
 
     private Interactome parent;
 
-    public CompositeInteraction(Interactome parent, Interaction a,
-	    Interaction b, double membership) {
+    public CompositeInteraction(Interactome parent, Interaction interaction,
+	    Interaction orthoaction, double membership) {
 	this.parent = parent;
-	this.a = a;
-	this.b = b;
+	this.interaction = interaction;
+	this.orthoaction = orthoaction;
 	this.membership = membership;
     }
 
-    public long getGene1() {
-	return a.getGene1();
+    public Gene getGene1() {
+	return interaction.getGene1();
     }
 
-    public long getGene2() {
-	return a.getGene2();
+    public Gene getGene2() {
+	return interaction.getGene2();
     }
 
     public double getMembership() {
@@ -37,9 +38,9 @@ public class CompositeInteraction implements Interaction {
 
     public StringBuilder show(StringBuilder sb) {
 	sb.append("(");
-	a.show(sb);
+	interaction.show(sb);
 	sb.append(" ≈ ");
-	b.show(sb);
+	orthoaction.show(sb);
 	sb.append(") : ").append(membership);
 	return sb;
     }

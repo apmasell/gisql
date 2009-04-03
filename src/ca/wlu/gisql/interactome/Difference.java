@@ -1,5 +1,7 @@
 package ca.wlu.gisql.interactome;
 
+import ca.wlu.gisql.gene.ComplementaryGene;
+import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.ComplementaryInteraction;
 import ca.wlu.gisql.interaction.Interaction;
 
@@ -10,15 +12,28 @@ public class Difference extends ArithmeticInteractome {
 	symbol = "∖";
     }
 
-    protected double calculateMembership(Interaction j1, Interaction j2) {
-	return Math.min(j1.getMembership(), 1 - j2.getMembership());
+    protected double calculateGeneMembership(Gene gene, Gene ortholog) {
+	return Math.min(gene.getMembership(), ortholog.getMembership());
     }
 
-    protected Interaction processLoneInteraction(Interaction j1, boolean left) {
+    protected double calculateMembership(Interaction interaction,
+	    Interaction orthoaction) {
+	return Math.min(interaction.getMembership(), 1 - orthoaction
+		.getMembership());
+    }
+
+    protected Gene processLoneGene(Gene gene, boolean left) {
 	if (left)
-	    return j1;
+	    return gene;
 	else
-	    return new ComplementaryInteraction(j1);
+	    return new ComplementaryGene(gene);
     }
 
+    protected Interaction processLoneInteraction(Interaction interaction,
+	    boolean left) {
+	if (left)
+	    return interaction;
+	else
+	    return new ComplementaryInteraction(interaction);
+    }
 }
