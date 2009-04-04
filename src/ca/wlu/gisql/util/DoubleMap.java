@@ -1,10 +1,14 @@
 package ca.wlu.gisql.util;
 
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections15.map.ListOrderedMap;
 
 public class DoubleMap<K, V> {
-    private Map<K, Map<K, V>> real = new HashMap<K, Map<K, V>>();
+    private ListOrderedMap<K, ListOrderedMap<K, V>> real = new ListOrderedMap<K, ListOrderedMap<K, V>>();
 
     public DoubleMap() {
     }
@@ -42,6 +46,30 @@ public class DoubleMap<K, V> {
 
     }
 
+    public Set<K> getKeySharing(K key) {
+	Map<K, V> submap = real.get(key);
+	if (submap == null)
+	    return null;
+
+	return submap.keySet();
+    }
+
+    public Collection<V> getValueListContaining(K key) {
+	ListOrderedMap<K, V> submap = real.get(key);
+	if (submap == null)
+	    return null;
+
+	return submap.values();
+    }
+
+    public Set<V> getValueSetContaining(K key) {
+	ListOrderedMap<K, V> submap = real.get(key);
+	if (submap == null)
+	    return null;
+
+	return new HashSet<V>(submap.values());
+    }
+
     public boolean isEmpty() {
 	for (Map<K, V> submap : real.values()) {
 	    if (!submap.isEmpty())
@@ -51,9 +79,9 @@ public class DoubleMap<K, V> {
     }
 
     public V put(K key, K subkey, V value) {
-	Map<K, V> submap = real.get(key);
+	ListOrderedMap<K, V> submap = real.get(key);
 	if (submap == null) {
-	    submap = new HashMap<K, V>();
+	    submap = new ListOrderedMap<K, V>();
 	    real.put(key, submap);
 	}
 	return submap.put(subkey, value);

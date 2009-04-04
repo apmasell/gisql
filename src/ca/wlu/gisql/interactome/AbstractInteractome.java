@@ -1,13 +1,18 @@
 package ca.wlu.gisql.interactome;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
+import org.jgrapht.EdgeFactory;
 
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.Interaction;
@@ -30,9 +35,17 @@ public abstract class AbstractInteractome implements Interactome {
 
     private DoubleMap<Gene, Interaction> interactionLUT = new DoubleMap<Gene, Interaction>();
 
-    private List<Interaction> interactions = null;
+    private ListOrderedSet<Interaction> interactions = null;
 
     private List<TableModelListener> listeners = new ArrayList<TableModelListener>();
+
+    public Interaction addEdge(Gene gene1, Gene gene2) {
+	return null;
+    }
+
+    public boolean addEdge(Gene gene1, Gene gene2, Interaction interaction) {
+	return false;
+    }
 
     protected void addGene(Gene gene) {
 	genes.add(gene);
@@ -40,7 +53,7 @@ public abstract class AbstractInteractome implements Interactome {
 
     protected final void addInteraction(Interaction i) {
 	if (interactions == null) {
-	    interactions = new ArrayList<Interaction>();
+	    interactions = new ListOrderedSet<Interaction>();
 	}
 	interactions.add(i);
 	addGene(i.getGene1());
@@ -52,8 +65,42 @@ public abstract class AbstractInteractome implements Interactome {
 	listeners.add(listener);
     }
 
+    public boolean addVertex(Gene gene) {
+	return false;
+    }
+
+    public boolean containsEdge(Gene gene1, Gene gene2) {
+	return this.getInteraction(gene1, gene2) != null;
+    }
+
+    public boolean containsEdge(Interaction interaction) {
+	return interactions.contains(interaction);
+    }
+
+    public boolean containsVertex(Gene gene) {
+	return genes.contains(gene);
+    }
+
+    public int degreeOf(Gene gene) {
+	return interactionLUT.getValueSetContaining(gene).size();
+    }
+
+    public Set<Interaction> edgeSet() {
+	return interactions;
+    }
+
+    public Set<Interaction> edgesOf(Gene gene) {
+	return interactionLUT.getValueSetContaining(gene);
+    }
+
     public final GeneSet genes() {
 	return genes;
+    }
+
+    public Set<Interaction> getAllEdges(Gene gene1, Gene gene2) {
+	Set<Interaction> result = new HashSet<Interaction>();
+	result.add(getInteraction(gene1, gene2));
+	return result;
     }
 
     public final Class<?> getColumnClass(int columnIndex) {
@@ -70,6 +117,26 @@ public abstract class AbstractInteractome implements Interactome {
 
     public final long getComputationTime() {
 	return computationTime;
+    }
+
+    public Interaction getEdge(Gene gene1, Gene gene2) {
+	return getInteraction(gene1, gene2);
+    }
+
+    public EdgeFactory<Gene, Interaction> getEdgeFactory() {
+	return null;
+    }
+
+    public Gene getEdgeSource(Interaction interaction) {
+	return interaction.getGene1();
+    }
+
+    public Gene getEdgeTarget(Interaction interaction) {
+	return interaction.getGene2();
+    }
+
+    public double getEdgeWeight(Interaction interaction) {
+	return interaction.getMembership();
     }
 
     protected final Gene getGene(long identifier) {
@@ -133,7 +200,7 @@ public abstract class AbstractInteractome implements Interactome {
     public synchronized final boolean process() {
 	if (interactions == null) {
 	    long start = System.currentTimeMillis();
-	    interactions = new ArrayList<Interaction>();
+	    interactions = new ListOrderedSet<Interaction>();
 	    prepareInteractions();
 	    computationTime = System.currentTimeMillis() - start;
 	    notifyListeners();
@@ -144,11 +211,39 @@ public abstract class AbstractInteractome implements Interactome {
 	}
     }
 
+    public boolean removeAllEdges(Collection<? extends Interaction> interactions) {
+	return false;
+    }
+
+    public Set<Interaction> removeAllEdges(Gene gene1, Gene gene2) {
+	return null;
+    }
+
+    public boolean removeAllVertices(Collection<? extends Gene> genes) {
+	return false;
+    }
+
+    public Interaction removeEdge(Gene gene1, Gene gene2) {
+	return null;
+    }
+
+    public boolean removeEdge(Interaction interactions) {
+	return false;
+    }
+
     public final void removeTableModelListener(TableModelListener listener) {
 	listeners.remove(listener);
     }
 
+    public boolean removeVertex(Gene gene) {
+	return false;
+    }
+
     public final void setValueAt(Object value, int rowIndex, int colIndex) {
 	log.warn("Someone tried to edit the data.");
+    }
+
+    public Set<Gene> vertexSet() {
+	return genes;
     }
 }

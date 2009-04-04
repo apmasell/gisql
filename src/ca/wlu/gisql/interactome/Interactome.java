@@ -2,12 +2,15 @@ package ca.wlu.gisql.interactome;
 
 import javax.swing.table.TableModel;
 
+import org.jgrapht.UndirectedGraph;
+
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.util.GeneSet;
 import ca.wlu.gisql.util.Show;
 
-public interface Interactome extends Iterable<Interaction>, TableModel, Show {
+public interface Interactome extends Iterable<Interaction>, TableModel, Show,
+	UndirectedGraph<Gene, Interaction> {
 
     public abstract Gene findOrtholog(Gene gene);
 

@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -38,10 +40,15 @@ import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
+import javax.xml.transform.TransformerConfigurationException;
 
 import org.apache.log4j.Logger;
+import org.jgrapht.ext.GraphMLExporter;
+import org.xml.sax.SAXException;
 
 import ca.wlu.gisql.Environment;
+import ca.wlu.gisql.gene.Gene;
+import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ToFile;
 
@@ -108,7 +115,9 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
     private JMenuItem menuQuit = new JMenuItem("Quit");
 
-    private JMenuItem menuSave = new JMenuItem("Save Results As...");
+    private JMenuItem menuSave = new JMenuItem("Save Data As...");
+
+    private JMenuItem menuSaveGraph = new JMenuItem("Save Graph As...");
 
     private int numCommands = 1;
 
@@ -190,9 +199,14 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	menuSave.setAccelerator(KeyStroke.getKeyStroke(
 		java.awt.event.KeyEvent.VK_S,
 		java.awt.event.InputEvent.CTRL_MASK));
-	menuSave.setText("Save Data As...");
 	menuSave.addActionListener(this);
 	menuMain.add(menuSave);
+
+	menuSaveGraph.setAccelerator(KeyStroke.getKeyStroke(
+		java.awt.event.KeyEvent.VK_G,
+		java.awt.event.InputEvent.CTRL_MASK));
+	menuSaveGraph.addActionListener(this);
+	menuMain.add(menuSaveGraph);
 
 	menuClear.setText("Clear Variables");
 	menuClear.addActionListener(this);
@@ -245,6 +259,38 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 			log.error("Could not write to file.", e);
 			JOptionPane.showMessageDialog(this,
 				"Error writing to file.", "gisQL",
+				JOptionPane.WARNING_MESSAGE);
+		    }
+		}
+	    }
+	} else if (evt.getSource() == menuSaveGraph) {
+	    if (interactions.getModel() instanceof Interactome) {
+		JFileChooser fc = new JFileChooser();
+		if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+		    try {
+			Writer writer = new FileWriter(fc.getSelectedFile());
+			GraphMLExporter<Gene, Interaction> exporter = new GraphMLExporter<Gene, Interaction>(
+				new GeneIdProvider(), new GeneNameProvider(),
+				new InteractionIdProvider(),
+				new InteractionNameProvider());
+
+			exporter.export(writer, (Interactome) interactions
+				.getModel());
+			writer.close();
+		    } catch (IOException e) {
+			log.error("Could not write to file.", e);
+			JOptionPane.showMessageDialog(this,
+				"Error writing to file.", "gisQL",
+				JOptionPane.WARNING_MESSAGE);
+		    } catch (TransformerConfigurationException e) {
+			log.error("Could not write to file.", e);
+			JOptionPane.showMessageDialog(this,
+				"Transformer error writing to file.", "gisQL",
+				JOptionPane.WARNING_MESSAGE);
+		    } catch (SAXException e) {
+			log.error("Could not write to file.", e);
+			JOptionPane.showMessageDialog(this,
+				"SAX error writing to file.", "gisQL",
 				JOptionPane.WARNING_MESSAGE);
 		    }
 		}

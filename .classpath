@@ -4,5 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/postgresql-8.3-604.jdbc4.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="lib/jgrapht-jdk1.6.jar"/>
+	<classpathentry kind="lib" path="lib/collections-generic-4.01.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
