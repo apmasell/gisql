@@ -1,5 +1,7 @@
 package ca.wlu.gisql.gene;
 
+import java.io.PrintStream;
+
 public class ComplementaryGene implements Gene {
 
     private Gene gene;
@@ -18,6 +20,13 @@ public class ComplementaryGene implements Gene {
 
     public String getName() {
 	return gene.getName();
+    }
+
+    public PrintStream show(PrintStream print) {
+	print.print("¬(");
+	gene.show(print);
+	print.print(")");
+	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {

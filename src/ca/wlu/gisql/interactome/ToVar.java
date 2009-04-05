@@ -1,5 +1,7 @@
 package ca.wlu.gisql.interactome;
 
+import java.io.PrintStream;
+
 import ca.wlu.gisql.Environment;
 
 public class ToVar extends AbstractShadowInteractome {
@@ -16,6 +18,13 @@ public class ToVar extends AbstractShadowInteractome {
 
     public void postprocess() {
 	env.setVariable(varname, i);
+    }
+
+    public PrintStream show(PrintStream print) {
+	i.show(print);
+	print.print(" ≝ ");
+	print.print(varname);
+	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {

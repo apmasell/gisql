@@ -1,5 +1,7 @@
 package ca.wlu.gisql.gene;
 
+import java.io.PrintStream;
+
 import ca.wlu.gisql.interactome.Interactome;
 
 public class DbGene implements Gene {
@@ -26,6 +28,16 @@ public class DbGene implements Gene {
 
     public String getName() {
 	return name;
+    }
+
+    public PrintStream show(PrintStream print) {
+	print.print(identifier);
+	print.print(" ");
+	parent.show(print);
+	print.print(" [");
+	print.print(name);
+	print.print("]");
+	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {

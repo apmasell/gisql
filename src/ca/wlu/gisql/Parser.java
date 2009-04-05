@@ -303,7 +303,9 @@ public class Parser {
 		    return left;
 		}
 		oldposition = position;
-		left = new ToFile(left, filename, lowerbound, upperbound);
+		// TODO Support other formats
+		left = new ToFile(left, ToFile.FORMAT_INTERACTOME_TEXT,
+			filename, lowerbound, upperbound);
 	    } else if (codepoint == '@' || codepoint == '≝') {
 		position++;
 		consumeWhitespace();

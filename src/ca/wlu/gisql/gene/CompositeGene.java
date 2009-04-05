@@ -1,5 +1,7 @@
 package ca.wlu.gisql.gene;
 
+import java.io.PrintStream;
+
 public class CompositeGene implements Gene {
 
     private Gene gene;
@@ -30,6 +32,16 @@ public class CompositeGene implements Gene {
 	    name = ortholog.getName();
 	}
 	return name;
+    }
+
+    public PrintStream show(PrintStream print) {
+	print.print("(");
+	gene.show(print);
+	print.print(" ≈ ");
+	ortholog.show(print);
+	print.print(") : ");
+	print.print(membership);
+	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {

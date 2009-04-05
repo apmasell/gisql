@@ -1,5 +1,7 @@
 package ca.wlu.gisql.interaction;
 
+import java.io.PrintStream;
+
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
@@ -35,6 +37,15 @@ public class DbInteraction implements Interaction {
 
     public Interactome getParent() {
 	return parent;
+    }
+
+    public PrintStream show(PrintStream print) {
+	print.print(gene1);
+	print.print(" ⇌ ");
+	print.print(gene2);
+	print.print(" : ");
+	print.print(membership);
+	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {

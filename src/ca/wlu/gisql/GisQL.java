@@ -37,7 +37,8 @@ public class GisQL {
 		    log.error("Failed to parse query.");
 		    return;
 		}
-		ToFile.writeInteractomeToFile(interactome, System.out);
+		ToFile.write(interactome, ToFile.FORMAT_INTERACTOME_TEXT,
+			System.out, 0, 1);
 	    }
 	} else {
 	    EventQueue.invokeLater(new Runnable() {

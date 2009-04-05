@@ -1,14 +1,16 @@
 package ca.wlu.gisql.interaction;
 
+import java.io.PrintStream;
+
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class CompositeInteraction implements Interaction {
     private Interaction interaction;
 
-    private Interaction orthoaction;
-
     double membership;
+
+    private Interaction orthoaction;
 
     private Interactome parent;
 
@@ -36,6 +38,16 @@ public class CompositeInteraction implements Interaction {
 	return parent;
     }
 
+    public PrintStream show(PrintStream print) {
+	print.print("(");
+	interaction.show(print);
+	print.print(" ≈ ");
+	orthoaction.show(print);
+	print.print(") : ");
+	print.print(membership);
+	return print;
+    }
+
     public StringBuilder show(StringBuilder sb) {
 	sb.append("(");
 	interaction.show(sb);
@@ -44,5 +56,4 @@ public class CompositeInteraction implements Interaction {
 	sb.append(") : ").append(membership);
 	return sb;
     }
-
 }

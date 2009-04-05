@@ -1,5 +1,6 @@
 package ca.wlu.gisql.interactome;
 
+import java.io.PrintStream;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
@@ -103,6 +104,17 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 
     protected abstract Interaction processLoneInteraction(
 	    Interaction interaction, boolean left);
+
+    public PrintStream show(PrintStream print) {
+	print.print("(");
+	left.show(print);
+	print.print(" ");
+	print.print(symbol);
+	print.print(" ");
+	right.show(print);
+	print.print(")");
+	return print;
+    }
 
     public StringBuilder show(StringBuilder sb) {
 	sb.append("(");

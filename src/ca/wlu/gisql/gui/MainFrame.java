@@ -6,9 +6,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -40,20 +39,60 @@ import javax.swing.table.TableModel;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import javax.xml.transform.TransformerConfigurationException;
 
 import org.apache.log4j.Logger;
-import org.jgrapht.ext.GraphMLExporter;
-import org.xml.sax.SAXException;
 
 import ca.wlu.gisql.Environment;
-import ca.wlu.gisql.gene.Gene;
-import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ToFile;
 
 public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	TableModelListener, TreeCellRenderer, TreeSelectionListener {
+
+    class FileWriteTask extends SwingWorker<Boolean, Boolean> {
+	private File file;
+
+	private int format;
+
+	private Interactome interactome;
+
+	private double lowerbound;
+
+	private JFrame parent;
+
+	private double upperbound;
+
+	FileWriteTask(JFrame parent, Interactome interactome, int format,
+		File file, double lowerbound, double upperbound) {
+	    this.parent = parent;
+	    this.interactome = interactome;
+	    this.format = format;
+	    this.file = file;
+	    this.lowerbound = lowerbound;
+	    this.upperbound = upperbound;
+	}
+
+	public Boolean doInBackground() {
+	    return ToFile.write(interactome, format, file, lowerbound,
+		    upperbound);
+	}
+
+	public void done() {
+	    boolean success = false;
+	    try {
+		success = get();
+	    } catch (InterruptedException e) {
+		log.error("Error saving file.", e);
+	    } catch (ExecutionException e) {
+		log.error("Error saving file.", e);
+	    }
+	    if (!success)
+		JOptionPane.showMessageDialog(parent, "Error writing to file.",
+			"gisQL", JOptionPane.WARNING_MESSAGE);
+
+	    progress.stop();
+	}
+    }
 
     class InteractomeTask extends SwingWorker<Interactome, Interactome> {
 
@@ -71,7 +110,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	public void done() {
 	    setInteractome(i);
 	    command.setText("");
-	    progress.setVisible(false);
+	    progress.stop();
 	    task = null;
 	}
     }
@@ -116,8 +155,6 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
     private JMenuItem menuQuit = new JMenuItem("Quit");
 
     private JMenuItem menuSave = new JMenuItem("Save Data As...");
-
-    private JMenuItem menuSaveGraph = new JMenuItem("Save Graph As...");
 
     private int numCommands = 1;
 
@@ -202,12 +239,6 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	menuSave.addActionListener(this);
 	menuMain.add(menuSave);
 
-	menuSaveGraph.setAccelerator(KeyStroke.getKeyStroke(
-		java.awt.event.KeyEvent.VK_G,
-		java.awt.event.InputEvent.CTRL_MASK));
-	menuSaveGraph.addActionListener(this);
-	menuMain.add(menuSaveGraph);
-
 	menuClear.setText("Clear Variables");
 	menuClear.addActionListener(this);
 	menuMain.add(menuClear);
@@ -237,8 +268,13 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	    if (name == null) {
 		return;
 	    }
+	    name = name.trim();
+	    if (name.length() == 0)
+		return;
+
 	    for (int i = 0; i < name.length(); i++) {
-		if (!Character.isJavaIdentifierPart(name.charAt(i))) {
+		if (!(i == 0 ? Character.isJavaIdentifierStart(name.charAt(i))
+			: Character.isJavaIdentifierPart(name.charAt(i)))) {
 		    JOptionPane.showMessageDialog(this, "Inavlid name.",
 			    "Name - gisQL", JOptionPane.ERROR_MESSAGE);
 		    return;
@@ -249,50 +285,17 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	} else if (evt.getSource() == menuSave) {
 	    if (interactions.getModel() instanceof Interactome) {
 		JFileChooser fc = new JFileChooser();
-		if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-		    try {
+		ExportAccessory ea = new ExportAccessory();
+		fc.setAccessory(ea);
 
-			ToFile.writeInteractomeToFile(
-				(Interactome) interactions.getModel(), fc
-					.getSelectedFile());
-		    } catch (IOException e) {
-			log.error("Could not write to file.", e);
-			JOptionPane.showMessageDialog(this,
-				"Error writing to file.", "gisQL",
-				JOptionPane.WARNING_MESSAGE);
-		    }
-		}
-	    }
-	} else if (evt.getSource() == menuSaveGraph) {
-	    if (interactions.getModel() instanceof Interactome) {
-		JFileChooser fc = new JFileChooser();
 		if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-		    try {
-			Writer writer = new FileWriter(fc.getSelectedFile());
-			GraphMLExporter<Gene, Interaction> exporter = new GraphMLExporter<Gene, Interaction>(
-				new GeneIdProvider(), new GeneNameProvider(),
-				new InteractionIdProvider(),
-				new InteractionNameProvider());
-
-			exporter.export(writer, (Interactome) interactions
-				.getModel());
-			writer.close();
-		    } catch (IOException e) {
-			log.error("Could not write to file.", e);
-			JOptionPane.showMessageDialog(this,
-				"Error writing to file.", "gisQL",
-				JOptionPane.WARNING_MESSAGE);
-		    } catch (TransformerConfigurationException e) {
-			log.error("Could not write to file.", e);
-			JOptionPane.showMessageDialog(this,
-				"Transformer error writing to file.", "gisQL",
-				JOptionPane.WARNING_MESSAGE);
-		    } catch (SAXException e) {
-			log.error("Could not write to file.", e);
-			JOptionPane.showMessageDialog(this,
-				"SAX error writing to file.", "gisQL",
-				JOptionPane.WARNING_MESSAGE);
-		    }
+		    FileWriteTask fwt = new FileWriteTask(this,
+			    (Interactome) interactions.getModel(), ea
+				    .getFormat(), fc.getSelectedFile(), ea
+				    .getLowerbound(), ea.getUpperbound());
+		    fwt.execute();
+		    progress.start("Saving to "
+			    + fc.getSelectedFile().getName() + "...");
 		}
 	    }
 	} else if (evt.getSource() == menuClear) {
@@ -320,7 +323,8 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	env.setVariable("_" + numCommands++, i);
 	task = new InteractomeTask(i);
 	task.execute();
-	progress.setVisible(true);
+	progress.start("Computing " + i.show(new StringBuilder()).toString()
+		+ "...");
     }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value,

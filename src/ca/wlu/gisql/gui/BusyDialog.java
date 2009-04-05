@@ -1,11 +1,11 @@
 package ca.wlu.gisql.gui;
 
 import java.awt.Cursor;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -19,7 +19,7 @@ public class BusyDialog extends JDialog implements ActionListener {
 
     private JButton cancel = new JButton("Abort");
 
-    private JLabel label = new JLabel("Computing result set...");
+    private JLabel label = new JLabel();
 
     private JProgressBar progress = new JProgressBar();
 
@@ -30,15 +30,33 @@ public class BusyDialog extends JDialog implements ActionListener {
 	setResizable(false);
 
 	progress.setIndeterminate(true);
-	progress.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-		.createEmptyBorder(10, 10, 10, 10), progress.getBorder()));
-	label.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+	cancel.addActionListener(this);
 
-	getContentPane().setLayout(
-		new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
-	getContentPane().add(label);
-	getContentPane().add(progress);
-	getContentPane().add(cancel);
+	GridBagConstraints gridBagConstraints;
+
+	getContentPane().setLayout(new GridBagLayout());
+
+	gridBagConstraints = new GridBagConstraints();
+	gridBagConstraints.gridx = 0;
+	gridBagConstraints.gridy = 0;
+	gridBagConstraints.ipadx = 10;
+	gridBagConstraints.ipady = 10;
+	getContentPane().add(label, gridBagConstraints);
+
+	gridBagConstraints = new GridBagConstraints();
+	gridBagConstraints.gridx = 0;
+	gridBagConstraints.gridy = 1;
+	gridBagConstraints.ipadx = 10;
+	gridBagConstraints.ipady = 10;
+	gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+	getContentPane().add(progress, gridBagConstraints);
+
+	gridBagConstraints = new GridBagConstraints();
+	gridBagConstraints.gridx = 0;
+	gridBagConstraints.gridy = 2;
+	gridBagConstraints.ipadx = 10;
+	gridBagConstraints.ipady = 10;
+	getContentPane().add(cancel, gridBagConstraints);
 
 	pack();
     }
@@ -48,6 +66,15 @@ public class BusyDialog extends JDialog implements ActionListener {
 	    System.exit(0);
 	}
 
+    }
+
+    public void start(String message) {
+	label.setText(message);
+	setVisible(true);
+    }
+
+    public void stop() {
+	setVisible(false);
     }
 
 }

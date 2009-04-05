@@ -1,15 +1,17 @@
 package ca.wlu.gisql.interaction;
 
+import java.io.PrintStream;
+
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class TranslatedInteraction implements Interaction {
 
+    private Interactome destination;
+
     private Gene ortholog1;
 
     private Gene ortholog2;
-
-    private Interactome destination;
 
     private Interaction source;
 
@@ -35,6 +37,18 @@ public class TranslatedInteraction implements Interaction {
 
     public Interactome getParent() {
 	return destination;
+    }
+
+    public PrintStream show(PrintStream print) {
+	source.show(print);
+	print.print(" → ");
+	ortholog1.show(print);
+	print.print(" ⇌ ");
+	ortholog2.show(print);
+	print.print("[");
+	destination.show(print);
+	print.print("]");
+	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {

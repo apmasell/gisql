@@ -1,5 +1,6 @@
 package ca.wlu.gisql.interactome;
 
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,11 +19,11 @@ public class DbSpecies extends AbstractInteractome {
 
     private Connection conn;
 
+    private OrthologyMap orthologs;
+
     private String species;
 
     private int species_id;
-
-    private OrthologyMap orthologs;
 
     public DbSpecies(OrthologyMap orthologs, String species, int species_id,
 	    Connection conn) {
@@ -37,6 +38,10 @@ public class DbSpecies extends AbstractInteractome {
 	if (geneid == null)
 	    return null;
 	return getGene(geneid);
+    }
+
+    public int numGenomes() {
+	return 1;
     }
 
     protected void prepareInteractions() {
@@ -74,12 +79,12 @@ public class DbSpecies extends AbstractInteractome {
 	}
     }
 
+    public PrintStream show(PrintStream print) {
+	print.print(species);
+	return print;
+    }
+
     public StringBuilder show(StringBuilder sb) {
 	return sb.append(species);
     }
-
-    public int numGenomes() {
-	return 1;
-    }
-
 }

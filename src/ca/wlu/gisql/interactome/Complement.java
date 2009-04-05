@@ -1,5 +1,7 @@
 package ca.wlu.gisql.interactome;
 
+import java.io.PrintStream;
+
 import ca.wlu.gisql.gene.ComplementaryGene;
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.ComplementaryInteraction;
@@ -31,11 +33,17 @@ public class Complement extends AbstractInteractome {
 	}
     }
 
+    public PrintStream show(PrintStream print) {
+	print.print("¬(");
+	interactome.show(print);
+	print.print(")");
+	return print;
+    }
+
     public StringBuilder show(StringBuilder sb) {
 	sb.append("¬(");
 	interactome.show(sb);
 	sb.append(")");
 	return sb;
     }
-
 }
