@@ -3,11 +3,14 @@ package ca.wlu.gisql.gui;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+
+import org.jdesktop.swingx.combobox.EnumComboBoxModel;
+
+import ca.wlu.gisql.interactome.ToFile.FileFormat;
 
 public class ExportAccessory extends JPanel {
 
@@ -21,10 +24,8 @@ public class ExportAccessory extends JPanel {
 
     private JLabel lowerboundlabel = new JLabel("Lower bound:");
 
-    private DefaultComboBoxModel model = new DefaultComboBoxModel(
-	    new String[] { "Interactome Table", "Genome Table", "Dot Graph",
-		    "GML File", "GraphML File", "MatLab Adjacency Matrix",
-		    "MatLab Laplace Matrix" });
+    private EnumComboBoxModel<FileFormat> model = new EnumComboBoxModel<FileFormat>(
+	    FileFormat.class);
 
     private JSlider upperbound = new JSlider();
 
@@ -80,8 +81,8 @@ public class ExportAccessory extends JPanel {
 	add(format, gridBagConstraints);
     }
 
-    public int getFormat() {
-	return model.getIndexOf(format.getSelectedItem());
+    public FileFormat getFormat() {
+	return model.getSelectedItem();
     }
 
     public double getLowerbound() {

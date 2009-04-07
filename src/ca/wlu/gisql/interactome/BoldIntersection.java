@@ -6,36 +6,36 @@ import ca.wlu.gisql.interaction.ComplementaryInteraction;
 import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.util.ParseableBinaryOperation;
 
-public class Intersection extends ArithmeticInteractome {
-    public final static ParseableBinaryOperation descriptor = new ParseableBinaryOperation(
-	    Intersection.class, 3, '∩', new char[] { '&' },
-	    "Intersection (Ax ∧ Bx)");
+public class BoldIntersection extends ArithmeticInteractome {
 
-    public Intersection(Interactome left, Interactome right) {
+    public final static ParseableBinaryOperation descriptor = new ParseableBinaryOperation(
+	    BoldIntersection.class, 3, '⊗', new char[] { '*' },
+	    "Bold Intersection (0 ∨ (Ax + Bx - 1))");
+
+    public BoldIntersection(Interactome left, Interactome right) {
 	super(left, right);
     }
 
     protected double calculateGeneMembership(Gene gene, Gene ortholog) {
-	return Math.min(gene.getMembership(), ortholog.getMembership());
+	return Math.max(0, gene.getMembership() + ortholog.getMembership() - 1);
     }
 
     protected double calculateMembership(Interaction interaction,
 	    Interaction orthoaction) {
-	return Math.min(interaction.getMembership(), orthoaction
-		.getMembership());
+	return Math.max(0, interaction.getMembership()
+		+ orthoaction.getMembership() - 1);
     }
 
     public char getSymbol() {
 	return descriptor.getSymbol();
     }
 
-    protected Gene processLoneGene(Gene interaction, boolean left) {
-	return new ComplementaryGene(interaction);
+    protected Gene processLoneGene(Gene gene, boolean left) {
+	return new ComplementaryGene(gene);
     }
 
     protected Interaction processLoneInteraction(Interaction interaction,
 	    boolean left) {
 	return new ComplementaryInteraction(interaction);
     }
-
 }

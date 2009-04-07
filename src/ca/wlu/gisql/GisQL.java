@@ -10,6 +10,7 @@ import org.apache.log4j.PatternLayout;
 import ca.wlu.gisql.gui.MainFrame;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ToFile;
+import ca.wlu.gisql.interactome.ToFile.FileFormat;
 
 public class GisQL {
 
@@ -37,8 +38,8 @@ public class GisQL {
 		    log.error("Failed to parse query.");
 		    return;
 		}
-		ToFile.write(interactome, ToFile.FORMAT_INTERACTOME_TEXT,
-			System.out, 0, 1);
+		ToFile.write(interactome, FileFormat.interactome, System.out,
+			0, 1);
 	    }
 	} else {
 	    EventQueue.invokeLater(new Runnable() {

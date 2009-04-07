@@ -39,6 +39,8 @@ public abstract class AbstractInteractome implements Interactome {
 
     private List<TableModelListener> listeners = new ArrayList<TableModelListener>();
 
+    protected double unknownGeneMembership = 0.0;
+
     public Interaction addEdge(Gene gene1, Gene gene2) {
 	return null;
     }
@@ -139,13 +141,20 @@ public abstract class AbstractInteractome implements Interactome {
 	return interaction.getMembership();
     }
 
+    protected abstract Interaction getEmptyInteraction(Gene gene1, Gene gene2);
+
     protected final Gene getGene(long identifier) {
 	return genes.get(identifier);
     }
 
     public final Interaction getInteraction(Gene gene1, Gene gene2) {
 	process();
-	return interactionLUT.get(gene1, gene2);
+	Interaction result = interactionLUT.get(gene1, gene2);
+	if (result == null) {
+	    return getEmptyInteraction(gene1, gene2);
+	} else {
+	    return result;
+	}
     }
 
     public final int getRowCount() {
@@ -175,7 +184,7 @@ public abstract class AbstractInteractome implements Interactome {
 	if (genes.contains(gene)) {
 	    return gene.getMembership();
 	} else {
-	    return 0;
+	    return unknownGeneMembership;
 	}
     }
 

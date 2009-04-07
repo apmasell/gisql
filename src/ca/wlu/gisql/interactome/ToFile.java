@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Writer;
+import java.util.List;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -15,6 +16,7 @@ import org.jgrapht.ext.MatrixExporter;
 import org.jgrapht.graph.UndirectedMaskSubgraph;
 import org.xml.sax.SAXException;
 
+import ca.wlu.gisql.Environment;
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.gui.GeneIdProvider;
 import ca.wlu.gisql.gui.GeneNameProvider;
@@ -22,90 +24,163 @@ import ca.wlu.gisql.gui.InteractionIdProvider;
 import ca.wlu.gisql.gui.InteractionNameProvider;
 import ca.wlu.gisql.interaction.Interaction;
 import ca.wlu.gisql.util.LimitedMembershipFunctor;
+import ca.wlu.gisql.util.Parseable;
+import ca.wlu.gisql.util.Statistics;
 
 public class ToFile extends AbstractShadowInteractome {
 
-    public static final int FORMAT_GENOME_TEXT = 1;
+    public enum FileFormat {
+	genome("Genome Table"), interactome("Interactome Table"), dot(
+		"Dot Graph"), gml("GML File"), graphml("GraphML File"), adjacency(
+		"MatLab Adjacency Matrix"), laplace("MatLab Laplace Matrix"), summary(
+		"Summary Statistics Only");
+	private String description;
 
-    public static final int FORMAT_INTERACTOME_DOT = 2;
+	FileFormat(String description) {
+	    this.description = description;
+	}
 
-    public static final int FORMAT_INTERACTOME_GML = 3;
+	public String toString() {
+	    return description;
+	}
 
-    public static final int FORMAT_INTERACTOME_GRAPHML = 4;
+    }
 
-    public static final int FORMAT_INTERACTOME_MATRIX_ADJACENCY = 5;
+    public static final Parseable descriptor = new Parseable() {
 
-    public static final int FORMAT_INTERACTOME_MATRIX_LAPLACE = 6;
+	public Interactome construct(Environment environment,
+		List<Object> params) {
+	    Interactome interactome = (Interactome) params.get(0);
+	    Double lowerbound = (Double) params.get(1);
+	    Double upperbound = (Double) params.get(2);
+	    String formatname = (String) params.get(3);
+	    FileFormat format = (formatname == null ? FileFormat.interactome
+		    : FileFormat.valueOf(formatname));
+	    String filename = (String) params.get(4);
 
-    public static final int FORMAT_INTERACTOME_TEXT = 0;
+	    if (format == null) {
+		format = FileFormat.interactome;
+	    }
 
-    private static PrintStream printFooter(PrintStream print, int count,
-	    Interactome i) {
-	print.print("# ");
-	print.print(count);
-	print.print(" records in ");
-	print.print(i.getComputationTime() / 1000.0);
+	    if (upperbound == null) {
+		if (lowerbound == null) {
+		    upperbound = 1.0;
+		} else {
+		    upperbound = lowerbound;
+		}
+		lowerbound = 0.0;
+	    }
+
+	    return new ToFile(interactome, format, filename, lowerbound,
+		    upperbound);
+	}
+
+	public int getNestingLevel() {
+	    return 0;
+	}
+
+	public boolean isMatchingOperator(char c) {
+	    return c == '@';
+	}
+
+	public boolean isPrefixed() {
+	    return false;
+	}
+
+	public PrintStream show(PrintStream print) {
+	    print
+		    .print("Write to file\tA @ [lowerbound [upperbound]] [{summary|interactome|genome|dot|gml|graphml|adjacency|laplace}] \"filename\"");
+	    return print;
+	}
+
+	public StringBuilder show(StringBuilder sb) {
+	    sb
+		    .append("Write to file\tA @ [lowerbound [upperbound]] [{summary|interactome|genome|dot|gml|graphml|adjacency|laplace}] \"filename\"");
+	    return sb;
+	}
+
+	public NextTask[] tasks() {
+	    return new NextTask[] { NextTask.Maybe, NextTask.Double,
+		    NextTask.Maybe, NextTask.Double, NextTask.Maybe,
+		    NextTask.Name, NextTask.QuotedString };
+	}
+
+    };
+
+    private static final int STANDARD_BIN_COUNT = 10;
+
+    private static PrintStream printFooter(PrintStream print, Statistics stats,
+	    Interactome interactome) {
+	stats.show(print);
+	print.println();
+	print.print("# Computation time: ");
+	print.print(interactome.getComputationTime() / 1000.0);
 	print.print(" seconds.");
 	print.println();
 	return print;
     }
 
-    private static int printGenes(Interactome i, PrintStream print,
-	    double lowerbound, double upperbound) throws IOException {
-	int count = 0;
-	for (Gene g : i.genes()) {
-	    if (g.getMembership() >= lowerbound
-		    && g.getMembership() <= upperbound) {
-		print.print(g.getId());
+    private static Statistics printGenes(Interactome interactome,
+	    PrintStream print, double lowerbound, double upperbound)
+	    throws IOException {
+	Statistics stats = new Statistics(STANDARD_BIN_COUNT, lowerbound,
+		upperbound);
+	for (Gene gene : interactome.genes()) {
+	    if (gene.getMembership() >= lowerbound
+		    && gene.getMembership() <= upperbound) {
+		print.print(gene.getId());
 		print.print(", ");
-		print.print(g.getMembership());
+		print.print(gene.getMembership());
 		print.print(", ");
-		g.show(print);
+		gene.show(print);
 		print.println();
-		count++;
+		stats.count(gene);
 	    }
 	}
-	return count;
+	return stats;
     }
 
-    private static PrintStream printHeader(PrintStream print, Interactome i)
-	    throws IOException {
+    private static PrintStream printHeader(PrintStream print,
+	    Interactome interactome) throws IOException {
 	print.print("# ");
-	i.show(print);
+	interactome.show(print);
 	print.println();
 	return print;
     }
 
-    private static int printInteractions(Interactome i, PrintStream print,
-	    double lowerbound, double upperbound) throws IOException {
+    private static Statistics printInteractions(Interactome interactome,
+	    PrintStream print, double lowerbound, double upperbound)
+	    throws IOException {
 
-	int count = 0;
-	for (Interaction n : i) {
-	    if (n.getMembership() >= lowerbound
-		    && n.getMembership() <= upperbound) {
-		print.print(n.getGene1());
+	Statistics stats = new Statistics(STANDARD_BIN_COUNT, lowerbound,
+		upperbound);
+	for (Interaction interaction : interactome) {
+	    if (interaction.getMembership() >= lowerbound
+		    && interaction.getMembership() <= upperbound) {
+		print.print(interaction.getGene1());
 		print.print(", ");
-		print.print(n.getGene2());
+		print.print(interaction.getGene2());
 		print.print(", ");
-		print.print(n.getMembership());
+		print.print(interaction.getMembership());
 		print.print(", ");
-		n.show(print);
+		interaction.show(print);
 		print.println();
-		count++;
+		stats.count(interaction);
 	    }
 	}
-	return count;
+	return stats;
     }
 
-    public static boolean write(Interactome i, int format, File file,
-	    double lowerbound, double upperbound) {
+    public static boolean write(Interactome interactome, FileFormat format,
+	    File file, double lowerbound, double upperbound) {
 	try {
 	    UndirectedMaskSubgraph<Gene, Interaction> subgraph = new UndirectedMaskSubgraph<Gene, Interaction>(
-		    i, new LimitedMembershipFunctor(lowerbound, upperbound));
+		    interactome, new LimitedMembershipFunctor(lowerbound,
+			    upperbound));
 	    Writer writer;
 
 	    switch (format) {
-	    case FORMAT_INTERACTOME_DOT:
+	    case dot:
 		writer = new FileWriter(file);
 		DOTExporter<Gene, Interaction> dotexporter = new DOTExporter<Gene, Interaction>(
 			new GeneIdProvider(), new GeneNameProvider(),
@@ -115,7 +190,7 @@ public class ToFile extends AbstractShadowInteractome {
 		writer.close();
 		return true;
 
-	    case FORMAT_INTERACTOME_GML:
+	    case gml:
 		writer = new FileWriter(file);
 		GmlExporter<Gene, Interaction> gmlexporter = new GmlExporter<Gene, Interaction>();
 
@@ -123,7 +198,7 @@ public class ToFile extends AbstractShadowInteractome {
 		writer.close();
 		return true;
 
-	    case FORMAT_INTERACTOME_GRAPHML:
+	    case graphml:
 		writer = new FileWriter(file);
 		GraphMLExporter<Gene, Interaction> graphmlexporter = new GraphMLExporter<Gene, Interaction>(
 			new GeneIdProvider(), new GeneNameProvider(),
@@ -134,11 +209,11 @@ public class ToFile extends AbstractShadowInteractome {
 		writer.close();
 		return true;
 
-	    case FORMAT_INTERACTOME_MATRIX_ADJACENCY:
-	    case FORMAT_INTERACTOME_MATRIX_LAPLACE:
+	    case adjacency:
+	    case laplace:
 		writer = new FileWriter(file);
 		MatrixExporter<Gene, Interaction> matrixexporter = new MatrixExporter<Gene, Interaction>();
-		if (format == FORMAT_INTERACTOME_MATRIX_ADJACENCY) {
+		if (format == FileFormat.adjacency) {
 		    matrixexporter.exportAdjacencyMatrix(writer, subgraph);
 		} else {
 		    matrixexporter.exportLaplacianMatrix(writer, subgraph);
@@ -147,7 +222,8 @@ public class ToFile extends AbstractShadowInteractome {
 		return true;
 	    default:
 		PrintStream print = new PrintStream(file);
-		boolean result = write(i, format, print, lowerbound, upperbound);
+		boolean result = write(interactome, format, print, lowerbound,
+			upperbound);
 		print.close();
 		return result;
 	    }
@@ -161,21 +237,40 @@ public class ToFile extends AbstractShadowInteractome {
 	return false;
     }
 
-    public static boolean write(Interactome i, int format, PrintStream print,
-	    double lowerbound, double upperbound) {
-	int count;
+    public static boolean write(Interactome interactome, FileFormat format,
+	    PrintStream print, double lowerbound, double upperbound) {
+	Statistics stats;
 	try {
 	    switch (format) {
-	    case FORMAT_INTERACTOME_TEXT:
-		printHeader(print, i);
-		count = printInteractions(i, print, lowerbound, upperbound);
-		printFooter(print, count, i);
+	    case interactome:
+		printHeader(print, interactome);
+		stats = printInteractions(interactome, print, lowerbound,
+			upperbound);
+		for (Gene gene : interactome.genes())
+		    stats.count(gene);
+		printFooter(print, stats, interactome);
 		return true;
-	    case FORMAT_GENOME_TEXT:
-		printHeader(print, i);
-		count = printGenes(i, print, lowerbound, upperbound);
-		printFooter(print, count, i);
+	    case genome:
+		printHeader(print, interactome);
+		stats = printGenes(interactome, print, lowerbound, upperbound);
+		for (Interaction interaction : interactome)
+		    stats.count(interaction);
+		printFooter(print, stats, interactome);
 		return true;
+	    case summary:
+		printHeader(print, interactome);
+		stats = new Statistics(STANDARD_BIN_COUNT, lowerbound,
+			upperbound);
+		for (Gene gene : interactome.genes())
+		    if (gene.getMembership() >= lowerbound
+			    && gene.getMembership() <= upperbound)
+			stats.count(gene);
+		for (Interaction interaction : interactome)
+		    if (interaction.getMembership() >= lowerbound
+			    && interaction.getMembership() <= upperbound)
+			stats.count(interaction);
+		printFooter(print, stats, interactome);
+
 	    default:
 		return false;
 	    }
@@ -187,13 +282,13 @@ public class ToFile extends AbstractShadowInteractome {
 
     private File file;
 
-    private int format;
+    private FileFormat format;
 
     private double lowerbound;
 
     private double upperbound;
 
-    public ToFile(Interactome i, int format, String filename,
+    public ToFile(Interactome i, FileFormat format, String filename,
 	    double lowerbound, double upperbound) {
 	super();
 	this.i = i;
@@ -209,10 +304,12 @@ public class ToFile extends AbstractShadowInteractome {
 
     public PrintStream show(PrintStream print) {
 	i.show(print);
-	print.print(" → ");
+	print.print(" @ ");
 	print.print(lowerbound);
 	print.print(" ");
 	print.print(upperbound);
+	print.print(" ");
+	print.print(format.name());
 	print.print(" ");
 	print.print("\"");
 	print.print(file);
@@ -222,8 +319,10 @@ public class ToFile extends AbstractShadowInteractome {
 
     public StringBuilder show(StringBuilder sb) {
 	i.show(sb);
-	sb.append(" → ");
-	sb.append(lowerbound).append(" ").append(upperbound).append(" ");
+	sb.append(" @ ");
+	sb.append(lowerbound).append(" ").append(upperbound);
+	sb.append(" ");
+	sb.append(format.name()).append(" ");
 	sb.append("\"").append(file).append("\"");
 	return sb;
     }

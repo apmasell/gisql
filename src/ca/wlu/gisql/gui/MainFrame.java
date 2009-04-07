@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
 import ca.wlu.gisql.Environment;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ToFile;
+import ca.wlu.gisql.interactome.ToFile.FileFormat;
 
 public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	TableModelListener, TreeCellRenderer, TreeSelectionListener {
@@ -52,7 +53,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
     class FileWriteTask extends SwingWorker<Boolean, Boolean> {
 	private File file;
 
-	private int format;
+	private FileFormat format;
 
 	private Interactome interactome;
 
@@ -62,7 +63,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
 	private double upperbound;
 
-	FileWriteTask(JFrame parent, Interactome interactome, int format,
+	FileWriteTask(JFrame parent, Interactome interactome, FileFormat format,
 		File file, double lowerbound, double upperbound) {
 	    this.parent = parent;
 	    this.interactome = interactome;

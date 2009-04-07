@@ -5,22 +5,19 @@ import java.io.PrintStream;
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
-public class DbInteraction implements Interaction {
+public class UniversalInteraction implements Interaction {
 
     private Gene gene1;
 
     private Gene gene2;
 
-    private double membership;
-
     private Interactome parent;
 
-    public DbInteraction(Interactome parent, Gene gene1, Gene gene2,
-	    double membership) {
+    public UniversalInteraction(Interactome parent, Gene gene1, Gene gene2) {
+	super();
 	this.parent = parent;
 	this.gene1 = gene1;
 	this.gene2 = gene2;
-	this.membership = membership;
     }
 
     public Gene getGene1() {
@@ -32,7 +29,7 @@ public class DbInteraction implements Interaction {
     }
 
     public double getMembership() {
-	return membership;
+	return 1;
     }
 
     public Interactome getParent() {
@@ -40,19 +37,19 @@ public class DbInteraction implements Interaction {
     }
 
     public PrintStream show(PrintStream print) {
-	print.print(membership);
-	print.print("/(");
+	print.print("1/∃");
 	gene1.show(print);
-	print.print(") ⇌ (");
+	print.print(" ⇌ ");
 	gene2.show(print);
-	print.print(")");
 	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {
-	sb.append(membership).append("/(");
-	gene1.show(sb).append(") ⇌ (");
-	gene2.show(sb).append(")");
+	sb.append("1/∃ ");
+	gene1.show(sb);
+	sb.append(" ⇌ ");
+	gene2.show(sb);
 	return sb;
     }
+
 }

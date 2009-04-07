@@ -17,6 +17,8 @@ public abstract class AbstractShadowInteractome implements Interactome {
 
     static final Logger log = Logger.getLogger(AbstractShadowInteractome.class);
 
+    private boolean first = true;
+
     protected Interactome i;
 
     public Interaction addEdge(Gene gene1, Gene gene2) {
@@ -141,8 +143,9 @@ public abstract class AbstractShadowInteractome implements Interactome {
 
     public boolean process() {
 	boolean parent = i.process();
-	if (parent) {
+	if (first) {
 	    postprocess();
+	    first = false;
 	}
 	return parent;
     }

@@ -35,21 +35,21 @@ public class CompositeGene implements Gene {
     }
 
     public PrintStream show(PrintStream print) {
-	print.print("(");
+	print.print(membership);
+	print.print("/(");
 	gene.show(print);
 	print.print(" ≈ ");
 	ortholog.show(print);
-	print.print(") : ");
-	print.print(membership);
+	print.print(")");
 	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {
-	sb.append("(");
+	sb.append(membership).append("1/(");
 	gene.show(sb);
 	sb.append(" ≈ ");
 	ortholog.show(sb);
-	sb.append(") : ").append(membership);
+	sb.append(")");
 	return sb;
     }
 

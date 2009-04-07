@@ -39,21 +39,21 @@ public class CompositeInteraction implements Interaction {
     }
 
     public PrintStream show(PrintStream print) {
-	print.print("(");
+	print.print(membership);
+	print.print("/(");
 	interaction.show(print);
 	print.print(" ≈ ");
 	orthoaction.show(print);
-	print.print(") : ");
-	print.print(membership);
+	print.print(")");
 	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {
-	sb.append("(");
+	sb.append(membership).append("/(");
 	interaction.show(sb);
 	sb.append(" ≈ ");
 	orthoaction.show(sb);
-	sb.append(") : ").append(membership);
+	sb.append(")");
 	return sb;
     }
 }

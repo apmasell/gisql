@@ -16,8 +16,6 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 
     protected Interactome left, right;
 
-    protected String symbol = "?";
-
     public ArithmeticInteractome(Interactome left, Interactome right) {
 	this.left = left;
 	this.right = right;
@@ -28,7 +26,7 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
     protected abstract double calculateMembership(Interaction interaction,
 	    Interaction orthoaction);
 
-    public Gene findOrtholog(Gene gene) {
+    public final Gene findOrtholog(Gene gene) {
 	/*
          * We seek to put orthlogs in the reference point of interactome #1 where possible. If there exists an orthlog in that genome, use it preferentially.
          */
@@ -36,11 +34,15 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 	return (ortholog != null ? ortholog : right.findOrtholog(gene));
     }
 
-    public int numGenomes() {
+    protected Interaction getEmptyInteraction(Gene gene1, Gene gene2) {
+	return null;
+    }
+
+    public final int numGenomes() {
 	return left.numGenomes() + left.numGenomes();
     }
 
-    protected void prepareInteractions() {
+    protected final void prepareInteractions() {
 	Iterator<Interaction> itLeftInteraction = left.iterator();
 	Iterator<Interaction> itRightInteraction = right.iterator();
 
@@ -105,21 +107,23 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
     protected abstract Interaction processLoneInteraction(
 	    Interaction interaction, boolean left);
 
-    public PrintStream show(PrintStream print) {
+    public abstract char getSymbol();
+
+    public final PrintStream show(PrintStream print) {
 	print.print("(");
 	left.show(print);
 	print.print(" ");
-	print.print(symbol);
+	print.print(getSymbol());
 	print.print(" ");
 	right.show(print);
 	print.print(")");
 	return print;
     }
 
-    public StringBuilder show(StringBuilder sb) {
+    public final StringBuilder show(StringBuilder sb) {
 	sb.append("(");
 	left.show(sb);
-	sb.append(" ").append(symbol).append(" ");
+	sb.append(" ").append(getSymbol()).append(" ");
 	right.show(sb);
 	sb.append(")");
 	return sb;

@@ -40,6 +40,10 @@ public class DbSpecies extends AbstractInteractome {
 	return getGene(geneid);
     }
 
+    protected Interaction getEmptyInteraction(Gene gene1, Gene gene2) {
+	return null;
+    }
+
     public int numGenomes() {
 	return 1;
     }

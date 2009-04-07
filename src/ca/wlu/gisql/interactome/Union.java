@@ -2,20 +2,28 @@ package ca.wlu.gisql.interactome;
 
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.Interaction;
+import ca.wlu.gisql.util.ParseableBinaryOperation;
 
 public class Union extends ArithmeticInteractome {
+    public final static ParseableBinaryOperation descriptor = new ParseableBinaryOperation(
+	    Union.class, 2, '∪', new char[] { '|' }, "Union (Ax ∨ Bx)");
+
+    public char getSymbol() {
+	return descriptor.getSymbol();
+    }
 
     public Union(Interactome left, Interactome right) {
 	super(left, right);
-	symbol = "\u222A";
     }
 
     protected double calculateGeneMembership(Gene gene, Gene ortholog) {
 	return Math.max(gene.getMembership(), ortholog.getMembership());
     }
 
-    protected double calculateMembership(Interaction j1, Interaction j2) {
-	return Math.max(j1.getMembership(), j2.getMembership());
+    protected double calculateMembership(Interaction interaction,
+	    Interaction orthoaction) {
+	return Math.max(interaction.getMembership(), orthoaction
+		.getMembership());
     }
 
     protected Gene processLoneGene(Gene gene, boolean left) {
@@ -26,5 +34,4 @@ public class Union extends ArithmeticInteractome {
 	    boolean left) {
 	return interaction;
     }
-
 }
