@@ -24,6 +24,8 @@ import ca.wlu.gisql.util.Parseable;
 import ca.wlu.gisql.util.Parseable.NextTask;
 
 public class Parser {
+    private static String help;
+
     static final Logger log = Logger.getLogger(Parser.class);
 
     private static int maxdepth = 0;
@@ -31,14 +33,20 @@ public class Parser {
     private static Parseable[] operators = new Parseable[] {
 	    BoldIntersection.descriptor, BoundedDifference.descriptor,
 	    BoundedSum.descriptor, Complement.descriptor,
-	    Difference.descriptor, Intersection.descriptor,
-	    Residuum.descriptor, StrongSymmetricDifference.descriptor,
+	    Difference.descriptor, Environment.descriptor,
+	    Intersection.descriptor, Residuum.descriptor,
+	    StrongSymmetricDifference.descriptor,
 	    SymmetricDifference.descriptor, ToFile.descriptor,
 	    ToVar.descriptor, Union.descriptor };
 
     private static Map<Integer, List<Parseable>> otherfixOperators = null;
 
     private static Map<Integer, List<Parseable>> prefixedOperators = null;
+
+    public static String getHelp() {
+	prepareParser();
+	return help;
+    }
 
     private static synchronized List<Parseable> getList(
 	    Map<Integer, List<Parseable>> map, int level) {
@@ -66,10 +74,23 @@ public class Parser {
 	    list.add(operator);
 	}
 
-	for (int i = 0; i <= maxdepth; i++) {
-	    getList(prefixedOperators, i);
-	    getList(otherfixOperators, i);
+	StringBuilder sb = new StringBuilder();
+	sb
+		.append("Syntax Help\nEach operator and it's membership function is described from lowest prescedence to highest.\n\n");
+	/* This also initialises every entry in the maps. */
+	for (int level = 0; level <= maxdepth; level++) {
+	    for (Parseable operator : getList(prefixedOperators, level)) {
+		operator.show(sb).append('\n');
+	    }
+	    for (Parseable operator : getList(otherfixOperators, level)) {
+		operator.show(sb).append('\n');
+	    }
+	    sb.append('\n');
+
 	}
+	sb
+		.append("\nAny other word will be interpreted as a species identifier and read from the database.\nParentheses may be used to control order of operations.");
+	help = sb.toString();
     }
 
     private Environment environment;
@@ -192,20 +213,6 @@ public class Parser {
 	    if (codepoint == '(') {
 		position++;
 		return parseExpression(')');
-	    } else if (codepoint == '$') {
-		position++;
-		String variable = parseName();
-		if (variable == null) {
-		    log.fatal("Expected variable name after $. Position: "
-			    + position);
-		    return null;
-		}
-		Interactome value = environment.getVariable(variable);
-		if (value == null) {
-		    log.fatal("Variable " + variable + " is undefined.");
-		    return null;
-		}
-		return value;
 	    } else {
 		String species = parseName();
 		if (species == null)
@@ -257,8 +264,12 @@ public class Parser {
 		}
 	    } else if (codepoint == '\\') {
 		position++;
-		sb.append(input.charAt(position));
-		position++;
+		if (position < input.length()) {
+		    sb.append(input.charAt(position));
+		    position++;
+		} else {
+		    return null;
+		}
 	    } else {
 		position++;
 		sb.append(codepoint);

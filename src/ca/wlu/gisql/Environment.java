@@ -1,5 +1,6 @@
 package ca.wlu.gisql;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +14,45 @@ import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.Parseable;
 
 public class Environment implements TreeModel {
+
+    public static final Parseable descriptor = new Parseable() {
+
+	public Interactome construct(Environment environment,
+		List<Object> params) {
+	    String name = (String) params.get(0);
+	    return environment.getVariable(name);
+	}
+
+	public int getNestingLevel() {
+	    return 6;
+	}
+
+	public boolean isMatchingOperator(char c) {
+	    return c == '$';
+	}
+
+	public boolean isPrefixed() {
+	    return true;
+	}
+
+	public PrintStream show(PrintStream print) {
+	    print.print("Read a variable: $varname");
+	    return print;
+	}
+
+	public StringBuilder show(StringBuilder sb) {
+	    sb.append("Read a variable: $varname");
+	    return sb;
+	}
+
+	public NextTask[] tasks() {
+	    return new NextTask[] { NextTask.Name };
+	}
+
+    };
 
     static final Logger log = Logger.getLogger(Environment.class);
 

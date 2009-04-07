@@ -73,8 +73,7 @@ public class ParseableBinaryOperation implements Parseable {
 
     public PrintStream show(PrintStream print) {
 	print.print(name);
-	print.print("\t");
-	print.print("A ");
+	print.print(": A ");
 	print.print(symbol);
 	print.print(" B");
 	if (alternateoperators != null) {
@@ -89,8 +88,7 @@ public class ParseableBinaryOperation implements Parseable {
 
     public StringBuilder show(StringBuilder sb) {
 	sb.append(name);
-	sb.append("\t");
-	sb.append("A ");
+	sb.append(": A ");
 	sb.append(symbol);
 	sb.append(" B");
 	if (alternateoperators != null) {

@@ -22,6 +22,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
@@ -43,6 +44,7 @@ import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.Environment;
+import ca.wlu.gisql.Parser;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ToFile;
 import ca.wlu.gisql.interactome.ToFile.FileFormat;
@@ -63,8 +65,9 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
 	private double upperbound;
 
-	FileWriteTask(JFrame parent, Interactome interactome, FileFormat format,
-		File file, double lowerbound, double upperbound) {
+	FileWriteTask(JFrame parent, Interactome interactome,
+		FileFormat format, File file, double lowerbound,
+		double upperbound) {
 	    this.parent = parent;
 	    this.interactome = interactome;
 	    this.format = format;
@@ -133,6 +136,10 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
     private JLabel genesRowLabel = new JLabel("No");
 
     private JScrollPane genesspane = new JScrollPane(genes);
+
+    private JTextArea helptext = new JTextArea(Parser.getHelp());
+
+    private JScrollPane helptextpane = new JScrollPane(helptext);
 
     private JSplitPane innersplitpane = new JSplitPane();
 
@@ -207,8 +214,11 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
 	interactions.setAutoCreateRowSorter(true);
 	genes.setAutoCreateRowSorter(true);
+	helptext.setEditable(false);
+
 	resulttabs.addTab("Interctions", interactionspane);
 	resulttabs.addTab("Genes", genesspane);
+	resulttabs.addTab("Help", helptextpane);
 	innersplitpane.setLeftComponent(resulttabs);
 
 	statusbar.setFloatable(false);
@@ -240,7 +250,6 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	menuSave.addActionListener(this);
 	menuMain.add(menuSave);
 
-	menuClear.setText("Clear Variables");
 	menuClear.addActionListener(this);
 	menuMain.add(menuClear);
 	menuMain.add(quitseparator);
@@ -248,7 +257,6 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	menuQuit.setAccelerator(KeyStroke.getKeyStroke(
 		java.awt.event.KeyEvent.VK_Q,
 		java.awt.event.InputEvent.CTRL_MASK));
-	menuQuit.setText("Quit");
 	menuQuit.addActionListener(this);
 	menuMain.add(menuQuit);
 

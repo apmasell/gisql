@@ -62,12 +62,12 @@ public class ToFile extends AbstractShadowInteractome {
 		format = FileFormat.interactome;
 	    }
 
+	    /* For the alpha cut, {Ax | x ∈ [lowerbound, upperbound]}. Normally, [α, 1].
+	     * That means lower should be filled preferentially, which it is. */
 	    if (upperbound == null) {
-		if (lowerbound == null) {
-		    upperbound = 1.0;
-		} else {
-		    upperbound = lowerbound;
-		}
+		upperbound = 1.0;
+	    }
+	    if (lowerbound == null) {
 		lowerbound = 0.0;
 	    }
 
@@ -89,13 +89,13 @@ public class ToFile extends AbstractShadowInteractome {
 
 	public PrintStream show(PrintStream print) {
 	    print
-		    .print("Write to file\tA @ [lowerbound [upperbound]] [{summary|interactome|genome|dot|gml|graphml|adjacency|laplace}] \"filename\"");
+		    .print("Write to file: A @ [lowerbound [upperbound]] [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
 	    return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
 	    sb
-		    .append("Write to file\tA @ [lowerbound [upperbound]] [{summary|interactome|genome|dot|gml|graphml|adjacency|laplace}] \"filename\"");
+		    .append("Write to file: A @ [lowerbound [upperbound]] [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
 	    return sb;
 	}
 

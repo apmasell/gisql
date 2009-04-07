@@ -31,12 +31,12 @@ public class ToVar extends AbstractShadowInteractome {
 	}
 
 	public PrintStream show(PrintStream print) {
-	    print.print("Assign to variable\tA @ varname");
+	    print.print("Assign to variable: A @ varname");
 	    return null;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-	    sb.append("Assign to variable\tA @ varname");
+	    sb.append("Assign to variable: A @ varname");
 	    return sb;
 	}
 

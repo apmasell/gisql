@@ -33,12 +33,12 @@ public class Complement extends AbstractInteractome {
 	}
 
 	public PrintStream show(PrintStream print) {
-	    print.print("Complement (1-Ax)\t¬A, !A");
+	    print.print("Complement (1-Ax): ¬A, !A");
 	    return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-	    sb.append("Complement (1-Ax)\t¬A, !A");
+	    sb.append("Complement (1-Ax): ¬A, !A");
 	    return sb;
 	}
 
