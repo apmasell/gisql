@@ -1,9 +1,10 @@
 package ca.wlu.gisql.interactome;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Stack;
@@ -32,9 +33,9 @@ import ca.wlu.gisql.util.Statistics;
 public class ToFile extends AbstractShadowInteractome {
 
     public enum FileFormat {
-	genome("Genome Table"), interactome("Interactome Table"), dot(
-		"Dot Graph"), gml("GML File"), graphml("GraphML File"), adjacency(
-		"MatLab Adjacency Matrix"), laplace("MatLab Laplace Matrix"), summary(
+	adjacency(
+	"MatLab Adjacency Matrix"), dot(
+		"Dot Graph"), genome("Genome Table"), gml("GML File"), graphml("GraphML File"), interactome("Interactome Table"), laplace("MatLab Laplace Matrix"), summary(
 		"Summary Statistics Only");
 	private String description;
 
@@ -114,6 +115,12 @@ public class ToFile extends AbstractShadowInteractome {
 
     private static final int STANDARD_BIN_COUNT = 10;
 
+    private static UndirectedMaskSubgraph<Gene, Interaction> makeSubgraph(
+	    Interactome interactome, double lowerbound, double upperbound) {
+	return new UndirectedMaskSubgraph<Gene, Interaction>(interactome,
+		new LimitedMembershipFunctor(lowerbound, upperbound));
+    }
+
     private static PrintStream printFooter(PrintStream print, Statistics stats,
 	    Interactome interactome) {
 	stats.show(print);
@@ -178,15 +185,30 @@ public class ToFile extends AbstractShadowInteractome {
 
     public static boolean write(Interactome interactome, FileFormat format,
 	    File file, double lowerbound, double upperbound) {
+	PrintStream print;
 	try {
-	    UndirectedMaskSubgraph<Gene, Interaction> subgraph = new UndirectedMaskSubgraph<Gene, Interaction>(
-		    interactome, new LimitedMembershipFunctor(lowerbound,
-			    upperbound));
-	    Writer writer;
+	    print = new PrintStream(file);
+	    boolean result = write(interactome, format, print, lowerbound,
+		    upperbound);
+	    print.close();
+	    return result;
+	} catch (FileNotFoundException e) {
+	    log.error("Could not write to file.", e);
+	}
+	return false;
+    }
+
+    public static boolean write(Interactome interactome, FileFormat format,
+	    PrintStream print, double lowerbound, double upperbound) {
+	Statistics stats;
+	UndirectedMaskSubgraph<Gene, Interaction> subgraph;
+	Writer writer;
+	try {
 
 	    switch (format) {
 	    case dot:
-		writer = new FileWriter(file);
+		subgraph = makeSubgraph(interactome, lowerbound, upperbound);
+		writer = new PrintWriter(print);
 		DOTExporter<Gene, Interaction> dotexporter = new DOTExporter<Gene, Interaction>(
 			new GeneIdProvider(), new GeneNameProvider(),
 			new InteractionNameProvider());
@@ -196,7 +218,8 @@ public class ToFile extends AbstractShadowInteractome {
 		return true;
 
 	    case gml:
-		writer = new FileWriter(file);
+		subgraph = makeSubgraph(interactome, lowerbound, upperbound);
+		writer = new PrintWriter(print);
 		GmlExporter<Gene, Interaction> gmlexporter = new GmlExporter<Gene, Interaction>();
 
 		gmlexporter.export(writer, subgraph);
@@ -204,7 +227,8 @@ public class ToFile extends AbstractShadowInteractome {
 		return true;
 
 	    case graphml:
-		writer = new FileWriter(file);
+		subgraph = makeSubgraph(interactome, lowerbound, upperbound);
+		writer = new PrintWriter(print);
 		GraphMLExporter<Gene, Interaction> graphmlexporter = new GraphMLExporter<Gene, Interaction>(
 			new GeneIdProvider(), new GeneNameProvider(),
 			new InteractionIdProvider(),
@@ -216,7 +240,8 @@ public class ToFile extends AbstractShadowInteractome {
 
 	    case adjacency:
 	    case laplace:
-		writer = new FileWriter(file);
+		subgraph = makeSubgraph(interactome, lowerbound, upperbound);
+		writer = new PrintWriter(print);
 		MatrixExporter<Gene, Interaction> matrixexporter = new MatrixExporter<Gene, Interaction>();
 		if (format == FileFormat.adjacency) {
 		    matrixexporter.exportAdjacencyMatrix(writer, subgraph);
@@ -225,28 +250,6 @@ public class ToFile extends AbstractShadowInteractome {
 		}
 		writer.close();
 		return true;
-	    default:
-		PrintStream print = new PrintStream(file);
-		boolean result = write(interactome, format, print, lowerbound,
-			upperbound);
-		print.close();
-		return result;
-	    }
-	} catch (IOException e) {
-	    log.error("Could not write to file.", e);
-	} catch (TransformerConfigurationException e) {
-	    log.error("Could not write to file.", e);
-	} catch (SAXException e) {
-	    log.error("SAX error writing to file.", e);
-	}
-	return false;
-    }
-
-    public static boolean write(Interactome interactome, FileFormat format,
-	    PrintStream print, double lowerbound, double upperbound) {
-	Statistics stats;
-	try {
-	    switch (format) {
 	    case interactome:
 		printHeader(print, interactome);
 		stats = printInteractions(interactome, print, lowerbound,
@@ -281,11 +284,15 @@ public class ToFile extends AbstractShadowInteractome {
 	    }
 	} catch (IOException e) {
 	    log.error("Could not write to file.", e);
-	    return false;
+	} catch (TransformerConfigurationException e) {
+	    log.error("Could not write to file.", e);
+	} catch (SAXException e) {
+	    log.error("SAX error writing to file.", e);
 	}
+	return false;
     }
 
-    private File file;
+    private String filename = null;
 
     private FileFormat format;
 
@@ -293,18 +300,31 @@ public class ToFile extends AbstractShadowInteractome {
 
     private double upperbound;
 
-    public ToFile(Interactome i, FileFormat format, String filename,
-	    double lowerbound, double upperbound) {
+    public ToFile(Interactome i, FileFormat format, double lowerbound,
+	    double upperbound) {
 	super();
 	this.i = i;
 	this.format = format;
-	this.file = new File(filename);
 	this.lowerbound = lowerbound;
 	this.upperbound = upperbound;
     }
 
+    public ToFile(Interactome i, FileFormat format, String filename,
+	    double lowerbound, double upperbound) {
+	this(i, format, lowerbound, upperbound);
+	if (filename == null || filename.equals("-")) {
+	    this.filename = null;
+	} else {
+	    this.filename = filename;
+	}
+    }
+
     public void postprocess() {
-	write(i, format, file, lowerbound, upperbound);
+	if (filename == null) {
+	    write(i, format, System.out, lowerbound, upperbound);
+	} else {
+	    write(i, format, new File(filename), lowerbound, upperbound);
+	}
     }
 
     public PrintStream show(PrintStream print) {
@@ -317,7 +337,7 @@ public class ToFile extends AbstractShadowInteractome {
 	print.print(format.name());
 	print.print(" ");
 	print.print("\"");
-	print.print(file);
+	print.print(filename == null ? "-" : filename);
 	print.print("\"");
 	return print;
     }
@@ -328,7 +348,7 @@ public class ToFile extends AbstractShadowInteractome {
 	sb.append(lowerbound).append(" ").append(upperbound);
 	sb.append(" ");
 	sb.append(format.name()).append(" ");
-	sb.append("\"").append(file).append("\"");
+	sb.append("\"").append(filename == null ? "-" : filename).append("\"");
 	return sb;
     }
 }

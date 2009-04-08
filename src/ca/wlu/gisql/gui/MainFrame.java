@@ -164,8 +164,6 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
     private JMenuItem menuSave = new JMenuItem("Save Data As...");
 
-    private int numCommands = 1;
-
     private BusyDialog progress = new BusyDialog(this);
 
     private JSeparator quitseparator = new JSeparator();
@@ -330,7 +328,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	String expr = i.show(new StringBuilder()).toString();
 	command.setText(expr);
 	log.info(expr);
-	env.setVariable("_" + numCommands++, i);
+	env.append(i);
 	task = new InteractomeTask(i);
 	task.execute();
 	progress.start("Computing " + i.show(new StringBuilder()).toString()

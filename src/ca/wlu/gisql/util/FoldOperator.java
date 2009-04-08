@@ -16,7 +16,9 @@ public class FoldOperator implements Parseable {
 	this.binary = binary;
     }
 
-    public Interactome construct(Environment environment, List<Object> params, Stack<String> error) {
+    @SuppressWarnings("unchecked")
+    public Interactome construct(Environment environment, List<Object> params,
+	    Stack<String> error) {
 	List<Interactome> interactomes = (List<Interactome>) params.get(0);
 	Interactome left = null;
 	for (Interactome interactome : interactomes) {

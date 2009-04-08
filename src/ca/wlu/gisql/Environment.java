@@ -66,6 +66,8 @@ public class Environment implements TreeModel {
 
     private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
+    private int numCommands = 1;
+
     private final String treeLast = "Last Result";
 
     private final String treeRoot = "Environment";
@@ -82,6 +84,12 @@ public class Environment implements TreeModel {
 
     public void addTreeModelListener(TreeModelListener listener) {
 	listeners.add(listener);
+    }
+
+    public void append(Interactome interactome) {
+	if (interactome != null) {
+	    setVariable("_" + numCommands++, interactome);
+	}
     }
 
     public void clearVariables() {
@@ -189,4 +197,5 @@ public class Environment implements TreeModel {
     public void valueForPathChanged(TreePath path, Object value) {
 	throw new UnsupportedOperationException();
     }
+
 }
