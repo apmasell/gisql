@@ -2,19 +2,23 @@ package ca.wlu.gisql.interactome;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Stack;
 
 import ca.wlu.gisql.Environment;
+import ca.wlu.gisql.Parser;
 import ca.wlu.gisql.util.Parseable;
 
 public class ToVar extends AbstractShadowInteractome {
     public final static Parseable descriptor = new Parseable() {
 
 	public Interactome construct(Environment environment,
-		List<Object> params) {
+		List<Object> params, Stack<String> error) {
 	    Interactome interactome = (Interactome) params.get(0);
 	    String name = (String) params.get(1);
-	    if (name == null)
+	    if (name == null) {
+		error.push("Missing variable name.");
 		return null;
+	    }
 	    return new ToVar(environment, interactome, name);
 	}
 
@@ -40,8 +44,8 @@ public class ToVar extends AbstractShadowInteractome {
 	    return sb;
 	}
 
-	public NextTask[] tasks() {
-	    return new NextTask[] { NextTask.Name };
+	public Parser.NextTask[] tasks(Parser parser) {
+	    return new Parser.NextTask[] { parser.new Name() };
 	}
 
     };

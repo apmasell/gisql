@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Writer;
 import java.util.List;
+import java.util.Stack;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -17,6 +18,7 @@ import org.jgrapht.graph.UndirectedMaskSubgraph;
 import org.xml.sax.SAXException;
 
 import ca.wlu.gisql.Environment;
+import ca.wlu.gisql.Parser;
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.gui.GeneIdProvider;
 import ca.wlu.gisql.gui.GeneNameProvider;
@@ -49,7 +51,7 @@ public class ToFile extends AbstractShadowInteractome {
     public static final Parseable descriptor = new Parseable() {
 
 	public Interactome construct(Environment environment,
-		List<Object> params) {
+		List<Object> params, Stack<String> error) {
 	    Interactome interactome = (Interactome) params.get(0);
 	    Double lowerbound = (Double) params.get(1);
 	    Double upperbound = (Double) params.get(2);
@@ -62,8 +64,9 @@ public class ToFile extends AbstractShadowInteractome {
 		format = FileFormat.interactome;
 	    }
 
-	    /* For the alpha cut, {Ax | x ∈ [lowerbound, upperbound]}. Normally, [α, 1].
-	     * That means lower should be filled preferentially, which it is. */
+	    /*
+                 * For the alpha cut, {Ax | x ∈ [lowerbound, upperbound]}. Normally, [α, 1]. That means lower should be filled preferentially, which it is.
+                 */
 	    if (upperbound == null) {
 		upperbound = 1.0;
 	    }
@@ -99,10 +102,12 @@ public class ToFile extends AbstractShadowInteractome {
 	    return sb;
 	}
 
-	public NextTask[] tasks() {
-	    return new NextTask[] { NextTask.Maybe, NextTask.Double,
-		    NextTask.Maybe, NextTask.Double, NextTask.Maybe,
-		    NextTask.Name, NextTask.QuotedString };
+	public Parser.NextTask[] tasks(Parser parser) {
+	    return new Parser.NextTask[] {
+		    parser.new Maybe(parser.new Decimal()),
+		    parser.new Maybe(parser.new Decimal()),
+		    parser.new Maybe(parser.new Name()),
+		    parser.new QuotedString() };
 	}
 
     };

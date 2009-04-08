@@ -2,10 +2,12 @@ package ca.wlu.gisql.util;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.Environment;
+import ca.wlu.gisql.Parser;
 import ca.wlu.gisql.interactome.ArithmeticInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 
@@ -34,17 +36,31 @@ public class ParseableBinaryOperation implements Parseable {
 	this.name = name;
     }
 
-    public Interactome construct(Environment environment, List<Object> params) {
-	Interactome left = (Interactome) params.get(0);
-	Interactome right = (Interactome) params.get(1);
-
+    public Interactome construct(Environment environment, Interactome left,
+	    Interactome right, Stack<String> error) {
 	try {
 	    return implementation.getConstructor(Interactome.class,
 		    Interactome.class).newInstance(left, right);
 	} catch (Exception e) {
+	    error.push("Unexpected instantiation error.");
 	    log.error("Instatiation error during parsing.", e);
 	}
 	return null;
+    }
+
+    public Interactome construct(Environment environment, List<Object> params,
+	    Stack<String> error) {
+	Interactome left = (Interactome) params.get(0);
+	Interactome right = (Interactome) params.get(1);
+	return construct(environment, left, right, error);
+    }
+
+    public String getName() {
+	return name;
+    }
+
+    public char[] getAlternateOperators() {
+	return alternateoperators;
     }
 
     public int getNestingLevel() {
@@ -101,8 +117,8 @@ public class ParseableBinaryOperation implements Parseable {
 	return sb;
     }
 
-    public NextTask[] tasks() {
-	return new NextTask[] { NextTask.SubExpression };
+    public Parser.NextTask[] tasks(Parser parser) {
+	return new Parser.NextTask[] { parser.new SubExpression() };
     }
 
 }

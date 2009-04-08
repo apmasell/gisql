@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -21,9 +22,12 @@ public class Environment implements TreeModel {
     public static final Parseable descriptor = new Parseable() {
 
 	public Interactome construct(Environment environment,
-		List<Object> params) {
+		List<Object> params, Stack<String> error) {
 	    String name = (String) params.get(0);
-	    return environment.getVariable(name);
+	    Interactome result = environment.getVariable(name);
+	    if (result == null)
+		error.push("Undefined variable: " + name);
+	    return result;
 	}
 
 	public int getNestingLevel() {
@@ -48,8 +52,8 @@ public class Environment implements TreeModel {
 	    return sb;
 	}
 
-	public NextTask[] tasks() {
-	    return new NextTask[] { NextTask.Name };
+	public Parser.NextTask[] tasks(Parser parser) {
+	    return new Parser.NextTask[] { parser.new Name() };
 	}
 
     };
@@ -171,15 +175,6 @@ public class Environment implements TreeModel {
 	    tml.treeStructureChanged(new TreeModelEvent(this,
 		    new Object[] { treeRoot }));
 	}
-    }
-
-    public Interactome parse(String input) {
-	Parser parser = new Parser(this, input);
-	Interactome interactome = parser.get();
-	if (interactome != null) {
-	    last = interactome;
-	}
-	return interactome;
     }
 
     public void removeTreeModelListener(TreeModelListener listener) {

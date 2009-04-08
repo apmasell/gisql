@@ -319,10 +319,11 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	if (expression == null || expression.trim().length() == 0) {
 	    return;
 	}
-	Interactome i = env.parse(expression);
+	Parser parser = new Parser(env, expression);
+	Interactome i = parser.get();
 	if (i == null) {
-	    JOptionPane.showMessageDialog(this, "Invalid expression.", "gisQL",
-		    JOptionPane.ERROR_MESSAGE);
+	    JOptionPane.showMessageDialog(this, parser.getErrors(),
+		    "Expression Error - gisQL", JOptionPane.ERROR_MESSAGE);
 	    return;
 	}
 	interactions.setModel(emptyModel);

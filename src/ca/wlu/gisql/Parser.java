@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
@@ -20,10 +21,166 @@ import ca.wlu.gisql.interactome.SymmetricDifference;
 import ca.wlu.gisql.interactome.ToFile;
 import ca.wlu.gisql.interactome.ToVar;
 import ca.wlu.gisql.interactome.Union;
+import ca.wlu.gisql.util.FoldOperator;
 import ca.wlu.gisql.util.Parseable;
-import ca.wlu.gisql.util.Parseable.NextTask;
+import ca.wlu.gisql.util.ParseableBinaryOperation;
 
 public class Parser {
+    public class Decimal extends NextTask {
+
+	boolean parse(int level, List<Object> results) {
+	    int oldposition = position;
+	    Double d = parseDouble();
+	    if (d == null) {
+		error.push("Failed to parse double. Position: " + oldposition);
+		return false;
+	    }
+	    results.add(d);
+	    return true;
+	}
+
+    }
+
+    public class Expression extends NextTask {
+
+	boolean parse(int level, List<Object> results) {
+	    int oldposition = position;
+	    Interactome result = (level == maxdepth ? parseIdentifier()
+		    : parseAutoExpression(0));
+	    if (result == null) {
+		error.push("Failed to parse expression. Position: "
+			+ oldposition);
+		return false;
+	    }
+	    results.add(result);
+	    return true;
+	}
+    }
+
+    public class ListOf extends NextTask {
+	NextTask child;
+
+	char delimiter;
+
+	public ListOf(NextTask child, char delimiter) {
+	    super();
+	    this.child = child;
+	    this.delimiter = delimiter;
+	}
+
+	boolean parse(int level, List<Object> results) {
+	    List<Object> items = new ArrayList<Object>();
+
+	    if (!child.parse(level, items)) {
+		return false;
+	    }
+
+	    consumeWhitespace();
+	    while (position < input.length()) {
+		if (input.charAt(position) == delimiter) {
+		    position++;
+		    if (!child.parse(level, items)) {
+			return false;
+		    }
+		} else {
+		    results.add(items);
+		    return true;
+		}
+		consumeWhitespace();
+	    }
+	    results.add(items);
+	    return true;
+	}
+
+    }
+
+    public class Literal extends NextTask {
+	char c;
+
+	public Literal(char c) {
+	    super();
+	    this.c = c;
+	}
+
+	boolean parse(int level, List<Object> results) {
+	    consumeWhitespace();
+	    if (position < input.length() && c == input.charAt(position)) {
+		position++;
+		return true;
+	    }
+	    error.push("Expected '" + c + "' missing. Position: " + position);
+	    return false;
+	}
+
+    }
+
+    public class Maybe extends NextTask {
+	NextTask child;
+
+	public Maybe(NextTask child) {
+	    super();
+	    this.child = child;
+	}
+
+	boolean parse(int level, List<Object> results) {
+	    int oldposition = position;
+	    int errorposition = error.size();
+	    if (child.parse(level, results))
+		return true;
+	    results.add(null);
+	    position = oldposition;
+	    error.setSize(errorposition);
+	    return true;
+	}
+    }
+
+    public class Name extends NextTask {
+
+	boolean parse(int level, List<Object> results) {
+	    int oldposition = position;
+	    String name = parseName();
+	    if (name == null) {
+		error.push("Expected name missing. Position: " + oldposition);
+		return false;
+	    }
+	    results.add(name);
+	    return true;
+	}
+
+    }
+
+    public abstract class NextTask {
+	abstract boolean parse(int level, List<Object> results);
+    }
+
+    public class QuotedString extends NextTask {
+
+	boolean parse(int level, List<Object> results) {
+	    int oldposition = position;
+	    String string = parseQuotedString();
+	    if (string == null) {
+		error.push("Failed to parse quoted string. Position: "
+			+ oldposition);
+		return false;
+	    }
+	    results.add(string);
+	    return true;
+	}
+
+    }
+
+    public class SubExpression extends NextTask {
+
+	boolean parse(int level, List<Object> results) {
+	    Interactome result = (level == maxdepth ? parseIdentifier()
+		    : parseAutoExpression(level + 1));
+	    if (result == null)
+		return false;
+	    results.add(result);
+	    return true;
+	}
+    }
+
     private static String help;
 
     static final Logger log = Logger.getLogger(Parser.class);
@@ -72,6 +229,10 @@ public class Parser {
 		    (operator.isPrefixed() ? prefixedOperators
 			    : otherfixOperators), level);
 	    list.add(operator);
+	    if (operator instanceof ParseableBinaryOperation) {
+		getList(prefixedOperators, level).add(
+			new FoldOperator((ParseableBinaryOperation) operator));
+	    }
 	}
 
 	StringBuilder sb = new StringBuilder();
@@ -92,6 +253,8 @@ public class Parser {
 		.append("\nAny other word will be interpreted as a species identifier and read from the database.\nParentheses may be used to control order of operations.");
 	help = sb.toString();
     }
+
+    private Stack<String> error = new Stack<String>();
 
     private Environment environment;
 
@@ -121,10 +284,14 @@ public class Parser {
 
     private Interactome parseAutoExpression(int level) {
 	Interactome left = null;
+	if (position >= input.length())
+	    return null;
+
 	for (Parseable operator : prefixedOperators.get(level)) {
 	    if (operator.isMatchingOperator(input.charAt(position))) {
 		position++;
 		left = processOperator(operator, null, level);
+		break;
 	    }
 	}
 
@@ -199,6 +366,10 @@ public class Parser {
 	    position++;
 	    return e;
 	} else {
+	    error
+		    .push("Failed to parse expression. Trailing garbage at position: "
+			    + position);
+
 	    position = oldposition;
 	    return null;
 	}
@@ -215,10 +386,12 @@ public class Parser {
 		return parseExpression(')');
 	    } else {
 		String species = parseName();
-		if (species == null)
+		if (species == null) {
 		    return null;
+		}
 		Interactome i = environment.getSpeciesInteractome(species);
 		if (i == null) {
+		    error.push("Unknown species: " + species);
 		    log.fatal("The species " + species
 			    + " does not exist in the database.");
 		    return null;
@@ -280,8 +453,7 @@ public class Parser {
 
     private Interactome processOperator(Parseable operator, Interactome left,
 	    int level) {
-	int oldposition = position;
-	NextTask[] todo = operator.tasks();
+	Parser.NextTask[] todo = operator.tasks(this);
 	List<Object> params = new ArrayList<Object>();
 
 	if (!operator.isPrefixed()) {
@@ -290,46 +462,27 @@ public class Parser {
 	    params.add(left);
 	}
 	if (todo != null) {
-	    int maybeposition = -1;
-	    for (NextTask task : todo) {
-		Object nextToken = null;
+	    for (Parser.NextTask task : todo) {
 		consumeWhitespace();
-		switch (task) {
-		case Maybe:
-		    maybeposition = position;
-		    continue;
-		case Double:
-		    nextToken = parseDouble();
-		    break;
-		case Identifier:
-		    nextToken = parseIdentifier();
-		    break;
-		case Name:
-		    nextToken = parseName();
-		    break;
-		case SubExpression:
-		    nextToken = (level == maxdepth ? parseIdentifier()
-			    : parseAutoExpression(level + 1));
-		    break;
-		case QuotedString:
-		    nextToken = parseQuotedString();
-		}
-		if (nextToken != null) {
-		    params.add(nextToken);
-		} else if (maybeposition != -1) {
-		    params.add(nextToken);
-		    position = maybeposition;
-		} else {
-		    position = oldposition;
+		if (!task.parse(level, params)) {
 		    return null;
 		}
-		maybeposition = -1;
 	    }
 	}
-	return operator.construct(environment, params);
+	return operator.construct(environment, params, error);
+    }
+
+    public String getErrors() {
+	StringBuilder sb = new StringBuilder();
+	while (error.size() > 0) {
+	    sb.append(error.pop());
+	    sb.append('\n');
+	}
+	return sb.toString();
     }
 
     private void reparse() {
+	error.clear();
 	position = 0;
 	interactome = parseExpression(null);
     }

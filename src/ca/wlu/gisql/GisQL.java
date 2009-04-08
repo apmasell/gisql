@@ -33,9 +33,10 @@ public class GisQL {
 
 	if (args.length > 0) {
 	    for (String argument : args) {
-		Interactome interactome = env.parse(argument);
+		Parser parser = new Parser(env, argument);
+		Interactome interactome = parser.get();
 		if (interactome == null) {
-		    log.error("Failed to parse query.");
+		    log.error(parser.getErrors());
 		    return;
 		}
 		ToFile.write(interactome, FileFormat.interactome, System.out,

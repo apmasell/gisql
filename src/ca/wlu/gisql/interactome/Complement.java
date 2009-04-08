@@ -2,8 +2,10 @@ package ca.wlu.gisql.interactome;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.Stack;
 
 import ca.wlu.gisql.Environment;
+import ca.wlu.gisql.Parser;
 import ca.wlu.gisql.gene.ComplementaryGene;
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.ComplementaryInteraction;
@@ -15,7 +17,8 @@ public class Complement extends AbstractInteractome {
 
     public final static Parseable descriptor = new Parseable() {
 
-	public Interactome construct(Environment environment, List<Object> params) {
+	public Interactome construct(Environment environment,
+		List<Object> params, Stack<String> error) {
 	    Interactome interactome = (Interactome) params.get(0);
 	    return new Complement(interactome);
 	}
@@ -42,8 +45,8 @@ public class Complement extends AbstractInteractome {
 	    return sb;
 	}
 
-	public NextTask[] tasks() {
-	    return new NextTask[] { NextTask.SubExpression };
+	public Parser.NextTask[] tasks(Parser parser) {
+	    return new Parser.NextTask[] { parser.new SubExpression() };
 	}
 
     };
