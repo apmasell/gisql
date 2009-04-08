@@ -309,6 +309,7 @@ public class Parser {
 	    for (Parseable operator : otherfixOperators.get(level)) {
 		if (operator.isMatchingOperator(input.charAt(position))) {
 		    int oldposition = position;
+		    int errorposition = error.size();
 		    position++;
 		    Interactome result = processOperator(operator, left, level);
 		    if (result != null) {
@@ -316,6 +317,7 @@ public class Parser {
 			matched = true;
 			break;
 		    }
+		    error.setSize(errorposition);
 		    position = oldposition;
 		}
 	    }
