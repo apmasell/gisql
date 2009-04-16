@@ -1,8 +1,7 @@
 package ca.wlu.gisql;
 
 import java.awt.EventQueue;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
 import java.io.PrintStream;
 import java.sql.SQLException;
 
@@ -16,21 +15,17 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import ca.wlu.gisql.gui.MainFrame;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.ToFile;
 import ca.wlu.gisql.interactome.ToFile.FileFormat;
 
 public class GisQL {
 
-    private static FileFormat format = FileFormat.interactome;
+    static Environment environment;
 
     static final Logger log = Logger.getLogger(GisQL.class);
 
     public static void main(String[] args) throws Exception {
 	ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
 	Logger.getRootLogger().addAppender(appender);
-
-	CommandLine commandline = processCommandLine(args);
 
 	DatabaseManager dm;
 	try {
@@ -40,34 +35,31 @@ public class GisQL {
 	    return;
 	}
 
-	final Environment environment = new Environment(dm);
+	environment = new Environment(dm);
 
-	PrintStream output = System.out;
+	CommandLine commandline = processCommandLine(args);
+
 	if (commandline.hasOption('o')) {
-	    output = new PrintStream(commandline.getOptionValue('o'));
+	    environment.setOutput(new PrintStream(commandline
+		    .getOptionValue('o')));
 	}
 	for (String argument : commandline.getArgs()) {
-	    runExpression(environment, output, argument);
+	    environment.runExpression(argument);
 	}
 
 	if (commandline.hasOption('c')) {
-	    BufferedReader input = new BufferedReader(new FileReader(
-		    commandline.getOptionValue('c')));
-	    String line;
-	    while ((line = input.readLine()) != null) {
-		runExpression(environment, output, line);
-	    }
-	    input.close();
+	    environment.runFile(new File(commandline.getOptionValue('c')));
 	}
 
 	if (commandline.hasOption('o')) {
-	    output.close();
+	    environment.getOutput().close();
+	    environment.setOutput(System.out);
 	}
 
 	if (commandline.hasOption('g') || commandline.getArgs().length == 0) {
 	    EventQueue.invokeLater(new Runnable() {
 		public void run() {
-		    new MainFrame(environment).setVisible(true);
+		    new MainFrame(GisQL.environment).setVisible(true);
 		}
 	    });
 	}
@@ -95,29 +87,17 @@ public class GisQL {
 	try {
 	    CommandLine command = new GnuParser().parse(options, args);
 	    if (command.hasOption('F')) {
-		GisQL.format = FileFormat.valueOf(command.getOptionValue('F'));
-		if (GisQL.format == null) {
-		    GisQL.format = FileFormat.interactome;
+		FileFormat fileformat = FileFormat.valueOf(command
+			.getOptionValue('F'));
+		if (fileformat == null) {
+		    fileformat = FileFormat.interactome;
 		}
+		GisQL.environment.setFormat(fileformat);
 	    }
 	    return command;
 	} catch (ParseException e) {
 	    log.error("Parsing failed.", e);
 	}
 	return null;
-    }
-
-    private static boolean runExpression(Environment environment,
-	    PrintStream output, String expression) {
-	Parser parser = new Parser(environment, expression);
-	Interactome interactome = parser.get();
-	environment.append(interactome);
-	if (interactome == null) {
-	    log.error(parser.getErrors());
-	    return false;
-	}
-	ToFile.write(interactome, format, output, 0, 1);
-	return true;
-
     }
 }

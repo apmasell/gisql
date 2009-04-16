@@ -1,5 +1,9 @@
 package ca.wlu.gisql;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,12 +21,64 @@ import org.apache.log4j.Logger;
 import ca.wlu.gisql.fuzzy.Godel;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.ToFile;
+import ca.wlu.gisql.interactome.Unit;
+import ca.wlu.gisql.interactome.ToFile.FileFormat;
 import ca.wlu.gisql.util.Parseable;
 
 public class Environment implements TreeModel {
+    public static final Parseable clearDescriptor = new Function("clear", null) {
+	class Clear extends Unit {
+	    private Environment environment;
 
-    public static final Parseable descriptor = new Parseable() {
+	    protected Clear(Environment environment) {
+		this.environment = environment;
+	    }
 
+	    public boolean process() {
+		environment.clearVariables();
+		return super.process();
+	    }
+	}
+
+	public Interactome construct(Environment environment,
+		List<Object> params, Stack<String> error) {
+	    return new Clear(environment);
+	}
+    };
+
+    static final Logger log = Logger.getLogger(Environment.class);
+
+    public static final Parseable runDescriptor = new Function("run",
+	    new Function.Parameter[] { new Function.QuotedString("filename") }) {
+	class Script extends Unit {
+	    private Environment environment;
+
+	    private File file;
+
+	    protected Script(Environment environment, File file) {
+		this.environment = environment;
+		this.file = file;
+	    }
+
+	    public boolean process() {
+		environment.runFile(file);
+		return super.process();
+	    }
+	}
+
+	public Interactome construct(Environment environment,
+		List<Object> params, Stack<String> error) {
+	    File file = new File((String) params.get(0));
+	    if (file.canRead()) {
+		return new Script(environment, file);
+	    } else {
+		return null;
+	    }
+	}
+    };
+
+    public static final Parseable variableDescriptor = new Parseable() {
 	public Interactome construct(Environment environment,
 		List<Object> params, Stack<String> error) {
 	    String name = (String) params.get(0);
@@ -60,15 +116,19 @@ public class Environment implements TreeModel {
 
     };
 
-    static final Logger log = Logger.getLogger(Environment.class);
-
     private DatabaseManager dm;
+
+    private FileFormat format;
 
     private Interactome last = null;
 
     private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
+    private TriangularNorm norm = new Godel();
+
     private int numCommands = 1;
+
+    private PrintStream output = System.out;
 
     private final String treeLast = "Last Result";
 
@@ -79,8 +139,6 @@ public class Environment implements TreeModel {
     private final String treeVariables = "Variables";
 
     private Map<String, Interactome> variables = new HashMap<String, Interactome>();
-
-    private TriangularNorm norm = new Godel();
 
     public Environment(DatabaseManager dm) {
 	this.dm = dm;
@@ -97,6 +155,7 @@ public class Environment implements TreeModel {
     }
 
     public void clearVariables() {
+	numCommands = 1;
 	variables.clear();
 	notifyListeners();
     }
@@ -137,6 +196,10 @@ public class Environment implements TreeModel {
 	}
     }
 
+    public FileFormat getFormat() {
+	return format;
+    }
+
     public int getIndexOfChild(Object arg0, Object arg1) {
 	throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -160,6 +223,14 @@ public class Environment implements TreeModel {
 
     public Interactome getLast() {
 	return last;
+    }
+
+    public TriangularNorm getNorm() {
+	return norm;
+    }
+
+    public PrintStream getOutput() {
+	return output;
     }
 
     public Object getRoot() {
@@ -193,6 +264,51 @@ public class Environment implements TreeModel {
 	listeners.remove(listener);
     }
 
+    public boolean runExpression(String expression) {
+	Parser parser = new Parser(this, expression);
+	Interactome interactome = parser.get();
+	append(interactome);
+	if (interactome == null) {
+	    log.error(parser.getErrors());
+	    return false;
+	}
+	if (output != null)
+	    ToFile.write(interactome, format, output, 0, 1);
+	return true;
+    }
+
+    public boolean runFile(File file) {
+	try {
+	    BufferedReader input = new BufferedReader(new FileReader(file));
+	    String line;
+	    int linenumber = 0;
+	    while ((line = input.readLine()) != null) {
+		linenumber++;
+		if (!runExpression(line)) {
+		    log.error("Script failed on line :" + linenumber);
+		    return false;
+		}
+	    }
+	    input.close();
+	    return true;
+	} catch (IOException e) {
+	    log.error("Script error.", e);
+	}
+	return false;
+    }
+
+    public void setFormat(FileFormat format) {
+	this.format = format;
+    }
+
+    public void setNorm(TriangularNorm norm) {
+	this.norm = norm;
+    }
+
+    public void setOutput(PrintStream output) {
+	this.output = output;
+    }
+
     public void setVariable(String name, Interactome value) {
 	variables.put(name, value);
 	notifyListeners();
@@ -200,14 +316,6 @@ public class Environment implements TreeModel {
 
     public void valueForPathChanged(TreePath path, Object value) {
 	throw new UnsupportedOperationException();
-    }
-
-    public void setNorm(TriangularNorm norm) {
-	this.norm = norm;
-    }
-
-    public TriangularNorm getNorm() {
-	return norm;
     }
 
 }

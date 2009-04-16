@@ -181,6 +181,26 @@ public class Parser {
 	}
     }
 
+    public class Word extends NextTask {
+	private String word;
+
+	public Word(String word) {
+	    this.word = word;
+	}
+
+	boolean parse(int level, List<Object> results) {
+	    int oldposition = position;
+	    String name = parseName();
+	    if (name == null || !word.equals(name)) {
+		error.push("Expected " + word + " missing. Position: "
+			+ oldposition);
+		return false;
+	    }
+	    return true;
+	}
+
+    }
+
     private static String help;
 
     static final Logger log = Logger.getLogger(Parser.class);
@@ -190,7 +210,8 @@ public class Parser {
     private static Parseable[] operators = new Parseable[] {
 	    BoldIntersection.descriptor, BoundedDifference.descriptor,
 	    BoundedSum.descriptor, Complement.descriptor,
-	    Difference.descriptor, Environment.descriptor,
+	    Difference.descriptor, Environment.clearDescriptor,
+	    Environment.runDescriptor, Environment.variableDescriptor,
 	    Intersection.descriptor, Residuum.descriptor,
 	    StrongSymmetricDifference.descriptor,
 	    SymmetricDifference.descriptor, ToFile.descriptor,
@@ -254,9 +275,9 @@ public class Parser {
 	help = sb.toString();
     }
 
-    private Stack<String> error = new Stack<String>();
-
     private Environment environment;
+
+    private Stack<String> error = new Stack<String>();
 
     private String input;
 
@@ -282,16 +303,31 @@ public class Parser {
 	return interactome;
     }
 
+    public String getErrors() {
+	StringBuilder sb = new StringBuilder();
+	while (error.size() > 0) {
+	    sb.append(error.pop());
+	    sb.append('\n');
+	}
+	return sb.toString();
+    }
+
     private Interactome parseAutoExpression(int level) {
 	Interactome left = null;
 	if (position >= input.length())
 	    return null;
 
+	int errorposition = error.size();
 	for (Parseable operator : prefixedOperators.get(level)) {
+	    int originalposition = position;
 	    if (operator.isMatchingOperator(input.charAt(position))) {
 		position++;
 		left = processOperator(operator, null, level);
-		break;
+		if (left != null) {
+		    error.setSize(errorposition);
+		    break;
+		}
+		position = originalposition;
 	    }
 	}
 
@@ -307,9 +343,9 @@ public class Parser {
 	while (position < input.length()) {
 	    boolean matched = false;
 	    for (Parseable operator : otherfixOperators.get(level)) {
+		int oldposition = position;
+		errorposition = error.size();
 		if (operator.isMatchingOperator(input.charAt(position))) {
-		    int oldposition = position;
-		    int errorposition = error.size();
 		    position++;
 		    Interactome result = processOperator(operator, left, level);
 		    if (result != null) {
@@ -446,8 +482,13 @@ public class Parser {
 		    return null;
 		}
 	    } else {
-		position++;
-		sb.append(codepoint);
+		if (sb == null) {
+		    return null;
+		} else {
+		    position++;
+
+		    sb.append(codepoint);
+		}
 	    }
 	}
 	return null;
@@ -472,15 +513,6 @@ public class Parser {
 	    }
 	}
 	return operator.construct(environment, params, error);
-    }
-
-    public String getErrors() {
-	StringBuilder sb = new StringBuilder();
-	while (error.size() > 0) {
-	    sb.append(error.pop());
-	    sb.append('\n');
-	}
-	return sb.toString();
     }
 
     private void reparse() {
