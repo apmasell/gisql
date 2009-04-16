@@ -18,5 +18,4 @@ public interface Gene extends Show {
 	public int getNumberOfOrthologies();
 
 	public void getSupplementaryIds(List<Long> ids);
-
 }

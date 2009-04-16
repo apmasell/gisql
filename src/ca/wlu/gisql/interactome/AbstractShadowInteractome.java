@@ -70,7 +70,7 @@ public abstract class AbstractShadowInteractome implements Interactome {
 	}
 
 	public Gene findRootOrtholog(Gene gene) {
-		return i.findRootOrtholog(gene);
+		return i.findOrtholog(gene);
 	}
 
 	public final GeneSet genes() {

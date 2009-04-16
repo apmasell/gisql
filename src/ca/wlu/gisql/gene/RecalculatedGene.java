@@ -8,6 +8,7 @@ import ca.wlu.gisql.interactome.Interactome;
 public class RecalculatedGene implements Gene {
 
 	private Gene gene;
+
 	private double membership;
 
 	public RecalculatedGene(Gene gene, double membership) {
