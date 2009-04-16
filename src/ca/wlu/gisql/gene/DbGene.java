@@ -38,15 +38,19 @@ public class DbGene implements Gene {
 	print.print(identifier);
 	print.print(" ");
 	parent.show(print);
-	print.print(" [");
-	print.print(name);
-	print.print("]");
+	if (name.length() > 0) {
+	    print.print(" [");
+	    print.print(name);
+	    print.print("]");
+	}
 	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {
 	sb.append(identifier).append(" ");
-	parent.show(sb).append(" [").append(name).append("]");
+	parent.show(sb);
+	if (name.length() > 0)
+	    sb.append(" [").append(name).append("]");
 	return sb;
     }
 
