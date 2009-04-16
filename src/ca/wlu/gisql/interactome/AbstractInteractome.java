@@ -16,6 +16,7 @@ import org.jgrapht.EdgeFactory;
 
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interaction.Interaction;
+import ca.wlu.gisql.interaction.UniversalInteraction;
 import ca.wlu.gisql.util.DoubleMap;
 import ca.wlu.gisql.util.GeneSet;
 
@@ -39,17 +40,15 @@ public abstract class AbstractInteractome implements Interactome {
 
     private List<TableModelListener> listeners = new ArrayList<TableModelListener>();
 
-    protected double unknownGeneMembership = 0.0;
-
-    public Interaction addEdge(Gene gene1, Gene gene2) {
+    public final Interaction addEdge(Gene gene1, Gene gene2) {
 	return null;
     }
 
-    public boolean addEdge(Gene gene1, Gene gene2, Interaction interaction) {
+    public final boolean addEdge(Gene gene1, Gene gene2, Interaction interaction) {
 	return false;
     }
 
-    protected void addGene(Gene gene) {
+    protected final void addGene(Gene gene) {
 	genes.add(gene);
     }
 
@@ -67,31 +66,31 @@ public abstract class AbstractInteractome implements Interactome {
 	listeners.add(listener);
     }
 
-    public boolean addVertex(Gene gene) {
+    public final boolean addVertex(Gene gene) {
 	return false;
     }
 
-    public boolean containsEdge(Gene gene1, Gene gene2) {
+    public final boolean containsEdge(Gene gene1, Gene gene2) {
 	return this.getInteraction(gene1, gene2) != null;
     }
 
-    public boolean containsEdge(Interaction interaction) {
+    public final boolean containsEdge(Interaction interaction) {
 	return interactions.contains(interaction);
     }
 
-    public boolean containsVertex(Gene gene) {
+    public final boolean containsVertex(Gene gene) {
 	return genes.contains(gene);
     }
 
-    public int degreeOf(Gene gene) {
+    public final int degreeOf(Gene gene) {
 	return interactionLUT.getValueSetContaining(gene).size();
     }
 
-    public Set<Interaction> edgeSet() {
+    public final Set<Interaction> edgeSet() {
 	return interactions;
     }
 
-    public Set<Interaction> edgesOf(Gene gene) {
+    public final Set<Interaction> edgesOf(Gene gene) {
 	return interactionLUT.getValueSetContaining(gene);
     }
 
@@ -99,7 +98,7 @@ public abstract class AbstractInteractome implements Interactome {
 	return genes;
     }
 
-    public Set<Interaction> getAllEdges(Gene gene1, Gene gene2) {
+    public final Set<Interaction> getAllEdges(Gene gene1, Gene gene2) {
 	Set<Interaction> result = new HashSet<Interaction>();
 	result.add(getInteraction(gene1, gene2));
 	return result;
@@ -121,15 +120,15 @@ public abstract class AbstractInteractome implements Interactome {
 	return computationTime;
     }
 
-    public Interaction getEdge(Gene gene1, Gene gene2) {
+    public final Interaction getEdge(Gene gene1, Gene gene2) {
 	return getInteraction(gene1, gene2);
     }
 
-    public EdgeFactory<Gene, Interaction> getEdgeFactory() {
+    public final EdgeFactory<Gene, Interaction> getEdgeFactory() {
 	return null;
     }
 
-    public Gene getEdgeSource(Interaction interaction) {
+    public final Gene getEdgeSource(Interaction interaction) {
 	return interaction.getGene1();
     }
 
@@ -141,17 +140,20 @@ public abstract class AbstractInteractome implements Interactome {
 	return interaction.getMembership();
     }
 
-    protected abstract Interaction getEmptyInteraction(Gene gene1, Gene gene2);
-
     protected final Gene getGene(long identifier) {
 	return genes.get(identifier);
     }
+
+    protected abstract double membershipOfUnknown();
 
     public final Interaction getInteraction(Gene gene1, Gene gene2) {
 	process();
 	Interaction result = interactionLUT.get(gene1, gene2);
 	if (result == null) {
-	    return getEmptyInteraction(gene1, gene2);
+	    double membership = membershipOfUnknown();
+	    if (membership == 0)
+		return null;
+	    return new UniversalInteraction(this, gene1, gene2, membership);
 	} else {
 	    return result;
 	}
@@ -184,7 +186,7 @@ public abstract class AbstractInteractome implements Interactome {
 	if (genes.contains(gene)) {
 	    return gene.getMembership();
 	} else {
-	    return unknownGeneMembership;
+	    return membershipOfUnknown();
 	}
     }
 
@@ -197,7 +199,7 @@ public abstract class AbstractInteractome implements Interactome {
 	return interactions.iterator();
     }
 
-    private void notifyListeners() {
+    private final void notifyListeners() {
 	TableModelEvent evt = new TableModelEvent(this);
 	for (TableModelListener tml : listeners) {
 	    tml.tableChanged(evt);
@@ -220,23 +222,24 @@ public abstract class AbstractInteractome implements Interactome {
 	}
     }
 
-    public boolean removeAllEdges(Collection<? extends Interaction> interactions) {
+    public final boolean removeAllEdges(
+	    Collection<? extends Interaction> interactions) {
 	return false;
     }
 
-    public Set<Interaction> removeAllEdges(Gene gene1, Gene gene2) {
+    public final Set<Interaction> removeAllEdges(Gene gene1, Gene gene2) {
 	return null;
     }
 
-    public boolean removeAllVertices(Collection<? extends Gene> genes) {
+    public final boolean removeAllVertices(Collection<? extends Gene> genes) {
 	return false;
     }
 
-    public Interaction removeEdge(Gene gene1, Gene gene2) {
+    public final Interaction removeEdge(Gene gene1, Gene gene2) {
 	return null;
     }
 
-    public boolean removeEdge(Interaction interactions) {
+    public final boolean removeEdge(Interaction interactions) {
 	return false;
     }
 
@@ -252,7 +255,7 @@ public abstract class AbstractInteractome implements Interactome {
 	log.warn("Someone tried to edit the data.");
     }
 
-    public Set<Gene> vertexSet() {
+    public final Set<Gene> vertexSet() {
 	return genes;
     }
 }

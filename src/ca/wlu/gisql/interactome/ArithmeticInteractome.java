@@ -5,10 +5,13 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.gene.CompositeGene;
 import ca.wlu.gisql.gene.Gene;
+import ca.wlu.gisql.gene.RecalculatedGene;
 import ca.wlu.gisql.interaction.CompositeInteraction;
 import ca.wlu.gisql.interaction.Interaction;
+import ca.wlu.gisql.interaction.RecalculatedInteraction;
 import ca.wlu.gisql.interaction.TranslatedInteraction;
 
 public abstract class ArithmeticInteractome extends AbstractInteractome {
@@ -16,15 +19,61 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 
     protected Interactome left, right;
 
-    public ArithmeticInteractome(Interactome left, Interactome right) {
+    private TriangularNorm norm;
+
+    public ArithmeticInteractome(TriangularNorm norm, Interactome left,
+	    Interactome right) {
 	this.left = left;
 	this.right = right;
+	this.norm = norm;
     }
 
-    protected abstract double calculateGeneMembership(Gene gene, Gene ortholog);
+    private final double calculateAdjustedGeneMembership(int numNewOrthologies,
+	    Gene gene, Gene ortholog) {
+	double geneMembership = (gene == null ? 0 : gene.getMembership());
+	int geneOrthologies = (gene == null ? 0 : gene.getNumberOfOrthologies());
+	int geneSize = left.numGenomes();
 
-    protected abstract double calculateMembership(Interaction interaction,
-	    Interaction orthoaction);
+	double orthologMembership = (ortholog == null ? 0 : ortholog
+		.getMembership());
+	int orthologOrthologies = (gene == null ? 0 : gene
+		.getNumberOfOrthologies());
+	int orthologSize = right.numGenomes();
+
+	double averagemembership = (geneSize * geneMembership + orthologSize
+		* orthologMembership)
+		/ (geneSize + orthologSize);
+
+	int totalOrthologies = 2 * numNewOrthologies + geneOrthologies
+		+ orthologOrthologies;
+	double geneFactor = (totalOrthologies == 0 ? 1
+		: (numNewOrthologies + geneOrthologies)
+			/ ((double) totalOrthologies));
+	double orthologFactor = (totalOrthologies == 0 ? 1 : 1 - geneFactor);
+
+	double geneAdjustedMembership = clipMembership(geneMembership
+		* geneFactor + averagemembership * orthologFactor);
+	double orthologAdjustedMembership = clipMembership(orthologMembership
+		* orthologFactor + averagemembership * geneFactor);
+
+	return calculateMembership(norm, geneAdjustedMembership,
+		orthologAdjustedMembership);
+    }
+
+    private double clipMembership(double membership) {
+	if (membership < 0)
+	    return 0;
+	if (membership > 1)
+	    return 1;
+	return membership;
+    }
+
+    protected abstract double calculateMembership(TriangularNorm norm,
+	    double left, double right);
+
+    public int countOrthologs(Gene gene) {
+	return left.countOrthologs(gene) + right.countOrthologs(gene);
+    }
 
     public final Gene findOrtholog(Gene gene) {
 	/*
@@ -34,8 +83,10 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 	return (ortholog != null ? ortholog : right.findOrtholog(gene));
     }
 
-    protected Interaction getEmptyInteraction(Gene gene1, Gene gene2) {
-	return null;
+    public abstract char getSymbol();
+
+    protected final double membershipOfUnknown() {
+	return calculateMembership(norm, 0, 0);
     }
 
     public final int numGenomes() {
@@ -50,16 +101,20 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 	for (Gene gene : left.genes()) {
 	    Gene ortholog = right.findOrtholog(gene);
 	    if (ortholog == null) {
-		addGene(processLoneGene(gene, true));
+		addGene(new RecalculatedGene(gene,
+			calculateAdjustedGeneMembership(0, gene, null)));
 	    } else {
-		double membership = calculateGeneMembership(gene, ortholog);
-		addGene(new CompositeGene(gene, ortholog, membership));
+		int newOrthologies = gene.countOrthologs(right);
+		addGene(new CompositeGene(gene, ortholog,
+			calculateAdjustedGeneMembership(newOrthologies, gene,
+				ortholog), newOrthologies));
 	    }
 	}
 	log.info("Computing right genes");
 	for (Gene gene : right.genes()) {
 	    if (left.findOrtholog(gene) == null) {
-		addGene(processLoneGene(gene, false));
+		addGene(new RecalculatedGene(gene,
+			calculateAdjustedGeneMembership(0, null, gene)));
 	    }
 	}
 
@@ -72,10 +127,12 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 		    .findOrtholog(interaction.getGene1()), right
 		    .findOrtholog(interaction.getGene2()));
 	    if (orthoaction == null) {
-		addInteraction(processLoneInteraction(interaction, true));
+		addInteraction(new RecalculatedInteraction(interaction,
+			calculateMembership(norm, interaction.getMembership(),
+				0)));
 	    } else {
-		double membership = calculateMembership(interaction,
-			orthoaction);
+		double membership = calculateMembership(norm, interaction
+			.getMembership(), orthoaction.getMembership());
 		Interaction i = new CompositeInteraction(this, interaction,
 			orthoaction, membership);
 		addInteraction(i);
@@ -94,20 +151,13 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 		ortholog2 = interaction.getGene2();
 	    }
 	    if (left.getInteraction(ortholog1, ortholog2) == null) {
-		interaction = new TranslatedInteraction(left, interaction,
-			ortholog1, ortholog2);
-		addInteraction(processLoneInteraction(interaction, false));
+		addInteraction(new TranslatedInteraction(left, interaction,
+			ortholog1, ortholog2, calculateMembership(norm, 0,
+				interaction.getMembership())));
 	    }
 	}
 	log.info("Set operation complete");
     }
-
-    protected abstract Gene processLoneGene(Gene gene, boolean left);
-
-    protected abstract Interaction processLoneInteraction(
-	    Interaction interaction, boolean left);
-
-    public abstract char getSymbol();
 
     public final PrintStream show(PrintStream print) {
 	print.print("(");

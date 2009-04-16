@@ -26,9 +26,12 @@ public class OrthologyMap {
 
     public void add(int species) {
 	try {
+	    if (knownSpecies.contains(species))
+		return;
 	    PreparedStatement self = conn
-		    .prepareStatement("SELECT id, species, id, species FROM gene WHERE species = ?");
+		    .prepareStatement("SELECT match_gene, mg.species, query_gene, qg.species FROM ortholog JOIN gene mg ON match_gene = mg.id JOIN gene qg ON query_gene = qg.id WHERE mg.species = ? AND qg.species = ?");
 	    self.setInt(1, species);
+	    self.setInt(2, species);
 	    addFromDb(self);
 
 	    for (int remotespecies : knownSpecies) {
@@ -42,6 +45,7 @@ public class OrthologyMap {
 		    addFromDb(statement);
 		}
 	    }
+	    knownSpecies.add(species);
 	} catch (SQLException e) {
 	    log.error("Failed processing query.", e);
 	}

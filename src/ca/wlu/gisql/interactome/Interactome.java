@@ -12,6 +12,8 @@ import ca.wlu.gisql.util.Show;
 public interface Interactome extends Iterable<Interaction>, TableModel, Show,
 	UndirectedGraph<Gene, Interaction> {
 
+    public abstract int countOrthologs(Gene gene);
+
     public abstract Gene findOrtholog(Gene gene);
 
     public abstract GeneSet genes();

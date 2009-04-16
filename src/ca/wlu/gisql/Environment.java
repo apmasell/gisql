@@ -14,6 +14,8 @@ import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.fuzzy.Godel;
+import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Parseable;
 
@@ -77,6 +79,8 @@ public class Environment implements TreeModel {
     private final String treeVariables = "Variables";
 
     private Map<String, Interactome> variables = new HashMap<String, Interactome>();
+
+    private TriangularNorm norm = new Godel();
 
     public Environment(DatabaseManager dm) {
 	this.dm = dm;
@@ -196,6 +200,14 @@ public class Environment implements TreeModel {
 
     public void valueForPathChanged(TreePath path, Object value) {
 	throw new UnsupportedOperationException();
+    }
+
+    public void setNorm(TriangularNorm norm) {
+	this.norm = norm;
+    }
+
+    public TriangularNorm getNorm() {
+	return norm;
     }
 
 }

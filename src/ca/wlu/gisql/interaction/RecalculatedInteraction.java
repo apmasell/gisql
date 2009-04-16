@@ -5,12 +5,15 @@ import java.io.PrintStream;
 import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
-public class ComplementaryInteraction implements Interaction {
+public class RecalculatedInteraction implements Interaction {
 
     private Interaction interaction;
 
-    public ComplementaryInteraction(Interaction interaction) {
+    private double membership;
+
+    public RecalculatedInteraction(Interaction interaction, double membership) {
 	this.interaction = interaction;
+	this.membership = membership;
     }
 
     public Gene getGene1() {
@@ -22,7 +25,7 @@ public class ComplementaryInteraction implements Interaction {
     }
 
     public double getMembership() {
-	return 1 - interaction.getMembership();
+	return membership;
     }
 
     public Interactome getParent() {
@@ -30,14 +33,16 @@ public class ComplementaryInteraction implements Interaction {
     }
 
     public PrintStream show(PrintStream print) {
-	print.print("¬(");
+	print.print(membership);
+	print.print("/(");
 	interaction.show(print);
 	print.print(")");
 	return print;
     }
 
     public StringBuilder show(StringBuilder sb) {
-	sb.append("¬(");
+	sb.append(membership);
+	sb.append("/(");
 	interaction.show(sb);
 	sb.append(")");
 	return sb;

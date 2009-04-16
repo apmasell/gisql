@@ -30,6 +30,10 @@ public class DbGene implements Gene {
 	return name;
     }
 
+    public int getNumberOfOrthologies() {
+	return 1;
+    }
+
     public PrintStream show(PrintStream print) {
 	print.print(identifier);
 	print.print(" ");
@@ -48,5 +52,9 @@ public class DbGene implements Gene {
 
     public String toString() {
 	return show(new StringBuilder()).toString();
+    }
+
+    public int countOrthologs(Interactome right) {
+	return right.countOrthologs(this);
     }
 }

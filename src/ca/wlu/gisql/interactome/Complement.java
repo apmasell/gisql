@@ -6,21 +6,19 @@ import java.util.Stack;
 
 import ca.wlu.gisql.Environment;
 import ca.wlu.gisql.Parser;
-import ca.wlu.gisql.gene.ComplementaryGene;
+import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.gene.Gene;
-import ca.wlu.gisql.interaction.ComplementaryInteraction;
+import ca.wlu.gisql.gene.RecalculatedGene;
 import ca.wlu.gisql.interaction.Interaction;
-import ca.wlu.gisql.interaction.UniversalInteraction;
+import ca.wlu.gisql.interaction.RecalculatedInteraction;
 import ca.wlu.gisql.util.Parseable;
 
 public class Complement extends AbstractInteractome {
-
     public final static Parseable descriptor = new Parseable() {
-
 	public Interactome construct(Environment environment,
 		List<Object> params, Stack<String> error) {
 	    Interactome interactome = (Interactome) params.get(0);
-	    return new Complement(interactome);
+	    return new Complement(environment.getNorm(), interactome);
 	}
 
 	public int getNestingLevel() {
@@ -53,17 +51,23 @@ public class Complement extends AbstractInteractome {
 
     Interactome interactome;
 
-    public Complement(Interactome i) {
-	unknownGeneMembership = 1;
+    private TriangularNorm norm;
+
+    public Complement(TriangularNorm norm, Interactome i) {
 	this.interactome = i;
+	this.norm = norm;
+    }
+
+    public int countOrthologs(Gene gene) {
+	return interactome.countOrthologs(gene);
     }
 
     public Gene findOrtholog(Gene gene) {
 	return interactome.findOrtholog(gene);
     }
 
-    protected Interaction getEmptyInteraction(Gene gene1, Gene gene2) {
-	return new UniversalInteraction(this, gene1, gene2);
+    protected double membershipOfUnknown() {
+	return norm.v(0);
     }
 
     public int numGenomes() {
@@ -72,11 +76,12 @@ public class Complement extends AbstractInteractome {
 
     protected void prepareInteractions() {
 	for (Gene gene : interactome.genes()) {
-	    addGene(new ComplementaryGene(gene));
+	    addGene(new RecalculatedGene(gene, norm.v(gene.getMembership())));
 	}
 
 	for (Interaction interaction : interactome) {
-	    this.addInteraction(new ComplementaryInteraction(interaction));
+	    this.addInteraction(new RecalculatedInteraction(interaction, norm
+		    .v(interaction.getMembership())));
 	}
     }
 

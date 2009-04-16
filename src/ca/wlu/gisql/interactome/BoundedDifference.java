@@ -1,7 +1,6 @@
 package ca.wlu.gisql.interactome;
 
-import ca.wlu.gisql.gene.Gene;
-import ca.wlu.gisql.interaction.Interaction;
+import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.util.ParseableBinaryOperation;
 
 public class BoundedDifference extends ArithmeticInteractome {
@@ -9,30 +8,16 @@ public class BoundedDifference extends ArithmeticInteractome {
 	    BoundedDifference.class, 1, '⊝', new char[] { '~' },
 	    "Bounded Difference (0 ∨ (Ax - Bx))");
 
-    public BoundedDifference(Interactome left, Interactome right) {
-	super(left, right);
+    public BoundedDifference(TriangularNorm norm, Interactome left, Interactome right) {
+	super(norm, left, right);
     }
 
-    protected double calculateGeneMembership(Gene gene, Gene ortholog) {
-	return Math.max(0, gene.getMembership() - ortholog.getMembership());
-    }
-
-    protected double calculateMembership(Interaction interaction,
-	    Interaction orthoaction) {
-	return Math.max(0, interaction.getMembership()
-		- orthoaction.getMembership());
+    protected double calculateMembership(TriangularNorm norm, double left, double right) {
+	return Math.max(0, left - right);
     }
 
     public char getSymbol() {
 	return descriptor.getSymbol();
     }
 
-    protected Gene processLoneGene(Gene gene, boolean left) {
-	return (left ? gene : null);
-    }
-
-    protected Interaction processLoneInteraction(Interaction interaction,
-	    boolean left) {
-	return (left ? interaction : null);
-    }
 }

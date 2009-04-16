@@ -40,8 +40,8 @@ public class DbSpecies extends AbstractInteractome {
 	return getGene(geneid);
     }
 
-    protected Interaction getEmptyInteraction(Gene gene1, Gene gene2) {
-	return null;
+    protected double membershipOfUnknown() {
+	return 0;
     }
 
     public int numGenomes() {
@@ -90,5 +90,9 @@ public class DbSpecies extends AbstractInteractome {
 
     public StringBuilder show(StringBuilder sb) {
 	return sb.append(species);
+    }
+
+    public int countOrthologs(Gene gene) {
+	return (this.findOrtholog(gene) == null ? 0 : 1);
     }
 }

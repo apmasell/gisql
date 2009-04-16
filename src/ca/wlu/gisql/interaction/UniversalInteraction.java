@@ -11,13 +11,17 @@ public class UniversalInteraction implements Interaction {
 
     private Gene gene2;
 
+    private double membership;
+
     private Interactome parent;
 
-    public UniversalInteraction(Interactome parent, Gene gene1, Gene gene2) {
+    public UniversalInteraction(Interactome parent, Gene gene1, Gene gene2,
+	    double membership) {
 	super();
 	this.parent = parent;
 	this.gene1 = gene1;
 	this.gene2 = gene2;
+	this.membership = membership;
     }
 
     public Gene getGene1() {
@@ -29,7 +33,7 @@ public class UniversalInteraction implements Interaction {
     }
 
     public double getMembership() {
-	return 1;
+	return membership;
     }
 
     public Interactome getParent() {
@@ -37,7 +41,8 @@ public class UniversalInteraction implements Interaction {
     }
 
     public PrintStream show(PrintStream print) {
-	print.print("1/∃");
+	print.print(membership);
+	print.print("/∃");
 	gene1.show(print);
 	print.print(" ⇌ ");
 	gene2.show(print);
@@ -45,7 +50,8 @@ public class UniversalInteraction implements Interaction {
     }
 
     public StringBuilder show(StringBuilder sb) {
-	sb.append("1/∃ ");
+	sb.append(membership);
+	sb.append("/∃ ");
 	gene1.show(sb);
 	sb.append(" ⇌ ");
 	gene2.show(sb);

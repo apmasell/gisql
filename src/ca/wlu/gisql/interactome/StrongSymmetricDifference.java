@@ -1,7 +1,6 @@
 package ca.wlu.gisql.interactome;
 
-import ca.wlu.gisql.gene.Gene;
-import ca.wlu.gisql.interaction.Interaction;
+import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.util.ParseableBinaryOperation;
 
 public class StrongSymmetricDifference extends ArithmeticInteractome {
@@ -9,30 +8,15 @@ public class StrongSymmetricDifference extends ArithmeticInteractome {
 	    StrongSymmetricDifference.class, 4, '∇', new char[] { '%' },
 	    "Strong Symmetric Difference (|Ax - Bx|)");
 
-    public StrongSymmetricDifference(Interactome left, Interactome right) {
-	super(left, right);
+    public StrongSymmetricDifference(TriangularNorm norm, Interactome left, Interactome right) {
+	super(norm, left, right);
     }
 
-    protected double calculateGeneMembership(Gene gene, Gene ortholog) {
-	return Math.abs(gene.getMembership() - ortholog.getMembership());
-    }
-
-    protected double calculateMembership(Interaction interaction,
-	    Interaction orthoaction) {
-	return Math.abs(interaction.getMembership()
-		- orthoaction.getMembership());
+    protected double calculateMembership(TriangularNorm norm, double left, double right) {
+	return Math.abs(left - right);
     }
 
     public char getSymbol() {
 	return descriptor.getSymbol();
-    }
-
-    protected Gene processLoneGene(Gene gene, boolean left) {
-	return gene;
-    }
-
-    protected Interaction processLoneInteraction(Interaction interaction,
-	    boolean left) {
-	return interaction;
     }
 }
