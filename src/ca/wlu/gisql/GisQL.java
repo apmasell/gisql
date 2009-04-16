@@ -19,85 +19,85 @@ import ca.wlu.gisql.interactome.ToFile.FileFormat;
 
 public class GisQL {
 
-    static Environment environment;
+	static Environment environment;
 
-    static final Logger log = Logger.getLogger(GisQL.class);
+	static final Logger log = Logger.getLogger(GisQL.class);
 
-    public static void main(String[] args) throws Exception {
-	ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
-	Logger.getRootLogger().addAppender(appender);
+	public static void main(String[] args) throws Exception {
+		ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
+		Logger.getRootLogger().addAppender(appender);
 
-	DatabaseManager dm;
-	try {
-	    dm = new DatabaseManager();
-	} catch (SQLException e) {
-	    log.error("Failed to connect to database.", e);
-	    return;
-	}
-
-	environment = new Environment(dm);
-
-	CommandLine commandline = processCommandLine(args);
-
-	if (commandline.hasOption('o')) {
-	    environment.setOutput(new PrintStream(commandline
-		    .getOptionValue('o')));
-	}
-	for (String argument : commandline.getArgs()) {
-	    environment.runExpression(argument);
-	}
-
-	if (commandline.hasOption('c')) {
-	    environment.runFile(new File(commandline.getOptionValue('c')));
-	}
-
-	if (commandline.hasOption('o')) {
-	    environment.getOutput().close();
-	    environment.setOutput(System.out);
-	}
-
-	if (commandline.hasOption('g') || commandline.getArgs().length == 0) {
-	    EventQueue.invokeLater(new Runnable() {
-		public void run() {
-		    new MainFrame(GisQL.environment).setVisible(true);
+		DatabaseManager dm;
+		try {
+			dm = new DatabaseManager();
+		} catch (SQLException e) {
+			log.error("Failed to connect to database.", e);
+			return;
 		}
-	    });
-	}
-    }
 
-    private static CommandLine processCommandLine(String[] args) {
-	Options options = new Options();
+		environment = new Environment(dm);
 
-	Option file = new Option("c", "command", true, "Run queries in file.");
-	file.setArgName("file");
+		CommandLine commandline = processCommandLine(args);
 
-	Option output = new Option("o", "output", true,
-		"Output results to file.");
-	output.setArgName("file");
-
-	Option format = new Option("F", "format", true, "Output result format.");
-	format.setArgName("layout");
-
-	Option gui = new Option("g", "gui", false, "Use graphical interface.");
-
-	options.addOption(file);
-	options.addOption(output);
-	options.addOption(format);
-	options.addOption(gui);
-	try {
-	    CommandLine command = new GnuParser().parse(options, args);
-	    if (command.hasOption('F')) {
-		FileFormat fileformat = FileFormat.valueOf(command
-			.getOptionValue('F'));
-		if (fileformat == null) {
-		    fileformat = FileFormat.interactome;
+		if (commandline.hasOption('o')) {
+			environment.setOutput(new PrintStream(commandline
+					.getOptionValue('o')));
 		}
-		GisQL.environment.setFormat(fileformat);
-	    }
-	    return command;
-	} catch (ParseException e) {
-	    log.error("Parsing failed.", e);
+		for (String argument : commandline.getArgs()) {
+			environment.runExpression(argument);
+		}
+
+		if (commandline.hasOption('c')) {
+			environment.runFile(new File(commandline.getOptionValue('c')));
+		}
+
+		if (commandline.hasOption('o')) {
+			environment.getOutput().close();
+			environment.setOutput(System.out);
+		}
+
+		if (commandline.hasOption('g') || commandline.getArgs().length == 0) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					new MainFrame(GisQL.environment).setVisible(true);
+				}
+			});
+		}
 	}
-	return null;
-    }
+
+	private static CommandLine processCommandLine(String[] args) {
+		Options options = new Options();
+
+		Option file = new Option("c", "command", true, "Run queries in file.");
+		file.setArgName("file");
+
+		Option output = new Option("o", "output", true,
+				"Output results to file.");
+		output.setArgName("file");
+
+		Option format = new Option("F", "format", true, "Output result format.");
+		format.setArgName("layout");
+
+		Option gui = new Option("g", "gui", false, "Use graphical interface.");
+
+		options.addOption(file);
+		options.addOption(output);
+		options.addOption(format);
+		options.addOption(gui);
+		try {
+			CommandLine command = new GnuParser().parse(options, args);
+			if (command.hasOption('F')) {
+				FileFormat fileformat = FileFormat.valueOf(command
+						.getOptionValue('F'));
+				if (fileformat == null) {
+					fileformat = FileFormat.interactome;
+				}
+				GisQL.environment.setFormat(fileformat);
+			}
+			return command;
+		} catch (ParseException e) {
+			log.error("Parsing failed.", e);
+		}
+		return null;
+	}
 }

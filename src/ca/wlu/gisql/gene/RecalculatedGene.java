@@ -6,51 +6,52 @@ import ca.wlu.gisql.interactome.Interactome;
 
 public class RecalculatedGene implements Gene {
 
-    private Gene gene;
-    private double membership;
+	private Gene gene;
 
-    public RecalculatedGene(Gene gene, double membership) {
-	this.gene = gene;
-	this.membership = membership;
-    }
+	private double membership;
 
-    public int countOrthologs(Interactome right) {
-	return gene.countOrthologs(right);
-    }
+	public RecalculatedGene(Gene gene, double membership) {
+		this.gene = gene;
+		this.membership = membership;
+	}
 
-    public long getId() {
-	return gene.getId();
-    }
+	public int countOrthologs(Interactome right) {
+		return gene.countOrthologs(right);
+	}
 
-    public double getMembership() {
-	return membership;
-    }
+	public long getId() {
+		return gene.getId();
+	}
 
-    public String getName() {
-	return gene.getName();
-    }
+	public double getMembership() {
+		return membership;
+	}
 
-    public int getNumberOfOrthologies() {
-	return gene.getNumberOfOrthologies();
-    }
+	public String getName() {
+		return gene.getName();
+	}
 
-    public PrintStream show(PrintStream print) {
-	print.print(membership);
-	print.print("/(");
-	gene.show(print);
-	print.print(")");
-	return print;
-    }
+	public int getNumberOfOrthologies() {
+		return gene.getNumberOfOrthologies();
+	}
 
-    public StringBuilder show(StringBuilder sb) {
-	sb.append(membership);
-	sb.append("/(");
-	gene.show(sb);
-	sb.append(")");
-	return sb;
-    }
+	public PrintStream show(PrintStream print) {
+		print.print(membership);
+		print.print("/(");
+		gene.show(print);
+		print.print(")");
+		return print;
+	}
 
-    public String toString() {
-	return show(new StringBuilder()).toString();
-    }
+	public StringBuilder show(StringBuilder sb) {
+		sb.append(membership);
+		sb.append("/(");
+		gene.show(sb);
+		sb.append(")");
+		return sb;
+	}
+
+	public String toString() {
+		return show(new StringBuilder()).toString();
+	}
 }

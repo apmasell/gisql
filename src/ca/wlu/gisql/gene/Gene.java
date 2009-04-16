@@ -5,14 +5,14 @@ import ca.wlu.gisql.util.Show;
 
 public interface Gene extends Show {
 
-    public long getId();
+	public long getId();
 
-    public double getMembership();
-    
-    public String getName();
+	public double getMembership();
 
-    public int getNumberOfOrthologies();
+	public String getName();
 
-    public int countOrthologs(Interactome right);
+	public int getNumberOfOrthologies();
+
+	public int countOrthologs(Interactome right);
 
 }
