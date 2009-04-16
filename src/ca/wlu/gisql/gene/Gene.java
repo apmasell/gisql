@@ -1,18 +1,22 @@
 package ca.wlu.gisql.gene;
 
+import java.util.List;
+
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Show;
 
 public interface Gene extends Show {
 
-    public long getId();
+	public int countOrthologs(Interactome right);
 
-    public double getMembership();
-    
-    public String getName();
+	public long getId();
 
-    public int getNumberOfOrthologies();
+	public double getMembership();
 
-    public int countOrthologs(Interactome right);
+	public String getName();
+
+	public int getNumberOfOrthologies();
+
+	public void getSupplementaryIds(List<Long> ids);
 
 }

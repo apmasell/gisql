@@ -13,114 +13,114 @@ import ca.wlu.gisql.interactome.ArithmeticInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class ParseableBinaryOperation implements Parseable {
-    static final Logger log = Logger.getLogger(ParseableBinaryOperation.class);
+	static final Logger log = Logger.getLogger(ParseableBinaryOperation.class);
 
-    private char[] alternateoperators;
+	private char[] alternateoperators;
 
-    private Class<? extends ArithmeticInteractome> implementation;
+	private Class<? extends ArithmeticInteractome> implementation;
 
-    private String name;
+	private String name;
 
-    private int nestinglevel;
+	private int nestinglevel;
 
-    private char symbol;
+	private char symbol;
 
-    public ParseableBinaryOperation(
-	    Class<? extends ArithmeticInteractome> implementation,
-	    int nestinglevel, char symbol, char[] alternateoperators,
-	    String name) {
-	super();
-	this.implementation = implementation;
-	this.nestinglevel = nestinglevel;
-	this.symbol = symbol;
-	this.alternateoperators = alternateoperators;
-	this.name = name;
-    }
-
-    public Interactome construct(Environment environment, Interactome left,
-	    Interactome right, Stack<String> error) {
-	try {
-	    return implementation.getConstructor(TriangularNorm.class,
-		    Interactome.class, Interactome.class).newInstance(environment.getNorm(), left,
-		    right);
-	} catch (Exception e) {
-	    error.push("Unexpected instantiation error.");
-	    log.error("Instatiation error during parsing.", e);
+	public ParseableBinaryOperation(
+			Class<? extends ArithmeticInteractome> implementation,
+			int nestinglevel, char symbol, char[] alternateoperators,
+			String name) {
+		super();
+		this.implementation = implementation;
+		this.nestinglevel = nestinglevel;
+		this.symbol = symbol;
+		this.alternateoperators = alternateoperators;
+		this.name = name;
 	}
-	return null;
-    }
 
-    public Interactome construct(Environment environment, List<Object> params,
-	    Stack<String> error) {
-	Interactome left = (Interactome) params.get(0);
-	Interactome right = (Interactome) params.get(1);
-	return construct(environment, left, right, error);
-    }
+	public Interactome construct(Environment environment, Interactome left,
+			Interactome right, Stack<String> error) {
+		try {
+			return implementation.getConstructor(TriangularNorm.class,
+					Interactome.class, Interactome.class).newInstance(
+					environment.getNorm(), left, right);
+		} catch (Exception e) {
+			error.push("Unexpected instantiation error.");
+			log.error("Instatiation error during parsing.", e);
+		}
+		return null;
+	}
 
-    public String getName() {
-	return name;
-    }
+	public Interactome construct(Environment environment, List<Object> params,
+			Stack<String> error) {
+		Interactome left = (Interactome) params.get(0);
+		Interactome right = (Interactome) params.get(1);
+		return construct(environment, left, right, error);
+	}
 
-    public char[] getAlternateOperators() {
-	return alternateoperators;
-    }
+	public char[] getAlternateOperators() {
+		return alternateoperators;
+	}
 
-    public int getNestingLevel() {
-	return nestinglevel;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public char getSymbol() {
-	return symbol;
-    }
+	public int getNestingLevel() {
+		return nestinglevel;
+	}
 
-    public boolean isMatchingOperator(char c) {
-	if (symbol == c)
-	    return true;
-	if (alternateoperators == null)
-	    return false;
-	for (char operator : alternateoperators)
-	    if (operator == c)
-		return true;
+	public char getSymbol() {
+		return symbol;
+	}
 
-	return false;
-    }
+	public boolean isMatchingOperator(char c) {
+		if (symbol == c)
+			return true;
+		if (alternateoperators == null)
+			return false;
+		for (char operator : alternateoperators)
+			if (operator == c)
+				return true;
 
-    public boolean isPrefixed() {
-	return false;
-    }
+		return false;
+	}
 
-    public PrintStream show(PrintStream print) {
-	print.print(name);
-	print.print(": A ");
-	print.print(symbol);
-	print.print(" B");
-	if (alternateoperators != null) {
-	    for (char c : alternateoperators) {
-		print.print(", A ");
-		print.print(c);
+	public boolean isPrefixed() {
+		return false;
+	}
+
+	public PrintStream show(PrintStream print) {
+		print.print(name);
+		print.print(": A ");
+		print.print(symbol);
 		print.print(" B");
-	    }
+		if (alternateoperators != null) {
+			for (char c : alternateoperators) {
+				print.print(", A ");
+				print.print(c);
+				print.print(" B");
+			}
+		}
+		return print;
 	}
-	return print;
-    }
 
-    public StringBuilder show(StringBuilder sb) {
-	sb.append(name);
-	sb.append(": A ");
-	sb.append(symbol);
-	sb.append(" B");
-	if (alternateoperators != null) {
-	    for (char c : alternateoperators) {
-		sb.append(", A ");
-		sb.append(c);
+	public StringBuilder show(StringBuilder sb) {
+		sb.append(name);
+		sb.append(": A ");
+		sb.append(symbol);
 		sb.append(" B");
-	    }
+		if (alternateoperators != null) {
+			for (char c : alternateoperators) {
+				sb.append(", A ");
+				sb.append(c);
+				sb.append(" B");
+			}
+		}
+		return sb;
 	}
-	return sb;
-    }
 
-    public Parser.NextTask[] tasks(Parser parser) {
-	return new Parser.NextTask[] { parser.new SubExpression() };
-    }
+	public Parser.NextTask[] tasks(Parser parser) {
+		return new Parser.NextTask[] { parser.new SubExpression() };
+	}
 
 }

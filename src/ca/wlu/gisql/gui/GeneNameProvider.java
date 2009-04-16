@@ -6,8 +6,8 @@ import ca.wlu.gisql.gene.Gene;
 
 public class GeneNameProvider implements VertexNameProvider<Gene> {
 
-    public String getVertexName(Gene gene) {
-	return gene.show(new StringBuilder()).toString();
-    }
+	public String getVertexName(Gene gene) {
+		return gene.show(new StringBuilder()).toString();
+	}
 
 }

@@ -9,14 +9,14 @@ import ca.wlu.gisql.interactome.Interactome;
 
 public interface Parseable extends Show {
 
-    public abstract Interactome construct(Environment environment,
-	    List<Object> params, Stack<String> error);
+	public abstract Interactome construct(Environment environment,
+			List<Object> params, Stack<String> error);
 
-    public abstract int getNestingLevel();
+	public abstract int getNestingLevel();
 
-    public abstract boolean isMatchingOperator(char c);
+	public abstract boolean isMatchingOperator(char c);
 
-    public abstract boolean isPrefixed();
+	public abstract boolean isPrefixed();
 
-    public abstract Parser.NextTask[] tasks(Parser parser);
+	public abstract Parser.NextTask[] tasks(Parser parser);
 }
