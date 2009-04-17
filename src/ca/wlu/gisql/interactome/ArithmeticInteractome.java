@@ -114,7 +114,7 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 		}
 		log.info("Computing right genes");
 		for (Gene gene : right.genes()) {
-			if (left.findOrtholog(gene) == null) {
+			if (this.findOrtholog(gene) == null) {
 				addGene(new RecalculatedGene(gene,
 						calculateAdjustedGeneMembership(0, null, gene)));
 			}
@@ -126,10 +126,12 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 			Interaction interaction = itLeftInteraction.next();
 
 			Interaction orthoaction = right.getInteraction(right
-					.findRootOrtholog(interaction.getGene1()), right
-					.findRootOrtholog(interaction.getGene2()));
+					.findOrtholog(interaction.getGene1()), right
+					.findOrtholog(interaction.getGene2()));
 			if (orthoaction == null) {
-				addInteraction(new RecalculatedInteraction(interaction,
+				addInteraction(new TranslatedInteraction(this, interaction,
+						this.findOrtholog(interaction.getGene1()), this
+								.findOrtholog(interaction.getGene2()),
 						calculateMembership(norm, interaction.getMembership(),
 								0)));
 			} else {
@@ -144,18 +146,15 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 		log.info("Computing right interactions");
 		while (itRightInteraction.hasNext()) {
 			Interaction interaction = itRightInteraction.next();
-			Gene ortholog1 = right.findRootOrtholog(interaction.getGene1());
-			Gene ortholog2 = right.findRootOrtholog(interaction.getGene2());
-			if (ortholog1 != null) {
-				ortholog1 = interaction.getGene1();
-			}
-			if (ortholog2 != null) {
-				ortholog2 = interaction.getGene2();
-			}
-			if (left.getInteraction(ortholog1, ortholog2) == null) {
+			Gene ortholog1 = left.findOrtholog(interaction.getGene1());
+			Gene ortholog2 = left.findOrtholog(interaction.getGene2());
+			if (ortholog1 == null || ortholog2 == null
+					|| left.getInteraction(ortholog1, ortholog2) == null) {
 				addInteraction(new TranslatedInteraction(left, interaction,
-						ortholog1, ortholog2, calculateMembership(norm, 0,
-								interaction.getMembership())));
+						this.findOrtholog(interaction.getGene1()), this
+								.findOrtholog(interaction.getGene2()),
+						calculateMembership(norm, 0, interaction
+								.getMembership())));
 			}
 		}
 		log.info("Set operation complete");

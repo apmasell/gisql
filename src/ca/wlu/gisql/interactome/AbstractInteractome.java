@@ -57,8 +57,6 @@ public abstract class AbstractInteractome implements Interactome {
 			interactions = new ListOrderedSet<Interaction>();
 		}
 		interactions.add(i);
-		addGene(i.getGene1());
-		addGene(i.getGene2());
 		interactionLUT.put(i.getGene1(), i.getGene2(), i);
 	}
 

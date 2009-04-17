@@ -6,6 +6,10 @@ import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class CompositeInteraction implements Interaction {
+	private Gene gene1;
+
+	private Gene gene2;
+
 	private Interaction interaction;
 
 	double membership;
@@ -20,14 +24,16 @@ public class CompositeInteraction implements Interaction {
 		this.interaction = interaction;
 		this.orthoaction = orthoaction;
 		this.membership = membership;
+		this.gene1 = parent.findOrtholog(interaction.getGene1());
+		this.gene2 = parent.findOrtholog(interaction.getGene2());
 	}
 
 	public Gene getGene1() {
-		return interaction.getGene1();
+		return gene1;
 	}
 
 	public Gene getGene2() {
-		return interaction.getGene2();
+		return gene2;
 	}
 
 	public double getMembership() {

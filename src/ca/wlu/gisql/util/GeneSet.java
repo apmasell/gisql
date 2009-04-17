@@ -27,9 +27,12 @@ public class GeneSet implements Iterable<Gene>, Set<Gene>, TableModel {
 
 	private HashMap<Long, Gene> genes = new HashMap<Long, Gene>();
 
+	private HashMap<Gene, Boolean> geneSet = new HashMap<Gene, Boolean>();
+
 	private List<TableModelListener> listeners = new ArrayList<TableModelListener>();
 
 	public boolean add(Gene gene) {
+		geneSet.put(gene, true);
 		genes.put(gene.getId(), gene);
 		List<Long> supplementaryids = new LinkedList<Long>();
 		gene.getSupplementaryIds(supplementaryids);
@@ -55,13 +58,12 @@ public class GeneSet implements Iterable<Gene>, Set<Gene>, TableModel {
 	}
 
 	public boolean contains(Gene gene) {
-		return genes.containsValue(gene);
+		return geneSet.containsKey(gene);
 	}
 
 	public boolean contains(Object needle) {
 		if (needle instanceof Gene) {
 			return contains((Gene) needle);
-
 		} else {
 			return false;
 		}
@@ -107,12 +109,12 @@ public class GeneSet implements Iterable<Gene>, Set<Gene>, TableModel {
 	}
 
 	public int getRowCount() {
-		return genes.size();
+		return geneSet.size();
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Gene gene = null;
-		Iterator<Gene> it = genes.values().iterator();
+		Iterator<Gene> it = geneSet.keySet().iterator();
 		while (it.hasNext() && rowIndex >= 0) {
 			gene = it.next();
 			rowIndex--;
@@ -139,7 +141,7 @@ public class GeneSet implements Iterable<Gene>, Set<Gene>, TableModel {
 	}
 
 	public Iterator<Gene> iterator() {
-		return genes.values().iterator();
+		return geneSet.keySet().iterator();
 	}
 
 	public void notifyListeners() {
@@ -174,10 +176,10 @@ public class GeneSet implements Iterable<Gene>, Set<Gene>, TableModel {
 	}
 
 	public Object[] toArray() {
-		return genes.values().toArray();
+		return geneSet.keySet().toArray();
 	}
 
 	public <T> T[] toArray(T[] array) {
-		return genes.values().toArray(array);
+		return geneSet.keySet().toArray(array);
 	}
 }
