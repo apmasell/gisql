@@ -44,7 +44,9 @@ public class GisQL {
 					.getOptionValue('o')));
 		}
 		for (String argument : commandline.getArgs()) {
-			environment.runExpression(argument);
+			boolean success = environment.runExpression(argument);
+			if (!success)
+				return;
 		}
 
 		if (commandline.hasOption('c')) {
