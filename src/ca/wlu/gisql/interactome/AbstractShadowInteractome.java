@@ -74,6 +74,7 @@ public abstract class AbstractShadowInteractome implements Interactome {
 	}
 
 	public final GeneSet genes() {
+		this.process();
 		return i.genes();
 	}
 

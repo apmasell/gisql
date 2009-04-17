@@ -97,6 +97,7 @@ public abstract class AbstractInteractome implements Interactome {
 	}
 
 	public final GeneSet genes() {
+		process();
 		return genes;
 	}
 
