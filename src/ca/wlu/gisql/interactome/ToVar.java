@@ -45,7 +45,8 @@ public class ToVar extends AbstractShadowInteractome {
 		}
 
 		public Parser.NextTask[] tasks(Parser parser) {
-			return new Parser.NextTask[] { parser.new Name() };
+			return new Parser.NextTask[] { parser.new Literal('$'),
+					parser.new Name() };
 		}
 
 	};
