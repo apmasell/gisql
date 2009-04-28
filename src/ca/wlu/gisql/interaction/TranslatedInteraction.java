@@ -23,6 +23,7 @@ public class TranslatedInteraction implements Interaction {
 		this.source = source;
 		this.ortholog1 = ortholog1;
 		this.ortholog2 = ortholog2;
+		this.membership = membership;
 	}
 
 	public Gene getGene1() {
