@@ -11,7 +11,6 @@ import ca.wlu.gisql.gene.Gene;
 import ca.wlu.gisql.gene.RecalculatedGene;
 import ca.wlu.gisql.interaction.CompositeInteraction;
 import ca.wlu.gisql.interaction.Interaction;
-import ca.wlu.gisql.interaction.RecalculatedInteraction;
 import ca.wlu.gisql.interaction.TranslatedInteraction;
 
 public abstract class ArithmeticInteractome extends AbstractInteractome {
@@ -98,6 +97,8 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 	protected final void prepareInteractions() {
 		Iterator<Interaction> itLeftInteraction = left.iterator();
 		Iterator<Interaction> itRightInteraction = right.iterator();
+
+		System.gc();
 
 		log.info("Computing left genes");
 		for (Gene gene : left.genes()) {
