@@ -12,7 +12,7 @@ public class CompositeInteraction implements Interaction {
 
 	private Interaction interaction;
 
-	double membership;
+	private double membership;
 
 	private Interaction orthoaction;
 

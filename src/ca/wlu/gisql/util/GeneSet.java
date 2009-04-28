@@ -17,13 +17,13 @@ import org.apache.log4j.Logger;
 import ca.wlu.gisql.gene.Gene;
 
 public class GeneSet implements Iterable<Gene>, Set<Gene>, TableModel {
-	static final Class[] columnClass = new Class[] { Long.class, Double.class,
+	private static final Class<?>[] columnClass = new Class[] { Long.class, Double.class,
 			String.class };
 
-	static final String[] columnName = new String[] { "Identifier",
+	private static final String[] columnName = new String[] { "Identifier",
 			"Membership", "Description" };
 
-	static final Logger log = Logger.getLogger(GeneSet.class);
+	private static final Logger log = Logger.getLogger(GeneSet.class);
 
 	private HashMap<Long, Gene> genes = new HashMap<Long, Gene>();
 

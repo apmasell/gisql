@@ -58,9 +58,9 @@ public class Parser {
 	}
 
 	public class ListOf extends NextTask {
-		NextTask child;
+		private NextTask child;
 
-		char delimiter;
+		private char delimiter;
 
 		public ListOf(NextTask child, char delimiter) {
 			super();
@@ -95,7 +95,7 @@ public class Parser {
 	}
 
 	public class Literal extends NextTask {
-		char c;
+		private char c;
 
 		public Literal(char c) {
 			super();
@@ -115,7 +115,7 @@ public class Parser {
 	}
 
 	public class Maybe extends NextTask {
-		NextTask child;
+		private NextTask child;
 
 		public Maybe(NextTask child) {
 			super();
@@ -184,7 +184,7 @@ public class Parser {
 	public class Word extends NextTask {
 		private String word;
 
-		public Word(String word) {
+		protected Word(String word) {
 			this.word = word;
 		}
 
@@ -203,7 +203,7 @@ public class Parser {
 
 	private static String help;
 
-	static final Logger log = Logger.getLogger(Parser.class);
+	private static final Logger log = Logger.getLogger(Parser.class);
 
 	private static int maxdepth = 0;
 

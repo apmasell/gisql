@@ -12,7 +12,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 public class OrthologyMap {
-	static final Logger log = Logger.getLogger(OrthologyMap.class);
+	private static final Logger log = Logger.getLogger(OrthologyMap.class);
 
 	private Connection conn;
 

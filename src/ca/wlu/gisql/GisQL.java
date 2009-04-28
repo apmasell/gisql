@@ -19,9 +19,9 @@ import ca.wlu.gisql.interactome.ToFile.FileFormat;
 
 public class GisQL {
 
-	static Environment environment;
+	private static Environment environment;
 
-	static final Logger log = Logger.getLogger(GisQL.class);
+	private static final Logger log = Logger.getLogger(GisQL.class);
 
 	public static void main(String[] args) throws Exception {
 		ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
