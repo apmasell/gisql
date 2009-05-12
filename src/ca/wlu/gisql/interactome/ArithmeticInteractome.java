@@ -16,6 +16,8 @@ import ca.wlu.gisql.interaction.TranslatedInteraction;
 public abstract class ArithmeticInteractome extends AbstractInteractome {
 	static final Logger log = Logger.getLogger(ArithmeticInteractome.class);
 
+	private static final boolean INTERACTOME_OF_THE_CORE_GENOME = true;
+
 	protected Interactome left, right;
 
 	private TriangularNorm norm;
@@ -130,11 +132,25 @@ public abstract class ArithmeticInteractome extends AbstractInteractome {
 					.findOrtholog(interaction.getGene1()), right
 					.findOrtholog(interaction.getGene2()));
 			if (orthoaction == null) {
+				double membership;
+				if (INTERACTOME_OF_THE_CORE_GENOME
+						&& right.findOrtholog(interaction.getGene1()) != null
+						&& right.findOrtholog(interaction.getGene2()) != null) {
+					/*
+					 * THIS IS FUCKED UP. WE ARE ASSUMING THAT IF AN INTERACTION
+					 * DOESN'T EXIST IN THE OTHER INTERACTOME, BUT THE ORTHOLOGS
+					 * DO, THEN IT SHOULD EXIST.
+					 */
+					membership = calculateMembership(norm, interaction
+							.getMembership(), interaction.getMembership());
+				} else {
+					membership = calculateMembership(norm, interaction
+							.getMembership(), 0);
+				}
 				addInteraction(new TranslatedInteraction(this, interaction,
 						this.findOrtholog(interaction.getGene1()), this
 								.findOrtholog(interaction.getGene2()),
-						calculateMembership(norm, interaction.getMembership(),
-								0)));
+						membership));
 			} else {
 				double membership = calculateMembership(norm, interaction
 						.getMembership(), orthoaction.getMembership());
