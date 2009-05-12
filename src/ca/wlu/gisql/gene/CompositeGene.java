@@ -1,6 +1,7 @@
 package ca.wlu.gisql.gene;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.wlu.gisql.interactome.Interactome;
@@ -14,6 +15,8 @@ public class CompositeGene implements Gene {
 	private Gene ortholog;
 
 	private int orthologies;
+	
+private	List<Long> supplementaryIds = new ArrayList<Long>();
 
 	public CompositeGene(Gene gene, Gene ortholog, double membership,
 			int newOrthologies) {
@@ -22,6 +25,9 @@ public class CompositeGene implements Gene {
 		this.membership = membership;
 		this.orthologies = newOrthologies + gene.getNumberOfOrthologies()
 				+ ortholog.getNumberOfOrthologies();
+		gene.getSupplementaryIds(supplementaryIds);
+		ortholog.getSupplementaryIds(supplementaryIds);
+		
 	}
 
 	public int countOrthologs(Interactome right) {
@@ -29,11 +35,10 @@ public class CompositeGene implements Gene {
 	}
 
 	public long getId() {
-		return gene.getId();
+		return supplementaryIds.get(0);
 	}
 
 	public double getMembership() {
-
 		return membership;
 	}
 
@@ -51,8 +56,7 @@ public class CompositeGene implements Gene {
 	}
 
 	public void getSupplementaryIds(List<Long> ids) {
-		gene.getSupplementaryIds(ids);
-		ortholog.getSupplementaryIds(ids);
+		ids.addAll(supplementaryIds);
 	}
 
 	public PrintStream show(PrintStream print) {
