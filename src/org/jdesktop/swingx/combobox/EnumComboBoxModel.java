@@ -38,8 +38,8 @@ import javax.swing.ComboBoxModel;
  * 
  * <p>
  * The simplest usage is to wrap an <code>enum</code> inside the
- * <code>EnumComboBoxModel</code> and then set it as the model on the combo box.
- * The combo box will then appear on screen with each value in the
+ * <code>EnumComboBoxModel</code> and then set it as the model on the combo
+ * box. The combo box will then appear on screen with each value in the
  * <code>enum</code> as a value in the combobox.
  * </p>
  * <p>
@@ -59,9 +59,9 @@ import javax.swing.ComboBoxModel;
  * <p>
  * By using generics and co-variant types you can make accessing elements from
  * the model be completely typesafe. ex:
- *</p>
+ * </p>
  * 
- *<pre>
+ * <pre>
  * &lt;code&gt;
  *  EnumComboBoxModel&lt;MyEnum&gt; enumModel = new EnumComboBoxModel&lt;MyEnum1&gt;(MyEnum1.class);
  *  MyEnum first = enumModel.getElement(0);
@@ -98,6 +98,7 @@ import javax.swing.ComboBoxModel;
 public class EnumComboBoxModel<E extends Enum<E>> extends AbstractListModel
 		implements ComboBoxModel {
 	private List<E> list;
+
 	private E selected = null;
 
 	public EnumComboBoxModel(Class<E> en) {

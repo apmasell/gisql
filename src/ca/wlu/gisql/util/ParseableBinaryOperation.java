@@ -6,10 +6,10 @@ import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.Environment;
-import ca.wlu.gisql.Parser;
+import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.environment.Parser;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.interactome.ArithmeticInteractome;
+import ca.wlu.gisql.interactome.BinaryArithmeticOperation;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class ParseableBinaryOperation implements Parseable {
@@ -17,7 +17,7 @@ public class ParseableBinaryOperation implements Parseable {
 
 	private char[] alternateoperators;
 
-	private Class<? extends ArithmeticInteractome> implementation;
+	private Class<? extends BinaryArithmeticOperation> implementation;
 
 	private String name;
 
@@ -26,7 +26,7 @@ public class ParseableBinaryOperation implements Parseable {
 	private char symbol;
 
 	public ParseableBinaryOperation(
-			Class<? extends ArithmeticInteractome> implementation,
+			Class<? extends BinaryArithmeticOperation> implementation,
 			int nestinglevel, char symbol, char[] alternateoperators,
 			String name) {
 		super();
@@ -42,7 +42,7 @@ public class ParseableBinaryOperation implements Parseable {
 		try {
 			return implementation.getConstructor(TriangularNorm.class,
 					Interactome.class, Interactome.class).newInstance(
-					environment.getNorm(), left, right);
+					environment.getTriangularNorm(), left, right);
 		} catch (Exception e) {
 			error.push("Unexpected instantiation error.");
 			log.error("Instatiation error during parsing.", e);

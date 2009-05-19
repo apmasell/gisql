@@ -1,13 +1,10 @@
 package ca.wlu.gisql.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -27,7 +24,6 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
-import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 import javax.swing.WindowConstants;
 import javax.swing.JToolBar.Separator;
@@ -37,87 +33,19 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreePath;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.Environment;
-import ca.wlu.gisql.Parser;
+import ca.wlu.gisql.environment.EnvironmentUtils;
+import ca.wlu.gisql.environment.Parser;
+import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.gui.output.EnvironmentTreeView;
+import ca.wlu.gisql.gui.output.InteractomeTreeCellRender;
+import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.ToFile;
-import ca.wlu.gisql.interactome.ToFile.FileFormat;
 
 public class MainFrame extends JFrame implements ActionListener, KeyListener,
-		TableModelListener, TreeCellRenderer, TreeSelectionListener {
-
-	class FileWriteTask extends SwingWorker<Boolean, Boolean> {
-		private File file;
-
-		private FileFormat format;
-
-		private Interactome interactome;
-
-		private double lowerbound;
-
-		private JFrame parent;
-
-		private double upperbound;
-
-		FileWriteTask(JFrame parent, Interactome interactome,
-				FileFormat format, File file, double lowerbound,
-				double upperbound) {
-			this.parent = parent;
-			this.interactome = interactome;
-			this.format = format;
-			this.file = file;
-			this.lowerbound = lowerbound;
-			this.upperbound = upperbound;
-		}
-
-		public Boolean doInBackground() {
-			return ToFile.write(interactome, format, file, lowerbound,
-					upperbound);
-		}
-
-		public void done() {
-			boolean success = false;
-			try {
-				success = get();
-			} catch (InterruptedException e) {
-				log.error("Error saving file.", e);
-			} catch (ExecutionException e) {
-				log.error("Error saving file.", e);
-			}
-			if (!success)
-				JOptionPane.showMessageDialog(parent, "Error writing to file.",
-						"gisQL", JOptionPane.WARNING_MESSAGE);
-
-			progress.stop();
-		}
-	}
-
-	class InteractomeTask extends SwingWorker<Interactome, Interactome> {
-
-		private Interactome i;
-
-		InteractomeTask(Interactome i) {
-			this.i = i;
-		}
-
-		public Interactome doInBackground() {
-			i.process();
-			return i;
-		}
-
-		public void done() {
-			setInteractome(i);
-			command.setText("");
-			progress.stop();
-			task = null;
-		}
-	}
+		TableModelListener, TreeSelectionListener {
 
 	static final TableModel emptyModel = new DefaultTableModel();
 
@@ -125,9 +53,11 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
 	private static final long serialVersionUID = -1767901719339978452L;
 
-	private JTextField command = new JTextField();
+	JTextField command = new JTextField();
 
-	private Environment env;
+	private UserEnvironment env;
+
+	private EnvironmentTreeView environmentTree;
 
 	private JTable genes = new JTable();
 
@@ -164,7 +94,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
 	private JMenuItem menuSave = new JMenuItem("Save Data As...");
 
-	private BusyDialog progress = new BusyDialog(this);
+	BusyDialog progress = new BusyDialog(this);
 
 	private JSeparator quitseparator = new JSeparator();
 
@@ -178,21 +108,20 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 
 	private Separator statusseparator = new Separator();
 
-	private InteractomeTask task = null;
+	InteractomeTask task = null;
 
 	private JToolBar toolbar = new JToolBar();
 
 	private Separator toolbarSeperator = new Separator();
 
-	private DefaultTreeCellRenderer treerenderer = new DefaultTreeCellRenderer();
-
 	private JTree variablelist = new JTree();
 
 	private JScrollPane variablelistPane = new JScrollPane(variablelist);
 
-	public MainFrame(Environment env) {
+	public MainFrame(UserEnvironment environment) {
 		super("gisQL");
-		this.env = env;
+		this.env = environment;
+		this.environmentTree = new EnvironmentTreeView(environment);
 
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		getContentPane().setLayout(new BorderLayout());
@@ -229,10 +158,11 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 		statusbar.add(status);
 		getContentPane().add(statusbar, BorderLayout.SOUTH);
 
-		variablelist.setModel(env);
+		variablelist.setModel(environmentTree);
 		variablelist.addTreeSelectionListener(this);
 		ToolTipManager.sharedInstance().registerComponent(variablelist);
-		variablelist.setCellRenderer(this);
+		variablelist.setCellRenderer(new InteractomeTreeCellRender(
+				environmentTree));
 		innersplitpane.setRightComponent(variablelistPane);
 		getContentPane().add(innersplitpane, BorderLayout.CENTER);
 
@@ -287,7 +217,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 					return;
 				}
 			}
-			env.setVariable(name, env.getLast());
+			env.setVariable("$" + name, env.getLast());
 
 		} else if (evt.getSource() == menuSave) {
 			if (interactions.getModel() instanceof Interactome) {
@@ -306,7 +236,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 				}
 			}
 		} else if (evt.getSource() == menuClear) {
-			env.clearVariables();
+			EnvironmentUtils.clear(env);
 		} else if (evt.getSource() == menuQuit) {
 			System.exit(0);
 		}
@@ -318,39 +248,21 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 			return;
 		}
 		Parser parser = new Parser(env, expression);
-		Interactome i = parser.get();
-		if (i == null) {
+		Interactome interactome = parser.get();
+		if (interactome == null) {
 			JOptionPane.showMessageDialog(this, parser.getErrors(),
 					"Expression Error - gisQL", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		interactions.setModel(emptyModel);
-		String expr = i.show(new StringBuilder()).toString();
+		String expr = interactome.show(new StringBuilder()).toString();
 		command.setText(expr);
 		log.info(expr);
-		env.append(i);
-		task = new InteractomeTask(i);
-		task.execute();
-		progress.start("Computing " + i.show(new StringBuilder()).toString()
-				+ "...");
-	}
 
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
-			boolean selected, boolean expanded, boolean leaf, int row,
-			boolean hasFocus) {
-		treerenderer.getTreeCellRendererComponent(tree, value, selected,
-				expanded, leaf, row, hasFocus);
-		if (value != null) {
-			TreePath tp = tree.getPathForRow(row);
-			Interactome i = env.getInteractome(tp);
-			if (i != null) {
-				treerenderer.setToolTipText(i.show(new StringBuilder())
-						.toString());
-			} else {
-				treerenderer.setToolTipText(null);
-			}
-		}
-		return treerenderer;
+		task = new InteractomeTask(this, env.append(interactome));
+		task.execute();
+		progress.start("Computing "
+				+ interactome.show(new StringBuilder()).toString() + "...");
 	}
 
 	public void keyPressed(KeyEvent evt) {
@@ -365,18 +277,18 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	public void keyTyped(KeyEvent evt) {
 	}
 
-	private void setInteractome(Interactome i) {
+	void setInteractome(CachedInteractome i) {
 		for (JTable table : new JTable[] { interactions, genes }) {
 			TableModel old = table.getModel();
 			if (old != null) {
 				old.removeTableModelListener(this);
 			}
 		}
-		interactions.setModel(i);
-		genes.setModel(i.genes());
+		interactions.setModel(i.getInteractionTable());
+		genes.setModel(i.getGeneTable());
 		if (i != null) {
-			i.addTableModelListener(this);
-			i.genes().addTableModelListener(this);
+			i.getInteractionTable().addTableModelListener(this);
+			i.getGeneTable().addTableModelListener(this);
 			tableChanged(null);
 		}
 	}
@@ -388,10 +300,16 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	}
 
 	public void valueChanged(TreeSelectionEvent evt) {
-		Interactome i = env.getInteractome(variablelist.getSelectionPath());
-		if (i != null) {
-			setInteractome(i);
-			status.setText(i.show(new StringBuilder()).toString());
+		try {
+			CachedInteractome i = CachedInteractome.wrap(environmentTree
+					.getInteractome(variablelist.getSelectionPath()), "");
+			if (i != null) {
+				setInteractome(i);
+				status.setText(i.show(new StringBuilder()).toString());
+				i.process(); /* Probably processed. */
+			}
+		} catch (Exception e) {
+			log.error("Error picking interactome from list.", e);
 		}
 	}
 }

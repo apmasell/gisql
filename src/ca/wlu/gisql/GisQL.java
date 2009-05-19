@@ -2,7 +2,6 @@ package ca.wlu.gisql;
 
 import java.awt.EventQueue;
 import java.io.File;
-import java.io.PrintStream;
 import java.sql.SQLException;
 
 import org.apache.commons.cli.CommandLine;
@@ -14,12 +13,16 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import ca.wlu.gisql.db.DatabaseManager;
+import ca.wlu.gisql.environment.DatabaseEnvironment;
+import ca.wlu.gisql.environment.EnvironmentUtils;
+import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.gui.MainFrame;
-import ca.wlu.gisql.interactome.ToFile.FileFormat;
+import ca.wlu.gisql.interactome.output.FileFormat;
 
 public class GisQL {
 
-	private static Environment environment;
+	private static UserEnvironment environment;
 
 	private static final Logger log = Logger.getLogger(GisQL.class);
 
@@ -35,27 +38,27 @@ public class GisQL {
 			return;
 		}
 
-		environment = new Environment(dm);
+		environment = new UserEnvironment(new DatabaseEnvironment(dm));
 
 		CommandLine commandline = processCommandLine(args);
 
 		if (commandline.hasOption('o')) {
-			environment.setOutput(new PrintStream(commandline
-					.getOptionValue('o')));
+			environment.setOutput(commandline.getOptionValue('o'));
 		}
 		for (String argument : commandline.getArgs()) {
-			boolean success = environment.runExpression(argument);
+			boolean success = EnvironmentUtils.runExpression(environment,
+					argument);
 			if (!success)
 				return;
 		}
 
 		if (commandline.hasOption('c')) {
-			environment.runFile(new File(commandline.getOptionValue('c')));
+			EnvironmentUtils.runFile(environment, new File(commandline
+					.getOptionValue('c')));
 		}
 
 		if (commandline.hasOption('o')) {
-			environment.getOutput().close();
-			environment.setOutput(System.out);
+			environment.setOutput(null);
 		}
 
 		if (commandline.hasOption('g') || commandline.getArgs().length == 0) {

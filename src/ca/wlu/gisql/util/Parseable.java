@@ -3,8 +3,8 @@ package ca.wlu.gisql.util;
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.Environment;
-import ca.wlu.gisql.Parser;
+import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.environment.Parser;
 import ca.wlu.gisql.interactome.Interactome;
 
 public interface Parseable extends Show {

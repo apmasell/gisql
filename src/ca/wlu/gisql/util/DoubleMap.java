@@ -1,17 +1,16 @@
 package ca.wlu.gisql.util;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
-import org.apache.commons.collections15.map.ListOrderedMap;
-
-public class DoubleMap<K, V> {
-	private ListOrderedMap<K, ListOrderedMap<K, V>> real = new ListOrderedMap<K, ListOrderedMap<K, V>>();
-
-	public DoubleMap() {
-	}
+public class DoubleMap<K, V> implements Iterable<V> {
+	private Map<K, Map<K, V>> real = new HashMap<K, Map<K, V>>();
 
 	public void clear() {
 		real.clear();
@@ -38,24 +37,21 @@ public class DoubleMap<K, V> {
 		if (submap != null)
 			return submap.get(subkey);
 
-		submap = real.get(subkey);
-		if (submap != null)
-			return submap.get(key);
-		else
-			return null;
+		return null;
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<K> getKeySharing(K key) {
 		Map<K, V> submap = real.get(key);
 		if (submap == null)
-			return null;
+			return Collections.EMPTY_SET;
 
 		return submap.keySet();
 	}
 
 	public Collection<V> getValueListContaining(K key) {
-		ListOrderedMap<K, V> submap = real.get(key);
+		Map<K, V> submap = real.get(key);
 		if (submap == null)
 			return null;
 
@@ -63,7 +59,7 @@ public class DoubleMap<K, V> {
 	}
 
 	public Set<V> getValueSetContaining(K key) {
-		ListOrderedMap<K, V> submap = real.get(key);
+		Map<K, V> submap = real.get(key);
 		if (submap == null)
 			return null;
 
@@ -78,18 +74,40 @@ public class DoubleMap<K, V> {
 		return true;
 	}
 
+	public Iterator<V> iterator() {
+		return new DoubleMapIterator<K, V>(real.values().iterator());
+	}
+
 	public V put(K key, K subkey, V value) {
-		ListOrderedMap<K, V> submap = real.get(key);
+		Map<K, V> submap = real.get(key);
 		if (submap == null) {
-			submap = new ListOrderedMap<K, V>();
+			submap = new HashMap<K, V>();
 			real.put(key, submap);
 		}
 		return submap.put(subkey, value);
 	}
 
+	public V remove(K key, K subkey) {
+		Map<K, V> submap = real.get(key);
+		if (submap == null)
+			return null;
+		V value = submap.get(subkey);
+		if (value == null)
+			return null;
+		submap.remove(subkey);
+		if (submap.size() == 0)
+			real.remove(key);
+		return value;
+	}
+
 	public V remove(V value) {
-		for (Map<K, V> submap : real.values()) {
-			submap.remove(value);
+		for (Entry<K, Map<K, V>> entry : real.entrySet()) {
+			for (Entry<K, V> subentry : entry.getValue().entrySet())
+				if (subentry.getValue() == value)
+					entry.getValue().remove(subentry.getKey());
+			if (entry.getValue().size() == 0) {
+				real.remove(entry.getKey());
+			}
 		}
 		return value;
 	}

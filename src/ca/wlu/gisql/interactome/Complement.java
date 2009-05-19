@@ -4,21 +4,19 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.Environment;
-import ca.wlu.gisql.Parser;
+import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.environment.Parser;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.gene.Gene;
-import ca.wlu.gisql.gene.RecalculatedGene;
-import ca.wlu.gisql.interaction.Interaction;
-import ca.wlu.gisql.interaction.RecalculatedInteraction;
+import ca.wlu.gisql.graph.Gene;
+import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.Parseable;
 
-public class Complement extends AbstractInteractome {
+public class Complement implements Interactome {
 	public final static Parseable descriptor = new Parseable() {
 		public Interactome construct(Environment environment,
 				List<Object> params, Stack<String> error) {
 			Interactome interactome = (Interactome) params.get(0);
-			return new Complement(environment.getNorm(), interactome);
+			return new Complement(environment.getTriangularNorm(), interactome);
 		}
 
 		public int getNestingLevel() {
@@ -58,15 +56,19 @@ public class Complement extends AbstractInteractome {
 		this.norm = norm;
 	}
 
-	public int countOrthologs(Gene gene) {
-		return interactome.countOrthologs(gene);
+	public double calculateMembership(Gene gene) {
+		return norm.v(interactome.calculateMembership(gene));
 	}
 
-	public Gene findRootOrtholog(Gene gene) {
-		return interactome.findRootOrtholog(gene);
+	public double calculateMembership(Interaction interaction) {
+		return norm.v(interactome.calculateMembership(interaction));
 	}
 
-	protected double membershipOfUnknown() {
+	public Type getType() {
+		return Type.Computed;
+	}
+
+	public double membershipOfUnknown() {
 		return norm.v(0);
 	}
 
@@ -74,15 +76,12 @@ public class Complement extends AbstractInteractome {
 		return interactome.numGenomes();
 	}
 
-	protected void prepareInteractions() {
-		for (Gene gene : interactome.genes()) {
-			addGene(new RecalculatedGene(gene, norm.v(gene.getMembership())));
-		}
+	public boolean postpare() {
+		return interactome.postpare();
+	}
 
-		for (Interaction interaction : interactome) {
-			this.addInteraction(new RecalculatedInteraction(interaction, norm
-					.v(interaction.getMembership())));
-		}
+	public boolean prepare() {
+		return interactome.prepare();
 	}
 
 	public PrintStream show(PrintStream print) {

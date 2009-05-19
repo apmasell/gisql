@@ -4,11 +4,13 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.Environment;
-import ca.wlu.gisql.Parser;
+import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.environment.Parser;
+import ca.wlu.gisql.graph.Gene;
+import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.Parseable;
 
-public class ToVar extends AbstractShadowInteractome {
+public class ToVar implements Interactome {
 	public final static Parseable descriptor = new Parseable() {
 
 		public Interactome construct(Environment environment,
@@ -51,32 +53,67 @@ public class ToVar extends AbstractShadowInteractome {
 
 	};
 
-	private Environment env;
+	private Environment environment;
 
-	private String varname;
+	private String name;
 
-	public ToVar(Environment env, Interactome i, String varname) {
+	private Interactome source;
+
+	private NamedInteractome target;
+
+	public ToVar(Environment environment, Interactome source, String name) {
 		super();
-		this.env = env;
-		this.i = i;
-		this.varname = varname;
+		this.environment = environment;
+		this.target = new NamedInteractome("$" + name, source.numGenomes(),
+				source.membershipOfUnknown(), Type.Computed);
+		this.source = source;
+		this.name = name;
 	}
 
-	public void postprocess() {
-		env.setVariable(varname, i);
+	public double calculateMembership(Gene gene) {
+		double membership = source.calculateMembership(gene);
+		gene.setMembership(target, membership);
+		return membership;
+	}
+
+	public double calculateMembership(Interaction interaction) {
+		double membership = source.calculateMembership(interaction);
+		interaction.setMembership(target, membership);
+		return membership;
+	}
+
+	public Type getType() {
+		return source.getType();
+	}
+
+	public double membershipOfUnknown() {
+		return source.membershipOfUnknown();
+	}
+
+	public int numGenomes() {
+		return source.numGenomes();
+	}
+
+	public boolean postpare() {
+		environment.setVariable(name, target);
+		return true;
+	}
+
+	public boolean prepare() {
+		return source.prepare();
 	}
 
 	public PrintStream show(PrintStream print) {
-		i.show(print);
+		source.show(print);
 		print.print(" @ ");
-		print.print(varname);
+		print.print(name);
 		return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-		i.show(sb);
+		source.show(sb);
 		sb.append(" @ ");
-		sb.append(varname);
+		sb.append(name);
 		return sb;
 	}
 

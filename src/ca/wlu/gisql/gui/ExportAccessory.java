@@ -10,7 +10,7 @@ import javax.swing.JSlider;
 
 import org.jdesktop.swingx.combobox.EnumComboBoxModel;
 
-import ca.wlu.gisql.interactome.ToFile.FileFormat;
+import ca.wlu.gisql.interactome.output.FileFormat;
 
 public class ExportAccessory extends JPanel {
 
