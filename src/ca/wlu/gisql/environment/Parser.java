@@ -6,12 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.apache.log4j.Logger;
-
 import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ToVar;
-import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.interactome.binary.BoldIntersection;
 import ca.wlu.gisql.interactome.binary.BoundedDifference;
 import ca.wlu.gisql.interactome.binary.BoundedSum;
@@ -203,8 +200,6 @@ public class Parser {
 	}
 
 	private static String help;
-
-	private static final Logger log = Logger.getLogger(Parser.class);
 
 	private static int maxdepth = 0;
 
