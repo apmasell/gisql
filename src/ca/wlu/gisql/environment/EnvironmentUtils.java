@@ -4,11 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.environment.Parser.NextTask;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Unit;
@@ -17,6 +19,7 @@ import ca.wlu.gisql.interactome.output.AbstractOutput;
 import ca.wlu.gisql.util.Parseable;
 
 public class EnvironmentUtils {
+
 	public static final Parseable clearDescriptor = new Function("clear", null) {
 		class Clear extends Unit {
 			private Environment environment;
@@ -35,6 +38,45 @@ public class EnvironmentUtils {
 				List<Object> params, Stack<String> error) {
 			return new Clear(environment);
 		}
+	};
+
+	public static Parseable lastDescriptor = new Parseable() {
+
+		public Interactome construct(Environment environment,
+				List<Object> params, Stack<String> error) {
+			if (environment.getLast() == null) {
+				error.push("No previous statement.");
+				return null;
+			}
+			return environment.getLast();
+		}
+
+		public int getNestingLevel() {
+			return 6;
+		}
+
+		public boolean isMatchingOperator(char c) {
+			return c == '.';
+		}
+
+		public boolean isPrefixed() {
+			return true;
+		}
+
+		public PrintStream show(PrintStream print) {
+			print.print("Last command: .");
+			return print;
+		}
+
+		public StringBuilder show(StringBuilder sb) {
+			sb.append("Last command: .");
+			return sb;
+		}
+
+		public NextTask[] tasks(Parser parser) {
+			return null;
+		}
+
 	};
 
 	private static final Logger log = Logger.getLogger(EnvironmentUtils.class);

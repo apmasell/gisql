@@ -212,8 +212,9 @@ public class Parser {
 			BoldIntersection.descriptor, BoundedDifference.descriptor,
 			BoundedSum.descriptor, Complement.descriptor,
 			Difference.descriptor, EnvironmentUtils.clearDescriptor,
-			EnvironmentUtils.runDescriptor, Intersection.descriptor,
-			Residuum.descriptor, StrongSymmetricDifference.descriptor,
+			EnvironmentUtils.lastDescriptor, EnvironmentUtils.runDescriptor,
+			Intersection.descriptor, Residuum.descriptor,
+			StrongSymmetricDifference.descriptor,
 			SymmetricDifference.descriptor, AbstractOutput.descriptor,
 			ToVar.descriptor, Union.descriptor };
 
@@ -305,9 +306,13 @@ public class Parser {
 
 	public String getErrors() {
 		StringBuilder sb = new StringBuilder();
-		while (error.size() > 0) {
-			sb.append(error.pop());
-			sb.append('\n');
+		if (error.size() == 0) {
+			sb.append("Unrecognized statement.");
+		} else {
+			while (error.size() > 0) {
+				sb.append(error.pop());
+				sb.append('\n');
+			}
 		}
 		return sb.toString();
 	}
