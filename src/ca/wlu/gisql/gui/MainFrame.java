@@ -217,7 +217,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 					return;
 				}
 			}
-			env.setVariable("$" + name, env.getLast());
+			env.setVariable(name, env.getLast());
 
 		} else if (evt.getSource() == menuSave) {
 			if (interactions.getModel() instanceof Interactome) {
@@ -302,7 +302,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 	public void valueChanged(TreeSelectionEvent evt) {
 		try {
 			CachedInteractome i = CachedInteractome.wrap(environmentTree
-					.getInteractome(variablelist.getSelectionPath()), "");
+					.getInteractome(variablelist.getSelectionPath()), null);
 			if (i != null) {
 				setInteractome(i);
 				status.setText(i.show(new StringBuilder()).toString());

@@ -53,7 +53,7 @@ public class UserEnvironment implements Environment, EnvironmentListener {
 		if (interactome == null) {
 			return null;
 		}
-		String name = "$_" + numCommands++;
+		String name = "_" + numCommands++;
 		CachedInteractome result = CachedInteractome.wrap(interactome, name);
 		setVariable(name, result);
 		last = result;

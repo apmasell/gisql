@@ -16,11 +16,11 @@ import ca.wlu.gisql.util.Show;
 
 public class Gene implements Show, Iterable<Accession> {
 
+	Map<Gene, Interaction> edges = new HashMap<Gene, Interaction>();
+
 	private Set<Accession> ids = new HashSet<Accession>();
 
 	private Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
-
-	Map<Gene, Interaction> edges = new HashMap<Gene, Interaction>();
 
 	void add(Accession accession) {
 		for (Accession existingaccession : this) {
@@ -48,6 +48,10 @@ public class Gene implements Show, Iterable<Accession> {
 
 	public Collection<Interaction> getInteractions() {
 		return edges.values();
+	}
+
+	public Interaction getInteractionWith(Gene gene) {
+		return edges.get(gene);
 	}
 
 	public double getMembership(Interactome interactome) {
@@ -87,9 +91,5 @@ public class Gene implements Show, Iterable<Accession> {
 			first = false;
 		}
 		return sb;
-	}
-
-	public Interaction getInteractionWith(Gene gene) {
-		return edges.get(gene);
 	}
 }

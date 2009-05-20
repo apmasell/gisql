@@ -19,12 +19,14 @@ import ca.wlu.gisql.interactome.Interactome;
 
 public class OutputGraph extends AbstractOutput {
 
-	OutputGraph(Interactome source, double lowerbound, double upperbound,
+	OutputGraph(Interactome source, String name, double lowerbound, double upperbound,
 			FileFormat format, String filename) {
-		super(source, lowerbound, upperbound, format, filename);
+		super(source, name, lowerbound, upperbound, format, filename);
 	}
 
 	public boolean postpare() {
+		if (!super.postpare())
+			return false;
 		try {
 			Writer writer = (filename == null ? new PrintWriter(System.out)
 					: new FileWriter(filename));

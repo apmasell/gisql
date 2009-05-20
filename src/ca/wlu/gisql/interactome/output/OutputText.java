@@ -16,9 +16,9 @@ public class OutputText extends AbstractOutput {
 	private Statistics statistics = new Statistics(STANDARD_BIN_COUNT,
 			lowerbound, upperbound);
 
-	OutputText(Interactome source, double lowerbound, double upperbound,
-			FileFormat format, String filename) {
-		super(source, lowerbound, upperbound, format, filename);
+	OutputText(Interactome source, String name, double lowerbound,
+			double upperbound, FileFormat format, String filename) {
+		super(source, name, lowerbound, upperbound, format, filename);
 	}
 
 	public double calculateMembership(Gene gene) {
@@ -54,10 +54,14 @@ public class OutputText extends AbstractOutput {
 	}
 
 	public boolean postpare() {
-		statistics.show(print);
-		if (filename != null)
-			print.close();
-		return true;
+		if (super.postpare()) {
+			statistics.show(print);
+			if (filename != null)
+				print.close();
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean prepare() {

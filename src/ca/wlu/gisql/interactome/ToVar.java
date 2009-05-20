@@ -6,11 +6,9 @@ import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.Parser;
-import ca.wlu.gisql.graph.Gene;
-import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.Parseable;
 
-public class ToVar implements Interactome {
+public class ToVar extends CachedInteractome {
 	public final static Parseable descriptor = new Parseable() {
 
 		public Interactome construct(Environment environment,
@@ -47,8 +45,7 @@ public class ToVar implements Interactome {
 		}
 
 		public Parser.NextTask[] tasks(Parser parser) {
-			return new Parser.NextTask[] { parser.new Literal('$'),
-					parser.new Name() };
+			return new Parser.NextTask[] { parser.new Name() };
 		}
 
 	};
@@ -57,50 +54,16 @@ public class ToVar implements Interactome {
 
 	private String name;
 
-	private Interactome source;
-
-	private NamedInteractome target;
-
 	public ToVar(Environment environment, Interactome source, String name) {
-		super();
+		super(source, name, 0, 1);
 		this.environment = environment;
-		this.target = new NamedInteractome("$" + name, source.numGenomes(),
-				source.membershipOfUnknown(), Type.Computed);
-		this.source = source;
 		this.name = name;
 	}
 
-	public double calculateMembership(Gene gene) {
-		double membership = source.calculateMembership(gene);
-		gene.setMembership(target, membership);
-		return membership;
-	}
-
-	public double calculateMembership(Interaction interaction) {
-		double membership = source.calculateMembership(interaction);
-		interaction.setMembership(target, membership);
-		return membership;
-	}
-
-	public Type getType() {
-		return source.getType();
-	}
-
-	public double membershipOfUnknown() {
-		return source.membershipOfUnknown();
-	}
-
-	public int numGenomes() {
-		return source.numGenomes();
-	}
-
 	public boolean postpare() {
-		environment.setVariable(name, target);
-		return true;
-	}
-
-	public boolean prepare() {
-		return source.prepare();
+		if (!super.postpare())
+			return false;
+		return environment.setVariable(name, this);
 	}
 
 	public PrintStream show(PrintStream print) {

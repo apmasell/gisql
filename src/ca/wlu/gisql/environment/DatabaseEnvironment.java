@@ -18,15 +18,15 @@ import ca.wlu.gisql.interactome.Interactome.Type;
 public class DatabaseEnvironment implements Environment {
 	private static TriangularNorm norm = new Godel();
 
-	private DatabaseManager databaseManager;
-
 	private Set<EnvironmentListener> listeners = new HashSet<EnvironmentListener>();
 
 	private Map<String, DbSpecies> species = new HashedMap<String, DbSpecies>();
 
 	public DatabaseEnvironment(DatabaseManager databaseManager) {
 		super();
-		this.databaseManager = databaseManager;
+		for (DbSpecies interactome : databaseManager.getSpecies()) {
+			species.put(interactome.toString(), interactome);
+		}
 	}
 
 	public void addListener(EnvironmentListener listener) {
@@ -42,14 +42,7 @@ public class DatabaseEnvironment implements Environment {
 	}
 
 	public Interactome getVariable(String name) {
-		DbSpecies interactome = species.get(name);
-		if (interactome != null)
-			return interactome;
-		interactome = databaseManager.getSpeciesInteractome(name);
-		if (interactome == null)
-			return null;
-		species.put(name, interactome);
-		return interactome;
+		return species.get(name);
 	}
 
 	public List<String> names(Type filter) {

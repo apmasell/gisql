@@ -32,7 +32,6 @@ public class DbSpecies extends NamedInteractome {
 		for (Interaction interaction : Ubergraph.getInstance()
 				.upsertInteraction(identifier1, identifier2)) {
 			interaction.setMembership(this, membership);
-			log.warn(identifier1 + ":" + identifier2);
 		}
 	}
 
@@ -41,7 +40,7 @@ public class DbSpecies extends NamedInteractome {
 		Counter<Gene> counter = new Counter<Gene>();
 		long identifier = accession.getIdentifier();
 
-		databaseManager.pullOrthologs(counter, identifier);
+		databaseManager.pullOrthologs(counter, identifier, species_id);
 
 		if (counter.getTotal() == 0) {
 			ubergraph.newGene(accession).setMembership(this, 1);

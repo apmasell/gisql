@@ -11,11 +11,11 @@ import ca.wlu.gisql.interactome.output.AbstractOutput;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
 class FileWriteTask extends SwingWorker<Boolean, Boolean> {
-	private final MainFrame frame;
-
 	private File file;
 
 	private FileFormat format;
+
+	private final MainFrame frame;
 
 	private Interactome interactome;
 
@@ -34,8 +34,8 @@ class FileWriteTask extends SwingWorker<Boolean, Boolean> {
 	}
 
 	public Boolean doInBackground() {
-		return AbstractOutput.wrap(interactome, lowerbound, upperbound, format,
-				file.getPath(), true).process();
+		return AbstractOutput.wrap(interactome, null, lowerbound, upperbound,
+				format, file.getPath(), true).process();
 	}
 
 	public void done() {

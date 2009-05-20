@@ -40,8 +40,8 @@ public abstract class AbstractOutput extends CachedInteractome {
 			if (lowerbound == null) {
 				lowerbound = 0.0;
 			}
-			return wrap(interactome, lowerbound, upperbound, format, filename,
-					true);
+			return wrap(interactome, null, lowerbound, upperbound, format,
+					filename, true);
 		}
 
 		public int getNestingLevel() {
@@ -80,7 +80,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 
 	protected static final Logger log = Logger.getLogger(OutputGraph.class);
 
-	public static AbstractOutput wrap(Interactome interactome,
+	public static AbstractOutput wrap(Interactome interactome, String name,
 			double lowerbound, double upperbound, FileFormat format,
 			String filename, boolean force) {
 		if (interactome == null)
@@ -91,11 +91,11 @@ public abstract class AbstractOutput extends CachedInteractome {
 		case genome:
 		case interactome:
 		case summary:
-			return new OutputText(interactome, lowerbound, upperbound, format,
-					filename);
+			return new OutputText(interactome, name, lowerbound, upperbound,
+					format, filename);
 		default:
-			return new OutputGraph(interactome, lowerbound, upperbound, format,
-					filename);
+			return new OutputGraph(interactome, name, lowerbound, upperbound,
+					format, filename);
 
 		}
 	}
@@ -106,9 +106,10 @@ public abstract class AbstractOutput extends CachedInteractome {
 
 	protected FileFormat format;
 
-	protected AbstractOutput(Interactome source, double lowerbound,
-			double upperbound, FileFormat format, String filename) {
-		super(source,"",  lowerbound, upperbound);
+	protected AbstractOutput(Interactome source, String name,
+			double lowerbound, double upperbound, FileFormat format,
+			String filename) {
+		super(source, name, lowerbound, upperbound);
 		this.format = format;
 		this.filename = filename;
 	}

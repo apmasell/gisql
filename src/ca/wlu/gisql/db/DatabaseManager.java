@@ -53,24 +53,22 @@ public class DatabaseManager {
 				+ props.getProperty("url"), props);
 	}
 
-	public DbSpecies getSpeciesInteractome(String species) {
+	public List<DbSpecies> getSpecies() {
+
 		try {
-
-			PreparedStatement idStatement = connection
-					.prepareStatement("SELECT id FROM species WHERE name = ?");
-			idStatement.setString(1, species);
-			Integer species_id = (Integer) DatabaseManager
-					.executeScalar(idStatement);
-			if (species_id == null) {
-				log.error("Unknown species " + species);
-				return null;
+			List<DbSpecies> list = new ArrayList<DbSpecies>();
+			PreparedStatement statement = connection
+					.prepareStatement("SELECT id, name FROM species");
+			ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				int species_id = rs.getInt(1);
+				String species = rs.getString(2);
+				DbSpecies interactome = new DbSpecies(this, species, species_id);
+				list.add(interactome);
 			}
-			log.info("Species " + species + " has id " + species_id);
-
-			DbSpecies interactome = new DbSpecies(this, species, species_id);
-			return interactome;
+			return list;
 		} catch (SQLException e) {
-			log.error("Database error fetching species " + species, e);
+			log.error("Database error fetching species.", e);
 			return null;
 		}
 	}
@@ -91,7 +89,7 @@ public class DatabaseManager {
 
 	void pullInteractions(DbSpecies interactome) throws SQLException {
 		PreparedStatement interactionStatement = connection
-				.prepareStatement("SELECT gene1, gene2, score FROM interaction JOIN gene g1 ON gene1 = g1.id JOIN gene g2 ON gene2 = g2.id WHERE g1.species = ? AND g2.species = ?");
+				.prepareStatement("SELECT gene1, gene2, score FROM interaction JOIN gene g1 ON gene1 = g1.id JOIN gene g2 ON gene2 = g2.id WHERE gene1 != gene2 AND g1.species = ? AND g2.species = ?");
 		interactionStatement.setInt(1, interactome.getId());
 		interactionStatement.setInt(2, interactome.getId());
 		ResultSet rs = interactionStatement.executeQuery();
@@ -104,7 +102,7 @@ public class DatabaseManager {
 		rs.close();
 	}
 
-	void pullOrthologs(Counter<Gene> counter, long identifier)
+	void pullOrthologs(Counter<Gene> counter, long identifier, int species_id)
 			throws SQLException {
 		for (String query : new String[] {
 				"SELECT match_gene FROM ortholog WHERE query_gene = ?",
@@ -119,7 +117,15 @@ public class DatabaseManager {
 				if (ortholog != identifier) {
 					for (Gene match : Ubergraph.getInstance().findGenes(
 							ortholog)) {
-						counter.add(match);
+						boolean add = true;
+						for (Accession accession : match) {
+							if (accession.getSpecies() == species_id) {
+								add = false;
+								break;
+							}
+						}
+						if (add)
+							counter.add(match);
 					}
 				}
 			}

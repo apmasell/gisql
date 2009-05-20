@@ -22,8 +22,15 @@ public class CachedInteractome implements Interactome {
 		if (interactome == null)
 			return null;
 
-		if (interactome instanceof CachedInteractome)
-			return (CachedInteractome) interactome;
+		if (interactome instanceof CachedInteractome) {
+			CachedInteractome cachedInteractome = (CachedInteractome) interactome;
+			if (name != null && cachedInteractome.name == null) {
+				log.info("Renaming from " + cachedInteractome.name + " to "
+						+ name);
+				cachedInteractome.name = name;
+			}
+			return cachedInteractome;
+		}
 
 		return new CachedInteractome(interactome, name, 0, 1);
 	}
@@ -172,6 +179,6 @@ public class CachedInteractome implements Interactome {
 	}
 
 	public String toString() {
-		return name;
+		return (name == null ? "<unknown>" : name);
 	}
 }

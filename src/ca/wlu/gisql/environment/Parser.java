@@ -212,8 +212,7 @@ public class Parser {
 			BoldIntersection.descriptor, BoundedDifference.descriptor,
 			BoundedSum.descriptor, Complement.descriptor,
 			Difference.descriptor, EnvironmentUtils.clearDescriptor,
-			EnvironmentUtils.runDescriptor,
-			EnvironmentUtils.variableDescriptor, Intersection.descriptor,
+			EnvironmentUtils.runDescriptor, Intersection.descriptor,
 			Residuum.descriptor, StrongSymmetricDifference.descriptor,
 			SymmetricDifference.descriptor, AbstractOutput.descriptor,
 			ToVar.descriptor, Union.descriptor };
@@ -424,15 +423,13 @@ public class Parser {
 				position++;
 				return parseExpression(')');
 			} else {
-				String species = parseName();
-				if (species == null) {
+				String name = parseName();
+				if (name == null) {
 					return null;
 				}
-				Interactome i = environment.getVariable(species);
-				if (i == null || i.getType() != Type.Species) {
-					error.push("Unknown species: " + species);
-					log.fatal("The species " + species
-							+ " does not exist in the database.");
+				Interactome i = environment.getVariable(name);
+				if (i == null) {
+					error.push("Unknown identifier: " + name);
 					return null;
 				}
 				return i;

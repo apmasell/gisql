@@ -26,24 +26,6 @@ public class Ubergraph implements Iterable<Interaction> {
 		super();
 	}
 
-	public Collection<Interaction> upsertInteraction(long identifier1,
-			long identifier2) {
-		Collection<Interaction> results = new ArrayList<Interaction>();
-
-		for (Gene gene1 : genes.get(identifier1)) {
-			for (Gene gene2 : genes.get(identifier2)) {
-				Interaction interaction = gene1.getInteractionWith(gene2);
-				if (interaction == null) {
-					interaction = new Interaction(gene1, gene2);
-					interactions.add(interaction);
-				}
-				results.add(interaction);
-			}
-		}
-
-		return results;
-	}
-
 	public Gene addOrtholog(Gene gene, Accession accession) {
 		if (genes.containsValue(gene)) {
 			gene.add(accession);
@@ -113,6 +95,24 @@ public class Ubergraph implements Iterable<Interaction> {
 		gene.add(accession);
 		genes.put(accession.getIdentifier(), gene);
 		return gene;
+	}
+
+	public Collection<Interaction> upsertInteraction(long identifier1,
+			long identifier2) {
+		Collection<Interaction> results = new ArrayList<Interaction>();
+
+		for (Gene gene1 : genes.get(identifier1)) {
+			for (Gene gene2 : genes.get(identifier2)) {
+				Interaction interaction = gene1.getInteractionWith(gene2);
+				if (interaction == null) {
+					interaction = new Interaction(gene1, gene2);
+					interactions.add(interaction);
+				}
+				results.add(interaction);
+			}
+		}
+
+		return results;
 	}
 
 }
