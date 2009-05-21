@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import ca.wlu.gisql.interactome.Complement;
+import ca.wlu.gisql.interactome.Cut;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ToVar;
 import ca.wlu.gisql.interactome.binary.BoldIntersection;
@@ -205,7 +206,7 @@ public class Parser {
 
 	private static Parseable[] operators = new Parseable[] {
 			BoldIntersection.descriptor, BoundedDifference.descriptor,
-			BoundedSum.descriptor, Complement.descriptor,
+			BoundedSum.descriptor, Complement.descriptor, Cut.descriptor,
 			Difference.descriptor, EnvironmentUtils.clearDescriptor,
 			EnvironmentUtils.lastDescriptor, EnvironmentUtils.runDescriptor,
 			Intersection.descriptor, Residuum.descriptor,
