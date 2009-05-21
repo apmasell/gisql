@@ -45,7 +45,7 @@ class InteractomeTask extends SwingWorker<Boolean, Interactome> {
 		} else {
 			JOptionPane.showMessageDialog(frame,
 					"Failed to compute result. Consult console output.",
-					"gisQL", JOptionPane.ERROR);
+					"gisQL", JOptionPane.ERROR_MESSAGE);
 		}
 
 		this.frame.progress.stop();
