@@ -7,13 +7,13 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 
-public class OutputText extends AbstractOutput {
+class OutputText extends AbstractOutput {
 
 	private static final int STANDARD_BIN_COUNT = 10;
 
 	private PrintStream print = null;
 
-	private Statistics statistics = new Statistics(STANDARD_BIN_COUNT,
+	private final Statistics statistics = new Statistics(STANDARD_BIN_COUNT,
 			lowerbound, upperbound);
 
 	OutputText(Interactome source, String name, double lowerbound,

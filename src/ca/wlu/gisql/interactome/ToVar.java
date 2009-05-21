@@ -50,9 +50,9 @@ public class ToVar extends CachedInteractome {
 
 	};
 
-	private Environment environment;
+	private final Environment environment;
 
-	private String name;
+	private final String name;
 
 	public ToVar(Environment environment, Interactome source, String name) {
 		super(source, name, 0, 1);

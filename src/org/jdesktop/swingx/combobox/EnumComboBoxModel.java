@@ -38,8 +38,8 @@ import javax.swing.ComboBoxModel;
  * 
  * <p>
  * The simplest usage is to wrap an <code>enum</code> inside the
- * <code>EnumComboBoxModel</code> and then set it as the model on the combo
- * box. The combo box will then appear on screen with each value in the
+ * <code>EnumComboBoxModel</code> and then set it as the model on the combo box.
+ * The combo box will then appear on screen with each value in the
  * <code>enum</code> as a value in the combobox.
  * </p>
  * <p>

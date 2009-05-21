@@ -12,15 +12,15 @@ import org.apache.commons.collections15.multimap.MultiHashMap;
 
 public class Ubergraph implements Iterable<Interaction> {
 
-	private static Ubergraph self = new Ubergraph();
+	private final static Ubergraph self = new Ubergraph();
 
 	public static Ubergraph getInstance() {
 		return self;
 	}
 
-	private MultiMap<Long, Gene> genes = new MultiHashMap<Long, Gene>();
+	private final MultiMap<Long, Gene> genes = new MultiHashMap<Long, Gene>();
 
-	private Set<Interaction> interactions = new HashSet<Interaction>();
+	private final Set<Interaction> interactions = new HashSet<Interaction>();
 
 	private Ubergraph() {
 		super();

@@ -12,24 +12,24 @@ import org.jdesktop.swingx.combobox.EnumComboBoxModel;
 
 import ca.wlu.gisql.interactome.output.FileFormat;
 
-public class ExportAccessory extends JPanel {
+class ExportAccessory extends JPanel {
 
 	private static final long serialVersionUID = 6631121744181456433L;
 
-	private JComboBox format = new JComboBox();
+	private final JComboBox format = new JComboBox();
 
-	private JLabel formatlabel = new JLabel("File format:");
+	private final JLabel formatlabel = new JLabel("File format:");
 
-	private JSlider lowerbound = new JSlider();
+	private final JSlider lowerbound = new JSlider();
 
-	private JLabel lowerboundlabel = new JLabel("Lower bound:");
+	private final JLabel lowerboundlabel = new JLabel("Lower bound:");
 
 	private EnumComboBoxModel<FileFormat> model = new EnumComboBoxModel<FileFormat>(
 			FileFormat.class);
 
-	private JSlider upperbound = new JSlider();
+	private final JSlider upperbound = new JSlider();
 
-	private JLabel upperboundlabel = new JLabel("Upper bound:");
+	private final JLabel upperboundlabel = new JLabel("Upper bound:");
 
 	public ExportAccessory() {
 		GridBagConstraints gridBagConstraints;

@@ -4,7 +4,7 @@ import org.jgrapht.ext.EdgeNameProvider;
 
 import ca.wlu.gisql.graph.Interaction;
 
-public class InteractionIdProvider implements EdgeNameProvider<Interaction> {
+class InteractionIdProvider implements EdgeNameProvider<Interaction> {
 
 	public String getEdgeName(Interaction interaction) {
 		StringBuilder sb = new StringBuilder();

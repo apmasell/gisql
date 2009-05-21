@@ -14,7 +14,7 @@ public class Interaction implements Show {
 
 	private Gene gene2;
 
-	private Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
+	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
 
 	Interaction(Gene gene1, Gene gene2) {
 		if (gene1 == gene2)
@@ -66,7 +66,7 @@ public class Interaction implements Show {
 		return null;
 	}
 
-	public void replace(Gene original, Gene replacement) {
+	protected void replace(Gene original, Gene replacement) {
 		if (gene1 == original && gene2 != replacement) {
 			gene1 = replacement;
 			original.edges.remove(gene2);

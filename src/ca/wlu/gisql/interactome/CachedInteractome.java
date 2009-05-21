@@ -16,7 +16,7 @@ import ca.wlu.gisql.gui.output.InteractionTable;
 
 public class CachedInteractome implements Interactome {
 
-	static final Logger log = Logger.getLogger(CachedInteractome.class);
+	private static final Logger log = Logger.getLogger(CachedInteractome.class);
 
 	public static CachedInteractome wrap(Interactome interactome, String name) {
 		if (interactome == null)
@@ -39,22 +39,22 @@ public class CachedInteractome implements Interactome {
 
 	private List<Gene> genes;
 
-	private GeneTable geneTable;
+	private final GeneTable geneTable;
 
-	private SimpleWeightedGraph<Gene, Interaction> graph = new SimpleWeightedGraph<Gene, Interaction>(
+	private final SimpleWeightedGraph<Gene, Interaction> graph = new SimpleWeightedGraph<Gene, Interaction>(
 			Interaction.class);
 
 	private List<Interaction> interactions;
 
-	private InteractionTable interactionTable;
+	private final InteractionTable interactionTable;
 
-	protected double lowerbound;
+	protected final double lowerbound;
 
 	private String name;
 
-	protected Interactome source;
+	protected final Interactome source;
 
-	protected double upperbound;
+	protected final double upperbound;
 
 	public CachedInteractome(Interactome source, String name,
 			double lowerbound, double upperbound) {

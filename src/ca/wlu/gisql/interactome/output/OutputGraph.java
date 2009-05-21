@@ -17,10 +17,10 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 
-public class OutputGraph extends AbstractOutput {
+class OutputGraph extends AbstractOutput {
 
-	OutputGraph(Interactome source, String name, double lowerbound, double upperbound,
-			FileFormat format, String filename) {
+	OutputGraph(Interactome source, String name, double lowerbound,
+			double upperbound, FileFormat format, String filename) {
 		super(source, name, lowerbound, upperbound, format, filename);
 	}
 

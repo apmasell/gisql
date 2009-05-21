@@ -5,9 +5,9 @@ public enum FileFormat {
 			"Genome Table"), gml("GML File"), graphml("GraphML File"), interactome(
 			"Interactome Table"), laplace("MatLab Laplace Matrix"), summary(
 			"Summary Statistics Only");
-	private String description;
+	private final String description;
 
-	FileFormat(String description) {
+	private FileFormat(String description) {
 		this.description = description;
 	}
 

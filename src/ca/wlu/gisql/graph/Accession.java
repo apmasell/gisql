@@ -1,11 +1,11 @@
 package ca.wlu.gisql.graph;
 
 public final class Accession {
-	private long identifier;
+	private final long identifier;
 
-	private String name;
+	private final String name;
 
-	private int species;
+	private final int species;
 
 	public Accession(long identifier, int species, String name) {
 		this.identifier = identifier;

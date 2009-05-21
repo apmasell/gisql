@@ -11,17 +11,17 @@ import ca.wlu.gisql.interactome.output.AbstractOutput;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
 class FileWriteTask extends SwingWorker<Boolean, Boolean> {
-	private File file;
+	private final File file;
 
-	private FileFormat format;
+	private final FileFormat format;
 
 	private final MainFrame frame;
 
-	private Interactome interactome;
+	private final Interactome interactome;
 
-	private double lowerbound;
+	private final double lowerbound;
 
-	private double upperbound;
+	private final double upperbound;
 
 	FileWriteTask(MainFrame frame, Interactome interactome, FileFormat format,
 			File file, double lowerbound, double upperbound) {

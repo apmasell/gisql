@@ -15,9 +15,9 @@ import ca.wlu.gisql.interactome.Interactome.Type;
 
 public class EnvironmentTreeView implements TreeModel, EnvironmentListener {
 
-	private Environment environment;
+	private final Environment environment;
 
-	private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
+	private final List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
 	private final String treeLast = "Last Result";
 

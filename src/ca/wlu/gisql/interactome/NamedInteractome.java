@@ -7,13 +7,13 @@ import ca.wlu.gisql.graph.Interaction;
 
 public class NamedInteractome implements Interactome {
 
-	private double membershipOfUnknown;
+	private final double membershipOfUnknown;
 
-	protected String name;
+	protected final String name;
 
-	private int numGenomes;
+	private final int numGenomes;
 
-	private Type type;
+	private final Type type;
 
 	public NamedInteractome(String name, int numGenomes,
 			double membershipOfUnknown, Type type) {

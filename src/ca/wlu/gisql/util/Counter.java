@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class Counter<E> implements Iterable<Map.Entry<E, Integer>> {
-	private Map<E, Integer> map = new HashMap<E, Integer>();
+	private final Map<E, Integer> map = new HashMap<E, Integer>();
 
 	private int total = 0;
 

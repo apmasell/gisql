@@ -13,17 +13,18 @@ import ca.wlu.gisql.interactome.BinaryArithmeticOperation;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class ParseableBinaryOperation implements Parseable {
-	static final Logger log = Logger.getLogger(ParseableBinaryOperation.class);
+	private static final Logger log = Logger
+			.getLogger(ParseableBinaryOperation.class);
 
-	private char[] alternateoperators;
+	private final char[] alternateoperators;
 
-	private Class<? extends BinaryArithmeticOperation> implementation;
+	private final Class<? extends BinaryArithmeticOperation> implementation;
 
-	private String name;
+	private final String name;
 
-	private int nestinglevel;
+	private final int nestinglevel;
 
-	private char symbol;
+	private final char symbol;
 
 	public ParseableBinaryOperation(
 			Class<? extends BinaryArithmeticOperation> implementation,
@@ -37,7 +38,7 @@ public class ParseableBinaryOperation implements Parseable {
 		this.name = name;
 	}
 
-	public Interactome construct(Environment environment, Interactome left,
+	protected Interactome construct(Environment environment, Interactome left,
 			Interactome right, Stack<String> error) {
 		try {
 			return implementation.getConstructor(TriangularNorm.class,

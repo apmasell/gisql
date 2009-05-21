@@ -21,7 +21,7 @@ public class UserEnvironment implements Environment, EnvironmentListener {
 
 	private Interactome last = null;
 
-	private Set<EnvironmentListener> listeners = new HashSet<EnvironmentListener>();
+	private final Set<EnvironmentListener> listeners = new HashSet<EnvironmentListener>();
 
 	private TriangularNorm norm;
 
@@ -29,9 +29,9 @@ public class UserEnvironment implements Environment, EnvironmentListener {
 
 	private String output = null;
 
-	private Environment parent;
+	private final Environment parent;
 
-	private Map<String, Interactome> variables = new HashedMap<String, Interactome>();
+	private final Map<String, Interactome> variables = new HashedMap<String, Interactome>();
 
 	public UserEnvironment(Environment parent) {
 		super();

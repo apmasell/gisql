@@ -47,76 +47,76 @@ import ca.wlu.gisql.interactome.Interactome;
 public class MainFrame extends JFrame implements ActionListener, KeyListener,
 		TableModelListener, TreeSelectionListener {
 
-	static final TableModel emptyModel = new DefaultTableModel();
+	private static final TableModel emptyModel = new DefaultTableModel();
 
 	static final Logger log = Logger.getLogger(MainFrame.class);
 
 	private static final long serialVersionUID = -1767901719339978452L;
 
-	JTextField command = new JTextField();
+	final JTextField command = new JTextField();
 
-	private UserEnvironment env;
+	private final UserEnvironment env;
 
-	private EnvironmentTreeView environmentTree;
+	private final EnvironmentTreeView environmentTree;
 
-	private JTable genes = new JTable();
+	private final JTable genes = new JTable();
 
-	private JLabel geneslabel = new JLabel(" genes.");
+	private final JLabel geneslabel = new JLabel(" genes.");
 
-	private JLabel genesRowLabel = new JLabel("No");
+	private final JLabel genesRowLabel = new JLabel("No");
 
-	private JScrollPane genesspane = new JScrollPane(genes);
+	private final JScrollPane genesspane = new JScrollPane(genes);
 
-	private JTextArea helptext = new JTextArea(Parser.getHelp());
+	private final JTextArea helptext = new JTextArea(Parser.getHelp());
 
-	private JScrollPane helptextpane = new JScrollPane(helptext);
+	private final JScrollPane helptextpane = new JScrollPane(helptext);
 
-	private JSplitPane innersplitpane = new JSplitPane();
+	private final JSplitPane innersplitpane = new JSplitPane();
 
-	private JTable interactions = new JTable();
+	private final JTable interactions = new JTable();
 
-	private JLabel interactionslabel = new JLabel(" interactions. ");
+	private final JLabel interactionslabel = new JLabel(" interactions. ");
 
-	private JScrollPane interactionspane = new JScrollPane(interactions);
+	private final JScrollPane interactionspane = new JScrollPane(interactions);
 
-	private JLabel interactionsRowLabel = new JLabel("No");
+	private final JLabel interactionsRowLabel = new JLabel("No");
 
-	private JMenuBar menu = new JMenuBar();
+	private final JMenuBar menu = new JMenuBar();
 
-	private JMenuItem menuClear = new JMenuItem("Clear Variables");
+	private final JMenuItem menuClear = new JMenuItem("Clear Variables");
 
-	private JMenu menuMain = new JMenu("Main");
+	private final JMenu menuMain = new JMenu("Main");
 
-	private JMenuItem menuName = new JMenuItem(
+	private final JMenuItem menuName = new JMenuItem(
 			"Assign Last Result to Variable...");
 
-	private JMenuItem menuQuit = new JMenuItem("Quit");
+	private final JMenuItem menuQuit = new JMenuItem("Quit");
 
-	private JMenuItem menuSave = new JMenuItem("Save Data As...");
+	private final JMenuItem menuSave = new JMenuItem("Save Data As...");
 
-	BusyDialog progress = new BusyDialog(this);
+	final BusyDialog progress = new BusyDialog(this);
 
-	private JSeparator quitseparator = new JSeparator();
+	private final JSeparator quitseparator = new JSeparator();
 
-	private JTabbedPane resulttabs = new JTabbedPane();
+	private final JTabbedPane resulttabs = new JTabbedPane();
 
-	private javax.swing.JButton run = new JButton("Run");
+	private final JButton run = new JButton("Run");
 
-	private JLabel status = new JLabel();
+	private final JLabel status = new JLabel();
 
-	private JToolBar statusbar = new JToolBar();
+	private final JToolBar statusbar = new JToolBar();
 
-	private Separator statusseparator = new Separator();
+	private final Separator statusseparator = new Separator();
 
 	InteractomeTask task = null;
 
-	private JToolBar toolbar = new JToolBar();
+	private final JToolBar toolbar = new JToolBar();
 
-	private Separator toolbarSeperator = new Separator();
+	private final Separator toolbarSeperator = new Separator();
 
-	private JTree variablelist = new JTree();
+	private final JTree variablelist = new JTree();
 
-	private JScrollPane variablelistPane = new JScrollPane(variablelist);
+	private final JScrollPane variablelistPane = new JScrollPane(variablelist);
 
 	public MainFrame(UserEnvironment environment) {
 		super("gisQL");
@@ -242,7 +242,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 		}
 	}
 
-	public void executeCurrentCommand() {
+	private void executeCurrentCommand() {
 		String expression = command.getText();
 		if (expression == null || expression.trim().length() == 0) {
 			return;

@@ -22,9 +22,9 @@ public class EnvironmentUtils {
 
 	public static final Parseable clearDescriptor = new Function("clear", null) {
 		class Clear extends Unit {
-			private Environment environment;
+			private final Environment environment;
 
-			protected Clear(Environment environment) {
+			private Clear(Environment environment) {
 				this.environment = environment;
 			}
 
@@ -84,11 +84,11 @@ public class EnvironmentUtils {
 	public static final Parseable runDescriptor = new Function("run",
 			new Function.Parameter[] { new Function.QuotedString("filename") }) {
 		class Script extends Unit {
-			private UserEnvironment environment;
+			private final UserEnvironment environment;
 
-			private File file;
+			private final File file;
 
-			protected Script(Environment environment, File file) {
+			private Script(Environment environment, File file) {
 				this.environment = (UserEnvironment) environment;
 				this.file = file;
 			}

@@ -4,26 +4,26 @@ import java.io.PrintStream;
 
 import ca.wlu.gisql.util.Show;
 
-public class Statistics implements Show {
-	private double binwidth;
+class Statistics implements Show {
+	private final double binwidth;
 
-	private int[] geneBins;
+	private final int[] geneBins;
 
 	private double geneFuziness = 0;
 
 	private int genes = 0;
 
-	private int[] interactionBins;
+	private final int[] interactionBins;
 
 	private double interactionFuzziness = 0;
 
 	private int interactions = 0;
 
-	private int maxbin;
+	private final int maxbin;
 
-	private double offset;
+	private final double offset;
 
-	public Statistics(int bincount, double lowerbound, double upperbound) {
+	protected Statistics(int bincount, double lowerbound, double upperbound) {
 		super();
 		maxbin = bincount - 1;
 		binwidth = bincount / (upperbound - lowerbound);
@@ -36,13 +36,13 @@ public class Statistics implements Show {
 		return Math.min((int) (membership * binwidth - offset), maxbin);
 	}
 
-	public void countGene(double membership) {
+	protected void countGene(double membership) {
 		genes++;
 		geneFuziness += 1 - Math.abs(2 * membership - 1);
 		geneBins[calculateBin(membership)]++;
 	}
 
-	public void countInteraction(double membership) {
+	protected void countInteraction(double membership) {
 		interactions++;
 		interactionFuzziness += 1 - Math.abs(2 * membership - 1);
 		interactionBins[calculateBin(membership)]++;
@@ -87,5 +87,4 @@ public class Statistics implements Show {
 			sb.append(i).append(" ");
 		return sb;
 	}
-
 }

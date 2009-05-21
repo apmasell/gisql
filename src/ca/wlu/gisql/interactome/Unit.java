@@ -7,12 +7,6 @@ import ca.wlu.gisql.graph.Interaction;
 
 public class Unit implements Interactome {
 
-	private static final Unit self = new Unit();
-
-	public static Interactome get() {
-		return self;
-	}
-
 	public double calculateMembership(Gene gene) {
 		return 0;
 	}

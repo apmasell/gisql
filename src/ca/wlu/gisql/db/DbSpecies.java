@@ -14,20 +14,20 @@ import ca.wlu.gisql.util.Counter;
 
 public class DbSpecies extends NamedInteractome {
 
-	static final Logger log = Logger.getLogger(DbSpecies.class);
+	private static final Logger log = Logger.getLogger(DbSpecies.class);
 
 	private DatabaseManager databaseManager;
 
-	private int species_id;
+	private final int species_id;
 
-	public DbSpecies(DatabaseManager databaseManager, String species,
+	protected DbSpecies(DatabaseManager databaseManager, String species,
 			int species_id) {
 		super(species, 1, 0.0, Type.Species);
 		this.species_id = species_id;
 		this.databaseManager = databaseManager;
 	}
 
-	public void addInteraction(long identifier1, long identifier2,
+	protected void addInteraction(long identifier1, long identifier2,
 			double membership) {
 		for (Interaction interaction : Ubergraph.getInstance()
 				.upsertInteraction(identifier1, identifier2)) {
@@ -45,6 +45,7 @@ public class DbSpecies extends NamedInteractome {
 		if (counter.getTotal() == 0) {
 			ubergraph.newGene(accession).setMembership(this, 1);
 		} else {
+			// TODO MERGE
 			for (Entry<Gene, Integer> entry : counter) {
 				ubergraph.addOrtholog(entry.getKey(), accession);
 				entry.getKey().setMembership(this,

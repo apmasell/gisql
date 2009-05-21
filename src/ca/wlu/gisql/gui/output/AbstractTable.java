@@ -3,7 +3,6 @@ package ca.wlu.gisql.gui.output;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
@@ -11,20 +10,20 @@ import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.interactome.CachedInteractome;
 
-public abstract class AbstractTable implements TableModel {
+abstract class AbstractTable implements TableModel {
 
-	static final Logger log = Logger.getLogger(InteractionTable.class);
+	private static final Logger log = Logger.getLogger(InteractionTable.class);
 
-	private Class[] columnClass;
+	private final Class<?>[] columnClass;
 
-	private String[] columnName;
+	private final String[] columnName;
 
-	protected CachedInteractome interactome;
+	protected final CachedInteractome interactome;
 
-	private List<TableModelListener> listeners = new ArrayList<TableModelListener>();
+	private final List<TableModelListener> listeners = new ArrayList<TableModelListener>();
 
-	public AbstractTable(CachedInteractome interactome, Class[] columnClass,
-			String[] columnNames) {
+	protected AbstractTable(CachedInteractome interactome,
+			Class<?>[] columnClass, String[] columnNames) {
 		super();
 		this.interactome = interactome;
 		this.columnClass = columnClass;
@@ -49,13 +48,6 @@ public abstract class AbstractTable implements TableModel {
 
 	public final boolean isCellEditable(int rowIndex, int colIndex) {
 		return false;
-	}
-
-	protected final void notifyListeners() {
-		TableModelEvent evt = new TableModelEvent(this);
-		for (TableModelListener tml : listeners) {
-			tml.tableChanged(evt);
-		}
 	}
 
 	public final void removeTableModelListener(TableModelListener listener) {

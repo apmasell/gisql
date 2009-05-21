@@ -12,7 +12,7 @@ class InteractomeTask extends SwingWorker<Boolean, Interactome> {
 
 	private final MainFrame frame;
 
-	private CachedInteractome i;
+	private final CachedInteractome i;
 
 	InteractomeTask(MainFrame frame, CachedInteractome i) {
 		this.frame = frame;
@@ -38,7 +38,7 @@ class InteractomeTask extends SwingWorker<Boolean, Interactome> {
 		} catch (ExecutionException e) {
 			success = false;
 		}
-		
+
 		if (success) {
 			this.frame.setInteractome(i);
 			this.frame.command.setText("");

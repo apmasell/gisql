@@ -57,9 +57,9 @@ public class Parser {
 	}
 
 	public class ListOf extends NextTask {
-		private NextTask child;
+		private final NextTask child;
 
-		private char delimiter;
+		private final char delimiter;
 
 		public ListOf(NextTask child, char delimiter) {
 			super();
@@ -94,7 +94,7 @@ public class Parser {
 	}
 
 	public class Literal extends NextTask {
-		private char c;
+		private final char c;
 
 		public Literal(char c) {
 			super();
@@ -114,7 +114,7 @@ public class Parser {
 	}
 
 	public class Maybe extends NextTask {
-		private NextTask child;
+		private final NextTask child;
 
 		public Maybe(NextTask child) {
 			super();
@@ -181,7 +181,7 @@ public class Parser {
 	}
 
 	public class Word extends NextTask {
-		private String word;
+		private final String word;
 
 		protected Word(String word) {
 			this.word = word;
@@ -204,7 +204,7 @@ public class Parser {
 
 	private static int maxdepth = 0;
 
-	private static Parseable[] operators = new Parseable[] {
+	private final static Parseable[] operators = new Parseable[] {
 			BoldIntersection.descriptor, BoundedDifference.descriptor,
 			BoundedSum.descriptor, Complement.descriptor, Cut.descriptor,
 			Difference.descriptor, EnvironmentUtils.clearDescriptor,
@@ -272,11 +272,11 @@ public class Parser {
 		help = sb.toString();
 	}
 
-	private Environment environment;
+	private final Environment environment;
 
-	private Stack<String> error = new Stack<String>();
+	private final Stack<String> error = new Stack<String>();
 
-	private String input;
+	private final String input;
 
 	private Interactome interactome = null;
 
@@ -289,7 +289,7 @@ public class Parser {
 		reparse();
 	}
 
-	public void consumeWhitespace() {
+	private void consumeWhitespace() {
 		while (position < input.length()
 				&& Character.isWhitespace(input.charAt(position))) {
 			position++;

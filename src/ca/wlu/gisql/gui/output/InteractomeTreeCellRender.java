@@ -10,9 +10,9 @@ import javax.swing.tree.TreePath;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class InteractomeTreeCellRender implements TreeCellRenderer {
-	private EnvironmentTreeView environmentTree;
+	private final EnvironmentTreeView environmentTree;
 
-	private DefaultTreeCellRenderer treerenderer = new DefaultTreeCellRenderer();
+	private final DefaultTreeCellRenderer treerenderer = new DefaultTreeCellRenderer();
 
 	public InteractomeTreeCellRender(EnvironmentTreeView environmentTree) {
 		super();

@@ -5,8 +5,8 @@ import org.jgrapht.ext.VertexNameProvider;
 import ca.wlu.gisql.graph.Accession;
 import ca.wlu.gisql.graph.Gene;
 
-public class GeneIdProvider implements VertexNameProvider<Gene> {
-	public static StringBuilder appendName(Gene gene, StringBuilder sb) {
+class GeneIdProvider implements VertexNameProvider<Gene> {
+	protected static StringBuilder appendName(Gene gene, StringBuilder sb) {
 		boolean first = true;
 		for (Accession accession : gene) {
 			if (!first) {

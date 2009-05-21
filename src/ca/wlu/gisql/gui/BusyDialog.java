@@ -13,17 +13,17 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
-public class BusyDialog extends JDialog implements ActionListener {
+class BusyDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -3519155352196497820L;
 
-	private JButton cancel = new JButton("Abort");
+	private final JButton cancel = new JButton("Abort");
 
-	private JLabel label = new JLabel();
+	private final JLabel label = new JLabel();
 
-	private JProgressBar progress = new JProgressBar();
+	private final JProgressBar progress = new JProgressBar();
 
-	public BusyDialog(JFrame parent) {
+	protected BusyDialog(JFrame parent) {
 		super(parent, "Working - gisQL", true);
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -68,12 +68,12 @@ public class BusyDialog extends JDialog implements ActionListener {
 
 	}
 
-	public void start(String message) {
+	protected void start(String message) {
 		label.setText(message);
 		setVisible(true);
 	}
 
-	public void stop() {
+	protected void stop() {
 		setVisible(false);
 	}
 

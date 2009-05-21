@@ -21,21 +21,9 @@ import ca.wlu.gisql.util.Counter;
 
 public class DatabaseManager {
 
-	static final Logger log = Logger.getLogger(DatabaseManager.class);
+	private static final Logger log = Logger.getLogger(DatabaseManager.class);
 
-	public static Object executeScalar(PreparedStatement statement)
-			throws SQLException {
-		Object result = null;
-		ResultSet rs = statement.executeQuery();
-		if (rs.next()) {
-			result = rs.getObject(1);
-		}
-		rs.close();
-		return result;
-
-	}
-
-	private Connection connection;
+	private final Connection connection;
 
 	public DatabaseManager() throws SQLException, ClassNotFoundException,
 			IOException {

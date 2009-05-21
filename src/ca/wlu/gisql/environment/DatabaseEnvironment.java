@@ -18,9 +18,9 @@ import ca.wlu.gisql.interactome.Interactome.Type;
 public class DatabaseEnvironment implements Environment {
 	private static TriangularNorm norm = new Godel();
 
-	private Set<EnvironmentListener> listeners = new HashSet<EnvironmentListener>();
+	private final Set<EnvironmentListener> listeners = new HashSet<EnvironmentListener>();
 
-	private Map<String, DbSpecies> species = new HashedMap<String, DbSpecies>();
+	private final Map<String, DbSpecies> species = new HashedMap<String, DbSpecies>();
 
 	public DatabaseEnvironment(DatabaseManager databaseManager) {
 		super();

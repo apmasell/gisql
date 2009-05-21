@@ -47,9 +47,9 @@ public class Complement implements Interactome {
 
 	};
 
-	private Interactome interactome;
+	private final Interactome interactome;
 
-	private TriangularNorm norm;
+	private final TriangularNorm norm;
 
 	public Complement(TriangularNorm norm, Interactome i) {
 		this.interactome = i;

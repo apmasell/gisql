@@ -9,7 +9,7 @@ import ca.wlu.gisql.environment.Parser;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class FoldOperator implements Parseable {
-	private ParseableBinaryOperation binary;
+	private final ParseableBinaryOperation binary;
 
 	public FoldOperator(ParseableBinaryOperation binary) {
 		super();

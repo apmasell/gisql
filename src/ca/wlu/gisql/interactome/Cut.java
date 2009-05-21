@@ -12,7 +12,7 @@ import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.Parseable;
 
 public class Cut implements Interactome {
-	public static Parseable descriptor = new Parseable() {
+	public final static Parseable descriptor = new Parseable() {
 
 		public Interactome construct(Environment environment,
 				List<Object> params, Stack<String> error) {
@@ -52,9 +52,9 @@ public class Cut implements Interactome {
 
 	};
 
-	private double cutoff;
+	private final double cutoff;
 
-	private Interactome interactome;
+	private final Interactome interactome;
 
 	public Cut(Interactome interactome, double cutoff) {
 		super();

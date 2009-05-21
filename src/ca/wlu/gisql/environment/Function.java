@@ -2,13 +2,11 @@ package ca.wlu.gisql.environment;
 
 import java.io.PrintStream;
 
-import org.apache.log4j.Logger;
-
 import ca.wlu.gisql.environment.Parser.NextTask;
 import ca.wlu.gisql.util.Parseable;
 import ca.wlu.gisql.util.Show;
 
-public abstract class Function implements Parseable {
+abstract class Function implements Parseable {
 	static class Expression extends Parameter {
 		NextTask createTask(Parser parser) {
 			return parser.new Expression();
@@ -26,7 +24,7 @@ public abstract class Function implements Parseable {
 	}
 
 	static class Name extends Parameter {
-		private String description;
+		private final String description;
 
 		Name(String description) {
 			this.description = description;
@@ -79,11 +77,9 @@ public abstract class Function implements Parseable {
 
 	}
 
-	static final Logger log = Logger.getLogger(Function.class);
+	private final Parameter[] parameters;
 
-	private Parameter[] parameters;
-
-	private String word;
+	private final String word;
 
 	protected Function(String word, Parameter[] parameters) {
 		this.word = word;

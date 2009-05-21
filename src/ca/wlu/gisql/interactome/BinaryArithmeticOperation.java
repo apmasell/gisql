@@ -2,19 +2,17 @@ package ca.wlu.gisql.interactome;
 
 import java.io.PrintStream;
 
-import org.apache.log4j.Logger;
-
 import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 
 public abstract class BinaryArithmeticOperation implements Interactome {
 
-	static final Logger log = Logger.getLogger(BinaryArithmeticOperation.class);
+	private final Interactome left;
 
-	protected Interactome left, right;
+	private final TriangularNorm norm;
 
-	private TriangularNorm norm;
+	private final Interactome right;
 
 	public BinaryArithmeticOperation(TriangularNorm norm, Interactome left,
 			Interactome right) {
@@ -37,14 +35,6 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 
 	protected abstract double calculateMembership(TriangularNorm norm,
 			double left, double right);
-
-	protected double clipMembership(double membership) {
-		if (membership < 0)
-			return 0;
-		if (membership > 1)
-			return 1;
-		return membership;
-	}
 
 	public abstract char getSymbol();
 

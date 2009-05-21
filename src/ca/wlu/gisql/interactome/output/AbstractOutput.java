@@ -100,11 +100,9 @@ public abstract class AbstractOutput extends CachedInteractome {
 		}
 	}
 
-	protected boolean close;
+	protected final String filename;
 
-	protected String filename;
-
-	protected FileFormat format;
+	protected final FileFormat format;
 
 	protected AbstractOutput(Interactome source, String name,
 			double lowerbound, double upperbound, FileFormat format,
