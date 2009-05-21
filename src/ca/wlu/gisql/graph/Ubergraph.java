@@ -71,11 +71,11 @@ public class Ubergraph implements Iterable<Interaction> {
 			return false;
 
 		/* Merge the genes. */
+		gene1.copyMembership(gene2);
+
 		for (Accession accession : gene2) {
 			genes.remove(accession.getIdentifier(), gene2);
-
 			addOrtholog(gene1, accession);
-			gene1.copyMembership(gene2);
 		}
 
 		/* Merge any interactions. */
@@ -85,10 +85,10 @@ public class Ubergraph implements Iterable<Interaction> {
 			Interaction duplicate = other.getInteractionWith(gene1);
 
 			if (duplicate == null) {
-				interactions.remove(interaction);
 				interaction.replace(gene2, gene1);
 			} else {
 				/* This edge has been duplicated by merging. */
+				interactions.remove(interaction);
 				duplicate.copyMembership(interaction);
 			}
 

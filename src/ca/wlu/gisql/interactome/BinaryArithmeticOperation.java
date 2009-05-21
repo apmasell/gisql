@@ -24,12 +24,28 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 	public double calculateMembership(Gene gene) {
 		double leftMembership = left.calculateMembership(gene);
 		double rightMembership = right.calculateMembership(gene);
+
+		if (Double.isNaN(leftMembership) && Double.isNaN(rightMembership))
+			return Double.NaN;
+		if (Double.isNaN(leftMembership))
+			leftMembership = 0;
+		if (Double.isNaN(rightMembership))
+			rightMembership = 0;
+
 		return calculateMembership(norm, leftMembership, rightMembership);
 	}
 
 	public double calculateMembership(Interaction interaction) {
 		double leftMembership = left.calculateMembership(interaction);
 		double rightMembership = right.calculateMembership(interaction);
+
+		if (Double.isNaN(leftMembership) && Double.isNaN(rightMembership))
+			return Double.NaN;
+		if (Double.isNaN(leftMembership))
+			leftMembership = 0;
+		if (Double.isNaN(rightMembership))
+			rightMembership = 0;
+
 		return calculateMembership(norm, leftMembership, rightMembership);
 	}
 

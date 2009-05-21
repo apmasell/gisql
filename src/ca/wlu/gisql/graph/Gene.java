@@ -44,6 +44,7 @@ public class Gene implements Show, Iterable<Accession> {
 			}
 			memberships.put(entry.getKey(), membership);
 		}
+		gene.memberships.clear();
 	}
 
 	public Collection<Interaction> getInteractions() {

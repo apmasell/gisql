@@ -57,6 +57,8 @@ public class DbSpecies extends NamedInteractome {
 				SimpleGraph<Gene, DefaultEdge> compatibility = new SimpleGraph<Gene, DefaultEdge>(
 						DefaultEdge.class);
 				List<Gene> genes = new ArrayList<Gene>(counter.set());
+				for (Gene gene : genes)
+					compatibility.addVertex(gene);
 				for (int i = 0; i < genes.size(); i++) {
 					for (int j = i + 1; j < genes.size(); j++) {
 						if (ubergraph.canMerge(genes.get(i), genes.get(j))) {
