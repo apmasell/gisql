@@ -1,6 +1,7 @@
 package ca.wlu.gisql.interactome.output;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.PrintStream;
 
 import ca.wlu.gisql.graph.Gene;
@@ -68,7 +69,7 @@ class OutputText extends AbstractOutput {
 		if (super.prepare()) {
 			try {
 				print = (filename == null ? System.out : new PrintStream(
-						filename));
+						new FileOutputStream(filename, true)));
 				print.print("# ");
 				source.show(print);
 				print.println();
