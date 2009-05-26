@@ -1,0 +1,9 @@
+
+Usage
+=====
+
+Make gisql.properties as follows:
+
+user=<dbusername>
+password=<dbusername>
+url=//meyhil.wlu.ca/interactome
