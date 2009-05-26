@@ -29,7 +29,7 @@ public class DbSpecies extends NamedInteractome {
 
 	protected DbSpecies(DatabaseManager databaseManager, String species,
 			int species_id) {
-		super(species, 1, 0.0, Type.Species);
+		super(species, 1, 0.0, Type.Species, true);
 		this.species_id = species_id;
 		this.databaseManager = databaseManager;
 	}

@@ -15,13 +15,17 @@ public class NamedInteractome implements Interactome {
 
 	private final Type type;
 
+	private final boolean zeroInteractionsWithOrthologs;
+
 	public NamedInteractome(String name, int numGenomes,
-			double membershipOfUnknown, Type type) {
+			double membershipOfUnknown, Type type,
+			boolean zeroInteractionsWithOrthologs) {
 		super();
 		this.name = name;
 		this.numGenomes = numGenomes;
 		this.membershipOfUnknown = membershipOfUnknown;
 		this.type = type;
+		this.zeroInteractionsWithOrthologs = zeroInteractionsWithOrthologs;
 	}
 
 	public final double calculateMembership(Gene gene) {
@@ -29,7 +33,14 @@ public class NamedInteractome implements Interactome {
 	}
 
 	public final double calculateMembership(Interaction interaction) {
-		return interaction.getMembership(this);
+		double membership = interaction.getMembership(this);
+		if (zeroInteractionsWithOrthologs && Double.isNaN(membership)
+				&& !Double.isNaN(interaction.getGene1().getMembership(this))
+				&& !Double.isNaN(interaction.getGene2().getMembership(this))) {
+			return 0;
+
+		}
+		return membership;
 	}
 
 	public final Type getType() {
