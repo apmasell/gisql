@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.wlu.gisql.environment.parser.list.ApplyToAll;
+import ca.wlu.gisql.environment.parser.list.CrossJoin;
 import ca.wlu.gisql.environment.parser.list.ListParseable;
 import ca.wlu.gisql.environment.parser.list.RawList;
 
 public class ListExpression extends NextTask {
 
 	private static final ListParseable[] operators = new ListParseable[] {
-			new ApplyToAll(), new RawList() };
+			new ApplyToAll(), new CrossJoin(), new RawList() };
 
 	public static StringBuilder show(StringBuilder sb) {
 		for (ListParseable operator : operators) {
