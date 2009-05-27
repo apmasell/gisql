@@ -34,9 +34,14 @@ public class ListExpression extends NextTask {
 	}
 
 	boolean parse(int level, List<Object> results) {
+		int errorstate = parser.error.size();
 		for (ListParseable operator : operators) {
-			if (processOperator(operator, level, results))
+			int oldposition = parser.position;
+			if (processOperator(operator, level, results)) {
+				parser.error.setSize(errorstate);
 				return true;
+			}
+			parser.position = oldposition;
 		}
 		return false;
 	}
