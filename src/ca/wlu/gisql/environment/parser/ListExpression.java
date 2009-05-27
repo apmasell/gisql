@@ -7,12 +7,15 @@ import ca.wlu.gisql.environment.parser.list.ApplyToAll;
 import ca.wlu.gisql.environment.parser.list.CrossJoin;
 import ca.wlu.gisql.environment.parser.list.ListParseable;
 import ca.wlu.gisql.environment.parser.list.RawList;
+import ca.wlu.gisql.environment.parser.list.ToVar;
+import ca.wlu.gisql.environment.parser.list.Variable;
 import ca.wlu.gisql.environment.parser.list.Zip;
 
 public class ListExpression extends NextTask {
 
 	private static final ListParseable[] operators = new ListParseable[] {
-			new ApplyToAll(), new CrossJoin(), new RawList(), new Zip() };
+			new ApplyToAll(), new CrossJoin(), new RawList(), new ToVar(),
+			new Variable(), new Zip() };
 
 	public static StringBuilder show(StringBuilder sb) {
 		for (ListParseable operator : operators) {
