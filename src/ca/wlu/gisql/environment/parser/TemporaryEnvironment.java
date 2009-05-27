@@ -31,9 +31,9 @@ public class TemporaryEnvironment extends NextTask {
 	}
 
 	private class MaskedEnvironment implements Environment {
-		private final Environment parent;
-
 		private final Interactome index;
+
+		private final Environment parent;
 
 		public MaskedEnvironment(Environment parent) {
 			this.parent = parent;
@@ -96,13 +96,13 @@ public class TemporaryEnvironment extends NextTask {
 
 	}
 
-	private final Expression expression;
+	private final NextTask expression;
 
 	private final Name name;
 
 	private final Parser parser;
 
-	public TemporaryEnvironment(Parser parser, Name name, Expression expression) {
+	public TemporaryEnvironment(Parser parser, Name name, NextTask expression) {
 		this.parser = parser;
 		this.name = name;
 		this.expression = expression;
