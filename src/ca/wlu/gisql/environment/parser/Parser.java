@@ -93,8 +93,10 @@ public class Parser {
 			sb.append('\n');
 
 		}
+		sb.append("Lists may be any of the following:\n");
+		ListExpression.show(sb);
 		sb
-				.append("\nAny other word will be interpreted as a species identifier and read from the database.\nParentheses may be used to control order of operations.");
+				.append("\nAny other word will be interpreted as a identifier for a species or variable.\nParentheses may be used to control order of operations.");
 		help = sb.toString();
 	}
 

@@ -9,14 +9,35 @@ import ca.wlu.gisql.environment.parser.list.RawList;
 
 public class ListExpression extends NextTask {
 
+	private static final ListParseable[] operators = new ListParseable[] {
+			new ApplyToAll(), new RawList() };
+
+	public static StringBuilder show(StringBuilder sb) {
+		for (ListParseable operator : operators) {
+			operator.show(sb);
+			sb.append('\n');
+		}
+		return sb;
+	}
+
 	private final Parser parser;
 
 	public ListExpression(Parser parser) {
 		this.parser = parser;
 	}
 
-	private final ListParseable[] operators = new ListParseable[] {
-			new ApplyToAll(), new RawList() };
+	boolean parse(int level, List<Object> results) {
+		int errorstate = parser.error.size();
+		for (ListParseable operator : operators) {
+			int oldposition = parser.position;
+			if (processOperator(operator, level, results)) {
+				parser.error.setSize(errorstate);
+				return true;
+			}
+			parser.position = oldposition;
+		}
+		return false;
+	}
 
 	private boolean processOperator(ListParseable operator, int level,
 			List<Object> results) {
@@ -31,18 +52,5 @@ public class ListExpression extends NextTask {
 		}
 		return operator.construct(this.parser.environment, params,
 				this.parser.error, results);
-	}
-
-	boolean parse(int level, List<Object> results) {
-		int errorstate = parser.error.size();
-		for (ListParseable operator : operators) {
-			int oldposition = parser.position;
-			if (processOperator(operator, level, results)) {
-				parser.error.setSize(errorstate);
-				return true;
-			}
-			parser.position = oldposition;
-		}
-		return false;
 	}
 }

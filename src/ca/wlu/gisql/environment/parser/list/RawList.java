@@ -1,5 +1,6 @@
 package ca.wlu.gisql.environment.parser.list;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -16,6 +17,16 @@ public class RawList implements ListParseable {
 			Stack<String> error, List<Object> results) {
 		results.add(params.get(0));
 		return true;
+	}
+
+	public PrintStream show(PrintStream print) {
+		print.print("List: {A, B, C, ...}");
+		return print;
+	}
+
+	public StringBuilder show(StringBuilder sb) {
+		sb.append("List: {A, B, C, ...}");
+		return sb;
 	}
 
 	public NextTask[] tasks(Parser parser) {
