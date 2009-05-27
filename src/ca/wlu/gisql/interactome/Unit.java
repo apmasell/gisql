@@ -15,12 +15,20 @@ public class Unit implements Interactome {
 		return 0;
 	}
 
+	public Interactome fork(Interactome substitute) {
+		return this;
+	}
+
 	public Type getType() {
 		return Type.Computed;
 	}
 
 	public double membershipOfUnknown() {
 		return 0;
+	}
+
+	public boolean needsFork() {
+		return false;
 	}
 
 	public int numGenomes() {

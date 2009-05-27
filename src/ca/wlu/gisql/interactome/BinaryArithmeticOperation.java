@@ -2,11 +2,34 @@ package ca.wlu.gisql.interactome;
 
 import java.io.PrintStream;
 
+import org.apache.log4j.Logger;
+
 import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 
 public abstract class BinaryArithmeticOperation implements Interactome {
+	private static final Logger log = Logger
+			.getLogger(BinaryArithmeticOperation.class);
+
+	public Interactome fork(Interactome substitute) {
+		Interactome left = (this.left.needsFork() ? this.left.fork(substitute)
+				: this.left);
+		Interactome right = (this.right.needsFork() ? this.right
+				.fork(substitute) : this.right);
+		try {
+			return this.getClass().getConstructor(TriangularNorm.class,
+					Interactome.class, Interactome.class).newInstance(norm,
+					left, right);
+		} catch (Exception e) {
+			log.error("Instatiation error during forking.", e);
+		}
+		return null;
+	}
+
+	public boolean needsFork() {
+		return left.needsFork() || right.needsFork();
+	}
 
 	private final Interactome left;
 

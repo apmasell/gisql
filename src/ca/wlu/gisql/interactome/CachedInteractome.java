@@ -102,6 +102,11 @@ public class CachedInteractome implements Interactome {
 		}
 	}
 
+	public Interactome fork(Interactome substitute) {
+		return new CachedInteractome(source.fork(substitute), name, lowerbound,
+				upperbound);
+	}
+
 	public final List<Gene> getGenes() {
 		process();
 		return genes;
@@ -126,12 +131,20 @@ public class CachedInteractome implements Interactome {
 		return interactionTable;
 	}
 
+	protected final String getName() {
+		return name;
+	}
+
 	public Type getType() {
 		return Type.Computed;
 	}
 
 	public final double membershipOfUnknown() {
 		return source.membershipOfUnknown();
+	}
+
+	public final boolean needsFork() {
+		return source.needsFork();
 	}
 
 	public final int numGenomes() {

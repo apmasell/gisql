@@ -43,12 +43,20 @@ public class NamedInteractome implements Interactome {
 		return membership;
 	}
 
+	public Interactome fork(Interactome substitute) {
+		return this;
+	}
+
 	public final Type getType() {
 		return type;
 	}
 
 	public final double membershipOfUnknown() {
 		return membershipOfUnknown;
+	}
+
+	public boolean needsFork() {
+		return false;
 	}
 
 	public final int numGenomes() {

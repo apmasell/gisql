@@ -1,4 +1,4 @@
-package ca.wlu.gisql.environment;
+package ca.wlu.gisql.environment.parser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.environment.EnvironmentUtils;
+import ca.wlu.gisql.environment.parser.util.FoldOperator;
+import ca.wlu.gisql.environment.parser.util.ParseableBinaryOperation;
 import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.Cut;
 import ca.wlu.gisql.interactome.Interactome;
@@ -20,189 +24,11 @@ import ca.wlu.gisql.interactome.binary.StrongSymmetricDifference;
 import ca.wlu.gisql.interactome.binary.SymmetricDifference;
 import ca.wlu.gisql.interactome.binary.Union;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
-import ca.wlu.gisql.util.FoldOperator;
-import ca.wlu.gisql.util.Parseable;
-import ca.wlu.gisql.util.ParseableBinaryOperation;
 
 public class Parser {
-	public class Decimal extends NextTask {
-
-		boolean parse(int level, List<Object> results) {
-			int oldposition = position;
-			Double d = parseDouble();
-			if (d == null) {
-				error.push("Failed to parse double. Position: " + oldposition);
-				return false;
-			}
-			results.add(d);
-			return true;
-		}
-
-	}
-
-	public class Expression extends NextTask {
-
-		boolean parse(int level, List<Object> results) {
-			int oldposition = position;
-			Interactome result = (level == maxdepth ? parseIdentifier()
-					: parseAutoExpression(0));
-			if (result == null) {
-				error.push("Failed to parse expression. Position: "
-						+ oldposition);
-				return false;
-			}
-			results.add(result);
-			return true;
-		}
-	}
-
-	public class ListOf extends NextTask {
-		private final NextTask child;
-
-		private final char delimiter;
-
-		public ListOf(NextTask child, char delimiter) {
-			super();
-			this.child = child;
-			this.delimiter = delimiter;
-		}
-
-		boolean parse(int level, List<Object> results) {
-			List<Object> items = new ArrayList<Object>();
-
-			if (!child.parse(level, items)) {
-				return false;
-			}
-
-			consumeWhitespace();
-			while (position < input.length()) {
-				if (input.charAt(position) == delimiter) {
-					position++;
-					if (!child.parse(level, items)) {
-						return false;
-					}
-				} else {
-					results.add(items);
-					return true;
-				}
-				consumeWhitespace();
-			}
-			results.add(items);
-			return true;
-		}
-
-	}
-
-	public class Literal extends NextTask {
-		private final char c;
-
-		public Literal(char c) {
-			super();
-			this.c = c;
-		}
-
-		boolean parse(int level, List<Object> results) {
-			consumeWhitespace();
-			if (position < input.length() && c == input.charAt(position)) {
-				position++;
-				return true;
-			}
-			error.push("Expected '" + c + "' missing. Position: " + position);
-			return false;
-		}
-
-	}
-
-	public class Maybe extends NextTask {
-		private final NextTask child;
-
-		public Maybe(NextTask child) {
-			super();
-			this.child = child;
-		}
-
-		boolean parse(int level, List<Object> results) {
-			int oldposition = position;
-			int errorposition = error.size();
-			if (child.parse(level, results))
-				return true;
-			results.add(null);
-			position = oldposition;
-			error.setSize(errorposition);
-			return true;
-		}
-	}
-
-	public class Name extends NextTask {
-
-		boolean parse(int level, List<Object> results) {
-			int oldposition = position;
-			String name = parseName();
-			if (name == null) {
-				error.push("Expected name missing. Position: " + oldposition);
-				return false;
-			}
-			results.add(name);
-			return true;
-		}
-
-	}
-
-	public abstract class NextTask {
-		abstract boolean parse(int level, List<Object> results);
-	}
-
-	public class QuotedString extends NextTask {
-
-		boolean parse(int level, List<Object> results) {
-			int oldposition = position;
-			String string = parseQuotedString();
-			if (string == null) {
-				error.push("Failed to parse quoted string. Position: "
-						+ oldposition);
-				return false;
-			}
-			results.add(string);
-			return true;
-		}
-
-	}
-
-	public class SubExpression extends NextTask {
-
-		boolean parse(int level, List<Object> results) {
-			Interactome result = (level == maxdepth ? parseIdentifier()
-					: parseAutoExpression(level + 1));
-			if (result == null)
-				return false;
-			results.add(result);
-			return true;
-		}
-	}
-
-	public class Word extends NextTask {
-		private final String word;
-
-		protected Word(String word) {
-			this.word = word;
-		}
-
-		boolean parse(int level, List<Object> results) {
-			int oldposition = position;
-			String name = parseName();
-			if (name == null || !word.equals(name)) {
-				error.push("Expected " + word + " missing. Position: "
-						+ oldposition);
-				return false;
-			}
-			return true;
-		}
-
-	}
-
 	private static String help;
 
-	private static int maxdepth = 0;
+	static int maxdepth = 0;
 
 	private final static Parseable[] operators = new Parseable[] {
 			BoldIntersection.descriptor, BoundedDifference.descriptor,
@@ -272,15 +98,15 @@ public class Parser {
 		help = sb.toString();
 	}
 
-	private final Environment environment;
+	Environment environment;
 
-	private final Stack<String> error = new Stack<String>();
+	final Stack<String> error = new Stack<String>();
 
-	private final String input;
+	final String input;
 
 	private Interactome interactome = null;
 
-	private int position = 0;
+	int position = 0;
 
 	public Parser(Environment environment, String input) {
 		this.environment = environment;
@@ -289,7 +115,7 @@ public class Parser {
 		reparse();
 	}
 
-	private void consumeWhitespace() {
+	void consumeWhitespace() {
 		while (position < input.length()
 				&& Character.isWhitespace(input.charAt(position))) {
 			position++;
@@ -313,7 +139,7 @@ public class Parser {
 		return sb.toString();
 	}
 
-	private Interactome parseAutoExpression(int level) {
+	Interactome parseAutoExpression(int level) {
 		Interactome left = null;
 		if (position >= input.length())
 			return null;
@@ -367,29 +193,6 @@ public class Parser {
 		return left;
 	}
 
-	private Double parseDouble() {
-		consumeWhitespace();
-		int initialposition = position;
-		while (position < input.length()
-				&& Character.isDigit(input.charAt(position))) {
-			position++;
-		}
-		if (position < input.length() && input.charAt(position) == '.') {
-			position++;
-			while (position < input.length()
-					&& Character.isDigit(input.charAt(position))) {
-				position++;
-			}
-		}
-
-		try {
-			return new Double(input.substring(initialposition, position));
-		} catch (NumberFormatException e) {
-			return null;
-		}
-
-	}
-
 	private Interactome parseExpression(Character endofexpression) {
 		Interactome e = parseAutoExpression(0);
 
@@ -439,7 +242,7 @@ public class Parser {
 		return null;
 	}
 
-	private String parseName() {
+	String parseName() {
 		StringBuilder sb = new StringBuilder();
 
 		while (position < input.length()) {
@@ -456,46 +259,9 @@ public class Parser {
 		return (sb.length() == 0 ? null : sb.toString());
 	}
 
-	private String parseQuotedString() {
-		consumeWhitespace();
-		StringBuilder sb = null;
-
-		while (position < input.length()) {
-			char codepoint = input.charAt(position);
-
-			if (codepoint == '"') {
-				position++;
-				if (sb == null) {
-					/* first quote. */
-					sb = new StringBuilder();
-				} else {
-					/* found final quote. */
-					return (sb.length() == 0 ? null : sb.toString());
-				}
-			} else if (codepoint == '\\') {
-				position++;
-				if (position < input.length()) {
-					sb.append(input.charAt(position));
-					position++;
-				} else {
-					return null;
-				}
-			} else {
-				if (sb == null) {
-					return null;
-				} else {
-					position++;
-
-					sb.append(codepoint);
-				}
-			}
-		}
-		return null;
-	}
-
 	private Interactome processOperator(Parseable operator, Interactome left,
 			int level) {
-		Parser.NextTask[] todo = operator.tasks(this);
+		NextTask[] todo = operator.tasks(this);
 		List<Object> params = new ArrayList<Object>();
 
 		if (!operator.isPrefixed()) {
@@ -504,7 +270,7 @@ public class Parser {
 			params.add(left);
 		}
 		if (todo != null) {
-			for (Parser.NextTask task : todo) {
+			for (NextTask task : todo) {
 				consumeWhitespace();
 				if (!task.parse(level, params)) {
 					return null;

@@ -7,10 +7,15 @@ import java.util.Stack;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.Parser;
+import ca.wlu.gisql.environment.parser.Decimal;
+import ca.wlu.gisql.environment.parser.Maybe;
+import ca.wlu.gisql.environment.parser.Name;
+import ca.wlu.gisql.environment.parser.NextTask;
+import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.QuotedString;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.util.Parseable;
 
 public abstract class AbstractOutput extends CachedInteractome {
 	public static final Parseable descriptor = new Parseable() {
@@ -68,12 +73,12 @@ public abstract class AbstractOutput extends CachedInteractome {
 			return sb;
 		}
 
-		public Parser.NextTask[] tasks(Parser parser) {
-			return new Parser.NextTask[] {
-					parser.new Maybe(parser.new Decimal()),
-					parser.new Maybe(parser.new Decimal()),
-					parser.new Maybe(parser.new Name()),
-					parser.new QuotedString() };
+		public NextTask[] tasks(Parser parser) {
+			return new NextTask[] {
+					new Maybe(parser, new Decimal(parser)),
+					new Maybe(parser, new Decimal(parser)),
+					new Maybe(parser, new Name(parser)),
+					new QuotedString(parser) };
 		}
 
 	};

@@ -1,11 +1,14 @@
-package ca.wlu.gisql.util;
+package ca.wlu.gisql.environment.parser.util;
 
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.Parser;
+import ca.wlu.gisql.environment.parser.ListExpression;
+import ca.wlu.gisql.environment.parser.NextTask;
+import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class FoldOperator implements Parseable {
@@ -55,7 +58,7 @@ public class FoldOperator implements Parseable {
 			for (char c : alternateoperators) {
 				print.print(", ");
 				print.print(c);
-				print.print(" { A, B, C, ... }");
+				print.print(" list");
 			}
 		}
 		return print;
@@ -65,7 +68,7 @@ public class FoldOperator implements Parseable {
 		sb.append(binary.getName());
 		sb.append(" (Folded): ");
 		sb.append(binary.getSymbol());
-		sb.append(" { A, B, C, ... }");
+		sb.append(" list");
 		char[] alternateoperators = binary.getAlternateOperators();
 		if (alternateoperators != null) {
 			for (char c : alternateoperators) {
@@ -77,10 +80,8 @@ public class FoldOperator implements Parseable {
 		return sb;
 	}
 
-	public Parser.NextTask[] tasks(Parser parser) {
-		return new Parser.NextTask[] { parser.new Literal('{'),
-				parser.new ListOf(parser.new Expression(), ','),
-				parser.new Literal('}') };
+	public NextTask[] tasks(Parser parser) {
+		return new NextTask[] { new ListExpression(parser) };
 	}
 
 }

@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.Parser;
+import ca.wlu.gisql.environment.parser.NextTask;
+import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.SubExpression;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
-import ca.wlu.gisql.util.Parseable;
 
 public class Complement implements Interactome {
 	public final static Parseable descriptor = new Parseable() {
@@ -41,8 +43,8 @@ public class Complement implements Interactome {
 			return sb;
 		}
 
-		public Parser.NextTask[] tasks(Parser parser) {
-			return new Parser.NextTask[] { parser.new SubExpression() };
+		public NextTask[] tasks(Parser parser) {
+			return new NextTask[] { new SubExpression(parser) };
 		}
 
 	};
@@ -64,12 +66,20 @@ public class Complement implements Interactome {
 		return norm.v(interactome.calculateMembership(interaction));
 	}
 
+	public Interactome fork(Interactome substitute) {
+		return new Complement(norm, interactome.fork(substitute));
+	}
+
 	public Type getType() {
 		return Type.Computed;
 	}
 
 	public double membershipOfUnknown() {
 		return norm.v(0);
+	}
+
+	public boolean needsFork() {
+		return interactome.needsFork();
 	}
 
 	public int numGenomes() {

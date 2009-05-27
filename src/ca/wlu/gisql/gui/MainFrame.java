@@ -37,8 +37,8 @@ import javax.swing.table.TableModel;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.EnvironmentUtils;
-import ca.wlu.gisql.environment.Parser;
 import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.gui.output.EnvironmentTreeView;
 import ca.wlu.gisql.gui.output.InteractomeTreeCellRender;
 import ca.wlu.gisql.interactome.CachedInteractome;

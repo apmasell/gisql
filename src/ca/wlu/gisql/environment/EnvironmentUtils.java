@@ -10,13 +10,15 @@ import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.environment.Parser.NextTask;
+import ca.wlu.gisql.environment.parser.NextTask;
+import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.util.Function;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Unit;
 import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
-import ca.wlu.gisql.util.Parseable;
 
 public class EnvironmentUtils {
 

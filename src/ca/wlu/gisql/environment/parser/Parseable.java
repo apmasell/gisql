@@ -1,11 +1,11 @@
-package ca.wlu.gisql.util;
+package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.Parser;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.Show;
 
 public interface Parseable extends Show {
 
@@ -18,5 +18,5 @@ public interface Parseable extends Show {
 
 	public abstract boolean isPrefixed();
 
-	public abstract Parser.NextTask[] tasks(Parser parser);
+	public abstract NextTask[] tasks(Parser parser);
 }

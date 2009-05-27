@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.Parser;
-import ca.wlu.gisql.util.Parseable;
+import ca.wlu.gisql.environment.parser.Name;
+import ca.wlu.gisql.environment.parser.NextTask;
+import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.Parser;
 
 public class ToVar extends CachedInteractome {
 	public final static Parseable descriptor = new Parseable() {
@@ -44,8 +46,8 @@ public class ToVar extends CachedInteractome {
 			return sb;
 		}
 
-		public Parser.NextTask[] tasks(Parser parser) {
-			return new Parser.NextTask[] { parser.new Name() };
+		public NextTask[] tasks(Parser parser) {
+			return new NextTask[] { new Name(parser) };
 		}
 
 	};
@@ -58,6 +60,10 @@ public class ToVar extends CachedInteractome {
 		super(source, name, 0, 1);
 		this.environment = environment;
 		this.name = name;
+	}
+
+	public Interactome fork(Interactome substitute) {
+		return new ToVar(environment, source.fork(substitute), name);
 	}
 
 	public boolean postpare() {

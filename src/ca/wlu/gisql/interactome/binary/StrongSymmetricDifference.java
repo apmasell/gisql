@@ -1,9 +1,9 @@
 package ca.wlu.gisql.interactome.binary;
 
+import ca.wlu.gisql.environment.parser.util.ParseableBinaryOperation;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.interactome.BinaryArithmeticOperation;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.util.ParseableBinaryOperation;
 
 public class StrongSymmetricDifference extends BinaryArithmeticOperation {
 	public final static ParseableBinaryOperation descriptor = new ParseableBinaryOperation(

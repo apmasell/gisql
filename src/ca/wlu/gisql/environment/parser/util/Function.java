@@ -1,15 +1,16 @@
-package ca.wlu.gisql.environment;
+package ca.wlu.gisql.environment.parser.util;
 
 import java.io.PrintStream;
 
-import ca.wlu.gisql.environment.Parser.NextTask;
-import ca.wlu.gisql.util.Parseable;
+import ca.wlu.gisql.environment.parser.NextTask;
+import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.util.Show;
 
-abstract class Function implements Parseable {
-	static class Expression extends Parameter {
+public abstract class Function implements Parseable {
+	public static class Expression extends Parameter {
 		NextTask createTask(Parser parser) {
-			return parser.new Expression();
+			return new ca.wlu.gisql.environment.parser.Expression(parser);
 		}
 
 		public PrintStream show(PrintStream print) {
@@ -23,15 +24,15 @@ abstract class Function implements Parseable {
 		}
 	}
 
-	static class Name extends Parameter {
+	public static class Name extends Parameter {
 		private final String description;
 
-		Name(String description) {
+		public Name(String description) {
 			this.description = description;
 		}
 
 		NextTask createTask(Parser parser) {
-			return parser.new Name();
+			return new ca.wlu.gisql.environment.parser.Name(parser);
 		}
 
 		public PrintStream show(PrintStream print) {
@@ -46,19 +47,19 @@ abstract class Function implements Parseable {
 
 	}
 
-	static abstract class Parameter implements Show {
+	public static abstract class Parameter implements Show {
 		abstract NextTask createTask(Parser parser);
 	}
 
-	static class QuotedString extends Parameter {
+	public static class QuotedString extends Parameter {
 		private String description;
 
-		QuotedString(String description) {
+		public QuotedString(String description) {
 			this.description = description;
 		}
 
 		NextTask createTask(Parser parser) {
-			return parser.new QuotedString();
+			return new ca.wlu.gisql.environment.parser.QuotedString(parser);
 		}
 
 		public PrintStream show(PrintStream print) {
@@ -140,20 +141,23 @@ abstract class Function implements Parseable {
 		NextTask[] tasks = new NextTask[3 + (parameters == null ? 0
 				: 2 * parameters.length - 1)];
 		int index = 0;
-		tasks[index++] = parser.new Word(word);
-		tasks[index++] = parser.new Literal('(');
+		tasks[index++] = new ca.wlu.gisql.environment.parser.Word(parser, word);
+		tasks[index++] = new ca.wlu.gisql.environment.parser.Literal(parser,
+				'(');
 		if (parameters != null) {
 			boolean first = true;
 			for (Parameter parameter : parameters) {
 				if (first) {
 					first = false;
 				} else {
-					tasks[index++] = parser.new Literal(',');
+					tasks[index++] = new ca.wlu.gisql.environment.parser.Literal(
+							parser, ',');
 				}
 				tasks[index++] = parameter.createTask(parser);
 			}
 		}
-		tasks[index++] = parser.new Literal(')');
+		tasks[index++] = new ca.wlu.gisql.environment.parser.Literal(parser,
+				')');
 
 		return tasks;
 	}

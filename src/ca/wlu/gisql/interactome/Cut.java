@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.Parser;
-import ca.wlu.gisql.environment.Parser.NextTask;
+import ca.wlu.gisql.environment.parser.Decimal;
+import ca.wlu.gisql.environment.parser.Literal;
+import ca.wlu.gisql.environment.parser.NextTask;
+import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
-import ca.wlu.gisql.util.Parseable;
 
 public class Cut implements Interactome {
 	public final static Parseable descriptor = new Parseable() {
@@ -46,8 +48,8 @@ public class Cut implements Interactome {
 		}
 
 		public NextTask[] tasks(Parser parser) {
-			return new NextTask[] { parser.new Decimal(),
-					parser.new Literal(']') };
+			return new NextTask[] { new Decimal(parser),
+					new Literal(parser, ']') };
 		}
 
 	};
@@ -76,12 +78,20 @@ public class Cut implements Interactome {
 		return membership;
 	}
 
+	public Interactome fork(Interactome substitute) {
+		return new Cut(interactome.fork(substitute), cutoff);
+	}
+
 	public Type getType() {
 		return Type.Computed;
 	}
 
 	public double membershipOfUnknown() {
 		return interactome.membershipOfUnknown();
+	}
+
+	public boolean needsFork() {
+		return interactome.needsFork();
 	}
 
 	public int numGenomes() {
@@ -111,5 +121,4 @@ public class Cut implements Interactome {
 		sb.append("]");
 		return sb;
 	}
-
 }
