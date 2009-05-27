@@ -79,4 +79,12 @@ public class DatabaseEnvironment implements Environment {
 		return list;
 	}
 
+	public List<Interactome> getArray(String name) {
+		return null;
+	}
+
+	public boolean setArray(String name, List<Interactome> array) {
+		return false;
+	}
+
 }

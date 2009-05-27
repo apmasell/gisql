@@ -19,6 +19,8 @@ public interface Environment {
 
 	public abstract void addListener(EnvironmentListener listener);
 
+	public abstract List<Interactome> getArray(String name);
+
 	public abstract Interactome getLast();
 
 	public abstract TriangularNorm getTriangularNorm();
@@ -30,6 +32,8 @@ public interface Environment {
 	public abstract List<String> names(Type filter, List<String> list);
 
 	public abstract void removeListener(EnvironmentListener listener);
+
+	public abstract boolean setArray(String name, List<Interactome> array);
 
 	public abstract boolean setTriangularNorm(TriangularNorm norm);
 

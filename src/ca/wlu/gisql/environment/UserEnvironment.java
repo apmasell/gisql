@@ -17,6 +17,8 @@ import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
 public class UserEnvironment implements Environment, EnvironmentListener {
+	private final Map<String, List<Interactome>> arrays = new HashedMap<String, List<Interactome>>();
+
 	private FileFormat format = FileFormat.summary;
 
 	private Interactome last = null;
@@ -67,6 +69,15 @@ public class UserEnvironment implements Environment, EnvironmentListener {
 		}
 	}
 
+	public List<Interactome> getArray(String name) {
+		List<Interactome> list = arrays.get(name);
+		if (list == null) {
+			return parent.getArray(name);
+		} else {
+			return list;
+		}
+	}
+
 	public FileFormat getFormat() {
 		return format;
 	}
@@ -113,6 +124,11 @@ public class UserEnvironment implements Environment, EnvironmentListener {
 		listeners.remove(listener);
 	}
 
+	public boolean setArray(String name, List<Interactome> array) {
+		arrays.put(name, array);
+		return true;
+	}
+
 	public void setFormat(FileFormat format) {
 		this.format = format;
 	}
@@ -156,5 +172,4 @@ public class UserEnvironment implements Environment, EnvironmentListener {
 			parent.variables(filter, list);
 		return list;
 	}
-
 }

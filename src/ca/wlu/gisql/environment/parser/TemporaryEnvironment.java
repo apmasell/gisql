@@ -44,6 +44,10 @@ public class TemporaryEnvironment extends NextTask {
 			parent.addListener(listener);
 		}
 
+		public List<Interactome> getArray(String name) {
+			return parent.getArray(name);
+		}
+
 		public int getDepth() {
 			if (parent instanceof MaskedEnvironment) {
 				return ((MaskedEnvironment) parent).getDepth() + 1;
@@ -76,6 +80,10 @@ public class TemporaryEnvironment extends NextTask {
 
 		public void removeListener(EnvironmentListener listener) {
 			parent.removeListener(listener);
+		}
+
+		public boolean setArray(String name, List<Interactome> array) {
+			return parent.setArray(name, array);
 		}
 
 		public boolean setTriangularNorm(TriangularNorm norm) {
