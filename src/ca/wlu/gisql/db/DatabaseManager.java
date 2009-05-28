@@ -77,9 +77,8 @@ public class DatabaseManager {
 
 	void pullInteractions(DbSpecies interactome) throws SQLException {
 		PreparedStatement interactionStatement = connection
-				.prepareStatement("SELECT gene1, gene2, score FROM interaction JOIN gene g1 ON gene1 = g1.id JOIN gene g2 ON gene2 = g2.id WHERE gene1 != gene2 AND g1.species = ? AND g2.species = ?");
+				.prepareStatement("SELECT gene1, gene2, score FROM interaction JOIN gene g1 ON gene1 = g1.id JOIN gene g2 ON gene2 = g2.id WHERE gene1 != gene2 AND g1.species = g2.species AND g1.species = ?");
 		interactionStatement.setInt(1, interactome.getId());
-		interactionStatement.setInt(2, interactome.getId());
 		ResultSet rs = interactionStatement.executeQuery();
 		while (rs.next()) {
 			long identifier1 = Math.min(rs.getLong(1), rs.getLong(2));
