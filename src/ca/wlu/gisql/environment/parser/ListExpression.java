@@ -32,11 +32,9 @@ public class ListExpression extends NextTask {
 	}
 
 	boolean parse(int level, List<Object> results) {
-		int errorstate = parser.error.size();
 		for (ListParseable operator : operators) {
 			int oldposition = parser.position;
 			if (processOperator(operator, level, results)) {
-				parser.error.setSize(errorstate);
 				return true;
 			}
 			parser.position = oldposition;
@@ -48,10 +46,12 @@ public class ListExpression extends NextTask {
 			List<Object> results) {
 		NextTask[] todo = operator.tasks(this.parser);
 		List<Object> params = new ArrayList<Object>();
+		int errorstate = parser.error.size();
 
 		for (NextTask task : todo) {
 			this.parser.consumeWhitespace();
 			if (!task.parse(level, params)) {
+				parser.error.setSize(errorstate);
 				return false;
 			}
 		}
