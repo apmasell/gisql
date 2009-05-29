@@ -83,6 +83,34 @@ public class EnvironmentUtils {
 
 	private static final Logger log = Logger.getLogger(EnvironmentUtils.class);
 
+	public static final Parseable outputDescriptor = new Function("output",
+			new Function.Parameter[] { new Function.QuotedString("filename") }) {
+		class SetOutput extends Unit {
+			private final Environment environment;
+
+			private final String filename;
+
+			private SetOutput(Environment environment, String filename) {
+				this.environment = environment;
+				this.filename = filename;
+			}
+
+			public boolean prepare() {
+				if (environment instanceof UserEnvironment) {
+					((UserEnvironment) environment).setOutput(filename);
+					return super.prepare();
+				} else {
+					return false;
+				}
+			}
+		}
+
+		public Interactome construct(Environment environment,
+				List<Object> params, Stack<String> error) {
+			return new SetOutput(environment, (String) params.get(0));
+		}
+	};
+
 	public static final Parseable runDescriptor = new Function("run",
 			new Function.Parameter[] { new Function.QuotedString("filename") }) {
 		class Script extends Unit {
