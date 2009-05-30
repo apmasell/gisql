@@ -20,6 +20,10 @@ public class BoundedDifference extends BinaryArithmeticOperation {
 		return Math.max(0, left - right);
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}

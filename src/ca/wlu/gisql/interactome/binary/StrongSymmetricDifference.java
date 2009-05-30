@@ -20,6 +20,10 @@ public class StrongSymmetricDifference extends BinaryArithmeticOperation {
 		return Math.abs(left - right);
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}

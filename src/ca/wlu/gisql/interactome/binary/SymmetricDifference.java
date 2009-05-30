@@ -21,6 +21,10 @@ public class SymmetricDifference extends BinaryArithmeticOperation {
 		return norm.s(norm.t(left, norm.v(right)), norm.t(right, norm.v(left)));
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}

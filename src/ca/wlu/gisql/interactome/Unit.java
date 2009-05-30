@@ -19,6 +19,10 @@ public class Unit implements Interactome {
 		return this;
 	}
 
+	public int getPrecedence() {
+		return Integer.MAX_VALUE;
+	}
+
 	public Type getType() {
 		return Type.Computed;
 	}

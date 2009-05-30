@@ -47,6 +47,10 @@ public class NamedInteractome implements Interactome {
 		return this;
 	}
 
+	public int getPrecedence() {
+		return Integer.MAX_VALUE;
+	}
+
 	public final Type getType() {
 		return type;
 	}

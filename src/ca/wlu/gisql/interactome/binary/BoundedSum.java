@@ -19,6 +19,10 @@ public class BoundedSum extends BinaryArithmeticOperation {
 		return Math.min(1, left + right);
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}

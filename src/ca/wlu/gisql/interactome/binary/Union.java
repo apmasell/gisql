@@ -18,6 +18,10 @@ public class Union extends BinaryArithmeticOperation {
 		return norm.s(left, right);
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}

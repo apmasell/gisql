@@ -19,6 +19,10 @@ public class Difference extends BinaryArithmeticOperation {
 		return norm.t(left, norm.v(right));
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}

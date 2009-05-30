@@ -19,6 +19,10 @@ public class Residuum extends BinaryArithmeticOperation {
 		return norm.s(norm.v(left), norm.t(left, right));
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}

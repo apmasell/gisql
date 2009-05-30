@@ -98,22 +98,40 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 	}
 
 	public final PrintStream show(PrintStream print) {
-		print.print("(");
+		if (left.getPrecedence() < this.getPrecedence())
+			print.print("(");
 		left.show(print);
+		if (left.getPrecedence() < this.getPrecedence())
+			print.print(")");
+
 		print.print(" ");
 		print.print(getSymbol());
 		print.print(" ");
+
+		if (right.getPrecedence() < this.getPrecedence())
+			print.print("(");
 		right.show(print);
-		print.print(")");
+		if (right.getPrecedence() < this.getPrecedence())
+			print.print("(");
+
 		return print;
 	}
 
 	public final StringBuilder show(StringBuilder sb) {
-		sb.append("(");
+		if (left.getPrecedence() < this.getPrecedence())
+			sb.append("(");
 		left.show(sb);
+		if (left.getPrecedence() < this.getPrecedence())
+			sb.append(")");
+
 		sb.append(" ").append(getSymbol()).append(" ");
+
+		if (right.getPrecedence() < this.getPrecedence())
+			sb.append("(");
 		right.show(sb);
-		sb.append(")");
+		if (right.getPrecedence() < this.getPrecedence())
+			sb.append(")");
+
 		return sb;
 	}
 }

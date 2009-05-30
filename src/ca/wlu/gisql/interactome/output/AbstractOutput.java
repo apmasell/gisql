@@ -74,8 +74,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 		}
 
 		public NextTask[] tasks(Parser parser) {
-			return new NextTask[] {
-					new Maybe(parser, new Decimal(parser)),
+			return new NextTask[] { new Maybe(parser, new Decimal(parser)),
 					new Maybe(parser, new Decimal(parser)),
 					new Maybe(parser, new Name(parser)),
 					new QuotedString(parser) };
@@ -115,6 +114,10 @@ public abstract class AbstractOutput extends CachedInteractome {
 		super(source, name, lowerbound, upperbound);
 		this.format = format;
 		this.filename = filename;
+	}
+
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
 	}
 
 	public PrintStream show(PrintStream print) {

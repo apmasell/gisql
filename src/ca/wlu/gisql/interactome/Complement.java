@@ -70,6 +70,10 @@ public class Complement implements Interactome {
 		return new Complement(norm, interactome.fork(substitute));
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public Type getType() {
 		return Type.Computed;
 	}
@@ -95,16 +99,22 @@ public class Complement implements Interactome {
 	}
 
 	public PrintStream show(PrintStream print) {
-		print.print("¬(");
+		print.print("¬");
+		if (interactome.getPrecedence() < this.getPrecedence())
+			print.print("(");
 		interactome.show(print);
-		print.print(")");
+		if (interactome.getPrecedence() < this.getPrecedence())
+			print.print(")");
 		return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-		sb.append("¬(");
+		sb.append("¬");
+		if (interactome.getPrecedence() < this.getPrecedence())
+			sb.append("(");
 		interactome.show(sb);
-		sb.append(")");
+		if (interactome.getPrecedence() < this.getPrecedence())
+			sb.append(")");
 		return sb;
 	}
 }

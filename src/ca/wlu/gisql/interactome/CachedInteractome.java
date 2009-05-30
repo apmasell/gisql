@@ -135,6 +135,10 @@ public class CachedInteractome implements Interactome {
 		return name;
 	}
 
+	public int getPrecedence() {
+		return source.getPrecedence();
+	}
+
 	public Type getType() {
 		return Type.Computed;
 	}

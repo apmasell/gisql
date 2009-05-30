@@ -82,6 +82,10 @@ public class Cut implements Interactome {
 		return new Cut(interactome.fork(substitute), cutoff);
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public Type getType() {
 		return Type.Computed;
 	}

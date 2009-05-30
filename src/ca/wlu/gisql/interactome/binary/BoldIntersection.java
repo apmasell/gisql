@@ -21,6 +21,10 @@ public class BoldIntersection extends BinaryArithmeticOperation {
 		return Math.max(0, left + right - 1);
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}

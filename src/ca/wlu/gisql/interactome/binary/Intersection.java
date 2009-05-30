@@ -19,6 +19,10 @@ public class Intersection extends BinaryArithmeticOperation {
 		return norm.t(left, right);
 	}
 
+	public int getPrecedence() {
+		return descriptor.getNestingLevel();
+	}
+
 	public char getSymbol() {
 		return descriptor.getSymbol();
 	}
