@@ -18,19 +18,28 @@ import ca.wlu.gisql.interactome.Interactome.Type;
 public class DatabaseEnvironment implements Environment {
 	private static TriangularNorm norm = new Godel();
 
+	private final Map<String, List<Interactome>> array = new HashedMap<String, List<Interactome>>();
+
 	private final Set<EnvironmentListener> listeners = new HashSet<EnvironmentListener>();
 
 	private final Map<String, DbSpecies> species = new HashedMap<String, DbSpecies>();
 
 	public DatabaseEnvironment(DatabaseManager databaseManager) {
 		super();
+		Map<Integer, DbSpecies> speciesById = new HashedMap<Integer, DbSpecies>();
 		for (DbSpecies interactome : databaseManager.getSpecies()) {
 			species.put(interactome.toString(), interactome);
+			speciesById.put(interactome.getId(), interactome);
 		}
+		databaseManager.populateArrays(array, speciesById);
 	}
 
 	public void addListener(EnvironmentListener listener) {
 		listeners.add(listener);
+	}
+
+	public List<Interactome> getArray(String name) {
+		return array.get(name);
 	}
 
 	public Interactome getLast() {
@@ -60,6 +69,10 @@ public class DatabaseEnvironment implements Environment {
 		listeners.remove(listener);
 	}
 
+	public boolean setArray(String name, List<Interactome> array) {
+		return false;
+	}
+
 	public boolean setTriangularNorm(TriangularNorm norm) {
 		return false;
 	}
@@ -77,14 +90,6 @@ public class DatabaseEnvironment implements Environment {
 			list.addAll(species.values());
 		}
 		return list;
-	}
-
-	public List<Interactome> getArray(String name) {
-		return null;
-	}
-
-	public boolean setArray(String name, List<Interactome> array) {
-		return false;
 	}
 
 }
