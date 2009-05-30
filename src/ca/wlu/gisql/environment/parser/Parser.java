@@ -34,9 +34,10 @@ public class Parser {
 			BoldIntersection.descriptor, BoundedDifference.descriptor,
 			BoundedSum.descriptor, Complement.descriptor, Cut.descriptor,
 			Difference.descriptor, EnvironmentUtils.clearDescriptor,
-			EnvironmentUtils.lastDescriptor, EnvironmentUtils.outputDescriptor,
-			EnvironmentUtils.runDescriptor, Intersection.descriptor,
-			Residuum.descriptor, StrongSymmetricDifference.descriptor,
+			EnvironmentUtils.echoDescriptor, EnvironmentUtils.lastDescriptor,
+			EnvironmentUtils.outputDescriptor, EnvironmentUtils.runDescriptor,
+			Intersection.descriptor, Residuum.descriptor,
+			StrongSymmetricDifference.descriptor,
 			SymmetricDifference.descriptor, AbstractOutput.descriptor,
 			ToVar.descriptor, Union.descriptor };
 

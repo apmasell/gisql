@@ -2,6 +2,7 @@ package ca.wlu.gisql.environment;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -21,7 +22,6 @@ import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
 
 public class EnvironmentUtils {
-
 	public static final Parseable clearDescriptor = new Function("clear", null) {
 		class Clear extends Unit {
 			private final Environment environment;
@@ -40,6 +40,44 @@ public class EnvironmentUtils {
 				List<Object> params, Stack<String> error) {
 			return new Clear(environment);
 		}
+	};
+
+	public static final Parseable echoDescriptor = new Function("echo",
+			new Function.Parameter[] { new Function.QuotedString("text") }) {
+		class Echo extends Unit {
+			private final Environment environment;
+
+			private final String string;
+
+			private Echo(Environment environment, String string) {
+				this.environment = environment;
+				this.string = string;
+			}
+
+			public boolean prepare() {
+				if (environment instanceof UserEnvironment) {
+					String filename = ((UserEnvironment) environment)
+							.getOutput();
+					PrintStream print;
+					try {
+						print = (filename == null ? System.out
+								: new PrintStream(new FileOutputStream(
+										filename, true)));
+						print.println(string);
+					} catch (IOException e) {
+						log.error("Failed to echo.", e);
+					}
+				}
+
+				return super.prepare();
+			}
+		}
+
+		public Interactome construct(Environment environment,
+				List<Object> params, Stack<String> error) {
+			return new Echo(environment, (String) params.get(0));
+		}
+
 	};
 
 	public static Parseable lastDescriptor = new Parseable() {
