@@ -16,13 +16,15 @@ import ca.wlu.gisql.util.Show;
 
 public class Gene implements Show, Iterable<Accession> {
 
+	private boolean dead = false;
+
 	final Map<Gene, Interaction> edges = new HashMap<Gene, Interaction>();
 
 	private final Set<Accession> ids = new HashSet<Accession>();
-
 	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
 
 	void add(Accession accession) {
+		checkState();
 		for (Accession existingaccession : this) {
 			if (existingaccession.getSpecies() == accession.getSpecies())
 				throw new IllegalArgumentException("Duplicate species in gene.");
@@ -31,7 +33,14 @@ public class Gene implements Show, Iterable<Accession> {
 			throw new RuntimeException();
 	}
 
+	private void checkState() {
+		if (dead) {
+			throw new IllegalStateException("Gene " + toString() + " is dead.");
+		}
+	}
+
 	void copyMembership(Gene gene) {
+		checkState();
 		for (Entry<Interactome, Double> entry : gene.memberships.entrySet()) {
 			double membership;
 			Double thisMembership = memberships.get(entry.getKey());
@@ -47,15 +56,23 @@ public class Gene implements Show, Iterable<Accession> {
 		gene.memberships.clear();
 	}
 
+	public void dispose() {
+		checkState();
+		dead = true;
+	}
+
 	public Collection<Interaction> getInteractions() {
+		checkState();
 		return edges.values();
 	}
 
 	protected Interaction getInteractionWith(Gene gene) {
+		checkState();
 		return edges.get(gene);
 	}
 
 	public double getMembership(Interactome interactome) {
+		checkState();
 		Double value = memberships.get(interactome);
 		if (value == null)
 			return Double.NaN;
@@ -64,16 +81,20 @@ public class Gene implements Show, Iterable<Accession> {
 	}
 
 	public Iterator<Accession> iterator() {
+		checkState();
 		return ids.iterator();
 	}
 
 	public void setMembership(Interactome interactome, double membership) {
+		checkState();
 		memberships.put(interactome, membership);
 
 	}
 
 	public PrintStream show(PrintStream print) {
 		boolean first = true;
+		if (dead)
+			print.print("DEAD:");
 		print.print("{");
 		for (Accession accession : this) {
 			if (!first)
@@ -87,6 +108,8 @@ public class Gene implements Show, Iterable<Accession> {
 
 	public StringBuilder show(StringBuilder sb) {
 		boolean first = true;
+		if (dead)
+			sb.append("DEAD:");
 		sb.append("{");
 		for (Accession accession : this) {
 			if (!first)

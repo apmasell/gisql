@@ -66,33 +66,34 @@ public class Ubergraph implements Iterable<Interaction> {
 		return interactions.iterator();
 	}
 
-	public boolean merge(Gene gene1, Gene gene2) {
-		if (!canMerge(gene1, gene2))
+	public boolean merge(Gene gene, Gene victim) {
+		if (!canMerge(gene, victim))
 			return false;
 
 		/* Merge the genes. */
-		gene1.copyMembership(gene2);
+		gene.copyMembership(victim);
 
-		for (Accession accession : gene2) {
-			genes.remove(accession.getIdentifier(), gene2);
-			addOrtholog(gene1, accession);
+		for (Accession accession : victim) {
+			genes.remove(accession.getIdentifier(), victim);
+			addOrtholog(gene, accession);
 		}
 
 		/* Merge any interactions. */
-		for (Interaction interaction : gene2.getInteractions()) {
-			Gene other = interaction.getOther(gene2);
+		for (Interaction interaction : new ArrayList<Interaction>(victim
+				.getInteractions())) {
+			Gene other = interaction.getOther(victim);
 
-			Interaction duplicate = other.getInteractionWith(gene1);
+			Interaction duplicate = other.getInteractionWith(gene);
 
 			if (duplicate == null) {
-				interaction.replace(gene2, gene1);
+				interaction.replace(victim, gene);
 			} else {
 				/* This edge has been duplicated by merging. */
 				interactions.remove(interaction);
 				duplicate.copyMembership(interaction);
 			}
-
 		}
+		victim.dispose();
 		return true;
 	}
 

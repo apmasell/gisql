@@ -67,17 +67,21 @@ public class Interaction implements Show {
 	}
 
 	protected void replace(Gene original, Gene replacement) {
+		Gene partner;
 		if (gene1 == original && gene2 != replacement) {
 			gene1 = replacement;
-			original.edges.remove(gene2);
-			replacement.edges.put(gene2, this);
+			partner = gene2;
 		} else if (gene2 == original && gene1 != replacement) {
 			gene2 = replacement;
-			original.edges.remove(gene1);
-			replacement.edges.put(gene1, this);
-		} else
+			partner = gene1;
+		} else {
 			throw new IllegalArgumentException(
-					"Trying to replace a gene that is not in this interaction or using a replacement that laready is.");
+					"Trying to replace a gene that is not in this interaction or using a replacement that already is.");
+		}
+		original.edges.remove(partner);
+		replacement.edges.put(partner, this);
+		partner.edges.remove(original);
+		partner.edges.put(replacement, this);
 	}
 
 	public void setMembership(Interactome interactome, double membership) {
