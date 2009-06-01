@@ -31,7 +31,9 @@ public class DatabaseManager {
 			IOException {
 		Class.forName("org.postgresql.Driver");
 		Properties props = new Properties();
-		InputStream is = new FileInputStream("gisql.properties");
+		String filename = System.getProperty("gisql.properties");
+		InputStream is = new FileInputStream(filename == null
+				|| filename.length() == 0 ? "gisql.properties" : filename);
 		if (is == null) {
 			log.fatal("Cannot find gisql.properties.");
 			throw new RuntimeException("Failed to connect to database.");
