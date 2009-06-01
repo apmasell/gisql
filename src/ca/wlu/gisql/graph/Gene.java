@@ -74,23 +74,31 @@ public class Gene implements Show, Iterable<Accession> {
 
 	public PrintStream show(PrintStream print) {
 		boolean first = true;
+		print.print("{");
 		for (Accession accession : this) {
 			if (!first)
 				print.print(", ");
-			print.print(accession.getIdentifier());
+			accession.show(print);
 			first = false;
 		}
+		print.print("}");
 		return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
 		boolean first = true;
+		sb.append("{");
 		for (Accession accession : this) {
 			if (!first)
 				sb.append(", ");
-			sb.append(accession.getIdentifier());
+			accession.show(sb);
 			first = false;
 		}
+		sb.append("}");
 		return sb;
+	}
+
+	public String toString() {
+		return show(new StringBuilder()).toString();
 	}
 }

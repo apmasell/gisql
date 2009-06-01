@@ -99,4 +99,8 @@ public class Interaction implements Show {
 		gene2.show(sb).append(")");
 		return sb;
 	}
+
+	public String toString() {
+		return show(new StringBuilder()).toString();
+	}
 }
