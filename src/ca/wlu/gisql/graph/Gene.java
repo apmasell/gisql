@@ -37,7 +37,7 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 
 	private void checkState() {
 		if (dead) {
-			throw new IllegalStateException("Gene " + toString() + " is dead.");
+			throw new IllegalStateException("Gene is dead.");
 		}
 	}
 
