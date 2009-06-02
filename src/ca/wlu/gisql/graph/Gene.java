@@ -12,15 +12,17 @@ import java.util.Map.Entry;
 
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Interactome.Type;
+import ca.wlu.gisql.util.Mergeable;
 import ca.wlu.gisql.util.Show;
 
-public class Gene implements Show, Iterable<Accession> {
+public class Gene implements Iterable<Accession>, Mergeable, Show {
 
 	private boolean dead = false;
 
 	final Map<Gene, Interaction> edges = new HashMap<Gene, Interaction>();
 
 	private final Set<Accession> ids = new HashSet<Accession>();
+
 	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
 
 	void add(Accession accession) {
@@ -37,6 +39,26 @@ public class Gene implements Show, Iterable<Accession> {
 		if (dead) {
 			throw new IllegalStateException("Gene " + toString() + " is dead.");
 		}
+	}
+
+	public boolean canMerge(Mergeable other) {
+		if (other instanceof Gene) {
+			Gene gene = (Gene) other;
+			Set<Integer> knownSpecies = new HashSet<Integer>();
+
+			/* Determine if we can merge these genes. */
+			for (Accession accession : this) {
+				knownSpecies.add(accession.getSpecies());
+			}
+			for (Accession accession : gene) {
+				if (knownSpecies.contains(accession.getSpecies())) {
+					return false;
+				}
+			}
+			return true;
+
+		}
+		return false;
 	}
 
 	void copyMembership(Gene gene) {

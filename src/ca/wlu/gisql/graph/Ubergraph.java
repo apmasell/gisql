@@ -36,21 +36,6 @@ public class Ubergraph implements Iterable<Interaction> {
 		}
 	}
 
-	public boolean canMerge(Gene gene1, Gene gene2) {
-		Set<Integer> knownSpecies = new HashSet<Integer>();
-
-		/* Determine if we can merge these genes. */
-		for (Accession accession : gene1) {
-			knownSpecies.add(accession.getSpecies());
-		}
-		for (Accession accession : gene2) {
-			if (knownSpecies.contains(accession.getSpecies())) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	@SuppressWarnings("unchecked")
 	public Collection<Gene> findGenes(long identifier) {
 		Collection<Gene> matches = genes.get(identifier);
@@ -67,7 +52,7 @@ public class Ubergraph implements Iterable<Interaction> {
 	}
 
 	public boolean merge(Gene gene, Gene victim) {
-		if (!canMerge(gene, victim))
+		if (!gene.canMerge(victim))
 			return false;
 
 		/* Merge the genes. */

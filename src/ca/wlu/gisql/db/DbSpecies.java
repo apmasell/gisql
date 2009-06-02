@@ -1,27 +1,24 @@
 package ca.wlu.gisql.db;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.jgrapht.alg.BronKerboschCliqueFinder;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleGraph;
 
 import ca.wlu.gisql.graph.Accession;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.interactome.NamedInteractome;
+import ca.wlu.gisql.util.CliqueMerger;
 import ca.wlu.gisql.util.Counter;
+import ca.wlu.gisql.util.CliqueMerger.Master;
 
-public class DbSpecies extends NamedInteractome {
+public class DbSpecies extends NamedInteractome implements Master<Gene> {
 
 	private static final Logger log = Logger.getLogger(DbSpecies.class);
+
+	private Counter<Gene> counter = null;
 
 	private DatabaseManager databaseManager;
 
@@ -44,7 +41,7 @@ public class DbSpecies extends NamedInteractome {
 
 	private void addToGenes(Accession accession) throws SQLException {
 		Ubergraph ubergraph = Ubergraph.getInstance();
-		Counter<Gene> counter = new Counter<Gene>();
+		counter = new Counter<Gene>();
 		long identifier = accession.getIdentifier();
 
 		databaseManager.pullOrthologs(counter, identifier, species_id);
@@ -54,34 +51,9 @@ public class DbSpecies extends NamedInteractome {
 		} else {
 			if (counter.size() > 1) {
 				/* Attempt to merge duplicate entries. */
-				SimpleGraph<Gene, DefaultEdge> compatibility = new SimpleGraph<Gene, DefaultEdge>(
-						DefaultEdge.class);
-				List<Gene> genes = new ArrayList<Gene>(counter.set());
-				for (Gene gene : genes)
-					compatibility.addVertex(gene);
-				for (int i = 0; i < genes.size(); i++) {
-					for (int j = i + 1; j < genes.size(); j++) {
-						if (ubergraph.canMerge(genes.get(i), genes.get(j))) {
-							compatibility.addEdge(genes.get(i), genes.get(j));
-						}
-					}
-				}
-
-				BronKerboschCliqueFinder<Gene, DefaultEdge> cliques = new BronKerboschCliqueFinder<Gene, DefaultEdge>(
-						compatibility);
-				for (Set<Gene> mergeable : cliques.getAllMaximalCliques()) {
-					if (mergeable.size() < 2)
-						break;
-					Iterator<Gene> geneIterator = mergeable.iterator();
-					Gene gene = geneIterator.next();
-					while (geneIterator.hasNext()) {
-						Gene victim = geneIterator.next();
-						if (!ubergraph.merge(gene, victim))
-							throw new RuntimeException(
-									"Gene merging failed unexpectedly.");
-						counter.transfer(victim, gene);
-					}
-				}
+				CliqueMerger<Gene> merger = new CliqueMerger<Gene>(counter
+						.set(), this);
+				merger.merge();
 			}
 			for (Entry<Gene, Integer> entry : counter) {
 				ubergraph.addOrtholog(entry.getKey(), accession);
@@ -93,6 +65,11 @@ public class DbSpecies extends NamedInteractome {
 
 	public int getId() {
 		return species_id;
+	}
+
+	public boolean merge(Gene gene, Gene victim) {
+		counter.transfer(victim, gene);
+		return Ubergraph.getInstance().merge(gene, victim);
 	}
 
 	public boolean prepare() {
