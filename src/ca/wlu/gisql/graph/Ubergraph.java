@@ -74,8 +74,9 @@ public class Ubergraph implements Iterable<Interaction> {
 				interaction.replace(victim, gene);
 			} else {
 				/* This edge has been duplicated by merging. */
-				interactions.remove(interaction);
 				duplicate.copyMembership(interaction);
+				interactions.remove(interaction);
+				other.edges.remove(victim);
 			}
 		}
 		victim.dispose();
