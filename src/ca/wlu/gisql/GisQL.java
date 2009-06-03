@@ -47,7 +47,7 @@ public class GisQL {
 		}
 		for (String argument : commandline.getArgs()) {
 			boolean success = EnvironmentUtils.runExpression(environment,
-					argument);
+					argument, true);
 			if (!success)
 				return;
 		}

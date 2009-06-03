@@ -187,7 +187,7 @@ public class EnvironmentUtils {
 	}
 
 	public static boolean runExpression(UserEnvironment environment,
-			String expression) {
+			String expression, boolean append) {
 		Parser parser = new Parser(environment, expression);
 		CachedInteractome interactome = AbstractOutput.wrap(parser.get(), null,
 				0.0, 1.0, environment.getFormat(), environment.getOutput(),
@@ -197,7 +197,8 @@ public class EnvironmentUtils {
 			return false;
 		}
 		if (interactome.process()) {
-			environment.append(interactome);
+			if (append)
+				environment.append(interactome);
 			return true;
 		} else {
 			return false;
@@ -211,7 +212,7 @@ public class EnvironmentUtils {
 			int linenumber = 0;
 			while ((line = input.readLine()) != null) {
 				linenumber++;
-				if (!runExpression(environment, line)) {
+				if (!runExpression(environment, line, false)) {
 					log.error("Script failed on line :" + linenumber);
 					return false;
 				}
