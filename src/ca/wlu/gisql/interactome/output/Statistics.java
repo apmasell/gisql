@@ -37,12 +37,16 @@ class Statistics implements Show {
 	}
 
 	protected void countGene(double membership) {
+		if (Double.isNaN(membership))
+			return;
 		genes++;
 		geneFuziness += 1 - Math.abs(2 * membership - 1);
 		geneBins[calculateBin(membership)]++;
 	}
 
 	protected void countInteraction(double membership) {
+		if (Double.isNaN(membership))
+			return;
 		interactions++;
 		interactionFuzziness += 1 - Math.abs(2 * membership - 1);
 		interactionBins[calculateBin(membership)]++;
@@ -67,6 +71,7 @@ class Statistics implements Show {
 			print.print(i);
 			print.print(" ");
 		}
+		print.println();
 		return print;
 	}
 
@@ -79,12 +84,13 @@ class Statistics implements Show {
 		sb.append(geneFuziness);
 		sb.append(" Interaction fuzziness: ");
 		sb.append(interactionFuzziness);
-		sb.append("\n#G ene histogram: ");
+		sb.append("\n# Gene histogram: ");
 		for (int i : geneBins)
 			sb.append(i).append(" ");
-		sb.append("\n#Interaction histogram: ");
+		sb.append("\n# Interaction histogram: ");
 		for (int i : interactionBins)
 			sb.append(i).append(" ");
+		sb.append("\n");
 		return sb;
 	}
 }
