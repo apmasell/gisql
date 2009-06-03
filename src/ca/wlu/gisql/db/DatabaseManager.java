@@ -99,14 +99,14 @@ public class DatabaseManager {
 		}
 	}
 
-	List<Accession> pullAccessions(int species_id) throws SQLException {
+	List<Accession> pullAccessions(DbSpecies species) throws SQLException {
 		List<Accession> list = new ArrayList<Accession>();
 		PreparedStatement statement = connection
 				.prepareStatement("SELECT id, name FROM gene WHERE species = ?");
-		statement.setInt(1, species_id);
+		statement.setInt(1, species.getId());
 		ResultSet rs = statement.executeQuery();
 		while (rs.next()) {
-			list.add(new Accession(rs.getLong(1), species_id, rs.getString(2)));
+			list.add(new Accession(rs.getLong(1), species, rs.getString(2)));
 		}
 		rs.close();
 
@@ -127,7 +127,7 @@ public class DatabaseManager {
 		rs.close();
 	}
 
-	void pullOrthologs(Counter<Gene> counter, long identifier, int species_id)
+	void pullOrthologs(Counter<Gene> counter, long identifier, DbSpecies species)
 			throws SQLException {
 		for (String query : new String[] {
 				"SELECT match_gene FROM ortholog WHERE query_gene = ?",
@@ -144,7 +144,7 @@ public class DatabaseManager {
 							ortholog)) {
 						boolean add = true;
 						for (Accession accession : match) {
-							if (accession.getSpecies() == species_id) {
+							if (accession.getSpecies() == species) {
 								add = false;
 								break;
 							}

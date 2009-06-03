@@ -2,6 +2,7 @@ package ca.wlu.gisql.graph;
 
 import java.io.PrintStream;
 
+import ca.wlu.gisql.db.DbSpecies;
 import ca.wlu.gisql.util.Show;
 
 public final class Accession implements Show {
@@ -9,9 +10,9 @@ public final class Accession implements Show {
 
 	private final String name;
 
-	private final int species;
+	private final DbSpecies species;
 
-	public Accession(long identifier, int species, String name) {
+	public Accession(long identifier, DbSpecies species, String name) {
 		this.identifier = identifier;
 		this.species = species;
 		this.name = name;
@@ -25,7 +26,7 @@ public final class Accession implements Show {
 		return name;
 	}
 
-	public int getSpecies() {
+	public DbSpecies getSpecies() {
 		return species;
 	}
 
@@ -34,7 +35,7 @@ public final class Accession implements Show {
 		print.print(" [gi:");
 		print.print(identifier);
 		print.print("/");
-		print.print(species);
+		species.show(print);
 		print.print("]");
 		return print;
 	}
@@ -44,7 +45,7 @@ public final class Accession implements Show {
 		sb.append(" [gi:");
 		sb.append(identifier);
 		sb.append("/");
-		sb.append(species);
+		species.show(sb);
 		sb.append("]");
 		return sb;
 	}

@@ -44,7 +44,7 @@ public class DbSpecies extends NamedInteractome implements Master<Gene> {
 		counter = new Counter<Gene>();
 		long identifier = accession.getIdentifier();
 
-		databaseManager.pullOrthologs(counter, identifier, species_id);
+		databaseManager.pullOrthologs(counter, identifier, this);
 
 		if (counter.getTotal() == 0) {
 			ubergraph.newGene(accession).setMembership(this, 1);
@@ -78,8 +78,7 @@ public class DbSpecies extends NamedInteractome implements Master<Gene> {
 		}
 		log.info("Loading species " + name);
 		try {
-			for (Accession accession : databaseManager
-					.pullAccessions(species_id)) {
+			for (Accession accession : databaseManager.pullAccessions(this)) {
 				addToGenes(accession);
 			}
 

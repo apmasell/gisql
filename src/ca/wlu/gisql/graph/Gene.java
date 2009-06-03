@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
 
+import ca.wlu.gisql.db.DbSpecies;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.util.Mergeable;
@@ -44,7 +45,7 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 	public boolean canMerge(Mergeable other) {
 		if (other instanceof Gene) {
 			Gene gene = (Gene) other;
-			Set<Integer> knownSpecies = new HashSet<Integer>();
+			Set<DbSpecies> knownSpecies = new HashSet<DbSpecies>();
 
 			/* Determine if we can merge these genes. */
 			for (Accession accession : this) {
