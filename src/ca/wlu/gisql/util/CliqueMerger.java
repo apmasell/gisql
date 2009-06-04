@@ -1,10 +1,10 @@
 package ca.wlu.gisql.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jgrapht.alg.BronKerboschCliqueFinder;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -24,25 +24,42 @@ public class CliqueMerger<V extends Mergeable> {
 		this.master = master;
 	}
 
+	private static final Logger log = Logger.getLogger(CliqueMerger.class);
 	public void merge() {
+		SimpleGraph<V, DefaultEdge> compatibility = prepareGraph();
 
-		while (true) {
-			BronKerboschCliqueFinder<V, DefaultEdge> cliques = new BronKerboschCliqueFinder<V, DefaultEdge>(
-					prepareGraph());
-			for (Set<V> mergeable : cliques.getBiggestMaximalCliques()) {
-				if (mergeable.size() < 2)
-					return;
+		BronKerboschCliqueFinder<V, DefaultEdge> cliques = new BronKerboschCliqueFinder<V, DefaultEdge>(
+				compatibility);
 
-				Iterator<V> iterator = mergeable.iterator();
-				V item = iterator.next();
-				while (iterator.hasNext()) {
-					V victim = iterator.next();
-					if (!master.merge(item, victim))
+		while (compatibility.edgeSet().size() > 0) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Finding cliques on a graph where |E| = ");
+			sb.append(compatibility.edgeSet().size());
+			sb.append(" and V = ");
+			for (V vertex: compatibility.vertexSet())
+				vertex.show(sb).append(" ");
+			
+			log.info(sb);
+			
+			Set<V> mergeable = cliques.getBiggestMaximalCliques().iterator()
+					.next();
+
+			if (mergeable.size() < 2)
+				return;
+
+			V item = null;
+			for (V victim : mergeable) {
+				compatibility.removeVertex(victim);
+				items.remove(victim);
+				if (item == null) {
+					item = victim;
+				} else {
+					if (!master.merge(item, victim)) {
 						throw new RuntimeException(
 								"Merging failed unexpectedly.");
-					items.remove(victim);
+					}
+
 				}
-				break;
 			}
 		}
 	}
