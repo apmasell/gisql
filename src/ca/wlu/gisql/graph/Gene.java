@@ -27,7 +27,6 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
 
 	void add(Accession accession) {
-		checkState();
 		for (Accession existingaccession : this) {
 			if (existingaccession.getSpecies() == accession.getSpecies())
 				throw new IllegalArgumentException("Duplicate species in gene.");
@@ -36,7 +35,7 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 			throw new RuntimeException();
 	}
 
-	private void checkState() {
+	protected void checkState() {
 		if (dead) {
 			throw new IllegalStateException("Gene is dead.");
 		}
@@ -63,7 +62,6 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 	}
 
 	void copyMembership(Gene gene) {
-		checkState();
 		for (Entry<Interactome, Double> entry : gene.memberships.entrySet()) {
 			double membership;
 			Double thisMembership = memberships.get(entry.getKey());
@@ -85,17 +83,14 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 	}
 
 	public Collection<Interaction> getInteractions() {
-		checkState();
 		return edges.values();
 	}
 
 	protected Interaction getInteractionWith(Gene gene) {
-		checkState();
 		return edges.get(gene);
 	}
 
 	public double getMembership(Interactome interactome) {
-		checkState();
 		Double value = memberships.get(interactome);
 		if (value == null)
 			return Double.NaN;
@@ -104,12 +99,10 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 	}
 
 	public Iterator<Accession> iterator() {
-		checkState();
 		return ids.iterator();
 	}
 
 	public void setMembership(Interactome interactome, double membership) {
-		checkState();
 		memberships.put(interactome, membership);
 
 	}
