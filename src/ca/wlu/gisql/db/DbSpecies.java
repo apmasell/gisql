@@ -55,6 +55,16 @@ public class DbSpecies extends NamedInteractome implements Master<Gene> {
 						.set(), this);
 				merger.merge();
 			}
+
+			if (counter.size() > 1) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Splitting accession ");
+				accession.show(sb);
+				sb.append(" amoung");
+				for (Entry<Gene, Integer> entry : counter)
+					entry.getKey().show(sb.append(" "));
+				log.warn(sb);
+			}
 			for (Entry<Gene, Integer> entry : counter) {
 				ubergraph.addOrtholog(entry.getKey(), accession);
 				entry.getKey().setMembership(this,
