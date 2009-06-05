@@ -14,8 +14,7 @@ class OutputText extends AbstractOutput {
 
 	private PrintStream print = null;
 
-	private final Statistics statistics = new Statistics(STANDARD_BIN_COUNT,
-			lowerbound, upperbound);
+	private Statistics statistics = null;
 
 	OutputText(Interactome source, String name, double lowerbound,
 			double upperbound, FileFormat format, String filename) {
@@ -72,6 +71,8 @@ class OutputText extends AbstractOutput {
 
 	public boolean prepare() {
 		if (super.prepare()) {
+			statistics = new Statistics(STANDARD_BIN_COUNT, lowerbound,
+					upperbound);
 			try {
 				print = (filename == null ? System.out : new PrintStream(
 						new FileOutputStream(filename, true)));
