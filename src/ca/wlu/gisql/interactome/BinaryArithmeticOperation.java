@@ -22,7 +22,7 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 					Interactome.class, Interactome.class).newInstance(norm,
 					left, right);
 		} catch (Exception e) {
-			log.error("Instatiation error during forking.", e);
+			log.error("Instantiation error during forking.", e);
 		}
 		return null;
 	}

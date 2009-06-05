@@ -49,7 +49,7 @@ public class ParseableBinaryOperation implements Parseable {
 					environment.getTriangularNorm(), left, right);
 		} catch (Exception e) {
 			error.push("Unexpected instantiation error.");
-			log.error("Instatiation error during parsing.", e);
+			log.error("Instantiation error during parsing.", e);
 		}
 		return null;
 	}

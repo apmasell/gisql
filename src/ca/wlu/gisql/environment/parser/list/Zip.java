@@ -44,13 +44,13 @@ public class Zip implements ListParseable {
 
 	public PrintStream show(PrintStream print) {
 		print
-				.print("Zip: < variable1 , variable 2 . expression : list1, list2 >");
+				.print("Zip: < variable1 , variable2 . expression : list1, list2 >");
 		return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
 		sb
-				.append("Zip: < variable1 , variable 2 . expression : list1, list2 >");
+				.append("Zip: < variable1 , variable2 . expression : list1, list2 >");
 		return sb;
 	}
 

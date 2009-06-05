@@ -82,7 +82,7 @@ public class Parser {
 
 		StringBuilder sb = new StringBuilder();
 		sb
-				.append("Syntax Help\nEach operator and it's membership function is described from lowest prescedence to highest.\n\n");
+				.append("Syntax Help\nEach operator and it's membership function is described from lowest precedence to highest.\n\n");
 		/* This also initialises every entry in the maps. */
 		for (int level = 0; level <= maxdepth; level++) {
 			for (Parseable operator : getList(prefixedOperators, level)) {

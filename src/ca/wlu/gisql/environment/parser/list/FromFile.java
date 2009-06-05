@@ -42,8 +42,8 @@ public class FromFile implements ListParseable {
 			results.add(list);
 			return true;
 		} catch (IOException e) {
-			error.push("I/O error reading scipt: " + filename);
-			log.error("I/O error reading scipt: " + filename, e);
+			error.push("I/O error reading script: " + filename);
+			log.error("I/O error reading script: " + filename, e);
 			return false;
 		}
 	}

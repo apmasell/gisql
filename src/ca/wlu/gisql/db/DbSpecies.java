@@ -60,7 +60,7 @@ public class DbSpecies extends NamedInteractome implements Master<Gene> {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Splitting accession ");
 				accession.show(sb);
-				sb.append(" amoung");
+				sb.append(" among");
 				for (Entry<Gene, Integer> entry : counter)
 					entry.getKey().show(sb.append(" "));
 				log.warn(sb);
@@ -94,7 +94,7 @@ public class DbSpecies extends NamedInteractome implements Master<Gene> {
 
 			databaseManager.pullInteractions(this);
 
-			log.info("Load complete.");
+			log.info("Loading " + name + " complete.");
 			databaseManager = null; /* Stop reloading. */
 			return true;
 		} catch (SQLException e) {

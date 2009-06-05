@@ -44,13 +44,13 @@ public class CrossJoin implements ListParseable {
 
 	public PrintStream show(PrintStream print) {
 		print
-				.print("Cartesian Product: [ variable1 , variable 2 . expression : outerlist, innerlist ]");
+				.print("Cartesian Product: [ variable1 , variable2 . expression : outerlist, innerlist ]");
 		return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
 		sb
-				.append("Cartesian Product: [ variable1 , variable 2 . expression : outerlist, innerlist ]");
+				.append("Cartesian Product: [ variable1 , variable2 . expression : outerlist, innerlist ]");
 		return sb;
 	}
 

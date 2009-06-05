@@ -212,7 +212,7 @@ public class MainFrame extends JFrame implements ActionListener, KeyListener,
 			for (int i = 0; i < name.length(); i++) {
 				if (!(i == 0 ? Character.isJavaIdentifierStart(name.charAt(i))
 						: Character.isJavaIdentifierPart(name.charAt(i)))) {
-					JOptionPane.showMessageDialog(this, "Inavlid name.",
+					JOptionPane.showMessageDialog(this, "Invalid name.",
 							"Name - gisQL", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
