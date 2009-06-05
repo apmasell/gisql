@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -17,6 +18,7 @@ import ca.wlu.gisql.db.DatabaseManager;
 import ca.wlu.gisql.environment.DatabaseEnvironment;
 import ca.wlu.gisql.environment.EnvironmentUtils;
 import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.gui.MainFrame;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
@@ -40,7 +42,15 @@ public class GisQL {
 
 		environment = new UserEnvironment(new DatabaseEnvironment(dm));
 
-		CommandLine commandline = processCommandLine(args);
+		Options options = makeOptions();
+		CommandLine commandline = processCommandLine(options, args);
+
+		if (commandline.hasOption('h')) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("gisql", options);
+			System.out.println(Parser.getHelp());
+			return;
+		}
 
 		if (commandline.hasOption('o')) {
 			environment.setOutput(commandline.getOptionValue('o'));
@@ -61,7 +71,9 @@ public class GisQL {
 			environment.setOutput(null);
 		}
 
-		if (commandline.hasOption('g') || commandline.getArgs().length == 0) {
+		if (commandline.hasOption('g')
+				|| (commandline.getArgs().length == 0 && !commandline
+						.hasOption('c'))) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					new MainFrame(GisQL.environment).setVisible(true);
@@ -70,8 +82,10 @@ public class GisQL {
 		}
 	}
 
-	private static CommandLine processCommandLine(String[] args) {
+	private static Options makeOptions() {
 		Options options = new Options();
+
+		Option help = new Option("h", "help", false, "Display this non-sense.");
 
 		Option file = new Option("c", "command", true, "Run queries in file.");
 		file.setArgName("file");
@@ -85,10 +99,15 @@ public class GisQL {
 
 		Option gui = new Option("g", "gui", false, "Use graphical interface.");
 
+		options.addOption(help);
 		options.addOption(file);
 		options.addOption(output);
 		options.addOption(format);
 		options.addOption(gui);
+		return options;
+	}
+
+	private static CommandLine processCommandLine(Options options, String[] args) {
 		try {
 			CommandLine command = new GnuParser().parse(options, args);
 			if (command.hasOption('F')) {
