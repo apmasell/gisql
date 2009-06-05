@@ -2,6 +2,7 @@ package ca.wlu.gisql.interactome;
 
 import java.io.PrintStream;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 
@@ -34,9 +35,9 @@ public class NamedInteractome implements Interactome {
 
 	public final double calculateMembership(Interaction interaction) {
 		double membership = interaction.getMembership(this);
-		if (zeroInteractionsWithOrthologs && Double.isNaN(membership)
-				&& !Double.isNaN(interaction.getGene1().getMembership(this))
-				&& !Double.isNaN(interaction.getGene2().getMembership(this))) {
+		if (zeroInteractionsWithOrthologs && GisQL.isMissing(membership)
+				&& !GisQL.isMissing(interaction.getGene1().getMembership(this))
+				&& !GisQL.isMissing(interaction.getGene2().getMembership(this))) {
 			return 0;
 
 		}

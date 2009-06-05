@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.db.DbSpecies;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Interactome.Type;
@@ -93,7 +94,7 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 	public double getMembership(Interactome interactome) {
 		Double value = memberships.get(interactome);
 		if (value == null)
-			return Double.NaN;
+			return GisQL.Missing;
 		else
 			return value;
 	}

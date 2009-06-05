@@ -4,6 +4,7 @@ import java.io.PrintStream;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
@@ -48,11 +49,11 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 		double leftMembership = left.calculateMembership(gene);
 		double rightMembership = right.calculateMembership(gene);
 
-		if (Double.isNaN(leftMembership) && Double.isNaN(rightMembership))
-			return Double.NaN;
+		if (GisQL.isMissing(leftMembership) && Double.isNaN(rightMembership))
+			return GisQL.Missing;
 		if (Double.isNaN(leftMembership))
 			leftMembership = left.membershipOfUnknown();
-		if (Double.isNaN(rightMembership))
+		if (GisQL.isMissing(rightMembership))
 			rightMembership = right.membershipOfUnknown();
 
 		return calculateMembership(norm, leftMembership, rightMembership);
@@ -62,11 +63,11 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 		double leftMembership = left.calculateMembership(interaction);
 		double rightMembership = right.calculateMembership(interaction);
 
-		if (Double.isNaN(leftMembership) && Double.isNaN(rightMembership))
-			return Double.NaN;
-		if (Double.isNaN(leftMembership))
+		if (GisQL.isMissing(leftMembership) && GisQL.isMissing(rightMembership))
+			return GisQL.Missing;
+		if (GisQL.isMissing(leftMembership))
 			leftMembership = left.membershipOfUnknown();
-		if (Double.isNaN(rightMembership))
+		if (GisQL.isMissing(rightMembership))
 			rightMembership = right.membershipOfUnknown();
 
 		return calculateMembership(norm, leftMembership, rightMembership);

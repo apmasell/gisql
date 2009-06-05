@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Decimal;
 import ca.wlu.gisql.environment.parser.Literal;
@@ -66,15 +67,15 @@ public class Cut implements Interactome {
 
 	public double calculateMembership(Gene gene) {
 		double membership = interactome.calculateMembership(gene);
-		if (Double.isNaN(membership) || membership < cutoff)
-			return Double.NaN;
+		if (GisQL.isMissing(membership) || membership < cutoff)
+			return GisQL.Missing;
 		return membership;
 	}
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = interactome.calculateMembership(interaction);
-		if (Double.isNaN(membership) || membership < cutoff)
-			return Double.NaN;
+		if (GisQL.isMissing(membership) || membership < cutoff)
+			return GisQL.Missing;
 		return membership;
 	}
 

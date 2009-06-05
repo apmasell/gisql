@@ -2,6 +2,7 @@ package ca.wlu.gisql.interactome.output;
 
 import java.io.PrintStream;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.util.Show;
 
 class Statistics implements Show {
@@ -45,7 +46,7 @@ class Statistics implements Show {
 	}
 
 	protected void countInteraction(double membership) {
-		if (Double.isNaN(membership))
+		if (GisQL.isMissing(membership))
 			return;
 		interactions++;
 		interactionFuzziness += 1 - Math.abs(2 * membership - 1);

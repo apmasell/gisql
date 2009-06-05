@@ -28,6 +28,12 @@ public class GisQL {
 
 	private static final Logger log = Logger.getLogger(GisQL.class);
 
+	public static final double Missing = -1;
+
+	public static boolean isMissing(double membership) {
+		return membership < 0;
+	}
+
 	public static void main(String[] args) throws Exception {
 		ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
 		Logger.getRootLogger().addAppender(appender);
