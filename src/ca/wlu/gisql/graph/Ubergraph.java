@@ -18,7 +18,8 @@ public class Ubergraph implements Iterable<Interaction> {
 		return self;
 	}
 
-	private final MultiMap<Long, Gene> genes = new MultiHashMap<Long, Gene>();
+	private final MultiMap<Long, Gene> geneByGi = new MultiHashMap<Long, Gene>();
+	private final Set<Gene> genes = new HashSet<Gene>();
 
 	private final Set<Interaction> interactions = new HashSet<Interaction>();
 
@@ -29,9 +30,9 @@ public class Ubergraph implements Iterable<Interaction> {
 	}
 
 	public Gene addOrtholog(Gene gene, Accession accession) {
-		if (genes.containsValue(gene)) {
+		if (genes.contains(gene)) {
 			gene.add(accession);
-			genes.put(accession.getIdentifier(), gene);
+			geneByGi.put(accession.getIdentifier(), gene);
 			return gene;
 		} else {
 			throw new IllegalArgumentException("Where did this gene come from?");
@@ -40,13 +41,13 @@ public class Ubergraph implements Iterable<Interaction> {
 
 	@SuppressWarnings("unchecked")
 	public Collection<Gene> findGenes(long identifier) {
-		Collection<Gene> matches = genes.get(identifier);
+		Collection<Gene> matches = geneByGi.get(identifier);
 		return (matches == null ? (Collection<Gene>) Collections.EMPTY_SET
 				: matches);
 	}
 
 	public Iterable<Gene> genes() {
-		return genes.values();
+		return genes;
 	}
 
 	public Iterator<Interaction> iterator() {
@@ -61,7 +62,7 @@ public class Ubergraph implements Iterable<Interaction> {
 		gene.copyMembership(victim);
 
 		for (Accession accession : victim) {
-			genes.remove(accession.getIdentifier(), victim);
+			geneByGi.remove(accession.getIdentifier(), victim);
 			addOrtholog(gene, accession);
 		}
 
@@ -81,6 +82,7 @@ public class Ubergraph implements Iterable<Interaction> {
 				other.edges.remove(victim);
 			}
 		}
+		genes.remove(victim);
 		victim.dispose();
 		return true;
 	}
@@ -88,7 +90,8 @@ public class Ubergraph implements Iterable<Interaction> {
 	public Gene newGene(Accession accession) {
 		Gene gene = (safeMode ? new CheckedGene() : new Gene());
 		gene.add(accession);
-		genes.put(accession.getIdentifier(), gene);
+		genes.add(gene);
+		geneByGi.put(accession.getIdentifier(), gene);
 		return gene;
 	}
 
@@ -96,8 +99,8 @@ public class Ubergraph implements Iterable<Interaction> {
 			long identifier2) {
 		Collection<Interaction> results = new ArrayList<Interaction>();
 
-		for (Gene gene1 : genes.get(identifier1)) {
-			for (Gene gene2 : genes.get(identifier2)) {
+		for (Gene gene1 : geneByGi.get(identifier1)) {
+			for (Gene gene2 : geneByGi.get(identifier2)) {
 				Interaction interaction = gene1.getInteractionWith(gene2);
 				if (interaction == null) {
 					interaction = new Interaction(gene1, gene2);
