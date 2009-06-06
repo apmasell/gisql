@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
+
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.db.DbSpecies;
 import ca.wlu.gisql.interactome.Interactome;
@@ -18,6 +20,8 @@ import ca.wlu.gisql.util.Mergeable;
 import ca.wlu.gisql.util.Show;
 
 public class Gene implements Iterable<Accession>, Mergeable, Show {
+
+	private static final Logger log = Logger.getLogger(Gene.class);
 
 	private boolean dead = false;
 
@@ -70,7 +74,15 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 			} else if (entry.getKey().getType() == Type.Computed) {
 				membership = entry.getKey().calculateMembership(gene);
 			} else {
-				membership = Math.max(entry.getValue(), thisMembership);
+				StringBuilder sb = new StringBuilder();
+				sb.append("There is a duplicated value for the interactome ");
+				entry.getKey().show(sb);
+				sb.append(" where gene ");
+				this.show(sb).append(" has value ").append(membership);
+				sb.append(" and gene ");
+				gene.show(sb).append(" has value ").append(entry.getValue());
+				log.warn(sb);
+				membership = Math.max(entry.getValue(), membership);
 			}
 			memberships.put(entry.getKey(), membership);
 		}
