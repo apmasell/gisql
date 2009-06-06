@@ -6,8 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import ca.wlu.gisql.environment.ClearFunction;
+import ca.wlu.gisql.environment.EchoFunction;
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.EnvironmentUtils;
+import ca.wlu.gisql.environment.FormatFunction;
+import ca.wlu.gisql.environment.LastInteractome;
+import ca.wlu.gisql.environment.OutputFunction;
+import ca.wlu.gisql.environment.RunFunction;
 import ca.wlu.gisql.environment.parser.util.FoldOperator;
 import ca.wlu.gisql.environment.parser.util.ParseableBinaryOperation;
 import ca.wlu.gisql.interactome.Complement;
@@ -31,15 +36,15 @@ public class Parser {
 	static int maxdepth = 0;
 
 	private final static Parseable[] operators = new Parseable[] {
-			BoldIntersection.descriptor, BoundedDifference.descriptor,
-			BoundedSum.descriptor, Complement.descriptor, Cut.descriptor,
-			Difference.descriptor, EnvironmentUtils.clearDescriptor,
-			EnvironmentUtils.echoDescriptor, EnvironmentUtils.lastDescriptor,
-			EnvironmentUtils.outputDescriptor, EnvironmentUtils.runDescriptor,
-			Intersection.descriptor, Residuum.descriptor,
+			AbstractOutput.descriptor, BoldIntersection.descriptor,
+			BoundedDifference.descriptor, BoundedSum.descriptor,
+			ClearFunction.descriptor, Complement.descriptor, Cut.descriptor,
+			Difference.descriptor, EchoFunction.descriptor,
+			FormatFunction.descriptor, Intersection.descriptor,
+			LastInteractome.descriptor, OutputFunction.descriptor,
+			Residuum.descriptor, RunFunction.descriptor,
 			StrongSymmetricDifference.descriptor,
-			SymmetricDifference.descriptor, AbstractOutput.descriptor,
-			ToVar.descriptor, Union.descriptor };
+			SymmetricDifference.descriptor, ToVar.descriptor, Union.descriptor };
 
 	private static Map<Integer, List<Parseable>> otherfixOperators = null;
 

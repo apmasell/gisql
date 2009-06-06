@@ -2,183 +2,18 @@ package ca.wlu.gisql.environment;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.List;
-import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.environment.parser.NextTask;
-import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
-import ca.wlu.gisql.environment.parser.util.Function;
 import ca.wlu.gisql.interactome.CachedInteractome;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Unit;
 import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
 
 public class EnvironmentUtils {
-	public static final Parseable clearDescriptor = new Function("clear", null) {
-		class Clear extends Unit {
-			private final Environment environment;
-
-			private Clear(Environment environment) {
-				this.environment = environment;
-			}
-
-			public boolean prepare() {
-				clear(environment);
-				return super.prepare();
-			}
-		}
-
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			return new Clear(environment);
-		}
-	};
-
-	public static final Parseable echoDescriptor = new Function("echo",
-			new Function.Parameter[] { new Function.QuotedString("text") }) {
-		class Echo extends Unit {
-			private final Environment environment;
-
-			private final String string;
-
-			private Echo(Environment environment, String string) {
-				this.environment = environment;
-				this.string = string;
-			}
-
-			public boolean prepare() {
-				if (environment instanceof UserEnvironment) {
-					String filename = ((UserEnvironment) environment)
-							.getOutput();
-					PrintStream print;
-					try {
-						print = (filename == null ? System.out
-								: new PrintStream(new FileOutputStream(
-										filename, true)));
-						print.println(string);
-					} catch (IOException e) {
-						log.error("Failed to echo.", e);
-					}
-				}
-
-				return super.prepare();
-			}
-		}
-
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			return new Echo(environment, (String) params.get(0));
-		}
-
-	};
-
-	public static Parseable lastDescriptor = new Parseable() {
-
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			if (environment.getLast() == null) {
-				error.push("No previous statement.");
-				return null;
-			}
-			return environment.getLast();
-		}
-
-		public int getNestingLevel() {
-			return 6;
-		}
-
-		public boolean isMatchingOperator(char c) {
-			return c == '.';
-		}
-
-		public boolean isPrefixed() {
-			return true;
-		}
-
-		public PrintStream show(PrintStream print) {
-			print.print("Last command: .");
-			return print;
-		}
-
-		public StringBuilder show(StringBuilder sb) {
-			sb.append("Last command: .");
-			return sb;
-		}
-
-		public NextTask[] tasks(Parser parser) {
-			return null;
-		}
-
-	};
-
-	private static final Logger log = Logger.getLogger(EnvironmentUtils.class);
-
-	public static final Parseable outputDescriptor = new Function("output",
-			new Function.Parameter[] { new Function.QuotedString("filename") }) {
-		class SetOutput extends Unit {
-			private final Environment environment;
-
-			private final String filename;
-
-			private SetOutput(Environment environment, String filename) {
-				this.environment = environment;
-				this.filename = filename;
-			}
-
-			public boolean prepare() {
-				if (environment instanceof UserEnvironment) {
-					((UserEnvironment) environment).setOutput(filename);
-					return super.prepare();
-				} else {
-					return false;
-				}
-			}
-		}
-
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			return new SetOutput(environment, (String) params.get(0));
-		}
-	};
-
-	public static final Parseable runDescriptor = new Function("run",
-			new Function.Parameter[] { new Function.QuotedString("filename") }) {
-		class Script extends Unit {
-			private final UserEnvironment environment;
-
-			private final File file;
-
-			private Script(Environment environment, File file) {
-				this.environment = (UserEnvironment) environment;
-				this.file = file;
-			}
-
-			public boolean prepare() {
-				if (!super.prepare())
-					return false;
-				return runFile(environment, file);
-
-			}
-		}
-
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			File file = new File((String) params.get(0));
-			if (file.canRead()) {
-				return new Script(environment, file);
-			} else {
-				return null;
-			}
-		}
-	};
+	static final Logger log = Logger.getLogger(EnvironmentUtils.class);
 
 	public static void clear(Environment environment) {
 		for (String name : environment.names(Type.Mutable)) {
