@@ -51,6 +51,16 @@ public class Slice implements ListParseable {
 		return true;
 	}
 
+	public PrintStream show(PrintStream print) {
+		print.print("slice(start, [ end,] list)");
+		return print;
+	}
+
+	public StringBuilder show(StringBuilder sb) {
+		sb.append("slice(start, [ end,] list)");
+		return sb;
+	}
+
 	public NextTask[] tasks(Parser parser) {
 		return new NextTask[] {
 				new Word(parser, "slice"),
@@ -61,15 +71,5 @@ public class Slice implements ListParseable {
 						new ca.wlu.gisql.environment.parser.Number(parser),
 						new Literal(parser, ','))), new ListExpression(parser),
 				new Literal(parser, ')') };
-	}
-
-	public PrintStream show(PrintStream print) {
-		print.print("slice(start, [ end,] list)");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("slice(start, [ end,] list)");
-		return sb;
 	}
 }

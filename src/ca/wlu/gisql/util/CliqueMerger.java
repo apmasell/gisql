@@ -15,6 +15,8 @@ public class CliqueMerger<V extends Mergeable> {
 		boolean merge(V gene, V victim);
 	}
 
+	private static final Logger log = Logger.getLogger(CliqueMerger.class);
+
 	private final List<V> items;
 
 	private final Master<V> master;
@@ -24,7 +26,6 @@ public class CliqueMerger<V extends Mergeable> {
 		this.master = master;
 	}
 
-	private static final Logger log = Logger.getLogger(CliqueMerger.class);
 	public void merge() {
 		SimpleGraph<V, DefaultEdge> compatibility = prepareGraph();
 
@@ -36,11 +37,11 @@ public class CliqueMerger<V extends Mergeable> {
 			sb.append("Finding cliques on a graph where |E| = ");
 			sb.append(compatibility.edgeSet().size());
 			sb.append(" and V = ");
-			for (V vertex: compatibility.vertexSet())
+			for (V vertex : compatibility.vertexSet())
 				vertex.show(sb).append(" ");
-			
+
 			log.info(sb);
-			
+
 			Set<V> mergeable = cliques.getBiggestMaximalCliques().iterator()
 					.next();
 

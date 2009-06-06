@@ -49,7 +49,7 @@ public final class Accession implements Show {
 		sb.append("]");
 		return sb;
 	}
-	
+
 	public String toString() {
 		return show(new StringBuilder()).toString();
 	}

@@ -40,12 +40,6 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 			throw new RuntimeException();
 	}
 
-	protected void checkState() {
-		if (dead) {
-			throw new IllegalStateException("Gene is dead.");
-		}
-	}
-
 	public boolean canMerge(Mergeable other) {
 		if (other instanceof Gene) {
 			Gene gene = (Gene) other;
@@ -64,6 +58,12 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 
 		}
 		return false;
+	}
+
+	protected void checkState() {
+		if (dead) {
+			throw new IllegalStateException("Gene is dead.");
+		}
 	}
 
 	void copyMembership(Gene gene) {

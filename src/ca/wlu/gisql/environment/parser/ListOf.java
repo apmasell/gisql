@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListOf extends NextTask {
-	private final Parser parser;
-
 	private final NextTask child;
 
 	private final char delimiter;
+
+	private final Parser parser;
 
 	public ListOf(Parser parser, NextTask child, char delimiter) {
 		super();

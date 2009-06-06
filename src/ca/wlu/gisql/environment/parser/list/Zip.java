@@ -49,8 +49,7 @@ public class Zip implements ListParseable {
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-		sb
-				.append("Zip: < variable1 , variable2 . expression : list1, list2 >");
+		sb.append("Zip: < variable1 , variable2 . expression : list1, list2 >");
 		return sb;
 	}
 

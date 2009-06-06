@@ -3,9 +3,9 @@ package ca.wlu.gisql.environment.parser;
 import java.util.List;
 
 public class Maybe extends NextTask {
-	private final Parser parser;
-
 	private final NextTask child;
+
+	private final Parser parser;
 
 	public Maybe(Parser parser, NextTask child) {
 		super();

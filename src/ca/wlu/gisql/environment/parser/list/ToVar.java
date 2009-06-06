@@ -22,11 +22,6 @@ public class ToVar implements ListParseable {
 		return environment.setArray(name, array) && results.add(array);
 	}
 
-	public NextTask[] tasks(Parser parser) {
-		return new NextTask[] { new Name(parser), new Literal(parser, '='),
-				new ListExpression(parser) };
-	}
-
 	public PrintStream show(PrintStream print) {
 		print.print("List assignment: name = list");
 		return print;
@@ -35,6 +30,11 @@ public class ToVar implements ListParseable {
 	public StringBuilder show(StringBuilder sb) {
 		sb.append("List assignment: name = list");
 		return sb;
+	}
+
+	public NextTask[] tasks(Parser parser) {
+		return new NextTask[] { new Name(parser), new Literal(parser, '='),
+				new ListExpression(parser) };
 	}
 
 }

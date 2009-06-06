@@ -3,9 +3,9 @@ package ca.wlu.gisql.environment.parser;
 import java.util.List;
 
 public class Literal extends NextTask {
-	private final Parser parser;
-
 	private final char c;
+
+	private final Parser parser;
 
 	public Literal(Parser parser, char c) {
 		super();

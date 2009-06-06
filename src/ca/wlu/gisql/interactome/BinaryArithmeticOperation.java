@@ -13,25 +13,6 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 	private static final Logger log = Logger
 			.getLogger(BinaryArithmeticOperation.class);
 
-	public Interactome fork(Interactome substitute) {
-		Interactome left = (this.left.needsFork() ? this.left.fork(substitute)
-				: this.left);
-		Interactome right = (this.right.needsFork() ? this.right
-				.fork(substitute) : this.right);
-		try {
-			return this.getClass().getConstructor(TriangularNorm.class,
-					Interactome.class, Interactome.class).newInstance(norm,
-					left, right);
-		} catch (Exception e) {
-			log.error("Instantiation error during forking.", e);
-		}
-		return null;
-	}
-
-	public boolean needsFork() {
-		return left.needsFork() || right.needsFork();
-	}
-
 	private final Interactome left;
 
 	private final TriangularNorm norm;
@@ -76,6 +57,21 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 	protected abstract double calculateMembership(TriangularNorm norm,
 			double left, double right);
 
+	public Interactome fork(Interactome substitute) {
+		Interactome left = (this.left.needsFork() ? this.left.fork(substitute)
+				: this.left);
+		Interactome right = (this.right.needsFork() ? this.right
+				.fork(substitute) : this.right);
+		try {
+			return this.getClass().getConstructor(TriangularNorm.class,
+					Interactome.class, Interactome.class).newInstance(norm,
+					left, right);
+		} catch (Exception e) {
+			log.error("Instantiation error during forking.", e);
+		}
+		return null;
+	}
+
 	public abstract char getSymbol();
 
 	public final Type getType() {
@@ -84,6 +80,10 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 
 	public final double membershipOfUnknown() {
 		return calculateMembership(norm, 0, 0);
+	}
+
+	public boolean needsFork() {
+		return left.needsFork() || right.needsFork();
 	}
 
 	public final int numGenomes() {
