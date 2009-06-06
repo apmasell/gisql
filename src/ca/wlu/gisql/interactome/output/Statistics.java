@@ -38,7 +38,7 @@ class Statistics implements Show {
 	}
 
 	protected void countGene(double membership) {
-		if (Double.isNaN(membership))
+		if (GisQL.isMissing(membership))
 			return;
 		genes++;
 		geneFuziness += 1 - Math.abs(2 * membership - 1);

@@ -64,9 +64,8 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 
 	void copyMembership(Gene gene) {
 		for (Entry<Interactome, Double> entry : gene.memberships.entrySet()) {
-			double membership;
-			Double thisMembership = memberships.get(entry.getKey());
-			if (thisMembership == null || GisQL.isMissing(thisMembership)) {
+			Double membership = memberships.get(entry.getKey());
+			if (membership == null || GisQL.isMissing(membership)) {
 				membership = entry.getValue();
 			} else if (entry.getKey().getType() == Type.Computed) {
 				membership = entry.getKey().calculateMembership(gene);

@@ -49,9 +49,9 @@ public abstract class BinaryArithmeticOperation implements Interactome {
 		double leftMembership = left.calculateMembership(gene);
 		double rightMembership = right.calculateMembership(gene);
 
-		if (GisQL.isMissing(leftMembership) && Double.isNaN(rightMembership))
+		if (GisQL.isMissing(leftMembership) && GisQL.isMissing(rightMembership))
 			return GisQL.Missing;
-		if (Double.isNaN(leftMembership))
+		if (GisQL.isMissing(leftMembership))
 			leftMembership = left.membershipOfUnknown();
 		if (GisQL.isMissing(rightMembership))
 			rightMembership = right.membershipOfUnknown();

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
@@ -70,8 +71,7 @@ public class CachedInteractome implements Interactome {
 	public double calculateMembership(Gene gene) {
 		if (first) {
 			double membership = source.calculateMembership(gene);
-			if (!Double.isNaN(membership) && membership >= lowerbound
-					&& membership <= upperbound) {
+			if (membership >= lowerbound && membership <= upperbound) {
 				gene.setMembership(this, membership);
 				genes.add(gene);
 			}
@@ -84,13 +84,12 @@ public class CachedInteractome implements Interactome {
 	public double calculateMembership(Interaction interaction) {
 		if (first) {
 			double membership = source.calculateMembership(interaction);
-			if (!Double.isNaN(membership) && membership >= lowerbound
-					&& membership <= upperbound) {
+			if (membership >= lowerbound && membership <= upperbound) {
 				interaction.setMembership(this, membership);
 				interactions.add(interaction);
 				for (Gene gene : new Gene[] { interaction.getGene1(),
 						interaction.getGene2() }) {
-					if (Double.isNaN(gene.getMembership(this))) {
+					if (GisQL.isMissing(gene.getMembership(this))) {
 						gene.setMembership(this, 0);
 						genes.add(gene);
 					}
