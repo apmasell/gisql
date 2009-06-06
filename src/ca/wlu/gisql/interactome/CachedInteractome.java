@@ -94,6 +94,10 @@ public class CachedInteractome implements Interactome {
 						genes.add(gene);
 					}
 				}
+				graph.addVertex(interaction.getGene1());
+				graph.addVertex(interaction.getGene2());
+				graph.addEdge(interaction.getGene1(), interaction.getGene2(),
+						interaction);
 			}
 			return membership;
 		} else {
