@@ -100,21 +100,14 @@ public class Complement implements Interactome {
 
 	public PrintStream show(PrintStream print) {
 		print.print("¬");
-		if (interactome.getPrecedence() < this.getPrecedence())
-			print.print("(");
-		interactome.show(print);
-		if (interactome.getPrecedence() < this.getPrecedence())
-			print.print(")");
+		InteractomeUtil
+				.precedenceShow(print, interactome, this.getPrecedence());
 		return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
 		sb.append("¬");
-		if (interactome.getPrecedence() < this.getPrecedence())
-			sb.append("(");
-		interactome.show(sb);
-		if (interactome.getPrecedence() < this.getPrecedence())
-			sb.append(")");
+		InteractomeUtil.precedenceShow(sb, interactome, this.getPrecedence());
 		return sb;
 	}
 }

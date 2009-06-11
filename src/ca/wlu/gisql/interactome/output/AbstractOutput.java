@@ -16,6 +16,7 @@ import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.QuotedString;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.InteractomeUtil;
 
 public abstract class AbstractOutput extends CachedInteractome {
 	public static final Parseable descriptor = new Parseable() {
@@ -121,7 +122,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 	}
 
 	public PrintStream show(PrintStream print) {
-		source.show(print);
+		InteractomeUtil.precedenceShow(print, source, this.getPrecedence());
 		print.print(" @ ");
 		print.print(lowerbound);
 		print.print(" ");
@@ -136,7 +137,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-		source.show(sb);
+		InteractomeUtil.precedenceShow(sb, source, this.getPrecedence());
 		sb.append(" @ ");
 		sb.append(lowerbound).append(" ").append(upperbound);
 		sb.append(" ");

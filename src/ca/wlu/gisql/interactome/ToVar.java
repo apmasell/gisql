@@ -73,14 +73,14 @@ public class ToVar extends CachedInteractome {
 	}
 
 	public PrintStream show(PrintStream print) {
-		source.show(print);
+		InteractomeUtil.precedenceShow(print, source, this.getPrecedence());
 		print.print(" @ ");
 		print.print(name);
 		return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-		source.show(sb);
+		InteractomeUtil.precedenceShow(sb, source, this.getPrecedence());
 		sb.append(" @ ");
 		sb.append(name);
 		return sb;

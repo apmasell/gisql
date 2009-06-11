@@ -112,7 +112,8 @@ public class Cut implements Interactome {
 	}
 
 	public PrintStream show(PrintStream print) {
-		interactome.show(print);
+		InteractomeUtil
+				.precedenceShow(print, interactome, this.getPrecedence());
 		print.print(" [");
 		print.print(cutoff);
 		print.print("]");
@@ -120,7 +121,7 @@ public class Cut implements Interactome {
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-		interactome.show(sb);
+		InteractomeUtil.precedenceShow(sb, interactome, this.getPrecedence());
 		sb.append(" [");
 		sb.append(cutoff);
 		sb.append("]");
