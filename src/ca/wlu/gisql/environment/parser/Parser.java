@@ -50,41 +50,12 @@ public class Parser {
 
 	private static Map<Integer, List<Parseable>> prefixedOperators = null;
 
-	public static String getHelp() {
-		prepareParser();
-		return help;
+	public static synchronized void addParseable(Parseable operator) {
+		installOperator(operator);
+		buildHelp();
 	}
 
-	private static synchronized List<Parseable> getList(
-			Map<Integer, List<Parseable>> map, int level) {
-		List<Parseable> list = map.get(level);
-		if (list == null) {
-			list = new ArrayList<Parseable>();
-			map.put(level, list);
-		}
-		return list;
-	}
-
-	private static synchronized void prepareParser() {
-		if (prefixedOperators != null)
-			return;
-
-		prefixedOperators = new HashMap<Integer, List<Parseable>>();
-		otherfixOperators = new HashMap<Integer, List<Parseable>>();
-		for (Parseable operator : operators) {
-			int level = operator.getNestingLevel();
-			if (level > maxdepth)
-				maxdepth = level;
-			List<Parseable> list = getList(
-					(operator.isPrefixed() ? prefixedOperators
-							: otherfixOperators), level);
-			list.add(operator);
-			if (operator instanceof ParseableBinaryOperation) {
-				getList(prefixedOperators, level).add(
-						new FoldOperator((ParseableBinaryOperation) operator));
-			}
-		}
-
+	private static void buildHelp() {
 		StringBuilder sb = new StringBuilder();
 		sb
 				.append("Syntax Help\nEach operator and it's membership function is described from lowest precedence to highest.\n\n");
@@ -104,6 +75,51 @@ public class Parser {
 		sb
 				.append("\nAny other word will be interpreted as a identifier for a species or variable.\nParentheses may be used to control order of operations.");
 		help = sb.toString();
+
+	}
+
+	public static String getHelp() {
+		prepareParser();
+		return help;
+	}
+
+	private static synchronized List<Parseable> getList(
+			Map<Integer, List<Parseable>> map, int level) {
+		List<Parseable> list = map.get(level);
+		if (list == null) {
+			list = new ArrayList<Parseable>();
+			map.put(level, list);
+		}
+		return list;
+	}
+
+	private static void installOperator(Parseable operator) {
+		int level = operator.getNestingLevel();
+		if (level > maxdepth)
+			maxdepth = level;
+		List<Parseable> list = getList(
+				(operator.isPrefixed() ? prefixedOperators : otherfixOperators),
+				level);
+		if (list.contains(operator))
+			return;
+		list.add(operator);
+		if (operator instanceof ParseableBinaryOperation) {
+			getList(prefixedOperators, level).add(
+					new FoldOperator((ParseableBinaryOperation) operator));
+		}
+	}
+
+	private static synchronized void prepareParser() {
+		if (prefixedOperators != null)
+			return;
+
+		prefixedOperators = new HashMap<Integer, List<Parseable>>();
+		otherfixOperators = new HashMap<Integer, List<Parseable>>();
+		for (Parseable operator : operators) {
+			installOperator(operator);
+
+		}
+		buildHelp();
 	}
 
 	Environment environment;
