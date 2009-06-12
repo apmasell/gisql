@@ -51,6 +51,7 @@ public class Parser {
 	private static Map<Integer, List<Parseable>> prefixedOperators = null;
 
 	public static synchronized void addParseable(Parseable operator) {
+		prepareParser();
 		installOperator(operator);
 		buildHelp();
 	}
