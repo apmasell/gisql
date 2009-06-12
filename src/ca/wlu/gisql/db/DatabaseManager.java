@@ -25,12 +25,8 @@ public class DatabaseManager {
 
 	private static final Logger log = Logger.getLogger(DatabaseManager.class);
 
-	private final Connection connection;
-
-	public DatabaseManager() throws SQLException, ClassNotFoundException,
-			IOException {
-		Class.forName("org.postgresql.Driver");
-		Properties props = new Properties();
+	public static Properties getPropertiesFromFile() throws IOException {
+		Properties properties = new Properties();
 		String filename = System.getProperty("gisql.properties");
 		InputStream is = new FileInputStream(filename == null
 				|| filename.length() == 0 ? "gisql.properties" : filename);
@@ -38,11 +34,19 @@ public class DatabaseManager {
 			log.fatal("Cannot find gisql.properties.");
 			throw new RuntimeException("Failed to connect to database.");
 		}
-		props.load(is);
+		properties.load(is);
+		return properties;
+	}
+
+	private final Connection connection;
+
+	public DatabaseManager(Properties properties) throws SQLException,
+			ClassNotFoundException {
+		Class.forName("org.postgresql.Driver");
 
 		log.info("Connecting to database.");
-		connection = DriverManager.getConnection("jdbc:postgresql:"
-				+ props.getProperty("url"), props);
+		connection = DriverManager.getConnection(properties.getProperty("url"),
+				properties);
 	}
 
 	public List<DbSpecies> getSpecies() {

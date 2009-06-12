@@ -40,7 +40,7 @@ public class GisQL {
 
 		DatabaseManager dm;
 		try {
-			dm = new DatabaseManager();
+			dm = new DatabaseManager(DatabaseManager.getPropertiesFromFile());
 		} catch (SQLException e) {
 			log.error("Failed to connect to database.", e);
 			return;
