@@ -6,11 +6,15 @@ import java.util.concurrent.ExecutionException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
+import org.apache.log4j.Logger;
+
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
 class FileWriteTask extends SwingWorker<Boolean, Boolean> {
+	private static final Logger log = Logger.getLogger(FileWriteTask.class);
+
 	private final File file;
 
 	private final FileFormat format;
@@ -43,9 +47,9 @@ class FileWriteTask extends SwingWorker<Boolean, Boolean> {
 		try {
 			success = get();
 		} catch (InterruptedException e) {
-			MainFrame.log.error("Error saving file.", e);
+			log.error("Error saving file.", e);
 		} catch (ExecutionException e) {
-			MainFrame.log.error("Error saving file.", e);
+			log.error("Error saving file.", e);
 		}
 		if (!success)
 			JOptionPane.showMessageDialog(frame, "Error writing to file.",
