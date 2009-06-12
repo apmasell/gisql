@@ -58,7 +58,7 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 
 	private final JMenuItem menuSave = new JMenuItem("Save Data As...");
 
-	final BusyDialog progress = new BusyDialog(this);
+	final BusyDialog progress = new BusyDialog(this, this);
 
 	private final JSeparator quitseparator = new JSeparator();
 
@@ -175,6 +175,8 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 							+ fc.getSelectedFile().getName() + "...");
 				}
 			}
+		} else if (evt.getSource() == progress) {
+			task.cancel(true);
 		} else if (evt.getSource() == menuClear) {
 			environment.clear();
 		} else if (evt.getSource() == menuQuit) {
