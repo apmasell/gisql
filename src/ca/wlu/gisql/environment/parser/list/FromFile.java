@@ -11,9 +11,9 @@ import java.util.Stack;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.QuotedString;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class FromFile implements ListParseable {
@@ -58,8 +58,8 @@ public class FromFile implements ListParseable {
 		return sb;
 	}
 
-	public NextTask[] tasks(Parser parser) {
-		return new NextTask[] { new QuotedString(parser) };
+	public Token[] tasks(Parser parser) {
+		return new Token[] { new QuotedString(parser) };
 	}
 
 }

@@ -18,5 +18,5 @@ public interface Parseable extends Show {
 
 	public abstract boolean isPrefixed();
 
-	public abstract NextTask[] tasks(Parser parser);
+	public abstract Token[] tasks(Parser parser);
 }

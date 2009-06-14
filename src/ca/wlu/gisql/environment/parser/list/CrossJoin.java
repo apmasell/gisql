@@ -10,9 +10,9 @@ import ca.wlu.gisql.environment.parser.Expression;
 import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Name;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.TemporaryEnvironment;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class CrossJoin implements ListParseable {
@@ -54,10 +54,10 @@ public class CrossJoin implements ListParseable {
 		return sb;
 	}
 
-	public NextTask[] tasks(Parser parser) {
+	public Token[] tasks(Parser parser) {
 		Name outername = new Name(parser);
 		Name innername = new Name(parser);
-		return new NextTask[] {
+		return new Token[] {
 				new Literal(parser, '['),
 				outername,
 				new Literal(parser, ','),

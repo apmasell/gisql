@@ -286,7 +286,7 @@ public class Parser {
 
 	private Interactome processOperator(Parseable operator, Interactome left,
 			int level) {
-		NextTask[] todo = operator.tasks(this);
+		Token[] todo = operator.tasks(this);
 		List<Object> params = new ArrayList<Object>();
 
 		if (!operator.isPrefixed()) {
@@ -295,7 +295,7 @@ public class Parser {
 			params.add(left);
 		}
 		if (todo != null) {
-			for (NextTask task : todo) {
+			for (Token task : todo) {
 				consumeWhitespace();
 				if (!task.parse(level, params)) {
 					return null;

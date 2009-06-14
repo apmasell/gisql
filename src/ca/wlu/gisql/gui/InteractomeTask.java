@@ -11,7 +11,8 @@ import org.apache.log4j.Logger;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 
-public class InteractomeTask<P extends Component &  TaskParent> extends SwingWorker<Boolean, Interactome> {
+public class InteractomeTask<P extends Component & TaskParent> extends
+		SwingWorker<Boolean, Interactome> {
 	private static final Logger log = Logger.getLogger(InteractomeTask.class);
 
 	private final CachedInteractome interactome;

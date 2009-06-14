@@ -2,7 +2,7 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
-public class QuotedString extends NextTask {
+public class QuotedString extends Token {
 
 	private final Parser parser;
 

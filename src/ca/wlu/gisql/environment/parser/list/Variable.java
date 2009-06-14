@@ -6,8 +6,8 @@ import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Name;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class Variable implements ListParseable {
@@ -34,8 +34,8 @@ public class Variable implements ListParseable {
 		return sb;
 	}
 
-	public NextTask[] tasks(Parser parser) {
-		return new NextTask[] { new Name(parser) };
+	public Token[] tasks(Parser parser) {
+		return new Token[] { new Name(parser) };
 	}
 
 }

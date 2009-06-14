@@ -10,9 +10,9 @@ import ca.wlu.gisql.environment.parser.Expression;
 import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Name;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.TemporaryEnvironment;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class ApplyToAll implements ListParseable {
@@ -44,9 +44,9 @@ public class ApplyToAll implements ListParseable {
 		return sb;
 	}
 
-	public NextTask[] tasks(Parser parser) {
+	public Token[] tasks(Parser parser) {
 		Name name = new Name(parser);
-		return new NextTask[] { new Literal(parser, '['), name,
+		return new Token[] { new Literal(parser, '['), name,
 				new Literal(parser, '.'),
 				new TemporaryEnvironment(parser, name, new Expression(parser)),
 				new Literal(parser, ':'), new ListExpression(parser),

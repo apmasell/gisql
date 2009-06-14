@@ -2,7 +2,7 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
-public class Decimal extends NextTask {
+public class Decimal extends Token {
 
 	private final Parser parser;
 

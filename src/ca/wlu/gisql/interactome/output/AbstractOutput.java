@@ -10,10 +10,10 @@ import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Decimal;
 import ca.wlu.gisql.environment.parser.Maybe;
 import ca.wlu.gisql.environment.parser.Name;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.QuotedString;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.InteractomeUtil;
@@ -74,8 +74,8 @@ public abstract class AbstractOutput extends CachedInteractome {
 			return sb;
 		}
 
-		public NextTask[] tasks(Parser parser) {
-			return new NextTask[] { new Maybe(parser, new Decimal(parser)),
+		public Token[] tasks(Parser parser) {
+			return new Token[] { new Maybe(parser, new Decimal(parser)),
 					new Maybe(parser, new Decimal(parser)),
 					new Maybe(parser, new Name(parser)),
 					new QuotedString(parser) };

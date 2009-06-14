@@ -2,14 +2,14 @@ package ca.wlu.gisql.environment.parser.util;
 
 import java.io.PrintStream;
 
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.util.Show;
 
 public abstract class Function implements Parseable {
 	public static class Expression extends Parameter {
-		NextTask createTask(Parser parser) {
+		Token createTask(Parser parser) {
 			return new ca.wlu.gisql.environment.parser.Expression(parser);
 		}
 
@@ -31,7 +31,7 @@ public abstract class Function implements Parseable {
 			this.description = description;
 		}
 
-		NextTask createTask(Parser parser) {
+		Token createTask(Parser parser) {
 			return new ca.wlu.gisql.environment.parser.Name(parser);
 		}
 
@@ -48,7 +48,7 @@ public abstract class Function implements Parseable {
 	}
 
 	public static abstract class Parameter implements Show {
-		abstract NextTask createTask(Parser parser);
+		abstract Token createTask(Parser parser);
 	}
 
 	public static class QuotedString extends Parameter {
@@ -58,7 +58,7 @@ public abstract class Function implements Parseable {
 			this.description = description;
 		}
 
-		NextTask createTask(Parser parser) {
+		Token createTask(Parser parser) {
 			return new ca.wlu.gisql.environment.parser.QuotedString(parser);
 		}
 
@@ -137,8 +137,8 @@ public abstract class Function implements Parseable {
 		return sb;
 	}
 
-	public NextTask[] tasks(Parser parser) {
-		NextTask[] tasks = new NextTask[3 + (parameters == null ? 0
+	public Token[] tasks(Parser parser) {
+		Token[] tasks = new Token[3 + (parameters == null ? 0
 				: 2 * parameters.length - 1)];
 		int index = 0;
 		tasks[index++] = new ca.wlu.gisql.environment.parser.Word(parser, word);

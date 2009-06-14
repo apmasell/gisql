@@ -8,9 +8,9 @@ import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Maybe;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Sequence;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.Word;
 import ca.wlu.gisql.interactome.Interactome;
 
@@ -61,8 +61,8 @@ public class Slice implements ListParseable {
 		return sb;
 	}
 
-	public NextTask[] tasks(Parser parser) {
-		return new NextTask[] {
+	public Token[] tasks(Parser parser) {
+		return new Token[] {
 				new Word(parser, "slice"),
 				new Literal(parser, '('),
 				new ca.wlu.gisql.environment.parser.Number(parser),

@@ -4,9 +4,9 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.interactome.Interactome;
 
 public final class LastInteractome implements Parseable {
@@ -47,7 +47,7 @@ public final class LastInteractome implements Parseable {
 		return sb;
 	}
 
-	public NextTask[] tasks(Parser parser) {
+	public Token[] tasks(Parser parser) {
 		return null;
 	}
 }

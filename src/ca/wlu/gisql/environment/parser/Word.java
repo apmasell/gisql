@@ -2,7 +2,7 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
-public class Word extends NextTask {
+public class Word extends Token {
 	private final Parser parser;
 
 	private final String word;

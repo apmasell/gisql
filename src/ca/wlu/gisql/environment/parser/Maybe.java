@@ -2,12 +2,12 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
-public class Maybe extends NextTask {
-	private final NextTask child;
+public class Maybe extends Token {
+	private final Token child;
 
 	private final Parser parser;
 
-	public Maybe(Parser parser, NextTask child) {
+	public Maybe(Parser parser, Token child) {
 		super();
 		this.parser = parser;
 		this.child = child;

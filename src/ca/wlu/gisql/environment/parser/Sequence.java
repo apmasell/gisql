@@ -2,13 +2,13 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
-public class Sequence extends NextTask {
+public class Sequence extends Token {
 
-	private final NextTask first;
+	private final Token first;
 
-	private final NextTask second;
+	private final Token second;
 
-	public Sequence(final NextTask first, final NextTask second) {
+	public Sequence(final Token first, final Token second) {
 		super();
 		this.first = first;
 		this.second = second;

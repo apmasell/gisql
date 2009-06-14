@@ -8,7 +8,7 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Unit;
 import ca.wlu.gisql.interactome.Interactome.Type;
 
-public class TemporaryEnvironment extends NextTask {
+public class TemporaryEnvironment extends Token {
 	private class DebrujinInteractome extends Unit {
 		private final int depth;
 
@@ -104,13 +104,13 @@ public class TemporaryEnvironment extends NextTask {
 
 	}
 
-	private final NextTask expression;
+	private final Token expression;
 
 	private final Name name;
 
 	private final Parser parser;
 
-	public TemporaryEnvironment(Parser parser, Name name, NextTask expression) {
+	public TemporaryEnvironment(Parser parser, Name name, Token expression) {
 		this.parser = parser;
 		this.name = name;
 		this.expression = expression;

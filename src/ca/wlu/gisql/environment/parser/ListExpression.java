@@ -13,7 +13,7 @@ import ca.wlu.gisql.environment.parser.list.ToVar;
 import ca.wlu.gisql.environment.parser.list.Variable;
 import ca.wlu.gisql.environment.parser.list.Zip;
 
-public class ListExpression extends NextTask {
+public class ListExpression extends Token {
 
 	private static final ListParseable[] operators = new ListParseable[] {
 			new ApplyToAll(), new CrossJoin(), new FromFile(), new RawList(),
@@ -46,11 +46,11 @@ public class ListExpression extends NextTask {
 
 	private boolean processOperator(ListParseable operator, int level,
 			List<Object> results) {
-		NextTask[] todo = operator.tasks(this.parser);
+		Token[] todo = operator.tasks(this.parser);
 		List<Object> params = new ArrayList<Object>();
 		int errorstate = parser.error.size();
 
-		for (NextTask task : todo) {
+		for (Token task : todo) {
 			this.parser.consumeWhitespace();
 			if (!task.parse(level, params)) {
 				parser.error.setSize(errorstate);

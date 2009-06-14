@@ -8,8 +8,8 @@ import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Expression;
 import ca.wlu.gisql.environment.parser.ListOf;
 import ca.wlu.gisql.environment.parser.Literal;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.Token;
 
 public class RawList implements ListParseable {
 
@@ -29,8 +29,8 @@ public class RawList implements ListParseable {
 		return sb;
 	}
 
-	public NextTask[] tasks(Parser parser) {
-		return new NextTask[] { new Literal(parser, '{'),
+	public Token[] tasks(Parser parser) {
+		return new Token[] { new Literal(parser, '{'),
 				new ListOf(parser, new Expression(parser), ','),
 				new Literal(parser, '}') };
 	}

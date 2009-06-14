@@ -4,7 +4,7 @@ import java.util.List;
 
 import ca.wlu.gisql.interactome.Interactome;
 
-public class Expression extends NextTask {
+public class Expression extends Token {
 	private final Parser parser;
 
 	public Expression(Parser parser) {

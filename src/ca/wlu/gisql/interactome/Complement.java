@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.SubExpression;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
@@ -43,8 +43,8 @@ public class Complement implements Interactome {
 			return sb;
 		}
 
-		public NextTask[] tasks(Parser parser) {
-			return new NextTask[] { new SubExpression(parser) };
+		public Token[] tasks(Parser parser) {
+			return new Token[] { new SubExpression(parser) };
 		}
 
 	};

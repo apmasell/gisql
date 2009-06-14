@@ -3,14 +3,14 @@ package ca.wlu.gisql.environment.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListOf extends NextTask {
-	private final NextTask child;
+public class ListOf extends Token {
+	private final Token child;
 
 	private final char delimiter;
 
 	private final Parser parser;
 
-	public ListOf(Parser parser, NextTask child, char delimiter) {
+	public ListOf(Parser parser, Token child, char delimiter) {
 		super();
 		this.parser = parser;
 		this.child = child;

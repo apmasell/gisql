@@ -8,9 +8,9 @@ import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Decimal;
 import ca.wlu.gisql.environment.parser.Literal;
-import ca.wlu.gisql.environment.parser.NextTask;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 
@@ -48,9 +48,8 @@ public class Cut implements Interactome {
 			return sb;
 		}
 
-		public NextTask[] tasks(Parser parser) {
-			return new NextTask[] { new Decimal(parser),
-					new Literal(parser, ']') };
+		public Token[] tasks(Parser parser) {
+			return new Token[] { new Decimal(parser), new Literal(parser, ']') };
 		}
 
 	};
