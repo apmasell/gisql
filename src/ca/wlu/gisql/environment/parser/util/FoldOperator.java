@@ -9,22 +9,26 @@ import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class FoldOperator implements Parseable {
-	private final ParseableBinaryOperation binary;
+	private final ComputedInteractomeParser binary;
 
-	public FoldOperator(ParseableBinaryOperation binary) {
+	public FoldOperator(ComputedInteractomeParser binary) {
 		super();
 		this.binary = binary;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Interactome construct(Environment environment, List<Object> params,
+	public AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
-		List<Interactome> interactomes = (List<Interactome>) params.get(0);
-		Interactome left = null;
-		for (Interactome interactome : interactomes) {
+		AstList interactomes = (AstList) params.get(0);
+		AstNode left = null;
+		for (AstNode interactome : interactomes) {
+			if (!interactome.isInteractome()) {
+				error.push("List contains non-interactome objects.");
+				return null;
+			}
 			if (left == null) {
 				left = interactome;
 			} else {

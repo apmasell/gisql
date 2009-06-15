@@ -13,15 +13,11 @@ public interface Interactome extends Show {
 
 	public abstract double calculateMembership(Interaction interaction);
 
-	public abstract Interactome fork(Interactome substitute);
-
 	public abstract int getPrecedence();
 
 	public abstract Type getType();
 
 	public abstract double membershipOfUnknown();
-
-	public abstract boolean needsFork();
 
 	public abstract int numGenomes();
 

@@ -9,22 +9,23 @@ import java.util.Stack;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
+import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.environment.parser.util.Function;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Unit;
 
 public final class EchoFunction extends Function {
-	class Echo extends Unit {
+	class Echo extends AstVoid {
 		private final Environment environment;
 
 		private final String string;
 
-		private Echo(Environment environment, String string) {
+		private Echo(Environment environment, AstString string) {
 			this.environment = environment;
-			this.string = string;
+			this.string = string.getString();
 		}
 
-		public boolean prepare() {
+		public void execute() {
 			if (environment instanceof UserEnvironment) {
 				String filename = ((UserEnvironment) environment).getOutput();
 				PrintStream print;
@@ -37,7 +38,6 @@ public final class EchoFunction extends Function {
 				}
 			}
 
-			return super.prepare();
 		}
 	}
 
@@ -50,8 +50,8 @@ public final class EchoFunction extends Function {
 				"text") });
 	}
 
-	public Interactome construct(Environment environment, List<Object> params,
+	public AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
-		return new Echo(environment, (String) params.get(0));
+		return new Echo(environment, (AstString) params.get(0));
 	}
 }

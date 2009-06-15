@@ -53,11 +53,6 @@ class OutputText extends AbstractOutput {
 		return membership;
 	}
 
-	public Interactome fork(Interactome substitute) {
-		return new OutputText(source.fork(substitute), getName(), lowerbound,
-				upperbound, format, filename);
-	}
-
 	public boolean postpare() {
 		if (super.postpare()) {
 			statistics.show(print);

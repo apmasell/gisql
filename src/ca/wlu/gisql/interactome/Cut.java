@@ -11,19 +11,58 @@ import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
+import ca.wlu.gisql.environment.parser.ast.AstDouble;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 
 public class Cut implements Interactome {
+	private static class AstCut implements AstNode {
+		private double cutoff;
+		private AstNode parameter;
+
+		public AstCut(AstNode node, double cutoff) {
+			parameter = node;
+			this.cutoff = cutoff;
+		}
+
+		public Interactome asInteractome() {
+			return new Cut(parameter.asInteractome(), cutoff);
+		}
+
+		public AstNode fork(AstNode substitute) {
+			return new AstCut(parameter.fork(substitute), cutoff);
+		}
+
+		public boolean isInteractome() {
+			return true;
+		}
+
+		public PrintStream show(PrintStream print) {
+			parameter.show(print);
+			print.print(" [");
+			print.print(cutoff);
+			print.print("]");
+			return print;
+		}
+
+		public StringBuilder show(StringBuilder sb) {
+			parameter.show(sb);
+			sb.append(" [").append(cutoff).append("]");
+			return sb;
+		}
+
+	}
+
 	public final static Parseable descriptor = new Parseable() {
 
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			Interactome interactome = (Interactome) params.get(0);
-			double cutoff = (Double) params.get(1);
-			if (cutoff > 1.0 || cutoff < 0)
+		public AstNode construct(Environment environment, List<AstNode> params,
+				Stack<String> error) {
+			AstNode interactome = params.get(0);
+			double cutoff = ((AstDouble) params.get(1)).getDouble();
+			if (cutoff > 1.0 || cutoff < 0 || !interactome.isInteractome())
 				return null;
-			return new Cut(interactome, cutoff);
+			return new AstCut(interactome, cutoff);
 		}
 
 		public int getNestingLevel() {
@@ -78,10 +117,6 @@ public class Cut implements Interactome {
 		return membership;
 	}
 
-	public Interactome fork(Interactome substitute) {
-		return new Cut(interactome.fork(substitute), cutoff);
-	}
-
 	public int getPrecedence() {
 		return descriptor.getNestingLevel();
 	}
@@ -92,10 +127,6 @@ public class Cut implements Interactome {
 
 	public double membershipOfUnknown() {
 		return interactome.membershipOfUnknown();
-	}
-
-	public boolean needsFork() {
-		return interactome.needsFork();
 	}
 
 	public int numGenomes() {

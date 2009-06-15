@@ -2,6 +2,8 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+
 public class Maybe extends Token {
 	private final Token child;
 
@@ -13,7 +15,7 @@ public class Maybe extends Token {
 		this.child = child;
 	}
 
-	boolean parse(int level, List<Object> results) {
+	boolean parse(int level, List<AstNode> results) {
 		int oldposition = this.parser.position;
 		int errorposition = this.parser.error.size();
 		if (child.parse(level, results))

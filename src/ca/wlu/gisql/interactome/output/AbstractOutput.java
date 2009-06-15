@@ -14,22 +14,87 @@ import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.QuotedString;
 import ca.wlu.gisql.environment.parser.Token;
+import ca.wlu.gisql.environment.parser.ast.AstDouble;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.InteractomeUtil;
 
 public abstract class AbstractOutput extends CachedInteractome {
+	private static class AstOutput implements AstNode {
+
+		private final AstNode interactome;
+		private final String name;
+		private final double lbound;
+		private final double ubound;
+		private final String filename;
+		private final FileFormat format;
+
+		public AstOutput(AstNode interactome, String name, double lbound,
+				double ubound, FileFormat format, String filename) {
+			this.interactome = interactome;
+			this.name = name;
+			this.lbound = lbound;
+			this.ubound = ubound;
+			this.format = format;
+			this.filename = filename;
+		}
+
+		public Interactome asInteractome() {
+			return wrap(interactome.asInteractome(), name, lbound, ubound,
+					format, filename, true);
+		}
+
+		public AstNode fork(AstNode substitue) {
+			return new AstOutput(interactome.fork(substitue), name, lbound,
+					ubound, format, filename);
+		}
+
+		public boolean isInteractome() {
+			return true;
+		}
+		public PrintStream show(PrintStream print) {
+			interactome.show(print);
+			print.print(" @ ");
+			print.print(lbound);
+			print.print(" ");
+			print.print(ubound);
+			print.print(" ");
+			print.print(format.name());
+			print.print(" ");
+			print.print("\"");
+			print.print(filename == null ? "-" : filename);
+			print.print("\"");
+			return print;
+		}
+
+		public StringBuilder show(StringBuilder sb) {
+			interactome.show(sb);
+			sb.append(" @ ");
+			sb.append(lbound).append(" ").append(ubound);
+			sb.append(" ");
+			sb.append(format.name()).append(" ");
+			sb.append("\"").append(filename == null ? "-" : filename).append("\"");
+			return sb;
+		}
+
+	}
+
 	public static final Parseable descriptor = new Parseable() {
 
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			Interactome interactome = (Interactome) params.get(0);
-			Double lowerbound = (Double) params.get(1);
-			Double upperbound = (Double) params.get(2);
-			String formatname = (String) params.get(3);
+		public AstNode construct(Environment environment, List<AstNode> params,
+				Stack<String> error) {
+			AstNode interactome = params.get(0);
+			AstDouble lowerbound = (AstDouble) params.get(1);
+			AstDouble upperbound = (AstDouble) params.get(2);
+			AstString formatname = (AstString) params.get(3);
 			FileFormat format = (formatname == null ? FileFormat.interactome
-					: FileFormat.valueOf(formatname));
-			String filename = (String) params.get(4);
+					: FileFormat.valueOf(formatname.getString()));
+			String filename = ((AstString) params.get(4)).getString();
+
+			if (!interactome.isInteractome())
+				return null;
 
 			if (format == null) {
 				format = FileFormat.interactome;
@@ -40,14 +105,10 @@ public abstract class AbstractOutput extends CachedInteractome {
 			 * [α, 1]. That means lower should be filled preferentially, which
 			 * it is.
 			 */
-			if (upperbound == null) {
-				upperbound = 1.0;
-			}
-			if (lowerbound == null) {
-				lowerbound = 0.0;
-			}
-			return wrap(interactome, null, lowerbound, upperbound, format,
-					filename, true);
+			double ubound = (upperbound == null ? 1.0 : upperbound.getDouble());
+			double lbound = (lowerbound == null ? 0.0 : lowerbound.getDouble());
+			return new AstOutput(interactome, null, lbound, ubound, format,
+					filename);
 		}
 
 		public int getNestingLevel() {

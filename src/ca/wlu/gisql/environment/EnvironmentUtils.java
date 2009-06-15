@@ -9,35 +9,37 @@ import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.interactome.CachedInteractome;
-import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
 
 public class EnvironmentUtils {
 	static final Logger log = Logger.getLogger(EnvironmentUtils.class);
 
-	public static void clear(Environment environment) {
-		for (String name : environment.names(Type.Mutable)) {
-			environment.setVariable(name, null);
-		}
-	}
-
 	public static boolean runExpression(UserEnvironment environment,
 			String expression, boolean append) {
 		Parser parser = new Parser(environment, expression);
-		CachedInteractome interactome = AbstractOutput.wrap(parser.get(), null,
-				0.0, 1.0, environment.getFormat(), environment.getOutput(),
-				false);
-		if (interactome == null) {
-			log.error(parser.getErrors());
-			return false;
-		}
-		if (interactome.process()) {
-			if (append)
-				environment.append(interactome);
+		switch (parser.getParseResult()) {
+		case Interactome:
+			CachedInteractome interactome = AbstractOutput.wrap(parser.get(),
+					null, 0.0, 1.0, environment.getFormat(), environment
+							.getOutput(), false);
+			if (interactome == null) {
+				log.error(parser.getErrors());
+				return false;
+			}
+			if (interactome.process()) {
+				if (append)
+					environment.append(interactome);
+				return true;
+			} else {
+				return false;
+			}
+		case Executable:
+			parser.execute();
 			return true;
-		} else {
+		case Failure:
 			return false;
 		}
+		return false;
 	}
 
 	public static boolean runFile(UserEnvironment environment, File file) {

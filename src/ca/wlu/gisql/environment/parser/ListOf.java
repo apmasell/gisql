@@ -1,7 +1,9 @@
 package ca.wlu.gisql.environment.parser;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class ListOf extends Token {
 	private final Token child;
@@ -17,8 +19,8 @@ public class ListOf extends Token {
 		this.delimiter = delimiter;
 	}
 
-	boolean parse(int level, List<Object> results) {
-		List<Object> items = new ArrayList<Object>();
+	boolean parse(int level, List<AstNode> results) {
+		AstList items = new AstList();
 
 		if (!child.parse(level, items)) {
 			return false;

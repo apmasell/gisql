@@ -5,18 +5,16 @@ import java.awt.Component;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreePath;
 
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.gui.output.EnvironmentTreeView.AstNodeTreeNode;
 
 public class InteractomeTreeCellRender implements TreeCellRenderer {
-	private final EnvironmentTreeView environmentTree;
 
 	private final DefaultTreeCellRenderer treerenderer = new DefaultTreeCellRenderer();
 
-	public InteractomeTreeCellRender(EnvironmentTreeView environmentTree) {
+	public InteractomeTreeCellRender() {
 		super();
-		this.environmentTree = environmentTree;
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -25,14 +23,14 @@ public class InteractomeTreeCellRender implements TreeCellRenderer {
 		treerenderer.getTreeCellRendererComponent(tree, value, selected,
 				expanded, leaf, row, hasFocus);
 		if (value != null) {
-			TreePath tp = tree.getPathForRow(row);
-			Interactome i = environmentTree.getInteractome(tp);
-			if (i != null) {
-				treerenderer.setToolTipText(i.show(new StringBuilder())
-						.toString());
-			} else {
-				treerenderer.setToolTipText(null);
+			if (value instanceof AstNodeTreeNode) {
+				AstNode node = ((AstNodeTreeNode) value).getNode();
+				if (node != null) {
+					treerenderer.setToolTipText(node.toString());
+					return treerenderer;
+				}
 			}
+			treerenderer.setToolTipText(null);
 		}
 		return treerenderer;
 	}

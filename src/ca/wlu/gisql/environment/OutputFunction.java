@@ -4,27 +4,25 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
+import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.environment.parser.util.Function;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Unit;
 
 public final class OutputFunction extends Function {
-	class SetOutput extends Unit {
+	class SetOutput extends AstVoid {
 		private final Environment environment;
 
 		private final String filename;
 
-		private SetOutput(Environment environment, String filename) {
+		private SetOutput(Environment environment, AstString filename) {
 			this.environment = environment;
-			this.filename = filename;
+			this.filename = filename.getString();
 		}
 
-		public boolean prepare() {
+		public void execute() {
 			if (environment instanceof UserEnvironment) {
 				((UserEnvironment) environment).setOutput(filename);
-				return super.prepare();
-			} else {
-				return false;
 			}
 		}
 	}
@@ -36,8 +34,8 @@ public final class OutputFunction extends Function {
 				"filename") });
 	}
 
-	public Interactome construct(Environment environment, List<Object> params,
+	public AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
-		return new SetOutput(environment, (String) params.get(0));
+		return new SetOutput(environment, (AstString) params.get(0));
 	}
 }

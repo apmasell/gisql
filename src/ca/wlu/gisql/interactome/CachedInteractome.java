@@ -1,9 +1,9 @@
 package ca.wlu.gisql.interactome;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -38,14 +38,14 @@ public class CachedInteractome implements Interactome {
 
 	private boolean first = true;
 
-	private List<Gene> genes;
+	private ListOrderedSet<Gene> genes;
 
 	private final GeneTable geneTable;
 
 	private final SimpleWeightedGraph<Gene, Interaction> graph = new SimpleWeightedGraph<Gene, Interaction>(
 			Interaction.class);
 
-	private List<Interaction> interactions;
+	private ListOrderedSet<Interaction> interactions;
 
 	private final InteractionTable interactionTable;
 
@@ -105,14 +105,10 @@ public class CachedInteractome implements Interactome {
 		}
 	}
 
-	public Interactome fork(Interactome substitute) {
-		return new CachedInteractome(source.fork(substitute), name, lowerbound,
-				upperbound);
-	}
 
 	public final List<Gene> getGenes() {
 		process();
-		return genes;
+		return genes.asList();
 	}
 
 	public final GeneTable getGeneTable() {
@@ -127,7 +123,7 @@ public class CachedInteractome implements Interactome {
 
 	public final List<Interaction> getInteractions() {
 		process();
-		return interactions;
+		return interactions.asList();
 	}
 
 	public final InteractionTable getInteractionTable() {
@@ -149,11 +145,6 @@ public class CachedInteractome implements Interactome {
 	public final double membershipOfUnknown() {
 		return source.membershipOfUnknown();
 	}
-
-	public final boolean needsFork() {
-		return source.needsFork();
-	}
-
 	public final int numGenomes() {
 		return source.numGenomes();
 	}
@@ -164,8 +155,8 @@ public class CachedInteractome implements Interactome {
 	}
 
 	public boolean prepare() {
-		genes = new ArrayList<Gene>();
-		interactions = new ArrayList<Interaction>();
+		genes = new ListOrderedSet<Gene>();
+		interactions = new ListOrderedSet<Interaction>();
 		return source.prepare();
 	}
 

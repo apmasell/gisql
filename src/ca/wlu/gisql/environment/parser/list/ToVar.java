@@ -10,16 +10,26 @@ import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Name;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
 
 public class ToVar implements ListParseable {
 
-	@SuppressWarnings("unchecked")
-	public boolean construct(Environment environment, List<Object> params,
-			Stack<String> error, List<Object> results) {
-		String name = (String) params.get(0);
-		List<Interactome> array = (List<Interactome>) params.get(1);
-		return environment.setArray(name, array) && results.add(array);
+	public boolean construct(Environment environment, List<AstNode> params,
+			Stack<String> error, List<AstNode> results) {
+		String name = ((AstString) params.get(0)).getString();
+		AstList array = (AstList) params.get(1);
+
+		AstList stored = new AstList();
+		for (AstNode node : array) {
+			if (node.isInteractome()) {
+				stored.add(node);
+			} else {
+				return false;
+			}
+		}
+		return environment.setVariable(name, stored) && results.add(array);
 	}
 
 	public PrintStream show(PrintStream print) {

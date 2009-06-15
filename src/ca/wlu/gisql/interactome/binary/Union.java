@@ -1,28 +1,19 @@
 package ca.wlu.gisql.interactome.binary;
 
-import ca.wlu.gisql.environment.parser.util.ParseableBinaryOperation;
+import ca.wlu.gisql.environment.parser.ast.AstLogic;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.interactome.BinaryArithmeticOperation;
-import ca.wlu.gisql.interactome.Interactome;
 
-public class Union extends BinaryArithmeticOperation {
-	public final static ParseableBinaryOperation descriptor = new ParseableBinaryOperation(
-			Union.class, 2, '∪', new char[] { '|' }, "Union (Ax s Bx)");
+public class Union extends ComputedInteractomeParser {
+	public final static ComputedInteractomeParser descriptor = new Union();
 
-	public Union(TriangularNorm norm, Interactome left, Interactome right) {
-		super(norm, left, right);
+	private Union() {
+		super(2, '∪', new char[] { '|' }, "Union (Ax s Bx)");
 	}
 
-	protected double calculateMembership(TriangularNorm norm, double left,
-			double right) {
-		return norm.s(left, right);
-	}
-
-	public int getPrecedence() {
-		return descriptor.getNestingLevel();
-	}
-
-	public char getSymbol() {
-		return descriptor.getSymbol();
+	protected AstLogic construct(AstNode left, AstNode right,
+			TriangularNorm norm) {
+		return AstLogic.makeDisjunct(left, right, norm);
 	}
 }

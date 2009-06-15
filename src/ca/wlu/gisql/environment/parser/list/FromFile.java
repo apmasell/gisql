@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -14,29 +13,31 @@ import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.QuotedString;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
 
 public class FromFile implements ListParseable {
 	private static final Logger log = Logger.getLogger(FromFile.class);
 
-	public boolean construct(Environment environment, List<Object> params,
-			Stack<String> error, List<Object> results) {
-		String filename = (String) params.get(0);
+	public boolean construct(Environment environment, List<AstNode> params,
+			Stack<String> error, List<AstNode> results) {
+		String filename = ((AstString) params.get(0)).getString();
 		try {
 			BufferedReader input = new BufferedReader(new FileReader(filename));
-			List<Interactome> list = new ArrayList<Interactome>();
+			AstList list = new AstList();
 			String line;
 			int linenumber = 0;
 			while ((line = input.readLine()) != null) {
 				linenumber++;
 				Parser parser = new Parser(environment, line);
-				Interactome interactome = parser.get();
-				if (interactome == null) {
+				AstNode node = parser.getRaw();
+				if (node == null) {
 					error.push("Script failed on line :" + linenumber);
 					error.push(parser.getErrors());
 					return false;
 				}
-				list.add(interactome);
+				list.add(node);
 			}
 			input.close();
 			results.add(list);

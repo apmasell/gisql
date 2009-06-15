@@ -2,6 +2,8 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+
 public class Literal extends Token {
 	private final char c;
 
@@ -13,7 +15,7 @@ public class Literal extends Token {
 		this.c = c;
 	}
 
-	boolean parse(int level, List<Object> results) {
+	boolean parse(int level, List<AstNode> results) {
 		this.parser.consumeWhitespace();
 		if (this.parser.position < this.parser.input.length()
 				&& c == this.parser.input.charAt(this.parser.position)) {

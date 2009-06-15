@@ -19,14 +19,16 @@ import javax.swing.ToolTipManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.environment.EnvironmentUtils;
 import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.gui.output.EnvironmentTreeView;
 import ca.wlu.gisql.gui.output.InteractomeTreeCellRender;
 import ca.wlu.gisql.gui.output.ResultTab;
+import ca.wlu.gisql.gui.output.EnvironmentTreeView.AstNodeTreeNode;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 
@@ -66,9 +68,9 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 
 	private InteractomeTask<MainFrame> task = null;
 
-	private final JTree variablelist = new JTree();
+	private final JTree variablelist;
 
-	private final JScrollPane variablelistPane = new JScrollPane(variablelist);
+	private final JScrollPane variablelistPane;
 
 	public MainFrame(UserEnvironment environment) {
 		super("gisQL");
@@ -80,11 +82,13 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		command.setActionListener(this);
 
 		environmentTree = new EnvironmentTreeView(environment);
-		variablelist.setModel(environmentTree);
+		variablelist = new JTree(environmentTree);
 		variablelist.addTreeSelectionListener(this);
 		ToolTipManager.sharedInstance().registerComponent(variablelist);
-		variablelist.setCellRenderer(new InteractomeTreeCellRender(
-				environmentTree));
+		variablelist.setCellRenderer(new InteractomeTreeCellRender());
+		variablelist.getSelectionModel().setSelectionMode(
+				TreeSelectionModel.SINGLE_TREE_SELECTION);
+		variablelistPane = new JScrollPane(variablelist);
 
 		innersplitpane.setRightComponent(variablelistPane);
 		innersplitpane.setLeftComponent(results);
@@ -172,7 +176,7 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 				}
 			}
 		} else if (evt.getSource() == menuClear) {
-			EnvironmentUtils.clear(environment);
+			environment.clear();
 		} else if (evt.getSource() == menuQuit) {
 			System.exit(0);
 		}
@@ -180,11 +184,17 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 
 	public void valueChanged(TreeSelectionEvent evt) {
 		try {
-			CachedInteractome i = CachedInteractome.wrap(environmentTree
-					.getInteractome(variablelist.getSelectionPath()), null);
-			if (i != null) {
-				results.setInteractome(i);
-				i.process(); /* Probably processed. */
+			Object selected = variablelist.getLastSelectedPathComponent();
+			if (selected instanceof AstNodeTreeNode) {
+				AstNode node = ((AstNodeTreeNode) selected).getNode();
+				if (node != null && node.isInteractome()) {
+					CachedInteractome interactome = CachedInteractome.wrap(node
+							.asInteractome(), null);
+					if (interactome != null) {
+						results.setInteractome(interactome);
+						interactome.process(); /* Probably processed. */
+					}
+				}
 			}
 		} catch (Exception e) {
 			log.error("Error picking interactome from list.", e);

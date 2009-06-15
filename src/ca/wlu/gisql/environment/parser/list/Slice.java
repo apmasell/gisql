@@ -12,21 +12,23 @@ import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Sequence;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.Word;
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstInteger;
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class Slice implements ListParseable {
 
-	@SuppressWarnings("unchecked")
-	public boolean construct(Environment environment, List<Object> params,
-			Stack<String> error, List<Object> results) {
+	public boolean construct(Environment environment, List<AstNode> params,
+			Stack<String> error, List<AstNode> results) {
 		/*
 		 * Our lists are 1-based and inclusive, and Java's are 0-based,
 		 * inclusive on the start and exclusive on the end. Negative indicies on
 		 * the end.
 		 */
-		int start = (Integer) params.get(0);
-		Integer end = (Integer) params.get(1);
-		List<Interactome> list = (List<Interactome>) params.get(2);
+		int start = ((AstInteger) params.get(0)).getInt();
+		AstInteger endNode = (AstInteger) params.get(1);
+		Integer end = (endNode == null ? null : endNode.getInt());
+		AstList list = (AstList) params.get(2);
 
 		/* Fix 0-base. */
 		start--;

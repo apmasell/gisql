@@ -15,10 +15,11 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.graph.Accession;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Ubergraph;
-import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Counter;
 
 public class DatabaseManager {
@@ -69,8 +70,8 @@ public class DatabaseManager {
 		}
 	}
 
-	public void populateArrays(Map<String, List<Interactome>> array,
-			Map<Integer, DbSpecies> speciesById) {
+	public void populateArrays(DatabaseEnvironment environment,
+			Map<Integer, AstNode> speciesById) {
 		try {
 			PreparedStatement arrayStatement = connection
 					.prepareStatement("SELECT id, name FROM userarray");
@@ -78,20 +79,19 @@ public class DatabaseManager {
 			while (arrayrs.next()) {
 				int arrayid = arrayrs.getInt(1);
 				String name = arrayrs.getString(2);
-				List<Interactome> list = new ArrayList<Interactome>();
+				AstList list = new AstList();
 				try {
 					PreparedStatement membersStatement = connection
 							.prepareStatement("SELECT species FROM arraymembers WHERE userarray = ?");
 					membersStatement.setInt(1, arrayid);
 					ResultSet memberrs = membersStatement.executeQuery();
 					while (memberrs.next()) {
-						DbSpecies interactome = speciesById.get(memberrs
-								.getInt(1));
-						if (interactome != null)
-							list.add(interactome);
+						AstNode node = speciesById.get(memberrs.getInt(1));
+						if (node != null)
+							list.add(node);
 					}
 					memberrs.close();
-					array.put(name, list);
+					environment.putArray(name, list);
 				} catch (SQLException e) {
 					log.error("Error processing array " + name, e);
 				}

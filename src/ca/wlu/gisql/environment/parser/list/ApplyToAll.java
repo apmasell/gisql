@@ -1,7 +1,6 @@
 package ca.wlu.gisql.environment.parser.list;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,22 +12,23 @@ import ca.wlu.gisql.environment.parser.Name;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.TemporaryEnvironment;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class ApplyToAll implements ListParseable {
 
-	@SuppressWarnings("unchecked")
-	public boolean construct(Environment environment, List<Object> params,
-			Stack<String> error, List<Object> results) {
-		/* String name = (String) params.get(0); */
-		Interactome expression = (Interactome) params.get(1);
-		List<Interactome> list = (List<Interactome>) params.get(2);
-		if (!expression.needsFork())
-			return false;
+	public boolean construct(Environment environment, List<AstNode> params,
+			Stack<String> error, List<AstNode> results) {
+		/* AstString name = (AstString) params.get(0); */
+		AstNode expression = params.get(1);
+		AstList list = (AstList) params.get(2);
 
-		List<Interactome> output = new ArrayList<Interactome>();
-		for (Interactome substitute : list) {
-			output.add(expression.fork(substitute));
+		AstList output = new AstList();
+		for (AstNode substitute : list) {
+			AstNode result = expression.fork(substitute);
+			if (result == null)
+				return false;
+			output.add(result);
 		}
 		results.add(output);
 		return true;

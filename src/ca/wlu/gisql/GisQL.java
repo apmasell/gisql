@@ -14,8 +14,8 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import ca.wlu.gisql.db.DatabaseEnvironment;
 import ca.wlu.gisql.db.DatabaseManager;
-import ca.wlu.gisql.environment.DatabaseEnvironment;
 import ca.wlu.gisql.environment.EnvironmentUtils;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.environment.parser.Parser;

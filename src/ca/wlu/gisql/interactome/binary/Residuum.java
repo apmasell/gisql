@@ -1,29 +1,21 @@
 package ca.wlu.gisql.interactome.binary;
 
-import ca.wlu.gisql.environment.parser.util.ParseableBinaryOperation;
+import ca.wlu.gisql.environment.parser.ast.AstLogic;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.interactome.BinaryArithmeticOperation;
-import ca.wlu.gisql.interactome.Interactome;
 
-public class Residuum extends BinaryArithmeticOperation {
-	public final static ParseableBinaryOperation descriptor = new ParseableBinaryOperation(
-			Residuum.class, 2, '⇒', new char[] { '>' },
-			"Residuum (v(Ax) s (Ax t Bx))");
+public class Residuum extends ComputedInteractomeParser {
+	public final static ComputedInteractomeParser descriptor = new Residuum();
 
-	public Residuum(TriangularNorm norm, Interactome left, Interactome right) {
-		super(norm, left, right);
+	public Residuum() {
+		super(2, '⇒', new char[] { '>' }, "Residuum (v(Ax) s (Ax t Bx))");
 	}
 
-	protected double calculateMembership(TriangularNorm norm, double left,
-			double right) {
-		return norm.s(norm.v(left), norm.t(left, right));
+	protected AstLogic construct(AstNode left, AstNode right,
+			TriangularNorm norm) {
+		return AstLogic.makeDisjunct(AstLogic.makeNegation(left, norm),
+				AstLogic.makeConjunct(left, right, norm), norm);
 	}
 
-	public int getPrecedence() {
-		return descriptor.getNestingLevel();
-	}
-
-	public char getSymbol() {
-		return descriptor.getSymbol();
-	}
 }

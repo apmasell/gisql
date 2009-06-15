@@ -1,31 +1,23 @@
 package ca.wlu.gisql.interactome.binary;
 
-import ca.wlu.gisql.environment.parser.util.ParseableBinaryOperation;
+import ca.wlu.gisql.environment.parser.ast.AstLogic;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.interactome.BinaryArithmeticOperation;
-import ca.wlu.gisql.interactome.Interactome;
 
-public class SymmetricDifference extends BinaryArithmeticOperation {
+public class SymmetricDifference extends ComputedInteractomeParser {
 
-	public final static ParseableBinaryOperation descriptor = new ParseableBinaryOperation(
-			SymmetricDifference.class, 4, '∆', new char[] { '^' },
-			"Symmetric Difference ((Ax t v(Bx)) s (Bx t v(Ax)))");
+	public final static ComputedInteractomeParser descriptor = new SymmetricDifference();
 
-	public SymmetricDifference(TriangularNorm norm, Interactome left,
-			Interactome right) {
-		super(norm, left, right);
+	public SymmetricDifference() {
+		super(4, '∆', new char[] { '^' },
+				"Symmetric Difference ((Ax t v(Bx)) s (Bx t v(Ax)))");
 	}
 
-	protected double calculateMembership(TriangularNorm norm, double left,
-			double right) {
-		return norm.s(norm.t(left, norm.v(right)), norm.t(right, norm.v(left)));
-	}
-
-	public int getPrecedence() {
-		return descriptor.getNestingLevel();
-	}
-
-	public char getSymbol() {
-		return descriptor.getSymbol();
+	protected AstLogic construct(AstNode left, AstNode right,
+			TriangularNorm norm) {
+		return AstLogic.makeDisjunct(AstLogic.makeConjunct(left, AstLogic
+				.makeNegation(right, norm), norm), AstLogic.makeConjunct(right,
+				AstLogic.makeNegation(left, norm), norm), norm);
 	}
 }

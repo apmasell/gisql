@@ -2,6 +2,8 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+
 public class Word extends Token {
 	private final Parser parser;
 
@@ -12,7 +14,7 @@ public class Word extends Token {
 		this.word = word;
 	}
 
-	boolean parse(int level, List<Object> results) {
+	boolean parse(int level, List<AstNode> results) {
 		int oldposition = this.parser.position;
 		String name = this.parser.parseName();
 		if (name == null || !word.equals(name)) {

@@ -9,19 +9,60 @@ import ca.wlu.gisql.environment.parser.Name;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
+import ca.wlu.gisql.environment.parser.ast.AstInteractome;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
 
 public class ToVar extends CachedInteractome {
+	private static class AstToVar implements AstNode {
+		private final Environment environment;
+		private final AstNode interactome;
+		private final String name;
+
+		public AstToVar(Environment environment, AstNode node, String name) {
+			this.environment = environment;
+			interactome = node;
+			this.name = name;
+		}
+
+		public Interactome asInteractome() {
+			return new ToVar(environment, interactome.asInteractome(), name);
+		}
+
+		public AstNode fork(AstNode substitue) {
+			return new AstToVar(environment, interactome.fork(substitue), name);
+		}
+
+		public boolean isInteractome() {
+			return true;
+		}
+
+		public PrintStream show(PrintStream print) {
+			interactome.show(print);
+			print.print(" @ ");
+			print.print(name);
+			return print;
+		}
+
+		public StringBuilder show(StringBuilder sb) {
+			interactome.show(sb);
+			sb.append(" @ ");
+			sb.append(name);
+			return sb;
+		}
+	}
+
 	public final static Parseable descriptor = new Parseable() {
 
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			Interactome interactome = (Interactome) params.get(0);
-			String name = (String) params.get(1);
+		public AstNode construct(Environment environment, List<AstNode> params,
+				Stack<String> error) {
+			AstNode interactome = params.get(0);
+			String name = ((AstString) params.get(1)).getString();
 			if (name == null) {
 				error.push("Missing variable name.");
 				return null;
 			}
-			return new ToVar(environment, interactome, name);
+			return new AstToVar(environment, interactome, name);
 		}
 
 		public int getNestingLevel() {
@@ -62,14 +103,10 @@ public class ToVar extends CachedInteractome {
 		this.name = name;
 	}
 
-	public Interactome fork(Interactome substitute) {
-		return new ToVar(environment, source.fork(substitute), name);
-	}
-
 	public boolean postpare() {
 		if (!super.postpare())
 			return false;
-		return environment.setVariable(name, this);
+		return environment.setVariable(name, new AstInteractome(this));
 	}
 
 	public PrintStream show(PrintStream print) {

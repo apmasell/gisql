@@ -3,6 +3,7 @@ package ca.wlu.gisql.environment.parser;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.environment.parser.list.ApplyToAll;
 import ca.wlu.gisql.environment.parser.list.CrossJoin;
 import ca.wlu.gisql.environment.parser.list.FromFile;
@@ -33,7 +34,7 @@ public class ListExpression extends Token {
 		this.parser = parser;
 	}
 
-	boolean parse(int level, List<Object> results) {
+	boolean parse(int level, List<AstNode> results) {
 		for (ListParseable operator : operators) {
 			int oldposition = parser.position;
 			if (processOperator(operator, level, results)) {
@@ -45,9 +46,9 @@ public class ListExpression extends Token {
 	}
 
 	private boolean processOperator(ListParseable operator, int level,
-			List<Object> results) {
+			List<AstNode> results) {
 		Token[] todo = operator.tasks(this.parser);
-		List<Object> params = new ArrayList<Object>();
+		List<AstNode> params = new ArrayList<AstNode>();
 		int errorstate = parser.error.size();
 
 		for (Token task : todo) {

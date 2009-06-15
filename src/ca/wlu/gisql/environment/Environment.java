@@ -1,46 +1,132 @@
 package ca.wlu.gisql.environment;
 
-import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.Map.Entry;
 
+import org.apache.commons.collections15.iterators.IteratorChain;
+import org.apache.commons.collections15.map.HashedMap;
+
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.fuzzy.Godel;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Interactome.Type;
 
-public interface Environment {
-	public interface EnvironmentListener {
-		public abstract void addedEnvironmentVariable(String name,
-				Interactome interactome);
+public abstract class Environment implements EnvironmentListener,
+		Iterable<Entry<String, AstNode>> {
+	private final boolean alwaysPropagate;
 
-		public abstract void droppedEnvironmentVariable(String name,
-				Interactome interactome);
+	private final Map<EnvironmentListener, Boolean> listeners = new WeakHashMap<EnvironmentListener, Boolean>();
 
-		public abstract void lastChanged();
+	private final boolean mutable;
+
+	private TriangularNorm norm = new Godel();
+	private final Environment parent;
+
+	private final Map<String, AstNode> variables = new HashedMap<String, AstNode>();
+
+	protected Environment(final Environment parent, boolean mutable,
+			boolean alwaysPropagate) {
+		super();
+		this.parent = parent;
+		this.mutable = mutable;
+		this.alwaysPropagate = alwaysPropagate;
+
+		if (parent != null) {
+			parent.addListener(this);
+		}
 	}
 
-	public abstract void addListener(EnvironmentListener listener);
+	protected final void add(String name, AstNode node) {
+		AstNode oldnode = variables.get(name);
+		if (oldnode != null) {
+			for (EnvironmentListener listener : listeners.keySet()) {
+				listener.droppedEnvironmentVariable(name, oldnode);
+			}
+		}
 
-	public abstract List<Interactome> getArray(String name);
+		variables.put(name, node);
+		if (node != null) {
+			for (EnvironmentListener listener : listeners.keySet()) {
+				listener.addedEnvironmentVariable(name, node);
+			}
+		}
 
-	public abstract Interactome getLast();
+	}
 
-	public abstract TriangularNorm getTriangularNorm();
+	public final void addedEnvironmentVariable(String name, AstNode node) {
+		if (variables.containsKey(name))
+			return;
+		for (EnvironmentListener listener : listeners.keySet()) {
+			listener.addedEnvironmentVariable(name, node);
+		}
+	}
 
-	public abstract Interactome getVariable(String name);
+	public final void addListener(EnvironmentListener listener) {
+		listeners.put(listener, Boolean.TRUE);
+	}
 
-	public abstract List<String> names(Type filter);
+	public void clear() {
+		if (mutable)
+			variables.clear();
+		if (alwaysPropagate && parent != null)
+			parent.clear();
+	}
 
-	public abstract List<String> names(Type filter, List<String> list);
+	public final void droppedEnvironmentVariable(String name, AstNode node) {
+		if (variables.containsKey(name))
+			return;
+		for (EnvironmentListener listener : listeners.keySet()) {
+			listener.addedEnvironmentVariable(name, node);
+		}
+	}
 
-	public abstract void removeListener(EnvironmentListener listener);
+	public TriangularNorm getTriangularNorm() {
+		return norm;
+	}
 
-	public abstract boolean setArray(String name, List<Interactome> array);
+	public AstNode getVariable(String name) {
+		AstNode node = variables.get(name);
+		if (node == null && parent != null)
+			return parent.getVariable(name);
+		else
+			return node;
 
-	public abstract boolean setTriangularNorm(TriangularNorm norm);
+	}
 
-	public abstract boolean setVariable(String name, Interactome interactome);
+	public final Iterator<Entry<String, AstNode>> iterator() {
+		Iterator<Entry<String, AstNode>> thisit = variables.entrySet()
+				.iterator();
+		if (parent == null)
+			return thisit;
+		return new IteratorChain<Entry<String, AstNode>>(thisit, parent
+				.iterator());
+	}
 
-	public abstract List<Interactome> variables(Type filter);
+	public void lastChanged() {
+	}
 
-	public abstract List<Interactome> variables(Type filter,
-			List<Interactome> list);
+	public final void removeListener(EnvironmentListener listener) {
+		listeners.remove(listener);
+	}
+
+	public boolean setTriangularNorm(TriangularNorm norm) {
+		if (mutable) {
+			this.norm = norm;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public boolean setVariable(String name, AstNode node) {
+		if (mutable) {
+			add(name, node);
+			return true;
+		} else if (alwaysPropagate && parent != null) {
+			return parent.setVariable(name, node);
+		} else {
+			return false;
+		}
+	}
 }

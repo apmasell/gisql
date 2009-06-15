@@ -7,7 +7,7 @@ import java.util.Stack;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public final class LastInteractome implements Parseable {
 	public static Parseable descriptor = new LastInteractome();
@@ -16,13 +16,21 @@ public final class LastInteractome implements Parseable {
 		super();
 	}
 
-	public Interactome construct(Environment environment, List<Object> params,
+	public AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
-		if (environment.getLast() == null) {
-			error.push("No previous statement.");
+		if (environment instanceof UserEnvironment) {
+			UserEnvironment userenvironment = (UserEnvironment) environment;
+
+			if (userenvironment.getLast() == null) {
+				error.push("No previous statement.");
+				return null;
+			} else {
+				return userenvironment.getLast();
+			}
+		} else {
+			error.push("Incompatible environment.");
 			return null;
 		}
-		return environment.getLast();
 	}
 
 	public int getNestingLevel() {

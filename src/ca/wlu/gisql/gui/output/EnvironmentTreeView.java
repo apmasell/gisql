@@ -1,143 +1,117 @@
 package ca.wlu.gisql.gui.output;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.Environment.EnvironmentListener;
+import ca.wlu.gisql.environment.EnvironmentListener;
+import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Interactome.Type;
 
-public class EnvironmentTreeView implements TreeModel, EnvironmentListener {
+public class EnvironmentTreeView extends DefaultMutableTreeNode implements
+		EnvironmentListener {
+
+	public static class AstNodeTreeNode extends DefaultMutableTreeNode {
+
+		private static final long serialVersionUID = 6806723183738094759L;
+		private AstNode node;
+
+		AstNodeTreeNode(String name, AstNode node) {
+			super(name);
+			this.node = node;
+		}
+
+		public AstNode getNode() {
+			return node;
+		}
+	}
+
+	private static final long serialVersionUID = -4745797101983139778L;
 
 	private final Environment environment;
 
-	private final List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
-
-	private final String treeLast = "Last Result";
-
-	private final String treeRoot = "Environment";
-
-	private final String treeSpecies = "Species";
-
-	private final String treeVariables = "Variables";
-
 	public EnvironmentTreeView(Environment environment) {
-		super();
+		super("Environment");
 		this.environment = environment;
 		environment.addListener(this);
+		prepareTree();
 	}
 
-	public void addedEnvironmentVariable(String name, Interactome interactome) {
-		notifyListeners();
+	public void addedEnvironmentVariable(String name, AstNode node) {
+		prepareTree();
 	}
 
-	public void addTreeModelListener(TreeModelListener listener) {
-		listeners.add(listener);
-	}
-
-	public void droppedEnvironmentVariable(String name, Interactome interactome) {
-		notifyListeners();
-	}
-
-	public Object getChild(Object item, int index) {
-		if (item == treeRoot) {
-			switch (index) {
-			case 0:
-				return treeSpecies;
-			case 1:
-				return treeVariables;
-			case 2:
-				return treeLast;
-			}
-		} else if (item == treeSpecies) {
-			return environment.variables(Type.Species).get(index);
-		} else if (item == treeVariables) {
-			return environment.variables(Type.Computed).get(index);
+	private void appendFromMap(String name, SortedMap<String, AstNode> map) {
+		if (map.size() == 0)
+			return;
+		DefaultMutableTreeNode tree = new DefaultMutableTreeNode(name);
+		for (Entry<String, AstNode> entry : map.entrySet()) {
+			DefaultMutableTreeNode child = new AstNodeTreeNode(entry.getKey(),
+					entry.getValue());
+			tree.add(child);
 		}
-		return null;
+		this.add(tree);
 	}
 
-	public int getChildCount(Object item) {
-
-		if (item == treeRoot) {
-			return (environment.getLast() == null ? 2 : 3);
-		} else if (item == treeSpecies) {
-			return environment.variables(Type.Species).size();
-		} else if (item == treeVariables) {
-			return environment.variables(Type.Computed).size();
-		} else {
-			return 0;
-		}
-	}
-
-	public int getIndexOfChild(Object parent, Object child) {
-		if (parent == treeRoot) {
-			if (child == treeSpecies) {
-				return 0;
-			} else if (child == treeVariables) {
-				return 1;
-			} else if (child == treeLast) {
-				return 2;
-			}
-		} else if (parent == treeSpecies) {
-			return environment.variables(Type.Species).indexOf(child);
-		} else if (parent == treeVariables) {
-			return environment.variables(Type.Computed).indexOf(child);
-		}
-		return -1;
-	}
-
-	public Interactome getInteractome(TreePath tp) {
-		if (tp == null) {
-			return null;
-		}
-		if (tp.getPathCount() == 2 && tp.getPathComponent(1) == treeLast) {
-			return environment.getLast();
-		} else if (tp.getPathCount() == 3) {
-			if (tp.getPathComponent(1) == treeSpecies
-					|| tp.getPathComponent(1) == treeVariables) {
-				return (Interactome) tp.getPathComponent(2);
-			}
-		}
-		return null;
-	}
-
-	public Object getRoot() {
-		return treeRoot;
-	}
-
-	public boolean isLeaf(Object item) {
-		if (item == treeRoot || item == treeSpecies || item == treeVariables) {
-			return false;
-		} else {
-			return true;
-		}
+	public void droppedEnvironmentVariable(String name, AstNode node) {
+		prepareTree();
 	}
 
 	public void lastChanged() {
-		notifyListeners();
+		prepareTree();
 	}
 
-	private void notifyListeners() {
-		TreeModelEvent event = new TreeModelEvent(this,
-				new Object[] { treeRoot });
-		for (TreeModelListener tml : listeners) {
-			tml.treeStructureChanged(event);
+	private void prepareTree() {
+		this.removeAllChildren();
+		SortedMap<String, AstNode> other = new TreeMap<String, AstNode>();
+		SortedMap<String, MutableTreeNode> lists = new TreeMap<String, MutableTreeNode>();
+		SortedMap<String, AstNode> species = new TreeMap<String, AstNode>();
+		SortedMap<String, AstNode> named = new TreeMap<String, AstNode>();
+		SortedMap<String, AstNode> appended = new TreeMap<String, AstNode>();
+		for (Entry<String, AstNode> entry : environment) {
+
+			if (entry.getValue().isInteractome()) {
+				if (entry.getKey().startsWith("_")) {
+					appended.put(entry.getKey(), entry.getValue());
+				} else {
+					Interactome interactome = entry.getValue().asInteractome();
+					(interactome.getType() == Type.Species ? species : named)
+							.put(entry.getKey(), entry.getValue());
+				}
+			} else if (entry.getValue() instanceof AstList) {
+				DefaultMutableTreeNode list = new DefaultMutableTreeNode(entry
+						.getKey());
+				for (AstNode node : (AstList) entry.getValue()) {
+					list.add(new AstNodeTreeNode(node.toString(), node));
+				}
+				lists.put(entry.getKey(), list);
+			} else {
+				other.put(entry.getKey(), entry.getValue());
+			}
+		}
+		appendFromMap("Species", species);
+		appendFromMap("Variables", named);
+		DefaultMutableTreeNode listnode = new DefaultMutableTreeNode("Lists");
+		for (MutableTreeNode node : lists.values()) {
+			listnode.add(node);
+		}
+		this.add(listnode);
+		appendFromMap("Other", other);
+		appendFromMap("History", appended);
+		if (environment instanceof UserEnvironment) {
+			UserEnvironment userenvironment = (UserEnvironment) environment;
+			if (userenvironment.getLast() != null) {
+				this.add(new AstNodeTreeNode("Last Result", userenvironment
+						.getLast()));
+			}
+
 		}
 	}
-
-	public void removeTreeModelListener(TreeModelListener listener) {
-		listeners.remove(listener);
-	}
-
-	public void valueForPathChanged(TreePath path, Object value) {
-		throw new UnsupportedOperationException();
-	}
-
 }

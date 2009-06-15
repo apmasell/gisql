@@ -4,13 +4,14 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
+import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.environment.parser.util.Function;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Unit;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
 public class FormatFunction extends Function {
-	class SetFormat extends Unit {
+	class SetFormat extends AstVoid {
 		private final Environment environment;
 
 		private FileFormat format;
@@ -20,12 +21,9 @@ public class FormatFunction extends Function {
 			this.format = format;
 		}
 
-		public boolean prepare() {
+		public void execute() {
 			if (environment instanceof UserEnvironment) {
 				((UserEnvironment) environment).setFormat(format);
-				return super.prepare();
-			} else {
-				return false;
 			}
 		}
 	}
@@ -36,9 +34,10 @@ public class FormatFunction extends Function {
 		super("format", new Parameter[] { new Function.Name("layout") });
 	}
 
-	public Interactome construct(Environment environment, List<Object> params,
+	public AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
-		FileFormat format = FileFormat.valueOf((String) params.get(0));
+		FileFormat format = FileFormat.valueOf(((AstString) params.get(0))
+				.getString());
 		if (format == null) {
 			return null;
 		} else {

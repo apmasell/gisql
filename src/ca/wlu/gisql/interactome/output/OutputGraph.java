@@ -24,11 +24,6 @@ class OutputGraph extends AbstractOutput {
 		super(source, name, lowerbound, upperbound, format, filename);
 	}
 
-	public Interactome fork(Interactome substitute) {
-		return new OutputGraph(source.fork(substitute), getName(), lowerbound,
-				upperbound, format, filename);
-	}
-
 	public boolean postpare() {
 		if (!super.postpare())
 			return false;

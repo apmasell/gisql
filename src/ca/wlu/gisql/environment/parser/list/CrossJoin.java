@@ -1,7 +1,6 @@
 package ca.wlu.gisql.environment.parser.list;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,28 +12,30 @@ import ca.wlu.gisql.environment.parser.Name;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.TemporaryEnvironment;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class CrossJoin implements ListParseable {
 
-	@SuppressWarnings("unchecked")
-	public boolean construct(Environment environment, List<Object> params,
-			Stack<String> error, List<Object> results) {
+	public boolean construct(Environment environment, List<AstNode> params,
+			Stack<String> error, List<AstNode> results) {
 		/* String outername = (String) params.get(0); */
 		/* String innername = (String) params.get(1); */
-		Interactome expression = (Interactome) params.get(2);
-		List<Interactome> outerlist = (List<Interactome>) params.get(3);
-		List<Interactome> innerlist = (List<Interactome>) params.get(4);
-		if (!expression.needsFork())
-			return false;
+		AstNode expression = params.get(2);
+		AstList outerlist = (AstList) params.get(3);
+		AstList innerlist = (AstList) params.get(4);
 
-		List<Interactome> output = new ArrayList<Interactome>();
-		for (Interactome outersubstitute : outerlist) {
-			Interactome partialexpression = expression.fork(outersubstitute);
-			if (!partialexpression.needsFork())
+		AstList output = new AstList();
+		for (AstNode outersubstitute : outerlist) {
+			AstNode partialexpression = expression.fork(outersubstitute);
+			if (partialexpression == null)
 				return false;
-			for (Interactome innersubstitute : innerlist) {
-				output.add(partialexpression.fork(innersubstitute));
+			for (AstNode innersubstitute : innerlist) {
+				AstNode completeexpression = partialexpression
+						.fork(innersubstitute);
+				if (completeexpression == null)
+					return false;
+				output.add(completeexpression);
 
 			}
 		}

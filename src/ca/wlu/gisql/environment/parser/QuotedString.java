@@ -2,6 +2,9 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
+
 public class QuotedString extends Token {
 
 	private final Parser parser;
@@ -10,7 +13,7 @@ public class QuotedString extends Token {
 		this.parser = parser;
 	}
 
-	boolean parse(int level, List<Object> results) {
+	boolean parse(int level, List<AstNode> results) {
 		int oldposition = this.parser.position;
 		parser.consumeWhitespace();
 		StringBuilder sb = null;
@@ -55,7 +58,7 @@ public class QuotedString extends Token {
 					+ oldposition);
 			return false;
 		}
-		results.add(sb.toString());
+		results.add(new AstString(sb.toString()));
 		return true;
 	}
 

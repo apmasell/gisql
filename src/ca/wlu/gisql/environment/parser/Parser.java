@@ -13,38 +13,38 @@ import ca.wlu.gisql.environment.FormatFunction;
 import ca.wlu.gisql.environment.LastInteractome;
 import ca.wlu.gisql.environment.OutputFunction;
 import ca.wlu.gisql.environment.RunFunction;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstVoid;
+import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
 import ca.wlu.gisql.environment.parser.util.FoldOperator;
-import ca.wlu.gisql.environment.parser.util.ParseableBinaryOperation;
 import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.Cut;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ToVar;
-import ca.wlu.gisql.interactome.binary.BoldIntersection;
-import ca.wlu.gisql.interactome.binary.BoundedDifference;
-import ca.wlu.gisql.interactome.binary.BoundedSum;
 import ca.wlu.gisql.interactome.binary.Difference;
 import ca.wlu.gisql.interactome.binary.Intersection;
 import ca.wlu.gisql.interactome.binary.Residuum;
-import ca.wlu.gisql.interactome.binary.StrongSymmetricDifference;
 import ca.wlu.gisql.interactome.binary.SymmetricDifference;
 import ca.wlu.gisql.interactome.binary.Union;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
 
 public class Parser {
+	public enum Result {
+		Executable, Failure, Interactome
+	};
+
 	private static String help;
 
 	static int maxdepth = 0;
 
 	private final static Parseable[] operators = new Parseable[] {
-			AbstractOutput.descriptor, BoldIntersection.descriptor,
-			BoundedDifference.descriptor, BoundedSum.descriptor,
-			ClearFunction.descriptor, Complement.descriptor, Cut.descriptor,
-			Difference.descriptor, EchoFunction.descriptor,
-			FormatFunction.descriptor, Intersection.descriptor,
-			LastInteractome.descriptor, OutputFunction.descriptor,
-			Residuum.descriptor, RunFunction.descriptor,
-			StrongSymmetricDifference.descriptor,
-			SymmetricDifference.descriptor, ToVar.descriptor, Union.descriptor };
+			AbstractOutput.descriptor, ClearFunction.descriptor,
+			Complement.descriptor, Cut.descriptor, Difference.descriptor,
+			EchoFunction.descriptor, FormatFunction.descriptor,
+			Intersection.descriptor, LastInteractome.descriptor,
+			OutputFunction.descriptor, Residuum.descriptor,
+			RunFunction.descriptor, SymmetricDifference.descriptor,
+			ToVar.descriptor, Union.descriptor };
 
 	private static Map<Integer, List<Parseable>> otherfixOperators = null;
 
@@ -104,9 +104,9 @@ public class Parser {
 		if (list.contains(operator))
 			return;
 		list.add(operator);
-		if (operator instanceof ParseableBinaryOperation) {
+		if (operator instanceof ComputedInteractomeParser) {
 			getList(prefixedOperators, level).add(
-					new FoldOperator((ParseableBinaryOperation) operator));
+					new FoldOperator((ComputedInteractomeParser) operator));
 		}
 	}
 
@@ -129,9 +129,10 @@ public class Parser {
 
 	final String input;
 
-	private Interactome interactome = null;
-
 	int position = 0;
+	private AstNode result = null;
+
+	private Result state = null;
 
 	public Parser(Environment environment, String input) {
 		this.environment = environment;
@@ -147,8 +148,16 @@ public class Parser {
 		}
 	}
 
+	public void execute() {
+		if (state == Result.Executable)
+			((AstVoid) result).execute();
+	}
+
 	public Interactome get() {
-		return interactome;
+		if (state == Result.Interactome)
+			return result.asInteractome();
+		else
+			return null;
 	}
 
 	public String getErrors() {
@@ -164,8 +173,19 @@ public class Parser {
 		return sb.toString();
 	}
 
-	Interactome parseAutoExpression(int level) {
-		Interactome left = null;
+	public Result getParseResult() {
+		return state;
+	}
+
+	public AstNode getRaw() {
+		if (state == null || state == Result.Failure)
+			return null;
+		else
+			return result;
+	}
+
+	AstNode parseAutoExpression(int level) {
+		AstNode left = null;
 		if (position >= input.length())
 			return null;
 
@@ -199,7 +219,7 @@ public class Parser {
 				errorposition = error.size();
 				if (operator.isMatchingOperator(input.charAt(position))) {
 					position++;
-					Interactome result = processOperator(operator, left, level);
+					AstNode result = processOperator(operator, left, level);
 					if (result != null) {
 						left = result;
 						matched = true;
@@ -218,8 +238,8 @@ public class Parser {
 		return left;
 	}
 
-	private Interactome parseExpression(Character endofexpression) {
-		Interactome e = parseAutoExpression(0);
+	private AstNode parseExpression(Character endofexpression) {
+		AstNode e = parseAutoExpression(0);
 
 		if (e == null) {
 			return null;
@@ -242,7 +262,7 @@ public class Parser {
 		}
 	}
 
-	public Interactome parseIdentifier() {
+	public AstNode parseIdentifier() {
 		consumeWhitespace();
 
 		while (position < input.length()) {
@@ -256,12 +276,12 @@ public class Parser {
 				if (name == null) {
 					return null;
 				}
-				Interactome i = environment.getVariable(name);
-				if (i == null) {
+				AstNode node = environment.getVariable(name);
+				if (node == null) {
 					error.push("Unknown identifier: " + name);
 					return null;
 				}
-				return i;
+				return node;
 			}
 		}
 		return null;
@@ -284,10 +304,9 @@ public class Parser {
 		return (sb.length() == 0 ? null : sb.toString());
 	}
 
-	private Interactome processOperator(Parseable operator, Interactome left,
-			int level) {
+	private AstNode processOperator(Parseable operator, AstNode left, int level) {
 		Token[] todo = operator.tasks(this);
-		List<Object> params = new ArrayList<Object>();
+		List<AstNode> params = new ArrayList<AstNode>();
 
 		if (!operator.isPrefixed()) {
 			if (left == null)
@@ -308,6 +327,17 @@ public class Parser {
 	private void reparse() {
 		error.clear();
 		position = 0;
-		interactome = parseExpression(null);
+		result = parseExpression(null);
+		if (result == null) {
+			state = Result.Failure;
+		} else if (result instanceof AstVoid) {
+			state = Result.Executable;
+		} else if (result.isInteractome()) {
+			state = Result.Interactome;
+		} else {
+			error
+					.push("Expression is not a statement or an interactome query.");
+			state = Result.Failure;
+		}
 	}
 }

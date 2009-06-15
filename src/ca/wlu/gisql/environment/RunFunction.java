@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
+import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.environment.parser.util.Function;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Unit;
 
 public final class RunFunction extends Function {
-	class Script extends Unit {
+	class Script extends AstVoid {
 		private final UserEnvironment environment;
 
 		private final File file;
@@ -20,11 +21,8 @@ public final class RunFunction extends Function {
 			this.file = file;
 		}
 
-		public boolean prepare() {
-			if (!super.prepare())
-				return false;
-			return EnvironmentUtils.runFile(environment, file);
-
+		public void execute() {
+			EnvironmentUtils.runFile(environment, file);
 		}
 	}
 
@@ -35,9 +33,9 @@ public final class RunFunction extends Function {
 				"filename") });
 	}
 
-	public Interactome construct(Environment environment, List<Object> params,
+	public AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
-		File file = new File((String) params.get(0));
+		File file = new File(((AstString) params.get(0)).getString());
 		if (file.canRead()) {
 			return new Script(environment, file);
 		} else {

@@ -2,7 +2,7 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class Expression extends Token {
 	private final Parser parser;
@@ -11,9 +11,9 @@ public class Expression extends Token {
 		this.parser = parser;
 	}
 
-	boolean parse(int level, List<Object> results) {
+	boolean parse(int level, List<AstNode> results) {
 		int oldposition = this.parser.position;
-		Interactome result = (level == Parser.maxdepth ? this.parser
+		AstNode result = (level == Parser.maxdepth ? this.parser
 				.parseIdentifier() : this.parser.parseAutoExpression(0));
 		if (result == null) {
 			this.parser.error.push("Failed to parse expression. Position: "

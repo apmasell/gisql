@@ -8,19 +8,21 @@ import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Name;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.environment.parser.ast.AstList;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstString;
 
 public class Variable implements ListParseable {
 
-	public boolean construct(Environment environment, List<Object> params,
-			Stack<String> error, List<Object> results) {
-		String name = (String) params.get(0);
-		List<Interactome> list = environment.getArray(name);
-		if (list == null) {
-			return false;
-		} else {
+	public boolean construct(Environment environment, List<AstNode> params,
+			Stack<String> error, List<AstNode> results) {
+		String name = ((AstString) params.get(0)).getString();
+		AstNode list = environment.getVariable(name);
+		if (list != null && list instanceof AstList ) {
 			results.add(list);
 			return true;
+		} else {
+			return false;
 		}
 	}
 

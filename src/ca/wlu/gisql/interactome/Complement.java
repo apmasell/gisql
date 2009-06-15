@@ -9,105 +9,45 @@ import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.SubExpression;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.graph.Gene;
-import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.environment.parser.ast.AstLogic;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
-public class Complement implements Interactome {
-	public final static Parseable descriptor = new Parseable() {
-		public Interactome construct(Environment environment,
-				List<Object> params, Stack<String> error) {
-			Interactome interactome = (Interactome) params.get(0);
-			return new Complement(environment.getTriangularNorm(), interactome);
-		}
+public class Complement implements Parseable {
+	public final static Parseable descriptor = new Complement();
 
-		public int getNestingLevel() {
-			return 5;
-		}
-
-		public boolean isMatchingOperator(char c) {
-			return c == '!' || c == '¬';
-		}
-
-		public boolean isPrefixed() {
-			return true;
-		}
-
-		public PrintStream show(PrintStream print) {
-			print.print("Complement (1-Ax): ¬A, !A");
-			return print;
-		}
-
-		public StringBuilder show(StringBuilder sb) {
-			sb.append("Complement (1-Ax): ¬A, !A");
-			return sb;
-		}
-
-		public Token[] tasks(Parser parser) {
-			return new Token[] { new SubExpression(parser) };
-		}
-
-	};
-
-	private final Interactome interactome;
-
-	private final TriangularNorm norm;
-
-	public Complement(TriangularNorm norm, Interactome i) {
-		this.interactome = i;
-		this.norm = norm;
+	public AstNode construct(Environment environment, List<AstNode> params,
+			Stack<String> error) {
+		AstNode interactome = params.get(0);
+		if (interactome.isInteractome())
+			return AstLogic.makeNegation(interactome, environment
+					.getTriangularNorm());
+		else
+			return null;
 	}
 
-	public double calculateMembership(Gene gene) {
-		return norm.v(interactome.calculateMembership(gene));
+	public int getNestingLevel() {
+		return 5;
 	}
 
-	public double calculateMembership(Interaction interaction) {
-		return norm.v(interactome.calculateMembership(interaction));
+	public boolean isMatchingOperator(char c) {
+		return c == '!' || c == '¬';
 	}
 
-	public Interactome fork(Interactome substitute) {
-		return new Complement(norm, interactome.fork(substitute));
-	}
-
-	public int getPrecedence() {
-		return descriptor.getNestingLevel();
-	}
-
-	public Type getType() {
-		return Type.Computed;
-	}
-
-	public double membershipOfUnknown() {
-		return norm.v(0);
-	}
-
-	public boolean needsFork() {
-		return interactome.needsFork();
-	}
-
-	public int numGenomes() {
-		return interactome.numGenomes();
-	}
-
-	public boolean postpare() {
-		return interactome.postpare();
-	}
-
-	public boolean prepare() {
-		return interactome.prepare();
+	public boolean isPrefixed() {
+		return true;
 	}
 
 	public PrintStream show(PrintStream print) {
-		print.print("¬");
-		InteractomeUtil
-				.precedenceShow(print, interactome, this.getPrecedence());
+		print.print("Complement (1-Ax): ¬A, !A");
 		return print;
 	}
 
 	public StringBuilder show(StringBuilder sb) {
-		sb.append("¬");
-		InteractomeUtil.precedenceShow(sb, interactome, this.getPrecedence());
+		sb.append("Complement (1-Ax): ¬A, !A");
 		return sb;
+	}
+
+	public Token[] tasks(Parser parser) {
+		return new Token[] { new SubExpression(parser) };
 	}
 }

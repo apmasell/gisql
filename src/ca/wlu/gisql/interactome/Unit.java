@@ -15,9 +15,7 @@ public class Unit implements Interactome {
 		return 0;
 	}
 
-	public Interactome fork(Interactome substitute) {
-		return this;
-	}
+
 
 	public int getPrecedence() {
 		return Integer.MAX_VALUE;
@@ -31,9 +29,7 @@ public class Unit implements Interactome {
 		return 0;
 	}
 
-	public boolean needsFork() {
-		return false;
-	}
+
 
 	public int numGenomes() {
 		return 0;

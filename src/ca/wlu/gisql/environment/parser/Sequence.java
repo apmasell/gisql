@@ -2,6 +2,8 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+
 public class Sequence extends Token {
 
 	private final Token first;
@@ -14,7 +16,7 @@ public class Sequence extends Token {
 		this.second = second;
 	}
 
-	boolean parse(int level, List<Object> results) {
+	boolean parse(int level, List<AstNode> results) {
 		return first.parse(level, results) && second.parse(level, results);
 	}
 

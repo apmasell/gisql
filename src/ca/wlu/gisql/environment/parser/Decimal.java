@@ -2,6 +2,9 @@ package ca.wlu.gisql.environment.parser;
 
 import java.util.List;
 
+import ca.wlu.gisql.environment.parser.ast.AstDouble;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+
 public class Decimal extends Token {
 
 	private final Parser parser;
@@ -10,7 +13,7 @@ public class Decimal extends Token {
 		this.parser = parser;
 	}
 
-	boolean parse(int level, List<Object> results) {
+	boolean parse(int level, List<AstNode> results) {
 		int oldposition = this.parser.position;
 		parser.consumeWhitespace();
 		while (parser.position < parser.input.length()
@@ -27,8 +30,8 @@ public class Decimal extends Token {
 		}
 
 		try {
-			results.add(new Double(parser.input.substring(oldposition,
-					parser.position)));
+			results.add(new AstDouble(Double.parseDouble(parser.input
+					.substring(oldposition, parser.position))));
 			return true;
 		} catch (NumberFormatException e) {
 			this.parser.error.push("Failed to parse double. Position: "

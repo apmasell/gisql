@@ -10,11 +10,12 @@ import ca.wlu.gisql.environment.parser.ListOf;
 import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class RawList implements ListParseable {
 
-	public boolean construct(Environment environment, List<Object> params,
-			Stack<String> error, List<Object> results) {
+	public boolean construct(Environment environment, List<AstNode> params,
+			Stack<String> error, List<AstNode> results) {
 		results.add(params.get(0));
 		return true;
 	}

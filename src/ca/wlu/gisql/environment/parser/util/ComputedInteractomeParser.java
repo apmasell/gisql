@@ -4,24 +4,18 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
-import org.apache.log4j.Logger;
-
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.SubExpression;
 import ca.wlu.gisql.environment.parser.Token;
+import ca.wlu.gisql.environment.parser.ast.AstLogic;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.interactome.BinaryArithmeticOperation;
-import ca.wlu.gisql.interactome.Interactome;
 
-public class ParseableBinaryOperation implements Parseable {
-	private static final Logger log = Logger
-			.getLogger(ParseableBinaryOperation.class);
+public abstract class ComputedInteractomeParser implements Parseable {
 
 	private final char[] alternateoperators;
-
-	private final Class<? extends BinaryArithmeticOperation> implementation;
 
 	private final String name;
 
@@ -29,35 +23,30 @@ public class ParseableBinaryOperation implements Parseable {
 
 	private final char symbol;
 
-	public ParseableBinaryOperation(
-			Class<? extends BinaryArithmeticOperation> implementation,
-			int nestinglevel, char symbol, char[] alternateoperators,
-			String name) {
+	public ComputedInteractomeParser(int nestinglevel, char symbol,
+			char[] alternateoperators, String name) {
 		super();
-		this.implementation = implementation;
 		this.nestinglevel = nestinglevel;
 		this.symbol = symbol;
 		this.alternateoperators = alternateoperators;
 		this.name = name;
 	}
 
-	protected Interactome construct(Environment environment, Interactome left,
-			Interactome right, Stack<String> error) {
-		try {
-			return implementation.getConstructor(TriangularNorm.class,
-					Interactome.class, Interactome.class).newInstance(
-					environment.getTriangularNorm(), left, right);
-		} catch (Exception e) {
-			error.push("Unexpected instantiation error.");
-			log.error("Instantiation error during parsing.", e);
+	abstract protected AstLogic construct(AstNode left, AstNode right,
+			TriangularNorm norm);
+
+	protected AstNode construct(Environment environment, AstNode left,
+			AstNode right, Stack<String> error) {
+		if (!left.isInteractome() || !right.isInteractome()) {
+			error.push("Cannot apply to non-interactome operand.");
 		}
-		return null;
+		return construct(left, right, environment.getTriangularNorm());
 	}
 
-	public Interactome construct(Environment environment, List<Object> params,
+	public AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
-		Interactome left = (Interactome) params.get(0);
-		Interactome right = (Interactome) params.get(1);
+		AstNode left = params.get(0);
+		AstNode right = params.get(1);
 		return construct(environment, left, right, error);
 	}
 

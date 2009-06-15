@@ -1,29 +1,20 @@
 package ca.wlu.gisql.interactome.binary;
 
-import ca.wlu.gisql.environment.parser.util.ParseableBinaryOperation;
+import ca.wlu.gisql.environment.parser.ast.AstLogic;
+import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
-import ca.wlu.gisql.interactome.BinaryArithmeticOperation;
-import ca.wlu.gisql.interactome.Interactome;
 
-public class Difference extends BinaryArithmeticOperation {
-	public final static ParseableBinaryOperation descriptor = new ParseableBinaryOperation(
-			Difference.class, 1, '∖', new char[] { '-', '\\' },
-			"Difference (Ax t v(Bx))");
+public class Difference extends ComputedInteractomeParser {
+	public final static ComputedInteractomeParser descriptor = new Difference();
 
-	public Difference(TriangularNorm norm, Interactome left, Interactome right) {
-		super(norm, left, right);
+	Difference() {
+		super(1, '∖', new char[] { '-', '\\' }, "Difference (Ax t v(Bx))");
 	}
 
-	protected double calculateMembership(TriangularNorm norm, double left,
-			double right) {
-		return norm.t(left, norm.v(right));
-	}
-
-	public int getPrecedence() {
-		return descriptor.getNestingLevel();
-	}
-
-	public char getSymbol() {
-		return descriptor.getSymbol();
+	protected AstLogic construct(AstNode left, AstNode right,
+			TriangularNorm norm) {
+		return AstLogic.makeConjunct(left, AstLogic.makeNegation(right, norm),
+				norm);
 	}
 }
