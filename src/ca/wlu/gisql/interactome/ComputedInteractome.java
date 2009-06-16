@@ -181,4 +181,8 @@ public class ComputedInteractome implements Interactome {
 		sb.append(expression);
 		return sb;
 	}
+
+	public String toString() {
+		return show(new StringBuilder()).toString();
+	}
 }

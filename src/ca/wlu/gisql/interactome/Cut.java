@@ -157,4 +157,8 @@ public class Cut implements Interactome {
 		sb.append("]");
 		return sb;
 	}
+
+	public String toString() {
+		return show(new StringBuilder()).toString();
+	}
 }
