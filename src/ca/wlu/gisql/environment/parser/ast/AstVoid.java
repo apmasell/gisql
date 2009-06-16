@@ -12,7 +12,7 @@ public abstract class AstVoid implements AstNode {
 
 	public abstract void execute();
 
-	public AstNode fork(AstNode substitue) {
+	public AstNode fork(AstNode substitute) {
 		return null;
 	}
 

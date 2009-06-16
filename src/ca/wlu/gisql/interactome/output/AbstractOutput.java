@@ -46,8 +46,8 @@ public abstract class AbstractOutput extends CachedInteractome {
 					format, filename, true);
 		}
 
-		public AstNode fork(AstNode substitue) {
-			return new AstOutput(interactome.fork(substitue), name, lbound,
+		public AstNode fork(AstNode substitute) {
+			return new AstOutput(interactome.fork(substitute), name, lbound,
 					ubound, format, filename);
 		}
 

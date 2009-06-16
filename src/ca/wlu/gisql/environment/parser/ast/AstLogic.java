@@ -136,9 +136,9 @@ public class AstLogic implements AstNode {
 		}
 	}
 
-	public AstNode fork(AstNode substitue) {
-		return new AstLogic(left.fork(substitue), (right == null ? null : right
-				.fork(substitue)), operation, norm);
+	public AstNode fork(AstNode substitute) {
+		return new AstLogic(left.fork(substitute), (right == null ? null
+				: right.fork(substitute)), operation, norm);
 	}
 
 	public boolean isInteractome() {

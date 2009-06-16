@@ -7,7 +7,7 @@ public interface AstNode extends Show {
 
 	public abstract Interactome asInteractome();
 
-	public abstract AstNode fork(AstNode substitue);
+	public abstract AstNode fork(AstNode substitute);
 
 	public abstract boolean isInteractome();
 }

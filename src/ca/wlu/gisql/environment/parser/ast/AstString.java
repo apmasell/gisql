@@ -17,7 +17,7 @@ public class AstString implements AstNode {
 		return null;
 	}
 
-	public AstNode fork(AstNode substitue) {
+	public AstNode fork(AstNode substitute) {
 		return this;
 	}
 

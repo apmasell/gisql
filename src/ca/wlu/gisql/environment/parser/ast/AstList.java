@@ -37,10 +37,10 @@ public class AstList extends ArrayList<AstNode> implements AstNode {
 		return result;
 	}
 
-	public AstNode fork(AstNode substitue) {
+	public AstNode fork(AstNode substitute) {
 		AstList forked = new AstList();
 		for (AstNode node : this) {
-			forked.add(node.fork(substitue));
+			forked.add(node.fork(substitute));
 		}
 		return forked;
 	}

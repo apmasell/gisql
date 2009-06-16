@@ -16,7 +16,7 @@ public class AstInteger implements AstNode {
 		return null;
 	}
 
-	public AstNode fork(AstNode substitue) {
+	public AstNode fork(AstNode substitute) {
 		return this;
 	}
 

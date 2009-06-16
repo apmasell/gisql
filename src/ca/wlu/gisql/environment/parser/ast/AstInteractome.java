@@ -17,7 +17,7 @@ public class AstInteractome implements AstNode {
 		return interactome;
 	}
 
-	public AstNode fork(AstNode substitue) {
+	public AstNode fork(AstNode substitute) {
 		return this;
 	}
 

@@ -29,8 +29,8 @@ public class ToVar extends CachedInteractome {
 			return new ToVar(environment, interactome.asInteractome(), name);
 		}
 
-		public AstNode fork(AstNode substitue) {
-			return new AstToVar(environment, interactome.fork(substitue), name);
+		public AstNode fork(AstNode substitute) {
+			return new AstToVar(environment, interactome.fork(substitute), name);
 		}
 
 		public boolean isInteractome() {
