@@ -24,12 +24,12 @@ import ca.wlu.gisql.interactome.InteractomeUtil;
 public abstract class AbstractOutput extends CachedInteractome {
 	private static class AstOutput implements AstNode {
 
-		private final AstNode interactome;
-		private final String name;
-		private final double lbound;
-		private final double ubound;
 		private final String filename;
 		private final FileFormat format;
+		private final AstNode interactome;
+		private final double lbound;
+		private final String name;
+		private final double ubound;
 
 		public AstOutput(AstNode interactome, String name, double lbound,
 				double ubound, FileFormat format, String filename) {
@@ -54,6 +54,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 		public boolean isInteractome() {
 			return true;
 		}
+
 		public PrintStream show(PrintStream print) {
 			interactome.show(print);
 			print.print(" @ ");
@@ -75,7 +76,8 @@ public abstract class AbstractOutput extends CachedInteractome {
 			sb.append(lbound).append(" ").append(ubound);
 			sb.append(" ");
 			sb.append(format.name()).append(" ");
-			sb.append("\"").append(filename == null ? "-" : filename).append("\"");
+			sb.append("\"").append(filename == null ? "-" : filename).append(
+					"\"");
 			return sb;
 		}
 

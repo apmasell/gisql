@@ -39,6 +39,8 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 
 	private static final long serialVersionUID = -1767901719339978452L;
 
+	private final CommandBox command;
+
 	private final UserEnvironment environment;
 
 	private final EnvironmentTreeView environmentTree;
@@ -63,8 +65,6 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 	private final JSeparator quitseparator = new JSeparator();
 
 	private final ResultTab results = new ResultTab();
-
-	private final CommandBox command;
 
 	private InteractomeTask<MainFrame> task = null;
 
@@ -184,6 +184,13 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		}
 	}
 
+	public void processedInteractome(CachedInteractome interactome) {
+		results.setInteractome(interactome);
+		command.clearCommand();
+		progress.stop();
+		task = null;
+	}
+
 	public void valueChanged(TreeSelectionEvent evt) {
 		try {
 			Object selected = variablelist.getLastSelectedPathComponent();
@@ -201,12 +208,5 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		} catch (Exception e) {
 			log.error("Error picking interactome from list.", e);
 		}
-	}
-
-	public void processedInteractome(CachedInteractome interactome) {
-		results.setInteractome(interactome);
-		command.clearCommand();
-		progress.stop();
-		task = null;
 	}
 }

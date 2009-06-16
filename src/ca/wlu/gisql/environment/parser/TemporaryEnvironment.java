@@ -16,15 +16,15 @@ public class TemporaryEnvironment extends Token {
 			this.depth = depth;
 		}
 
+		public Interactome asInteractome() {
+			return null;
+		}
+
 		public AstNode fork(AstNode substitute) {
 			if (depth == 1)
 				return substitute;
 			else
 				return new DebrujinAst(depth - 1);
-		}
-
-		public Interactome asInteractome() {
-			return null;
 		}
 
 		public boolean isInteractome() {

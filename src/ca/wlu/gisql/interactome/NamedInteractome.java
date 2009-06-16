@@ -44,8 +44,6 @@ public class NamedInteractome implements Interactome {
 		return membership;
 	}
 
-
-
 	public int getPrecedence() {
 		return Integer.MAX_VALUE;
 	}
@@ -57,8 +55,6 @@ public class NamedInteractome implements Interactome {
 	public final double membershipOfUnknown() {
 		return membershipOfUnknown;
 	}
-
-
 
 	public final int numGenomes() {
 		return numGenomes;

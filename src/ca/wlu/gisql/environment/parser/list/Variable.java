@@ -18,7 +18,7 @@ public class Variable implements ListParseable {
 			Stack<String> error, List<AstNode> results) {
 		String name = ((AstString) params.get(0)).getString();
 		AstNode list = environment.getVariable(name);
-		if (list != null && list instanceof AstList ) {
+		if (list != null && list instanceof AstList) {
 			results.add(list);
 			return true;
 		} else {

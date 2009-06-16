@@ -13,8 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
-public class BusyDialog extends JDialog
-		implements ActionListener {
+public class BusyDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -3519155352196497820L;
 

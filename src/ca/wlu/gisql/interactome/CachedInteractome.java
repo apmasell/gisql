@@ -105,7 +105,6 @@ public class CachedInteractome implements Interactome {
 		}
 	}
 
-
 	public final List<Gene> getGenes() {
 		process();
 		return genes.asList();
@@ -145,6 +144,7 @@ public class CachedInteractome implements Interactome {
 	public final double membershipOfUnknown() {
 		return source.membershipOfUnknown();
 	}
+
 	public final int numGenomes() {
 		return source.numGenomes();
 	}

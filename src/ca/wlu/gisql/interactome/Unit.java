@@ -15,8 +15,6 @@ public class Unit implements Interactome {
 		return 0;
 	}
 
-
-
 	public int getPrecedence() {
 		return Integer.MAX_VALUE;
 	}
@@ -28,8 +26,6 @@ public class Unit implements Interactome {
 	public double membershipOfUnknown() {
 		return 0;
 	}
-
-
 
 	public int numGenomes() {
 		return 0;

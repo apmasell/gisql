@@ -6,22 +6,18 @@ import ca.wlu.gisql.interactome.Interactome;
 
 public abstract class AstVoid implements AstNode {
 
-	public AstNode fork(AstNode substitue) {
+	public Interactome asInteractome() {
 		return null;
 	}
 
-	public Interactome asInteractome() {
+	public abstract void execute();
+
+	public AstNode fork(AstNode substitue) {
 		return null;
 	}
 
 	public boolean isInteractome() {
 		return false;
-	}
-
-	public abstract void execute();
-
-	public String toString() {
-		return show(new StringBuilder()).toString();
 	}
 
 	public PrintStream show(PrintStream print) {
@@ -34,5 +30,9 @@ public abstract class AstVoid implements AstNode {
 		sb.append(':');
 		sb.append(this.getClass().getName());
 		return sb;
+	}
+
+	public String toString() {
+		return show(new StringBuilder()).toString();
 	}
 }
