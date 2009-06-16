@@ -1,7 +1,6 @@
 package ca.wlu.gisql.gui;
 
 import java.awt.Component;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
@@ -45,10 +44,9 @@ public class InteractomeTask<P extends Component & TaskParent> extends
 		boolean success;
 		try {
 			success = get();
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			success = false;
-		} catch (ExecutionException e) {
-			success = false;
+			log.warn("Unable to finish task.", e);
 		}
 
 		if (success) {

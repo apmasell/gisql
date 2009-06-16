@@ -5,6 +5,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.CancellationException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -74,7 +75,11 @@ public class BusyDialog extends JDialog implements ActionListener {
 
 	public void start(String message) {
 		label.setText(message);
-		setVisible(true);
+		pack();
+		try {
+			setVisible(true);
+		} catch (CancellationException e) {
+		}
 	}
 
 	public void stop() {
