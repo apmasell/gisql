@@ -1,6 +1,7 @@
 package ca.wlu.gisql.gui;
 
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -10,8 +11,8 @@ import java.util.concurrent.CancellationException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 public class BusyDialog extends JDialog implements ActionListener {
@@ -20,7 +21,7 @@ public class BusyDialog extends JDialog implements ActionListener {
 
 	private final JButton cancel = new JButton("Abort");
 
-	private final JLabel label = new JLabel();
+	private final JTextArea label = new JTextArea();
 
 	private final ActionListener listener;
 
@@ -33,6 +34,10 @@ public class BusyDialog extends JDialog implements ActionListener {
 		setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		setResizable(false);
 
+		label.setEditable(false);
+		label.setLineWrap(true);
+		label.setWrapStyleWord(true);
+		label.setMaximumSize(new Dimension(600, 600));
 		progress.setIndeterminate(true);
 		cancel.addActionListener(this);
 
