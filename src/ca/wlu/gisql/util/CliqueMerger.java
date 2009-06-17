@@ -33,14 +33,16 @@ public class CliqueMerger<V extends Mergeable> {
 				compatibility);
 
 		while (compatibility.edgeSet().size() > 0) {
-			StringBuilder sb = new StringBuilder();
-			sb.append("Finding cliques on a graph where |E| = ");
-			sb.append(compatibility.edgeSet().size());
-			sb.append(" and V = ");
-			for (V vertex : compatibility.vertexSet())
-				vertex.show(sb).append(" ");
+			ShowableStringBuilder print = new ShowableStringBuilder();
+			print.print("Finding cliques on a graph where |E| = ");
+			print.print(compatibility.edgeSet().size());
+			print.print(" and V = ");
+			for (V vertex : compatibility.vertexSet()) {
+				print.print(vertex);
+				print.print(" ");
+			}
 
-			log.info(sb);
+			log.info(print);
 
 			Set<V> mergeable = cliques.getBiggestMaximalCliques().iterator()
 					.next();

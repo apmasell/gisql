@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class InteractomeTask<P extends Component & TaskParent> extends
 		SwingWorker<Boolean, Interactome> {
@@ -23,11 +24,11 @@ public class InteractomeTask<P extends Component & TaskParent> extends
 	public InteractomeTask(P parent, CachedInteractome interactome) {
 		this.parent = parent;
 		this.interactome = interactome;
-		StringBuilder sb = new StringBuilder();
-		sb.append("Computing ");
-		interactome.show(sb);
-		sb.append("...");
-		message = sb.toString();
+		ShowableStringBuilder print = new ShowableStringBuilder();
+		print.append("Computing ");
+		print.print(interactome);
+		print.append("...");
+		message = print.toString();
 	}
 
 	public Boolean doInBackground() {

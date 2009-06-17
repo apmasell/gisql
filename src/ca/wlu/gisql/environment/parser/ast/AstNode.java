@@ -1,9 +1,10 @@
 package ca.wlu.gisql.environment.parser.ast;
 
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 
-public interface AstNode extends Show {
+public interface AstNode extends Prioritizable, Show {
 
 	public abstract Interactome asInteractome();
 

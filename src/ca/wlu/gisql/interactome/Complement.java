@@ -1,6 +1,5 @@
 package ca.wlu.gisql.interactome;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -11,6 +10,7 @@ import ca.wlu.gisql.environment.parser.SubExpression;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstLogic;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class Complement implements Parseable {
 	public final static Parseable descriptor = new Complement();
@@ -25,7 +25,7 @@ public class Complement implements Parseable {
 			return null;
 	}
 
-	public int getNestingLevel() {
+	public int getPrecedence() {
 		return 5;
 	}
 
@@ -37,14 +37,8 @@ public class Complement implements Parseable {
 		return true;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print("Complement (1-Ax): ¬A, !A");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("Complement (1-Ax): ¬A, !A");
-		return sb;
 	}
 
 	public Token[] tasks(Parser parser) {

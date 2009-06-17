@@ -1,8 +1,7 @@
 package ca.wlu.gisql.environment.parser.ast;
 
-import java.io.PrintStream;
-
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class AstInteractome implements AstNode {
 
@@ -21,22 +20,20 @@ public class AstInteractome implements AstNode {
 		return this;
 	}
 
+	public int getPrecedence() {
+		return interactome.getPrecedence();
+	}
+
 	public boolean isInteractome() {
 		return true;
 	}
 
-	public PrintStream show(PrintStream print) {
-		interactome.show(print);
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		interactome.show(sb);
-		return sb;
+	public void show(ShowablePrintWriter print) {
+		print.print(interactome);
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return interactome.toString();
 	}
 
 }

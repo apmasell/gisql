@@ -23,13 +23,13 @@ public class InteractionTable extends AbstractTable {
 
 		switch (colIndex) {
 		case 0:
-			return interaction.getGene1().show(new StringBuilder()).toString();
+			return interaction.getGene1().toString();
 		case 1:
-			return interaction.getGene2().show(new StringBuilder()).toString();
+			return interaction.getGene2().toString();
 		case 2:
 			return interaction.getMembership(interactome);
 		case 3:
-			return interaction.show(new StringBuilder()).toString();
+			return interaction.toString();
 		default:
 			return null;
 		}

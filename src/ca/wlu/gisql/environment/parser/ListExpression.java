@@ -13,6 +13,7 @@ import ca.wlu.gisql.environment.parser.list.Slice;
 import ca.wlu.gisql.environment.parser.list.ToVar;
 import ca.wlu.gisql.environment.parser.list.Variable;
 import ca.wlu.gisql.environment.parser.list.Zip;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class ListExpression extends Token {
 
@@ -20,12 +21,10 @@ public class ListExpression extends Token {
 			new ApplyToAll(), new CrossJoin(), new FromFile(), new RawList(),
 			new Slice(), new ToVar(), new Variable(), new Zip() };
 
-	public static StringBuilder show(StringBuilder sb) {
+	public static void show(ShowablePrintWriter print) {
 		for (ListParseable operator : operators) {
-			operator.show(sb);
-			sb.append('\n');
+			print.println(operator);
 		}
-		return sb;
 	}
 
 	private final Parser parser;

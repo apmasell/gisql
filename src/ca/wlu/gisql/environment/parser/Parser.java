@@ -27,6 +27,7 @@ import ca.wlu.gisql.interactome.binary.Residuum;
 import ca.wlu.gisql.interactome.binary.SymmetricDifference;
 import ca.wlu.gisql.interactome.binary.Union;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Parser {
 	public enum Result {
@@ -57,25 +58,31 @@ public class Parser {
 	}
 
 	private static void buildHelp() {
-		StringBuilder sb = new StringBuilder();
-		sb
-				.append("Syntax Help\nEach operator and it's membership function is described from lowest precedence to highest.\n\n");
+		ShowableStringBuilder print = new ShowableStringBuilder();
+		print.println("Syntax Help");
+		print.println();
+		print
+				.println("Each operator and it's membership function is described from lowest precedence to highest.");
+		print.println();
 		/* This also initialises every entry in the maps. */
 		for (int level = 0; level <= maxdepth; level++) {
 			for (Parseable operator : getList(prefixedOperators, level)) {
-				operator.show(sb).append('\n');
+				print.println(operator);
 			}
 			for (Parseable operator : getList(otherfixOperators, level)) {
-				operator.show(sb).append('\n');
+				print.println(operator);
 			}
-			sb.append('\n');
+			print.println();
 
 		}
-		sb.append("Lists may be any of the following:\n");
-		ListExpression.show(sb);
-		sb
-				.append("\nAny other word will be interpreted as a identifier for a species or variable.\nParentheses may be used to control order of operations.");
-		help = sb.toString();
+		print.append("Lists may be any of the following:\n");
+		ListExpression.show(print);
+		print.println();
+		print
+				.println("Any other word will be interpreted as a identifier for a species or variable.");
+		print
+				.println("Parentheses may be used to control order of operations.");
+		help = print.toString();
 
 	}
 
@@ -95,7 +102,7 @@ public class Parser {
 	}
 
 	private static void installOperator(Parseable operator) {
-		int level = operator.getNestingLevel();
+		int level = operator.getPrecedence();
 		if (level > maxdepth)
 			maxdepth = level;
 		List<Parseable> list = getList(

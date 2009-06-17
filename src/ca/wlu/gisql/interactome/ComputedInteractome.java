@@ -1,6 +1,5 @@
 package ca.wlu.gisql.interactome;
 
-import java.io.PrintStream;
 import java.util.List;
 
 import ca.wlu.gisql.GisQL;
@@ -8,6 +7,9 @@ import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.binary.Intersection;
+import ca.wlu.gisql.interactome.binary.Union;
+import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class ComputedInteractome implements Interactome {
 
@@ -31,39 +33,41 @@ public class ComputedInteractome implements Interactome {
 		this.size = prepareSize();
 		this.unknown = prepareUnknown();
 
-		StringBuilder sb = new StringBuilder();
+		ShowableStringBuilder print = new ShowableStringBuilder();
 		boolean firstSum = true;
 		for (int term = 0; term < productOfSums.size(); term++) {
 			if (firstSum)
 				firstSum = false;
 			else
-				sb.append(" ∩ ");
+				print.print(" ∩ ");
 			boolean hasBrackets = productOfSums.size() > 1
 					&& productOfSums.get(term).size()
 							+ productOfSumsNegated.get(term).size() > 1;
 			if (hasBrackets)
-				sb.append("(");
+				print.print("(");
 			boolean firstProduct = true;
 			for (int index : productOfSums.get(term)) {
 				if (firstProduct)
 					firstProduct = false;
 				else
-					sb.append(" ∪ ");
-				interactomes.get(index).show(sb);
+					print.print(" ∪ ");
+				print.print(interactomes.get(index), Union.descriptor
+						.getPrecedence());
 			}
 
 			for (int index : productOfSumsNegated.get(term)) {
 				if (firstProduct)
 					firstProduct = false;
 				else
-					sb.append(" ∩ ");
-				sb.append("¬");
-				interactomes.get(index).show(sb);
+					print.print(" ∩ ");
+				print.print("¬");
+				print.print(interactomes.get(index), Complement.descriptor
+						.getPrecedence());
 			}
 			if (hasBrackets)
-				sb.append(")");
+				print.print(")");
 		}
-		expression = sb.toString();
+		expression = print.toString();
 	}
 
 	private double calculateMembership(double[] memberships) {
@@ -125,7 +129,7 @@ public class ComputedInteractome implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return (Intersection.descriptor.getNestingLevel());
+		return (Intersection.descriptor.getPrecedence());
 	}
 
 	public Type getType() {
@@ -172,17 +176,11 @@ public class ComputedInteractome implements Interactome {
 		return calculateMembership(unknowns);
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print(expression);
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append(expression);
-		return sb;
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return expression;
 	}
 }

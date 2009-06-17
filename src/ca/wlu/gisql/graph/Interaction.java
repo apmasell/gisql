@@ -1,6 +1,5 @@
 package ca.wlu.gisql.graph;
 
-import java.io.PrintStream;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
@@ -9,6 +8,8 @@ import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.util.Show;
+import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Interaction implements Show {
 	private Gene gene1;
@@ -89,23 +90,15 @@ public class Interaction implements Show {
 		memberships.put(interactome, membership);
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print("(");
-		gene1.show(print);
+		print.print(gene1);
 		print.print(") ⇌ (");
-		gene2.show(print);
+		print.print(gene2);
 		print.print(")");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("(");
-		gene1.show(sb).append(") ⇌ (");
-		gene2.show(sb).append(")");
-		return sb;
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return ShowableStringBuilder.toString(this);
 	}
 }

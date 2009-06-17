@@ -3,7 +3,6 @@ package ca.wlu.gisql.environment.parser.list;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -16,6 +15,7 @@ import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.environment.parser.ast.AstString;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class FromFile implements ListParseable {
 	private static final Logger log = Logger.getLogger(FromFile.class);
@@ -49,14 +49,8 @@ public class FromFile implements ListParseable {
 		}
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print("Read List from File: \"filename\"");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("Read List from File: \"filename\"");
-		return sb;
 	}
 
 	public Token[] tasks(Parser parser) {

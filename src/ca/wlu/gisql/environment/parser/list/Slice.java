@@ -1,6 +1,5 @@
 package ca.wlu.gisql.environment.parser.list;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -15,6 +14,7 @@ import ca.wlu.gisql.environment.parser.Word;
 import ca.wlu.gisql.environment.parser.ast.AstInteger;
 import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class Slice implements ListParseable {
 
@@ -53,14 +53,8 @@ public class Slice implements ListParseable {
 		return true;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print("slice(start, [ end,] list)");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("slice(start, [ end,] list)");
-		return sb;
 	}
 
 	public Token[] tasks(Parser parser) {

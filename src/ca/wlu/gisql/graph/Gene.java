@@ -1,6 +1,5 @@
 package ca.wlu.gisql.graph;
 
-import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +17,8 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.util.Mergeable;
 import ca.wlu.gisql.util.Show;
+import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Gene implements Iterable<Accession>, Mergeable, Show {
 
@@ -74,14 +75,18 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 			} else if (entry.getKey().getType() == Type.Computed) {
 				membership = entry.getKey().calculateMembership(gene);
 			} else {
-				StringBuilder sb = new StringBuilder();
-				sb.append("There is a duplicated value for the interactome ");
-				entry.getKey().show(sb);
-				sb.append(" where gene ");
-				this.show(sb).append(" has value ").append(membership);
-				sb.append(" and gene ");
-				gene.show(sb).append(" has value ").append(entry.getValue());
-				log.warn(sb);
+				ShowableStringBuilder print = new ShowableStringBuilder();
+				print.print("There is a duplicated value for the interactome ");
+				print.print(entry.getKey());
+				print.print(" where gene ");
+				print.print(this);
+				print.print(" has value ");
+				print.print(membership);
+				print.print(" and gene ");
+				print.print(gene);
+				print.print(" has value ");
+				print.print(entry.getValue());
+				log.warn(print);
 				membership = Math.max(entry.getValue(), membership);
 			}
 			memberships.put(entry.getKey(), membership);
@@ -119,7 +124,7 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		boolean first = true;
 		if (dead)
 			print.print("DEAD:");
@@ -131,25 +136,9 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 			first = false;
 		}
 		print.print("}");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		boolean first = true;
-		if (dead)
-			sb.append("DEAD:");
-		sb.append("{");
-		for (Accession accession : this) {
-			if (!first)
-				sb.append(", ");
-			accession.show(sb);
-			first = false;
-		}
-		sb.append("}");
-		return sb;
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return ShowableStringBuilder.toString(this);
 	}
 }

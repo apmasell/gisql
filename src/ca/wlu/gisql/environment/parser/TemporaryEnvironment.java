@@ -1,11 +1,11 @@
 package ca.wlu.gisql.environment.parser;
 
-import java.io.PrintStream;
 import java.util.List;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class TemporaryEnvironment extends Token {
 	private class DebrujinAst implements AstNode {
@@ -27,20 +27,16 @@ public class TemporaryEnvironment extends Token {
 				return new DebrujinAst(depth - 1);
 		}
 
+		public int getPrecedence() {
+			return Integer.MAX_VALUE;
+		}
+
 		public boolean isInteractome() {
 			return true;
 		}
 
-		public PrintStream show(PrintStream print) {
-			print.print("$");
+		public void show(ShowablePrintWriter print) {
 			print.print(depth);
-			return print;
-		}
-
-		public StringBuilder show(StringBuilder sb) {
-			sb.append("$");
-			sb.append(depth);
-			return sb;
 		}
 	}
 

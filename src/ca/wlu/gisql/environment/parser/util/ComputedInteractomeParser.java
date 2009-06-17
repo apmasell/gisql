@@ -1,6 +1,5 @@
 package ca.wlu.gisql.environment.parser.util;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -12,6 +11,7 @@ import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstLogic;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class ComputedInteractomeParser implements Parseable {
 
@@ -58,7 +58,7 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		return name;
 	}
 
-	public int getNestingLevel() {
+	public int getPrecedence() {
 		return nestinglevel;
 	}
 
@@ -82,7 +82,7 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		return false;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print(name);
 		print.print(": A ");
 		print.print(symbol);
@@ -94,22 +94,6 @@ public abstract class ComputedInteractomeParser implements Parseable {
 				print.print(" B");
 			}
 		}
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append(name);
-		sb.append(": A ");
-		sb.append(symbol);
-		sb.append(" B");
-		if (alternateoperators != null) {
-			for (char c : alternateoperators) {
-				sb.append(", A ");
-				sb.append(c);
-				sb.append(" B");
-			}
-		}
-		return sb;
 	}
 
 	public Token[] tasks(Parser parser) {

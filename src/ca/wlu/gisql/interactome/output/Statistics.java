@@ -1,9 +1,8 @@
 package ca.wlu.gisql.interactome.output;
 
-import java.io.PrintStream;
-
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.util.Show;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 class Statistics implements Show {
 	private final double binwidth;
@@ -53,7 +52,7 @@ class Statistics implements Show {
 		interactionBins[calculateBin(membership)]++;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print("# ");
 		print.print(genes);
 		print.print(" genes in ");
@@ -73,25 +72,6 @@ class Statistics implements Show {
 			print.print(" ");
 		}
 		print.println();
-		return print;
 	}
 
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("# ");
-		sb.append(genes);
-		sb.append(" genes in ");
-		sb.append(interactions);
-		sb.append(" interactions. Gene fuzziness: ");
-		sb.append(geneFuziness);
-		sb.append(" Interaction fuzziness: ");
-		sb.append(interactionFuzziness);
-		sb.append("\n# Gene histogram: ");
-		for (int i : geneBins)
-			sb.append(i).append(" ");
-		sb.append("\n# Interaction histogram: ");
-		for (int i : interactionBins)
-			sb.append(i).append(" ");
-		sb.append("\n");
-		return sb;
-	}
 }

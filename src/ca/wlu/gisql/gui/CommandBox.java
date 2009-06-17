@@ -86,7 +86,7 @@ public class CommandBox extends JToolBar implements ActionListener, KeyListener 
 			return;
 		}
 
-		command.setText(interactome.show(new StringBuilder()).toString());
+		command.setText(interactome.toString());
 
 		this.interactome = interactome;
 

@@ -1,6 +1,5 @@
 package ca.wlu.gisql.interactome.output;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -19,7 +18,7 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.environment.parser.ast.AstString;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.InteractomeUtil;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class AbstractOutput extends CachedInteractome {
 	private static class AstOutput implements AstNode {
@@ -51,12 +50,16 @@ public abstract class AbstractOutput extends CachedInteractome {
 					ubound, format, filename);
 		}
 
+		public int getPrecedence() {
+			return descriptor.getPrecedence();
+		}
+
 		public boolean isInteractome() {
 			return true;
 		}
 
-		public PrintStream show(PrintStream print) {
-			interactome.show(print);
+		public void show(ShowablePrintWriter print) {
+			print.print(interactome, getPrecedence());
 			print.print(" @ ");
 			print.print(lbound);
 			print.print(" ");
@@ -67,20 +70,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 			print.print("\"");
 			print.print(filename == null ? "-" : filename);
 			print.print("\"");
-			return print;
 		}
-
-		public StringBuilder show(StringBuilder sb) {
-			interactome.show(sb);
-			sb.append(" @ ");
-			sb.append(lbound).append(" ").append(ubound);
-			sb.append(" ");
-			sb.append(format.name()).append(" ");
-			sb.append("\"").append(filename == null ? "-" : filename).append(
-					"\"");
-			return sb;
-		}
-
 	}
 
 	public static final Parseable descriptor = new Parseable() {
@@ -113,7 +103,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 					filename);
 		}
 
-		public int getNestingLevel() {
+		public int getPrecedence() {
 			return 0;
 		}
 
@@ -125,16 +115,9 @@ public abstract class AbstractOutput extends CachedInteractome {
 			return false;
 		}
 
-		public PrintStream show(PrintStream print) {
+		public void show(ShowablePrintWriter print) {
 			print
 					.print("Write to file: A @ [lowerbound [upperbound]] [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
-			return print;
-		}
-
-		public StringBuilder show(StringBuilder sb) {
-			sb
-					.append("Write to file: A @ [lowerbound [upperbound]] [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
-			return sb;
 		}
 
 		public Token[] tasks(Parser parser) {
@@ -181,11 +164,11 @@ public abstract class AbstractOutput extends CachedInteractome {
 	}
 
 	public int getPrecedence() {
-		return descriptor.getNestingLevel();
+		return descriptor.getPrecedence();
 	}
 
-	public PrintStream show(PrintStream print) {
-		InteractomeUtil.precedenceShow(print, source, this.getPrecedence());
+	public void show(ShowablePrintWriter print) {
+		print.print(source, this.getPrecedence());
 		print.print(" @ ");
 		print.print(lowerbound);
 		print.print(" ");
@@ -196,16 +179,5 @@ public abstract class AbstractOutput extends CachedInteractome {
 		print.print("\"");
 		print.print(filename == null ? "-" : filename);
 		print.print("\"");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		InteractomeUtil.precedenceShow(sb, source, this.getPrecedence());
-		sb.append(" @ ");
-		sb.append(lowerbound).append(" ").append(upperbound);
-		sb.append(" ");
-		sb.append(format.name()).append(" ");
-		sb.append("\"").append(filename == null ? "-" : filename).append("\"");
-		return sb;
 	}
 }

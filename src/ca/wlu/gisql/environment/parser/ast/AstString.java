@@ -1,8 +1,7 @@
 package ca.wlu.gisql.environment.parser.ast;
 
-import java.io.PrintStream;
-
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class AstString implements AstNode {
 
@@ -21,6 +20,10 @@ public class AstString implements AstNode {
 		return this;
 	}
 
+	public int getPrecedence() {
+		return Integer.MAX_VALUE;
+	}
+
 	public String getString() {
 		return value;
 	}
@@ -29,18 +32,12 @@ public class AstString implements AstNode {
 		return false;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print(value);
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append(value);
-		return sb;
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return value;
 	}
 
 }

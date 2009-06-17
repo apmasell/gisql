@@ -2,17 +2,17 @@ package ca.wlu.gisql.interactome.output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.PrintStream;
 
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 class OutputText extends AbstractOutput {
 
 	private static final int STANDARD_BIN_COUNT = 10;
 
-	private PrintStream print = null;
+	private ShowablePrintWriter print = null;
 
 	private Statistics statistics = null;
 
@@ -69,10 +69,11 @@ class OutputText extends AbstractOutput {
 			statistics = new Statistics(STANDARD_BIN_COUNT, lowerbound,
 					upperbound);
 			try {
-				print = (filename == null ? System.out : new PrintStream(
-						new FileOutputStream(filename, true)));
+				print = (filename == null ? new ShowablePrintWriter(System.out)
+						: new ShowablePrintWriter(new FileOutputStream(
+								filename, true)));
 				print.print("# ");
-				source.show(print);
+				print.print(source);
 				print.println();
 				return true;
 			} catch (FileNotFoundException e) {

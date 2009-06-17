@@ -1,6 +1,5 @@
 package ca.wlu.gisql.environment.parser.list;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -14,6 +13,7 @@ import ca.wlu.gisql.environment.parser.TemporaryEnvironment;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class ApplyToAll implements ListParseable {
 
@@ -34,14 +34,8 @@ public class ApplyToAll implements ListParseable {
 		return true;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print("List Comprehension: [ variable . expression : list ]");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("List Comprehension: [ variable . expression : list ]");
-		return sb;
 	}
 
 	public Token[] tasks(Parser parser) {

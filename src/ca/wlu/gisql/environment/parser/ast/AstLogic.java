@@ -1,12 +1,16 @@
 package ca.wlu.gisql.environment.parser.ast;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import ca.wlu.gisql.fuzzy.TriangularNorm;
+import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.ComputedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.binary.Intersection;
+import ca.wlu.gisql.interactome.binary.Union;
+import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class AstLogic implements AstNode {
 
@@ -141,6 +145,18 @@ public class AstLogic implements AstNode {
 				: right.fork(substitute)), operation, norm);
 	}
 
+	public int getPrecedence() {
+		switch (operation) {
+		case Negation:
+			return Complement.descriptor.getPrecedence();
+		case Conjunct:
+			return Intersection.descriptor.getPrecedence();
+		case Disjunct:
+			return Union.descriptor.getPrecedence();
+		}
+		return 0;
+	}
+
 	public boolean isInteractome() {
 		return true;
 	}
@@ -201,53 +217,29 @@ public class AstLogic implements AstNode {
 		return this;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		switch (operation) {
 		case Negation:
 			print.print("!");
-			left.show(print);
+			print.print(left, Complement.descriptor.getPrecedence());
 			break;
 		case Conjunct:
 			print.print("(");
-			left.show(print);
+			print.print(left, Intersection.descriptor.getPrecedence());
 			print.print(" & ");
-			right.show(print);
+			print.print(right, Intersection.descriptor.getPrecedence());
 			print.print(")");
 			break;
 		case Disjunct:
 			print.print("(");
-			left.show(print);
+			print.print(left, Union.descriptor.getPrecedence());
 			print.print(" | ");
-			right.show(print);
+			print.print(right, Union.descriptor.getPrecedence());
 			print.print(")");
 		}
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		switch (operation) {
-		case Negation:
-			sb.append("!");
-			left.show(sb);
-			break;
-		case Conjunct:
-			sb.append("(");
-			left.show(sb);
-			sb.append(" & ");
-			right.show(sb);
-			sb.append(")");
-			break;
-		case Disjunct:
-			sb.append("(");
-			left.show(sb);
-			sb.append(" | ");
-			right.show(sb);
-			sb.append(")");
-		}
-		return sb;
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return ShowableStringBuilder.toString(this);
 	}
 }

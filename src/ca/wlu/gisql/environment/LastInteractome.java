@@ -1,6 +1,5 @@
 package ca.wlu.gisql.environment;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -8,6 +7,7 @@ import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public final class LastInteractome implements Parseable {
 	public static Parseable descriptor = new LastInteractome();
@@ -33,7 +33,7 @@ public final class LastInteractome implements Parseable {
 		}
 	}
 
-	public int getNestingLevel() {
+	public int getPrecedence() {
 		return 6;
 	}
 
@@ -45,14 +45,8 @@ public final class LastInteractome implements Parseable {
 		return true;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print("Last command: .");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("Last command: .");
-		return sb;
 	}
 
 	public Token[] tasks(Parser parser) {

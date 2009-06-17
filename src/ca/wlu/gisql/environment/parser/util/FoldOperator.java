@@ -1,6 +1,5 @@
 package ca.wlu.gisql.environment.parser.util;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -11,6 +10,7 @@ import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class FoldOperator implements Parseable {
 	private final ComputedInteractomeParser binary;
@@ -40,8 +40,8 @@ public class FoldOperator implements Parseable {
 		return left;
 	}
 
-	public int getNestingLevel() {
-		return binary.getNestingLevel();
+	public int getPrecedence() {
+		return binary.getPrecedence();
 	}
 
 	public boolean isMatchingOperator(char c) {
@@ -52,7 +52,7 @@ public class FoldOperator implements Parseable {
 		return true;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print(binary.getName());
 		print.print(" (Folded): ");
 		print.print(binary.getSymbol());
@@ -65,23 +65,6 @@ public class FoldOperator implements Parseable {
 				print.print(" list");
 			}
 		}
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append(binary.getName());
-		sb.append(" (Folded): ");
-		sb.append(binary.getSymbol());
-		sb.append(" list");
-		char[] alternateoperators = binary.getAlternateOperators();
-		if (alternateoperators != null) {
-			for (char c : alternateoperators) {
-				sb.append(", ");
-				sb.append(c);
-				sb.append(" { A, B, C, ... }");
-			}
-		}
-		return sb;
 	}
 
 	public Token[] tasks(Parser parser) {

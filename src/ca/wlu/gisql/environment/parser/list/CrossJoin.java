@@ -1,6 +1,5 @@
 package ca.wlu.gisql.environment.parser.list;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -14,6 +13,7 @@ import ca.wlu.gisql.environment.parser.TemporaryEnvironment;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class CrossJoin implements ListParseable {
 
@@ -43,16 +43,9 @@ public class CrossJoin implements ListParseable {
 		return true;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print
 				.print("Cartesian Product: [ variable1 , variable2 . expression : outerlist, innerlist ]");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb
-				.append("Cartesian Product: [ variable1 , variable2 . expression : outerlist, innerlist ]");
-		return sb;
 	}
 
 	public Token[] tasks(Parser parser) {

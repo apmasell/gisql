@@ -1,6 +1,5 @@
 package ca.wlu.gisql.interactome;
 
-import java.io.PrintStream;
 import java.util.List;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
@@ -14,6 +13,7 @@ import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.gui.output.GeneTable;
 import ca.wlu.gisql.gui.output.InteractionTable;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class CachedInteractome implements Interactome {
 
@@ -181,12 +181,8 @@ public class CachedInteractome implements Interactome {
 
 	}
 
-	public PrintStream show(PrintStream print) {
-		return source.show(print);
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		return source.show(sb);
+	public void show(ShowablePrintWriter print) {
+		print.print(source);
 	}
 
 	public String toString() {

@@ -5,14 +5,13 @@ import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 
-public interface Parseable extends Show {
+public interface Parseable extends Prioritizable, Show {
 
 	public abstract AstNode construct(Environment environment,
 			List<AstNode> params, Stack<String> error);
-
-	public abstract int getNestingLevel();
 
 	public abstract boolean isMatchingOperator(char c);
 

@@ -1,10 +1,8 @@
 package ca.wlu.gisql.interactome;
 
-import java.io.PrintStream;
-
-import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class NamedInteractome implements Interactome {
 
@@ -68,14 +66,8 @@ public class NamedInteractome implements Interactome {
 		return true;
 	}
 
-	public final PrintStream show(PrintStream print) {
+	public final void show(ShowablePrintWriter print) {
 		print.print(name);
-		return print;
-	}
-
-	public final StringBuilder show(StringBuilder sb) {
-		sb.append(name);
-		return sb;
 	}
 
 	public final String toString() {

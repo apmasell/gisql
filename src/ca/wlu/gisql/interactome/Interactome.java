@@ -2,9 +2,10 @@ package ca.wlu.gisql.interactome;
 
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 
-public interface Interactome extends Show {
+public interface Interactome extends Prioritizable, Show {
 	public enum Type {
 		Computed, Mutable, Species
 	}
@@ -12,8 +13,6 @@ public interface Interactome extends Show {
 	public abstract double calculateMembership(Gene gene);
 
 	public abstract double calculateMembership(Interaction interaction);
-
-	public abstract int getPrecedence();
 
 	public abstract Type getType();
 

@@ -1,9 +1,9 @@
 package ca.wlu.gisql.graph;
 
-import java.io.PrintStream;
-
 import ca.wlu.gisql.db.DbSpecies;
 import ca.wlu.gisql.util.Show;
+import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public final class Accession implements Show {
 	private final long identifier;
@@ -30,27 +30,16 @@ public final class Accession implements Show {
 		return species;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print(name);
 		print.print(" [gi:");
 		print.print(identifier);
 		print.print("/");
 		species.show(print);
 		print.print("]");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append(name);
-		sb.append(" [gi:");
-		sb.append(identifier);
-		sb.append("/");
-		species.show(sb);
-		sb.append("]");
-		return sb;
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return ShowableStringBuilder.toString(this);
 	}
 }

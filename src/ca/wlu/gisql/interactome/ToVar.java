@@ -1,6 +1,5 @@
 package ca.wlu.gisql.interactome;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -12,6 +11,8 @@ import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstInteractome;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.environment.parser.ast.AstString;
+import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class ToVar extends CachedInteractome {
 	private static class AstToVar implements AstNode {
@@ -33,22 +34,18 @@ public class ToVar extends CachedInteractome {
 			return new AstToVar(environment, interactome.fork(substitute), name);
 		}
 
+		public int getPrecedence() {
+			return descriptor.getPrecedence();
+		}
+
 		public boolean isInteractome() {
 			return true;
 		}
 
-		public PrintStream show(PrintStream print) {
-			interactome.show(print);
+		public void show(ShowablePrintWriter print) {
+			print.print(interactome);
 			print.print(" @ ");
 			print.print(name);
-			return print;
-		}
-
-		public StringBuilder show(StringBuilder sb) {
-			interactome.show(sb);
-			sb.append(" @ ");
-			sb.append(name);
-			return sb;
 		}
 	}
 
@@ -65,7 +62,7 @@ public class ToVar extends CachedInteractome {
 			return new AstToVar(environment, interactome, name);
 		}
 
-		public int getNestingLevel() {
+		public int getPrecedence() {
 			return 0;
 		}
 
@@ -77,14 +74,8 @@ public class ToVar extends CachedInteractome {
 			return false;
 		}
 
-		public PrintStream show(PrintStream print) {
+		public void show(ShowablePrintWriter print) {
 			print.print("Assign to variable: A @ varname");
-			return null;
-		}
-
-		public StringBuilder show(StringBuilder sb) {
-			sb.append("Assign to variable: A @ varname");
-			return sb;
 		}
 
 		public Token[] tasks(Parser parser) {
@@ -109,18 +100,14 @@ public class ToVar extends CachedInteractome {
 		return environment.setVariable(name, new AstInteractome(this));
 	}
 
-	public PrintStream show(PrintStream print) {
-		InteractomeUtil.precedenceShow(print, source, this.getPrecedence());
+	public void show(ShowablePrintWriter print) {
+		print.print(source, this.getPrecedence());
 		print.print(" @ ");
 		print.print(name);
-		return print;
 	}
 
-	public StringBuilder show(StringBuilder sb) {
-		InteractomeUtil.precedenceShow(sb, source, this.getPrecedence());
-		sb.append(" @ ");
-		sb.append(name);
-		return sb;
+	public String toString() {
+		return ShowableStringBuilder.toString(this);
 	}
 
 }

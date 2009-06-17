@@ -1,11 +1,12 @@
 package ca.wlu.gisql.environment.parser.ast;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class AstList extends ArrayList<AstNode> implements AstNode {
 
@@ -45,11 +46,15 @@ public class AstList extends ArrayList<AstNode> implements AstNode {
 		return forked;
 	}
 
+	public int getPrecedence() {
+		return Integer.MAX_VALUE;
+	}
+
 	public boolean isInteractome() {
 		return false;
 	}
 
-	public PrintStream show(PrintStream print) {
+	public void show(ShowablePrintWriter print) {
 		print.print("{");
 		boolean first = true;
 		for (AstNode node : this) {
@@ -60,21 +65,6 @@ public class AstList extends ArrayList<AstNode> implements AstNode {
 			node.show(print);
 		}
 		print.print("}");
-		return print;
-	}
-
-	public StringBuilder show(StringBuilder sb) {
-		sb.append("{");
-		boolean first = true;
-		for (AstNode node : this) {
-			if (first)
-				first = false;
-			else
-				sb.append(", ");
-			node.show(sb);
-		}
-		sb.append("}");
-		return sb;
 	}
 
 	public AstList subList(int start, int end) {
@@ -84,6 +74,6 @@ public class AstList extends ArrayList<AstNode> implements AstNode {
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return ShowableStringBuilder.toString(this);
 	}
 }

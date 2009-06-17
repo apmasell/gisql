@@ -1,6 +1,5 @@
 package ca.wlu.gisql.interactome;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.Stack;
 
@@ -15,6 +14,8 @@ import ca.wlu.gisql.environment.parser.ast.AstDouble;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Cut implements Interactome {
 	private static class AstCut implements AstNode {
@@ -34,22 +35,19 @@ public class Cut implements Interactome {
 			return new AstCut(parameter.fork(substitute), cutoff);
 		}
 
+		public int getPrecedence() {
+			return descriptor.getPrecedence();
+		}
+
 		public boolean isInteractome() {
 			return true;
 		}
 
-		public PrintStream show(PrintStream print) {
-			parameter.show(print);
+		public void show(ShowablePrintWriter print) {
+			print.print(parameter, getPrecedence());
 			print.print(" [");
 			print.print(cutoff);
 			print.print("]");
-			return print;
-		}
-
-		public StringBuilder show(StringBuilder sb) {
-			parameter.show(sb);
-			sb.append(" [").append(cutoff).append("]");
-			return sb;
 		}
 
 	}
@@ -65,7 +63,7 @@ public class Cut implements Interactome {
 			return new AstCut(interactome, cutoff);
 		}
 
-		public int getNestingLevel() {
+		public int getPrecedence() {
 			return 0;
 		}
 
@@ -77,14 +75,8 @@ public class Cut implements Interactome {
 			return false;
 		}
 
-		public PrintStream show(PrintStream print) {
+		public void show(ShowablePrintWriter print) {
 			print.print("Cut-off (Ax|x>c): A [c]");
-			return print;
-		}
-
-		public StringBuilder show(StringBuilder sb) {
-			sb.append("Cut-off (Ax|x>c): A [c]");
-			return sb;
 		}
 
 		public Token[] tasks(Parser parser) {
@@ -118,7 +110,7 @@ public class Cut implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return descriptor.getNestingLevel();
+		return descriptor.getPrecedence();
 	}
 
 	public Type getType() {
@@ -141,24 +133,15 @@ public class Cut implements Interactome {
 		return interactome.prepare();
 	}
 
-	public PrintStream show(PrintStream print) {
-		InteractomeUtil
-				.precedenceShow(print, interactome, this.getPrecedence());
+	public void show(ShowablePrintWriter print) {
+		print.print(interactome, this.getPrecedence());
 		print.print(" [");
 		print.print(cutoff);
 		print.print("]");
-		return print;
-	}
 
-	public StringBuilder show(StringBuilder sb) {
-		InteractomeUtil.precedenceShow(sb, interactome, this.getPrecedence());
-		sb.append(" [");
-		sb.append(cutoff);
-		sb.append("]");
-		return sb;
 	}
 
 	public String toString() {
-		return show(new StringBuilder()).toString();
+		return ShowableStringBuilder.toString(this);
 	}
 }

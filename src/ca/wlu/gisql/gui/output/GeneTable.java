@@ -22,7 +22,7 @@ public class GeneTable extends AbstractTable {
 
 		switch (colIndex) {
 		case 0:
-			return gene.show(new StringBuilder()).toString();
+			return gene.toString();
 		case 1:
 			return gene.getMembership(interactome);
 		default:

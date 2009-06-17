@@ -12,6 +12,7 @@ import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.interactome.NamedInteractome;
 import ca.wlu.gisql.util.CliqueMerger;
 import ca.wlu.gisql.util.Counter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 import ca.wlu.gisql.util.CliqueMerger.Master;
 
 public class DbSpecies extends NamedInteractome implements Master<Gene> {
@@ -57,13 +58,15 @@ public class DbSpecies extends NamedInteractome implements Master<Gene> {
 			}
 
 			if (counter.size() > 1) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("Splitting accession ");
-				accession.show(sb);
-				sb.append(" among");
-				for (Entry<Gene, Integer> entry : counter)
-					entry.getKey().show(sb.append(" "));
-				log.warn(sb);
+				ShowableStringBuilder print = new ShowableStringBuilder();
+				print.print("Splitting accession ");
+				print.print(accession);
+				print.print(" among");
+				for (Entry<Gene, Integer> entry : counter) {
+					print.print(" ");
+					print.print(entry.getKey());
+				}
+				log.warn(print);
 			}
 			for (Entry<Gene, Integer> entry : counter) {
 				ubergraph.addOrtholog(entry.getKey(), accession);
