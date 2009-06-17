@@ -10,7 +10,7 @@ import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.environment.parser.util.Function;
 
 public final class OutputFunction extends Function {
-	class SetOutput extends AstVoid {
+	private class SetOutput extends AstVoid {
 		private final Environment environment;
 
 		private final String filename;

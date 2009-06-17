@@ -70,7 +70,7 @@ public class DatabaseManager {
 		}
 	}
 
-	public void populateArrays(DatabaseEnvironment environment,
+	protected void populateArrays(DatabaseEnvironment environment,
 			Map<Integer, AstNode> speciesById) {
 		try {
 			PreparedStatement arrayStatement = connection

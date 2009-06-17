@@ -39,7 +39,7 @@ public abstract class Function implements Parseable {
 	}
 
 	public static class QuotedString extends Parameter {
-		private String description;
+		private final String description;
 
 		public QuotedString(String description) {
 			this.description = description;

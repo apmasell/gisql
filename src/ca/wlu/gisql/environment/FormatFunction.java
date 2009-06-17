@@ -11,10 +11,10 @@ import ca.wlu.gisql.environment.parser.util.Function;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
 public class FormatFunction extends Function {
-	class SetFormat extends AstVoid {
+	private class SetFormat extends AstVoid {
 		private final Environment environment;
 
-		private FileFormat format;
+		private final FileFormat format;
 
 		private SetFormat(Environment environment, FileFormat format) {
 			this.environment = environment;

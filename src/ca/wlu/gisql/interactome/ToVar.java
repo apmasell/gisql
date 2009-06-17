@@ -20,7 +20,7 @@ public class ToVar extends CachedInteractome {
 		private final AstNode interactome;
 		private final String name;
 
-		public AstToVar(Environment environment, AstNode node, String name) {
+		private AstToVar(Environment environment, AstNode node, String name) {
 			this.environment = environment;
 			interactome = node;
 			this.name = name;

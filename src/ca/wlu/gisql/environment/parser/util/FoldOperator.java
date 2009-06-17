@@ -12,7 +12,7 @@ import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class FoldOperator implements Parseable {
+public final class FoldOperator implements Parseable {
 	private final ComputedInteractomeParser binary;
 
 	public FoldOperator(ComputedInteractomeParser binary) {

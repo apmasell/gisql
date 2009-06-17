@@ -23,9 +23,9 @@ public class EnvironmentTreeView extends DefaultTreeModel implements
 	public static class AstNodeTreeNode extends DefaultMutableTreeNode {
 
 		private static final long serialVersionUID = 6806723183738094759L;
-		private AstNode node;
+		private final AstNode node;
 
-		AstNodeTreeNode(String name, AstNode node) {
+		private AstNodeTreeNode(String name, AstNode node) {
 			super(name);
 			this.node = node;
 		}

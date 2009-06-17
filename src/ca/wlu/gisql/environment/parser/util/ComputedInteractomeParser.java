@@ -35,7 +35,7 @@ public abstract class ComputedInteractomeParser implements Parseable {
 	abstract protected AstLogic construct(AstNode left, AstNode right,
 			TriangularNorm norm);
 
-	protected AstNode construct(Environment environment, AstNode left,
+	protected final AstNode construct(Environment environment, AstNode left,
 			AstNode right, Stack<String> error) {
 		if (!left.isInteractome() || !right.isInteractome()) {
 			error.push("Cannot apply to non-interactome operand.");
@@ -43,30 +43,30 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		return construct(left, right, environment.getTriangularNorm());
 	}
 
-	public AstNode construct(Environment environment, List<AstNode> params,
+	public final AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
 		AstNode left = params.get(0);
 		AstNode right = params.get(1);
 		return construct(environment, left, right, error);
 	}
 
-	public char[] getAlternateOperators() {
+	public final char[] getAlternateOperators() {
 		return alternateoperators;
 	}
 
-	public String getName() {
+	public final String getName() {
 		return name;
 	}
 
-	public int getPrecedence() {
+	public final int getPrecedence() {
 		return nestinglevel;
 	}
 
-	public char getSymbol() {
+	public final char getSymbol() {
 		return symbol;
 	}
 
-	public boolean isMatchingOperator(char c) {
+	public final boolean isMatchingOperator(char c) {
 		if (symbol == c)
 			return true;
 		if (alternateoperators == null)
@@ -78,11 +78,11 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		return false;
 	}
 
-	public boolean isPrefixed() {
+	public final boolean isPrefixed() {
 		return false;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public final void show(ShowablePrintWriter print) {
 		print.print(name);
 		print.print(": A ");
 		print.print(symbol);
@@ -96,7 +96,7 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		}
 	}
 
-	public Token[] tasks(Parser parser) {
+	public final Token[] tasks(Parser parser) {
 		return new Token[] { new SubExpression(parser) };
 	}
 

@@ -6,7 +6,7 @@ import java.util.Iterator;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Mergeable;
 
-public class CheckedGene extends Gene {
+class CheckedGene extends Gene {
 
 	void add(Accession accession) {
 		checkState();

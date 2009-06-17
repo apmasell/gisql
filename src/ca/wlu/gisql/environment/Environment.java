@@ -66,7 +66,7 @@ public abstract class Environment implements EnvironmentListener,
 		listeners.put(listener, Boolean.TRUE);
 	}
 
-	public void clear() {
+	public final void clear() {
 		if (mutable)
 			variables.clear();
 		if (alwaysPropagate && parent != null)
@@ -85,7 +85,7 @@ public abstract class Environment implements EnvironmentListener,
 		return norm;
 	}
 
-	public AstNode getVariable(String name) {
+	public final AstNode getVariable(String name) {
 		AstNode node = variables.get(name);
 		if (node == null && parent != null)
 			return parent.getVariable(name);
@@ -110,7 +110,7 @@ public abstract class Environment implements EnvironmentListener,
 		listeners.remove(listener);
 	}
 
-	public boolean setTriangularNorm(TriangularNorm norm) {
+	public final boolean setTriangularNorm(TriangularNorm norm) {
 		if (mutable) {
 			this.norm = norm;
 			return true;
@@ -119,7 +119,7 @@ public abstract class Environment implements EnvironmentListener,
 		}
 	}
 
-	public boolean setVariable(String name, AstNode node) {
+	public final boolean setVariable(String name, AstNode node) {
 		if (mutable) {
 			add(name, node);
 			return true;

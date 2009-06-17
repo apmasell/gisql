@@ -9,7 +9,7 @@ import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.environment.parser.util.Function;
 
 public final class ClearFunction extends Function {
-	class Clear extends AstVoid {
+	private class Clear extends AstVoid {
 		private final Environment environment;
 
 		private Clear(Environment environment) {

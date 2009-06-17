@@ -10,7 +10,7 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public final class LastInteractome implements Parseable {
-	public static Parseable descriptor = new LastInteractome();
+	public final static Parseable descriptor = new LastInteractome();
 
 	private LastInteractome() {
 		super();

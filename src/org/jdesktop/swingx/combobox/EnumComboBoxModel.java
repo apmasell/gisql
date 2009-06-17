@@ -33,7 +33,7 @@ import javax.swing.ComboBoxModel;
 @SuppressWarnings("serial")
 public class EnumComboBoxModel<E extends Enum<E>> extends AbstractListModel
 		implements ComboBoxModel {
-	private List<E> list;
+	private final List<E> list;
 
 	private E selected = null;
 

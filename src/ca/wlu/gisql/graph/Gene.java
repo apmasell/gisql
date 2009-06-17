@@ -61,7 +61,7 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 		return false;
 	}
 
-	protected void checkState() {
+	protected final void checkState() {
 		if (dead) {
 			throw new IllegalStateException("Gene is dead.");
 		}
@@ -94,7 +94,7 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 		gene.memberships.clear();
 	}
 
-	public void dispose() {
+	protected final void dispose() {
 		checkState();
 		dead = true;
 	}

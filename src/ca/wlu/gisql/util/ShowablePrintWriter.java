@@ -43,7 +43,7 @@ public class ShowablePrintWriter extends PrintWriter {
 		super(out, autoFlush);
 	}
 
-	public void print(Prioritizable prioritizable, int precedence) {
+	public final void print(Prioritizable prioritizable, int precedence) {
 		if (prioritizable.getPrecedence() < precedence)
 			print("(");
 		prioritizable.show(this);
@@ -51,16 +51,16 @@ public class ShowablePrintWriter extends PrintWriter {
 			print(")");
 	}
 
-	public void print(Show showable) {
+	public final void print(Show showable) {
 		showable.show(this);
 	}
 
-	public void println(Prioritizable prioritizable, int precdence) {
+	public final void println(Prioritizable prioritizable, int precdence) {
 		print(prioritizable, precdence);
 		println();
 	}
 
-	public void println(Show showable) {
+	public final void println(Show showable) {
 		print(showable);
 		println();
 	}

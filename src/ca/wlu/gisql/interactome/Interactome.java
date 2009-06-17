@@ -7,7 +7,7 @@ import ca.wlu.gisql.util.Show;
 
 public interface Interactome extends Prioritizable, Show {
 	public enum Type {
-		Computed, Mutable, Species
+		Computed, Species
 	}
 
 	public abstract double calculateMembership(Gene gene);

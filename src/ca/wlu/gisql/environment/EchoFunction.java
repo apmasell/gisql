@@ -15,7 +15,7 @@ import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.environment.parser.util.Function;
 
 public final class EchoFunction extends Function {
-	class Echo extends AstVoid {
+	private class Echo extends AstVoid {
 		private final Environment environment;
 
 		private final String string;
@@ -43,7 +43,7 @@ public final class EchoFunction extends Function {
 
 	public static final Parseable descriptor = new EchoFunction();
 
-	static final Logger log = Logger.getLogger(EchoFunction.class);
+	private static final Logger log = Logger.getLogger(EchoFunction.class);
 
 	private EchoFunction() {
 		super("echo", new Function.Parameter[] { new Function.QuotedString(

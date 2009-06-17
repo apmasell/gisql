@@ -30,7 +30,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 		private final String name;
 		private final double ubound;
 
-		public AstOutput(AstNode interactome, String name, double lbound,
+		private AstOutput(AstNode interactome, String name, double lbound,
 				double ubound, FileFormat format, String filename) {
 			this.interactome = interactome;
 			this.name = name;

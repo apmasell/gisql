@@ -82,7 +82,7 @@ public class AstLogic implements AstNode {
 		}
 	}
 
-	protected final AstNode left, right;
+	private final AstNode left, right;
 
 	private final TriangularNorm norm;
 

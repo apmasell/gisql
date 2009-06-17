@@ -2,7 +2,7 @@ package ca.wlu.gisql.fuzzy;
 
 public class Yager implements TriangularNorm {
 
-	private double p;
+	private final double p;
 
 	public Yager(double p) {
 		super();

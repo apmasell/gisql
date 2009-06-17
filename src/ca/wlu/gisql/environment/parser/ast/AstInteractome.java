@@ -5,7 +5,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class AstInteractome implements AstNode {
 
-	private Interactome interactome;
+	private final Interactome interactome;
 
 	public AstInteractome(Interactome interactome) {
 		super();

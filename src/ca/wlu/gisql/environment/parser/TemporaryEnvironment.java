@@ -11,7 +11,7 @@ public class TemporaryEnvironment extends Token {
 	private class DebrujinAst implements AstNode {
 		private final int depth;
 
-		public DebrujinAst(final int depth) {
+		private DebrujinAst(final int depth) {
 			super();
 			this.depth = depth;
 		}
@@ -43,7 +43,7 @@ public class TemporaryEnvironment extends Token {
 	private class MaskedEnvironment extends Environment {
 		private final Environment parent;
 
-		public MaskedEnvironment(Environment parent) {
+		private MaskedEnvironment(Environment parent) {
 			super(parent, false, true);
 			this.parent = parent;
 			this.add(name.getResult(), new DebrujinAst(getDepth()));

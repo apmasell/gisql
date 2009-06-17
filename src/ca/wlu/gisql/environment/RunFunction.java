@@ -11,7 +11,7 @@ import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.environment.parser.util.Function;
 
 public final class RunFunction extends Function {
-	class Script extends AstVoid {
+	private class Script extends AstVoid {
 		private final UserEnvironment environment;
 
 		private final File file;

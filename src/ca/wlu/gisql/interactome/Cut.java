@@ -19,10 +19,10 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Cut implements Interactome {
 	private static class AstCut implements AstNode {
-		private double cutoff;
-		private AstNode parameter;
+		private final double cutoff;
+		private final AstNode parameter;
 
-		public AstCut(AstNode node, double cutoff) {
+		private AstCut(AstNode node, double cutoff) {
 			parameter = node;
 			this.cutoff = cutoff;
 		}

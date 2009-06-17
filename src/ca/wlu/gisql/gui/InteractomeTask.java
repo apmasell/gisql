@@ -17,7 +17,7 @@ public class InteractomeTask<P extends Component & TaskParent> extends
 
 	private final CachedInteractome interactome;
 
-	private String message;
+	private final String message;
 
 	private final P parent;
 
