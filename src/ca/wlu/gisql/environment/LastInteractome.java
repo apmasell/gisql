@@ -34,7 +34,7 @@ public final class LastInteractome implements Parseable {
 	}
 
 	public int getPrecedence() {
-		return 6;
+		return Parser.PREC_LITERAL;
 	}
 
 	public boolean isMatchingOperator(char c) {

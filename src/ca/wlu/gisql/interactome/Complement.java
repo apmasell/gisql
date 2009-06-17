@@ -26,7 +26,7 @@ public class Complement implements Parseable {
 	}
 
 	public int getPrecedence() {
-		return 5;
+		return Parser.PREC_UNARY;
 	}
 
 	public boolean isMatchingOperator(char c) {

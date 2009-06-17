@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
@@ -47,7 +48,7 @@ public class AstList extends ArrayList<AstNode> implements AstNode {
 	}
 
 	public int getPrecedence() {
-		return Integer.MAX_VALUE;
+		return Parser.PREC_LITERAL;
 	}
 
 	public boolean isInteractome() {

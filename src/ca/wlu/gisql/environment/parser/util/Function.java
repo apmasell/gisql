@@ -67,7 +67,7 @@ public abstract class Function implements Parseable {
 	}
 
 	public int getPrecedence() {
-		return 0;
+		return Parser.PREC_FUNCTION;
 	}
 
 	public boolean isMatchingOperator(char c) {

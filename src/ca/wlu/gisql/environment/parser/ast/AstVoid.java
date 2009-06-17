@@ -1,5 +1,6 @@
 package ca.wlu.gisql.environment.parser.ast;
 
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
@@ -17,7 +18,7 @@ public abstract class AstVoid implements AstNode {
 	}
 
 	public int getPrecedence() {
-		return 0;
+		return Parser.PREC_FUNCTION;
 	}
 
 	public boolean isInteractome() {

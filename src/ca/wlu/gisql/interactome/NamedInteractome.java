@@ -1,5 +1,7 @@
 package ca.wlu.gisql.interactome;
 
+import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -43,7 +45,7 @@ public class NamedInteractome implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return Integer.MAX_VALUE;
+		return Parser.PREC_LITERAL;
 	}
 
 	public final Type getType() {

@@ -1,5 +1,6 @@
 package ca.wlu.gisql.environment.parser.ast;
 
+import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
@@ -21,7 +22,7 @@ public class AstString implements AstNode {
 	}
 
 	public int getPrecedence() {
-		return Integer.MAX_VALUE;
+		return Parser.PREC_LITERAL;
 	}
 
 	public String getString() {

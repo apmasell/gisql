@@ -49,6 +49,22 @@ public class Parser {
 
 	private static Map<Integer, List<Parseable>> otherfixOperators = null;
 
+	public static final int PREC_ASSIGN = 1;
+
+	public final static int PREC_CONJUNCT = 3;
+
+	public static final int PREC_DIFF = 2;
+
+	public final static int PREC_DISJUNCT = 3;
+
+	public static final int PREC_FUNCTION = 0;
+
+	public static final int PREC_LITERAL = 7;
+
+	public static final int PREC_UNARY = 6;
+
+	public static final int PREC_UNARY_MANGLE = 5;
+
 	private static Map<Integer, List<Parseable>> prefixedOperators = null;
 
 	public static synchronized void addParseable(Parseable operator) {

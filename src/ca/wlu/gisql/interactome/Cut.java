@@ -64,7 +64,7 @@ public class Cut implements Interactome {
 		}
 
 		public int getPrecedence() {
-			return 0;
+			return Parser.PREC_UNARY_MANGLE;
 		}
 
 		public boolean isMatchingOperator(char c) {

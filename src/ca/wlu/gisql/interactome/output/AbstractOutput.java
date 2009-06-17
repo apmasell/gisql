@@ -104,7 +104,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 		}
 
 		public int getPrecedence() {
-			return 0;
+			return Parser.PREC_ASSIGN;
 		}
 
 		public boolean isMatchingOperator(char c) {
