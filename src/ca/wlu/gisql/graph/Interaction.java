@@ -44,6 +44,13 @@ public class Interaction implements Show {
 		}
 	}
 
+	public double getAverageMembership() {
+		double sum = 0;
+		for (double value : memberships.values())
+			sum += value;
+		return sum / memberships.size();
+	}
+
 	public Gene getGene1() {
 		return gene1;
 	}

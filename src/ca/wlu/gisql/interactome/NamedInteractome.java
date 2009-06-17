@@ -1,6 +1,5 @@
 package ca.wlu.gisql.interactome;
 
-import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
@@ -16,8 +15,6 @@ public class NamedInteractome implements Interactome {
 
 	private final Type type;
 
-	private final boolean zeroInteractionsWithOrthologs;
-
 	public NamedInteractome(String name, int numGenomes,
 			double membershipOfUnknown, Type type,
 			boolean zeroInteractionsWithOrthologs) {
@@ -26,7 +23,6 @@ public class NamedInteractome implements Interactome {
 		this.numGenomes = numGenomes;
 		this.membershipOfUnknown = membershipOfUnknown;
 		this.type = type;
-		this.zeroInteractionsWithOrthologs = zeroInteractionsWithOrthologs;
 	}
 
 	public final double calculateMembership(Gene gene) {
@@ -34,14 +30,7 @@ public class NamedInteractome implements Interactome {
 	}
 
 	public final double calculateMembership(Interaction interaction) {
-		double membership = interaction.getMembership(this);
-		if (zeroInteractionsWithOrthologs && GisQL.isMissing(membership)
-				&& !GisQL.isMissing(interaction.getGene1().getMembership(this))
-				&& !GisQL.isMissing(interaction.getGene2().getMembership(this))) {
-			return 0;
-
-		}
-		return membership;
+		return interaction.getMembership(this);
 	}
 
 	public int getPrecedence() {

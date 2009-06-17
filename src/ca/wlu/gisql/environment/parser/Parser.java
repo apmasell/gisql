@@ -20,6 +20,7 @@ import ca.wlu.gisql.environment.parser.util.FoldOperator;
 import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.Cut;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.Patch;
 import ca.wlu.gisql.interactome.ToVar;
 import ca.wlu.gisql.interactome.binary.Difference;
 import ca.wlu.gisql.interactome.binary.Intersection;
@@ -43,7 +44,7 @@ public class Parser {
 			Complement.descriptor, Cut.descriptor, Difference.descriptor,
 			EchoFunction.descriptor, FormatFunction.descriptor,
 			Intersection.descriptor, LastInteractome.descriptor,
-			OutputFunction.descriptor, Residuum.descriptor,
+			OutputFunction.descriptor, Patch.descriptor, Residuum.descriptor,
 			RunFunction.descriptor, SymmetricDifference.descriptor,
 			ToVar.descriptor, Union.descriptor };
 
