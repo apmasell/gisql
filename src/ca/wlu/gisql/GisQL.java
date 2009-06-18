@@ -30,8 +30,18 @@ public class GisQL {
 
 	public static final double Missing = -1;
 
+	public static final double Undefined = -2;
+
 	public static boolean isMissing(double membership) {
 		return membership < 0;
+	}
+
+	/*
+	 * Semantically, a missing thing is known to be not present in the
+	 * interactome while an undefined one could be unprocessed.
+	 */
+	public static boolean isUndefined(double membership) {
+		return membership < -1;
 	}
 
 	public static void main(String[] args) throws Exception {

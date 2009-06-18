@@ -23,32 +23,40 @@ class OutputText extends AbstractOutput {
 	}
 
 	public double calculateMembership(Gene gene) {
-		double membership = source.calculateMembership(gene);
-		if (!GisQL.isMissing(membership)) {
-			statistics.countGene(membership);
+		double membership = gene.getMembership(this);
+		if (GisQL.isUndefined(membership)) {
+			membership = source.calculateMembership(gene);
 
-			if (format == FileFormat.genome) {
-				gene.show(print);
-				print.print("; ");
-				print.print(membership);
-				print.println();
+			if (!GisQL.isMissing(membership)) {
+				statistics.countGene(membership);
+
+				if (format == FileFormat.genome) {
+					gene.show(print);
+					print.print("; ");
+					print.print(membership);
+					print.println();
+				}
 			}
 		}
 		return membership;
 	}
 
 	public double calculateMembership(Interaction interaction) {
-		double membership = source.calculateMembership(interaction);
+		double membership = interaction.getMembership(this);
+		if (GisQL.isUndefined(membership)) {
+			membership = source.calculateMembership(interaction);
+			interaction.setMembership(this, membership);
 
-		if (!GisQL.isMissing(membership)) {
-			statistics.countInteraction(membership);
-			if (format == FileFormat.interactome) {
-				interaction.getGene1().show(print);
-				print.print("; ");
-				interaction.getGene2().show(print);
-				print.print("; ");
-				print.print(membership);
-				print.println();
+			if (!GisQL.isMissing(membership)) {
+				statistics.countInteraction(membership);
+				if (format == FileFormat.interactome) {
+					interaction.getGene1().show(print);
+					print.print("; ");
+					interaction.getGene2().show(print);
+					print.print("; ");
+					print.print(membership);
+					print.println();
+				}
 			}
 		}
 		return membership;

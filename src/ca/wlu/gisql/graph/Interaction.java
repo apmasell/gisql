@@ -62,7 +62,7 @@ public class Interaction implements Show {
 	public double getMembership(Interactome interactome) {
 		Double value = memberships.get(interactome);
 		if (value == null)
-			return GisQL.Missing;
+			return GisQL.Undefined;
 		else
 			return value;
 	}
