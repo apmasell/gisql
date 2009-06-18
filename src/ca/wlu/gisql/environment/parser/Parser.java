@@ -51,7 +51,7 @@ public class Parser {
 
 	public static final int PREC_ASSIGN = 1;
 
-	public final static int PREC_CONJUNCT = 3;
+	public final static int PREC_CONJUNCT = 4;
 
 	public static final int PREC_DIFF = 2;
 
