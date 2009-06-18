@@ -195,13 +195,19 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 			Object selected = variablelist.getLastSelectedPathComponent();
 			if (selected instanceof AstNodeTreeNode) {
 				AstNode node = ((AstNodeTreeNode) selected).getNode();
-				if (node != null && node.isInteractome()) {
+				if (node == null) {
+					/* Do nothing. */
+				} else if (node.isInteractome()) {
 					CachedInteractome interactome = CachedInteractome.wrap(node
 							.asInteractome(), null);
 					if (interactome != null) {
 						results.setInteractome(interactome);
 						interactome.process(); /* Probably processed. */
 					}
+				} else {
+					JOptionPane.showMessageDialog(this, node.toString(),
+							"Inspection - GisQL",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 		} catch (Exception e) {
