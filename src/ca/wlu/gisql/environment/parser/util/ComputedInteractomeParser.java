@@ -8,7 +8,6 @@ import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.SubExpression;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.environment.parser.ast.AstLogic;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -32,7 +31,7 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		this.name = name;
 	}
 
-	abstract protected AstLogic construct(AstNode left, AstNode right,
+	abstract protected AstNode construct(AstNode left, AstNode right,
 			TriangularNorm norm);
 
 	protected final AstNode construct(Environment environment, AstNode left,

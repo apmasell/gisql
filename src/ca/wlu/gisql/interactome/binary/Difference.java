@@ -14,8 +14,7 @@ public class Difference extends ComputedInteractomeParser {
 				"Difference (Ax t v(Bx))");
 	}
 
-	protected AstLogic construct(AstNode left, AstNode right,
-			TriangularNorm norm) {
+	protected AstNode construct(AstNode left, AstNode right, TriangularNorm norm) {
 		return AstLogic.makeConjunct(left, AstLogic.makeNegation(right, norm),
 				norm);
 	}

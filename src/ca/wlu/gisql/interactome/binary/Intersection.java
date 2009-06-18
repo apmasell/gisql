@@ -15,8 +15,7 @@ public class Intersection extends ComputedInteractomeParser {
 
 	}
 
-	protected AstLogic construct(AstNode left, AstNode right,
-			TriangularNorm norm) {
+	protected AstNode construct(AstNode left, AstNode right, TriangularNorm norm) {
 		return AstLogic.makeConjunct(left, right, norm);
 	}
 }

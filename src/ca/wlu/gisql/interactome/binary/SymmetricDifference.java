@@ -14,8 +14,7 @@ public class SymmetricDifference extends ComputedInteractomeParser {
 				"Symmetric Difference ((Ax t v(Bx)) s (Bx t v(Ax)))");
 	}
 
-	protected AstLogic construct(AstNode left, AstNode right,
-			TriangularNorm norm) {
+	protected AstNode construct(AstNode left, AstNode right, TriangularNorm norm) {
 		return AstLogic.makeDisjunct(AstLogic.makeConjunct(left, AstLogic
 				.makeNegation(right, norm), norm), AstLogic.makeConjunct(right,
 				AstLogic.makeNegation(left, norm), norm), norm);

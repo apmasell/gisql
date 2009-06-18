@@ -13,8 +13,7 @@ public class Union extends ComputedInteractomeParser {
 		super(Parser.PREC_DISJUNCT, '∪', new char[] { '|' }, "Union (Ax s Bx)");
 	}
 
-	protected AstLogic construct(AstNode left, AstNode right,
-			TriangularNorm norm) {
+	protected AstNode construct(AstNode left, AstNode right, TriangularNorm norm) {
 		return AstLogic.makeDisjunct(left, right, norm);
 	}
 }
