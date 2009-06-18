@@ -17,6 +17,15 @@ public class AstString implements AstNode {
 		return null;
 	}
 
+	public boolean equals(Object other) {
+		if (other instanceof AstString) {
+			return value == ((AstString) other).value;
+
+		} else {
+			return false;
+		}
+	}
+
 	public AstNode fork(AstNode substitute) {
 		return this;
 	}

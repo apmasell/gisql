@@ -16,6 +16,15 @@ public class AstInteractome implements AstNode {
 		return interactome;
 	}
 
+	public boolean equals(Object other) {
+		if (other instanceof AstInteractome) {
+			return interactome == ((AstInteractome) other).interactome;
+
+		} else {
+			return false;
+		}
+	}
+
 	public AstNode fork(AstNode substitute) {
 		return this;
 	}

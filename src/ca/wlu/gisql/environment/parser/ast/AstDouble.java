@@ -16,6 +16,15 @@ public class AstDouble implements AstNode {
 		return null;
 	}
 
+	public boolean equals(Object other) {
+		if (other instanceof AstDouble) {
+			return value == ((AstDouble) other).value;
+
+		} else {
+			return false;
+		}
+	}
+
 	public AstNode fork(AstNode substitute) {
 		return this;
 	}

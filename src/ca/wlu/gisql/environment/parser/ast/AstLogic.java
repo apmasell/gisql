@@ -140,6 +140,18 @@ public class AstLogic implements AstNode {
 		}
 	}
 
+	public boolean equals(Object other) {
+		if (other instanceof AstLogic) {
+			AstLogic logic = ((AstLogic) other);
+			return (this.operation == logic.operation)
+					&& (this.left.equals(logic.left))
+					&& (this.right == null ? logic.right == null : right
+							.equals(logic.right));
+		} else {
+			return false;
+		}
+	}
+
 	public AstNode fork(AstNode substitute) {
 		return new AstLogic(left.fork(substitute), (right == null ? null
 				: right.fork(substitute)), operation, norm);
