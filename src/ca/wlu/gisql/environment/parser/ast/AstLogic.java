@@ -1,6 +1,7 @@
 package ca.wlu.gisql.environment.parser.ast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ca.wlu.gisql.interactome.Complement;
@@ -10,6 +11,7 @@ import ca.wlu.gisql.interactome.binary.Intersection;
 import ca.wlu.gisql.interactome.binary.Union;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
+import ca.wlu.gisql.util.ToStringComparator;
 
 public class AstLogic implements AstNode {
 
@@ -114,6 +116,7 @@ public class AstLogic implements AstNode {
 			List<List<Integer>> productOfSumsNegated = new ArrayList<List<Integer>>();
 			AstList termini = new AstList();
 			normalForm.prepareInteractomes(termini);
+			Collections.sort(termini, ToStringComparator.instance);
 			normalForm.makeTermMatrix(productOfSums, productOfSumsNegated,
 					termini, Operation.Conjunct);
 			List<Interactome> interactomes = termini.asInteractomeList();
@@ -128,8 +131,11 @@ public class AstLogic implements AstNode {
 						productOfSumsNegated.remove(subindex);
 					}
 				}
+				Collections.sort(productOfSums.get(index));
+				Collections.sort(productOfSumsNegated.get(index));
 			}
-
+			quicksort(productOfSums, productOfSumsNegated, 0, productOfSums
+					.size() - 1);
 			return new ComputedInteractome(interactomes, productOfSums,
 					productOfSumsNegated);
 		} else {
@@ -245,6 +251,31 @@ public class AstLogic implements AstNode {
 		}
 	}
 
+	private void quicksort(List<List<Integer>> list1,
+			List<List<Integer>> list2, int left, int right) {
+		if (right > left) {
+			int pivotIndex = left;
+			String pivotValue1 = list1.get(pivotIndex).toString();
+			String pivotValue2 = list1.get(pivotIndex).toString();
+			swap(list1, list2, pivotIndex, right);
+			int storeIndex = left;
+			for (int i = left; i < right; i++) {
+				String value1 = list1.get(i).toString();
+				String value2 = list2.get(i).toString();
+				int comparison = value1.compareTo(pivotValue1);
+				if (comparison == 0)
+					comparison = value2.compareTo(pivotValue2);
+				if (comparison < 0) {
+					swap(list1, list2, i, storeIndex);
+					storeIndex++;
+				}
+			}
+			swap(list1, list2, storeIndex, right);
+			quicksort(list1, list2, left, storeIndex - 1);
+			quicksort(list1, list2, storeIndex + 1, right);
+		}
+	}
+
 	private AstNode removeNegation() {
 		if (this.operation == Operation.Negation) {
 			Operation suboperation = operationOf(left);
@@ -281,6 +312,17 @@ public class AstLogic implements AstNode {
 			print.print(right, Union.descriptor.getPrecedence());
 			print.print(")");
 		}
+	}
+
+	private void swap(List<List<Integer>> list1, List<List<Integer>> list2,
+			int left, int right) {
+		List<Integer> value1 = list1.get(left);
+		list1.set(left, list1.get(right));
+		list1.set(right, value1);
+
+		List<Integer> value2 = list2.get(left);
+		list2.set(left, list2.get(right));
+		list2.set(right, value2);
 	}
 
 	public String toString() {
