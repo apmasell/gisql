@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.parser.Parser;
-import ca.wlu.gisql.interactome.CachedInteractome;
+import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
 
 public class EnvironmentUtils {
@@ -19,9 +19,9 @@ public class EnvironmentUtils {
 		Parser parser = new Parser(environment, expression);
 		switch (parser.getParseResult()) {
 		case Interactome:
-			CachedInteractome interactome = AbstractOutput.wrap(parser.get(),
-					null, 0.0, 1.0, environment.getFormat(), environment
-							.getOutput(), false);
+			ProcessableInteractome interactome = AbstractOutput.wrap(parser
+					.get(), null, environment.getFormat(), environment
+					.getOutput(), false);
 			if (interactome == null) {
 				log.error(parser.getErrors());
 				return false;

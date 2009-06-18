@@ -32,7 +32,7 @@ public final class Accession implements Show {
 
 	public void show(ShowablePrintWriter print) {
 		print.print(name);
-		print.print(" [gi:");
+		print.print("[gi:");
 		print.print(identifier);
 		print.print("/");
 		species.show(print);

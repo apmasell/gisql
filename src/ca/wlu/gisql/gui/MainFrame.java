@@ -168,8 +168,7 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 				if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 					FileWriteTask fwt = new FileWriteTask(this, results
 							.getInteractome(), ea.getFormat(), fc
-							.getSelectedFile(), ea.getLowerbound(), ea
-							.getUpperbound());
+							.getSelectedFile());
 					fwt.execute();
 					progress.start("Saving to "
 							+ fc.getSelectedFile().getName() + "...");

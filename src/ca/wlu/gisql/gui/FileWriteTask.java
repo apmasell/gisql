@@ -23,23 +23,17 @@ class FileWriteTask extends SwingWorker<Boolean, Boolean> {
 
 	private final Interactome interactome;
 
-	private final double lowerbound;
-
-	private final double upperbound;
-
 	FileWriteTask(MainFrame frame, Interactome interactome, FileFormat format,
-			File file, double lowerbound, double upperbound) {
+			File file) {
 		this.frame = frame;
 		this.interactome = interactome;
 		this.format = format;
 		this.file = file;
-		this.lowerbound = lowerbound;
-		this.upperbound = upperbound;
 	}
 
 	public Boolean doInBackground() {
-		return AbstractOutput.wrap(interactome, null, lowerbound, upperbound,
-				format, file.getPath(), true).process();
+		return AbstractOutput.wrap(interactome, null, format, file.getPath(),
+				true).process();
 	}
 
 	public void done() {

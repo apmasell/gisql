@@ -6,48 +6,42 @@ import java.util.Stack;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.parser.Decimal;
 import ca.wlu.gisql.environment.parser.Maybe;
 import ca.wlu.gisql.environment.parser.Name;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.QuotedString;
 import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.environment.parser.ast.AstDouble;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.environment.parser.ast.AstString;
-import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public abstract class AbstractOutput extends CachedInteractome {
+public abstract class AbstractOutput extends ProcessableInteractome {
 	private static class AstOutput implements AstNode {
 
 		private final String filename;
 		private final FileFormat format;
 		private final AstNode interactome;
-		private final double lbound;
 		private final String name;
-		private final double ubound;
 
-		private AstOutput(AstNode interactome, String name, double lbound,
-				double ubound, FileFormat format, String filename) {
+		private AstOutput(AstNode interactome, String name, FileFormat format,
+				String filename) {
 			this.interactome = interactome;
 			this.name = name;
-			this.lbound = lbound;
-			this.ubound = ubound;
 			this.format = format;
 			this.filename = filename;
 		}
 
 		public Interactome asInteractome() {
-			return wrap(interactome.asInteractome(), name, lbound, ubound,
-					format, filename, true);
+			return wrap(interactome.asInteractome(), name, format, filename,
+					true);
 		}
 
 		public AstNode fork(AstNode substitute) {
-			return new AstOutput(interactome.fork(substitute), name, lbound,
-					ubound, format, filename);
+			return new AstOutput(interactome.fork(substitute), name, format,
+					filename);
 		}
 
 		public int getPrecedence() {
@@ -61,10 +55,6 @@ public abstract class AbstractOutput extends CachedInteractome {
 		public void show(ShowablePrintWriter print) {
 			print.print(interactome, getPrecedence());
 			print.print(" @ ");
-			print.print(lbound);
-			print.print(" ");
-			print.print(ubound);
-			print.print(" ");
 			print.print(format.name());
 			print.print(" ");
 			print.print("\"");
@@ -78,12 +68,10 @@ public abstract class AbstractOutput extends CachedInteractome {
 		public AstNode construct(Environment environment, List<AstNode> params,
 				Stack<String> error) {
 			AstNode interactome = params.get(0);
-			AstDouble lowerbound = (AstDouble) params.get(1);
-			AstDouble upperbound = (AstDouble) params.get(2);
-			AstString formatname = (AstString) params.get(3);
+			AstString formatname = (AstString) params.get(1);
 			FileFormat format = (formatname == null ? FileFormat.interactome
 					: FileFormat.valueOf(formatname.getString()));
-			String filename = ((AstString) params.get(4)).getString();
+			String filename = ((AstString) params.get(2)).getString();
 
 			if (!interactome.isInteractome())
 				return null;
@@ -92,15 +80,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 				format = FileFormat.interactome;
 			}
 
-			/*
-			 * For the alpha cut, {Ax | x ∈ [lowerbound, upperbound]}. Normally,
-			 * [α, 1]. That means lower should be filled preferentially, which
-			 * it is.
-			 */
-			double ubound = (upperbound == null ? 1.0 : upperbound.getDouble());
-			double lbound = (lowerbound == null ? 0.0 : lowerbound.getDouble());
-			return new AstOutput(interactome, null, lbound, ubound, format,
-					filename);
+			return new AstOutput(interactome, null, format, filename);
 		}
 
 		public int getPrecedence() {
@@ -121,9 +101,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 		}
 
 		public Token[] tasks(Parser parser) {
-			return new Token[] { new Maybe(parser, new Decimal(parser)),
-					new Maybe(parser, new Decimal(parser)),
-					new Maybe(parser, new Name(parser)),
+			return new Token[] { new Maybe(parser, new Name(parser)),
 					new QuotedString(parser) };
 		}
 
@@ -132,7 +110,7 @@ public abstract class AbstractOutput extends CachedInteractome {
 	protected static final Logger log = Logger.getLogger(OutputGraph.class);
 
 	public static AbstractOutput wrap(Interactome interactome, String name,
-			double lowerbound, double upperbound, FileFormat format,
+			FileFormat format,
 			String filename, boolean force) {
 		if (interactome == null)
 			return null;
@@ -142,10 +120,10 @@ public abstract class AbstractOutput extends CachedInteractome {
 		case genome:
 		case interactome:
 		case summary:
-			return new OutputText(interactome, name, lowerbound, upperbound,
+			return new OutputText(interactome, name, 
 					format, filename);
 		default:
-			return new OutputGraph(interactome, name, lowerbound, upperbound,
+			return new OutputGraph(interactome, name, 
 					format, filename);
 
 		}
@@ -155,10 +133,20 @@ public abstract class AbstractOutput extends CachedInteractome {
 
 	protected final FileFormat format;
 
+	protected final Interactome source;
+
+	public Type getType() {
+		return source.getType();
+	}
+
+	public double membershipOfUnknown() {
+		return 0;
+	}
+
 	protected AbstractOutput(Interactome source, String name,
-			double lowerbound, double upperbound, FileFormat format,
+			 FileFormat format,
 			String filename) {
-		super(source, name, lowerbound, upperbound);
+		this.source = source;
 		this.format = format;
 		this.filename = filename;
 	}
@@ -170,10 +158,6 @@ public abstract class AbstractOutput extends CachedInteractome {
 	public void show(ShowablePrintWriter print) {
 		print.print(source, this.getPrecedence());
 		print.print(" @ ");
-		print.print(lowerbound);
-		print.print(" ");
-		print.print(upperbound);
-		print.print(" ");
 		print.print(format.name());
 		print.print(" ");
 		print.print("\"");

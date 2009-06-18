@@ -5,7 +5,7 @@ import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 class Statistics implements Show {
-	private final double binwidth;
+	private final int bincount;
 
 	private final int[] geneBins;
 
@@ -19,21 +19,15 @@ class Statistics implements Show {
 
 	private int interactions = 0;
 
-	private final int maxbin;
-
-	private final double offset;
-
-	protected Statistics(int bincount, double lowerbound, double upperbound) {
+	protected Statistics(int bincount) {
 		super();
-		maxbin = bincount - 1;
-		binwidth = bincount / (upperbound - lowerbound);
-		offset = binwidth * lowerbound;
+		this.bincount = bincount;
 		geneBins = new int[bincount];
 		interactionBins = new int[bincount];
 	}
 
 	private int calculateBin(double membership) {
-		return Math.min((int) (membership * binwidth - offset), maxbin);
+		return Math.min((int) (membership * bincount), bincount - 1);
 	}
 
 	protected void countGene(double membership) {

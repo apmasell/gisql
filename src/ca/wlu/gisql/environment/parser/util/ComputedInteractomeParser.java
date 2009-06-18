@@ -40,8 +40,8 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		return construct(left, right);
 	}
 
-	public final AstNode construct(Environment environment, List<AstNode> params,
-			Stack<String> error) {
+	public final AstNode construct(Environment environment,
+			List<AstNode> params, Stack<String> error) {
 		AstNode left = params.get(0);
 		AstNode right = params.get(1);
 		return construct(environment, left, right, error);

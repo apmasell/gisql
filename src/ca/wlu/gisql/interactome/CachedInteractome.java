@@ -4,18 +4,15 @@ import java.util.List;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
-import org.jgrapht.UndirectedGraph;
-import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
-import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.gui.output.GeneTable;
 import ca.wlu.gisql.gui.output.InteractionTable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class CachedInteractome implements Interactome {
+public class CachedInteractome extends ProcessableInteractome {
 
 	private static final Logger log = Logger.getLogger(CachedInteractome.class);
 
@@ -33,58 +30,48 @@ public class CachedInteractome implements Interactome {
 			return cachedInteractome;
 		}
 
-		return new CachedInteractome(interactome, name, 0, 1);
+		return new CachedInteractome(interactome, name);
 	}
-
-	private boolean first = true;
 
 	private ListOrderedSet<Gene> genes;
 
 	private final GeneTable geneTable;
 
-	private final SimpleWeightedGraph<Gene, Interaction> graph = new SimpleWeightedGraph<Gene, Interaction>(
-			Interaction.class);
-
 	private ListOrderedSet<Interaction> interactions;
 
 	private final InteractionTable interactionTable;
-
-	protected final double lowerbound;
 
 	private String name;
 
 	protected final Interactome source;
 
-	protected final double upperbound;
-
-	public CachedInteractome(Interactome source, String name,
-			double lowerbound, double upperbound) {
+	public CachedInteractome(Interactome source, String name) {
 		super();
 		this.source = source;
 		geneTable = new GeneTable(this);
 		interactionTable = new InteractionTable(this);
 		this.name = name;
-		this.lowerbound = lowerbound;
-		this.upperbound = upperbound;
 	}
 
 	public double calculateMembership(Gene gene) {
-		if (first) {
+		if (genes.contains(gene)) {
+			return gene.getMembership(this);
+		} else {
 			double membership = source.calculateMembership(gene);
-			if (membership >= lowerbound && membership <= upperbound) {
+			if (!GisQL.isMissing(membership)) {
 				gene.setMembership(this, membership);
 				genes.add(gene);
 			}
 			return membership;
-		} else {
-			return gene.getMembership(this);
 		}
 	}
 
 	public double calculateMembership(Interaction interaction) {
-		if (first) {
+		if (interactions.contains(interaction)) {
+			return interaction.getMembership(this);
+		} else {
 			double membership = source.calculateMembership(interaction);
-			if (membership >= lowerbound && membership <= upperbound) {
+			if (!GisQL.isMissing(membership)) {
 				interaction.setMembership(this, membership);
 				interactions.add(interaction);
 				for (Gene gene : new Gene[] { interaction.getGene1(),
@@ -94,14 +81,8 @@ public class CachedInteractome implements Interactome {
 						genes.add(gene);
 					}
 				}
-				graph.addVertex(interaction.getGene1());
-				graph.addVertex(interaction.getGene2());
-				graph.addEdge(interaction.getGene1(), interaction.getGene2(),
-						interaction);
 			}
 			return membership;
-		} else {
-			return interaction.getMembership(this);
 		}
 	}
 
@@ -113,11 +94,6 @@ public class CachedInteractome implements Interactome {
 	public final GeneTable getGeneTable() {
 		process();
 		return geneTable;
-	}
-
-	public final UndirectedGraph<Gene, Interaction> getGraph() {
-		process();
-		return graph;
 	}
 
 	public final List<Interaction> getInteractions() {
@@ -138,7 +114,7 @@ public class CachedInteractome implements Interactome {
 	}
 
 	public Type getType() {
-		return Type.Computed;
+		return source.getType();
 	}
 
 	public final double membershipOfUnknown() {
@@ -146,35 +122,13 @@ public class CachedInteractome implements Interactome {
 	}
 
 	public boolean postpare() {
-		first = false;
-		return source.postpare();
+		return super.postpare() && source.postpare();
 	}
 
 	public boolean prepare() {
 		genes = new ListOrderedSet<Gene>();
 		interactions = new ListOrderedSet<Interaction>();
 		return source.prepare();
-	}
-
-	public final boolean process() {
-		if (first) {
-			if (!prepare()) {
-				log.error("Preparation failed.");
-				return false;
-			}
-			for (Gene gene : Ubergraph.getInstance().genes()) {
-				this.calculateMembership(gene);
-			}
-			for (Interaction interaction : Ubergraph.getInstance()) {
-				this.calculateMembership(interaction);
-			}
-			if (!postpare()) {
-				log.error("Postparation failed.");
-				return false;
-			}
-		}
-		return true;
-
 	}
 
 	public void show(ShowablePrintWriter print) {
