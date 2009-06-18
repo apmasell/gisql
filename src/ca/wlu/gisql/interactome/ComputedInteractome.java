@@ -3,7 +3,6 @@ package ca.wlu.gisql.interactome;
 import java.util.List;
 
 import ca.wlu.gisql.GisQL;
-import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.binary.Intersection;
@@ -15,18 +14,15 @@ public class ComputedInteractome implements Interactome {
 
 	private final String expression;
 	private final List<Interactome> interactomes;
-	private final TriangularNorm norm;
 	private final List<List<Integer>> productOfSums;
 	private final List<List<Integer>> productOfSumsNegated;
 	private final int size;
 	private final double unknown;
 
-	public ComputedInteractome(final TriangularNorm norm,
-			final List<Interactome> interactomes,
+	public ComputedInteractome(final List<Interactome> interactomes,
 			final List<List<Integer>> productOfSums,
 			final List<List<Integer>> productOfSumsNegated) {
 		super();
-		this.norm = norm;
 		this.interactomes = interactomes;
 		this.productOfSums = productOfSums;
 		this.productOfSumsNegated = productOfSumsNegated;
@@ -77,13 +73,13 @@ public class ComputedInteractome implements Interactome {
 		for (int term = 0; term < productOfSums.size(); term++) {
 			double sum = 0;
 			for (int index : productOfSums.get(term)) {
-				sum = norm.s(sum, memberships[index]);
+				sum = Math.max(sum, memberships[index]);
 			}
 
 			for (int index : productOfSumsNegated.get(term)) {
-				sum = norm.s(sum, norm.v(memberships[index]));
+				sum = Math.max(sum, 1 - memberships[index]);
 			}
-			product = norm.t(product, sum);
+			product = Math.min(product, sum);
 		}
 		return product;
 	}

@@ -9,7 +9,6 @@ import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.SubExpression;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
-import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class ComputedInteractomeParser implements Parseable {
@@ -31,15 +30,14 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		this.name = name;
 	}
 
-	abstract protected AstNode construct(AstNode left, AstNode right,
-			TriangularNorm norm);
+	abstract protected AstNode construct(AstNode left, AstNode right);
 
 	protected final AstNode construct(Environment environment, AstNode left,
 			AstNode right, Stack<String> error) {
 		if (!left.isInteractome() || !right.isInteractome()) {
 			error.push("Cannot apply to non-interactome operand.");
 		}
-		return construct(left, right, environment.getTriangularNorm());
+		return construct(left, right);
 	}
 
 	public final AstNode construct(Environment environment, List<AstNode> params,

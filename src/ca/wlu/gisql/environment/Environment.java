@@ -9,8 +9,6 @@ import org.apache.commons.collections15.iterators.IteratorChain;
 import org.apache.commons.collections15.map.HashedMap;
 
 import ca.wlu.gisql.environment.parser.ast.AstNode;
-import ca.wlu.gisql.fuzzy.Godel;
-import ca.wlu.gisql.fuzzy.TriangularNorm;
 
 public abstract class Environment implements EnvironmentListener,
 		Iterable<Entry<String, AstNode>> {
@@ -20,7 +18,6 @@ public abstract class Environment implements EnvironmentListener,
 
 	private final boolean mutable;
 
-	private TriangularNorm norm = new Godel();
 	private final Environment parent;
 
 	private final Map<String, AstNode> variables = new HashedMap<String, AstNode>();
@@ -81,10 +78,6 @@ public abstract class Environment implements EnvironmentListener,
 		}
 	}
 
-	public TriangularNorm getTriangularNorm() {
-		return norm;
-	}
-
 	public final AstNode getVariable(String name) {
 		AstNode node = variables.get(name);
 		if (node == null && parent != null)
@@ -108,15 +101,6 @@ public abstract class Environment implements EnvironmentListener,
 
 	public final void removeListener(EnvironmentListener listener) {
 		listeners.remove(listener);
-	}
-
-	public final boolean setTriangularNorm(TriangularNorm norm) {
-		if (mutable) {
-			this.norm = norm;
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public final boolean setVariable(String name, AstNode node) {

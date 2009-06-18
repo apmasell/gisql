@@ -19,8 +19,7 @@ public class Complement implements Parseable {
 			Stack<String> error) {
 		AstNode interactome = params.get(0);
 		if (interactome.isInteractome())
-			return AstLogic.makeNegation(interactome, environment
-					.getTriangularNorm());
+			return AstLogic.makeNegation(interactome);
 		else
 			return null;
 	}

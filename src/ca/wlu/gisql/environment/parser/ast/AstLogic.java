@@ -3,7 +3,6 @@ package ca.wlu.gisql.environment.parser.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.wlu.gisql.fuzzy.TriangularNorm;
 import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.ComputedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
@@ -26,30 +25,30 @@ public class AstLogic implements AstNode {
 		}
 	}
 
-	public static AstNode makeConjunct(AstNode a, AstNode b, TriangularNorm norm) {
+	public static AstNode makeConjunct(AstNode a, AstNode b) {
 		if (a.equals(b)) {
 			return a;
 		} else {
-			return new AstLogic(a, b, Operation.Conjunct, norm);
+			return new AstLogic(a, b, Operation.Conjunct);
 		}
 	}
 
-	public static AstNode makeDisjunct(AstNode a, AstNode b, TriangularNorm norm) {
+	public static AstNode makeDisjunct(AstNode a, AstNode b) {
 		if (a.equals(b)) {
 			return a;
 		} else {
-			return new AstLogic(a, b, Operation.Disjunct, norm);
+			return new AstLogic(a, b, Operation.Disjunct);
 		}
 	};
 
-	public static AstNode makeNegation(AstNode a, TriangularNorm norm) {
+	public static AstNode makeNegation(AstNode a) {
 		if (a instanceof AstLogic) {
 			AstLogic n = (AstLogic) a;
 			if (n.operation == Operation.Negation) {
 				return n.left;
 			}
 		}
-		return new AstLogic(a, null, Operation.Negation, norm);
+		return new AstLogic(a, null, Operation.Negation);
 	}
 
 	private static void makeTermMatrixOf(AstNode node,
@@ -98,16 +97,12 @@ public class AstLogic implements AstNode {
 
 	private final AstNode left, right;
 
-	private final TriangularNorm norm;
-
 	private final Operation operation;
 
-	private AstLogic(AstNode left, AstNode right, Operation operation,
-			TriangularNorm norm) {
+	private AstLogic(AstNode left, AstNode right, Operation operation) {
 		this.left = left;
 		this.right = right;
 		this.operation = operation;
-		this.norm = norm;
 	}
 
 	public Interactome asInteractome() {
@@ -135,7 +130,7 @@ public class AstLogic implements AstNode {
 				}
 			}
 
-			return new ComputedInteractome(norm, interactomes, productOfSums,
+			return new ComputedInteractome(interactomes, productOfSums,
 					productOfSumsNegated);
 		} else {
 			return baseNormalForm.asInteractome();
@@ -150,9 +145,9 @@ public class AstLogic implements AstNode {
 					return distributeDisjunctOf(left);
 				} else {
 					return makeConjunct(distributeDisjunctOf(makeDisjunct(left,
-							((AstLogic) right).left, norm)),
+							((AstLogic) right).left)),
 							distributeDisjunctOf(makeDisjunct(left,
-									((AstLogic) right).right, norm)), norm);
+									((AstLogic) right).right)));
 				}
 			} else if (operationOf(left) == Operation.Conjunct) {
 				if (right.equals(((AstLogic) left).left)
@@ -160,18 +155,18 @@ public class AstLogic implements AstNode {
 					return distributeDisjunctOf(right);
 				} else {
 					return makeConjunct(distributeDisjunctOf(makeDisjunct(
-							right, ((AstLogic) left).left, norm)),
+							right, ((AstLogic) left).left)),
 							distributeDisjunctOf(makeDisjunct(right,
-									((AstLogic) left).right, norm)), norm);
+									((AstLogic) left).right)));
 
 				}
 			}
 
 			return makeDisjunct(distributeDisjunctOf(left),
-					distributeDisjunctOf(right), norm);
+					distributeDisjunctOf(right));
 		} else if (this.operation == Operation.Conjunct) {
 			return makeConjunct(distributeDisjunctOf(left),
-					distributeDisjunctOf(right), norm);
+					distributeDisjunctOf(right));
 		} else {
 			return this;
 		}
@@ -191,7 +186,7 @@ public class AstLogic implements AstNode {
 
 	public AstNode fork(AstNode substitute) {
 		return new AstLogic(left.fork(substitute), (right == null ? null
-				: right.fork(substitute)), operation, norm);
+				: right.fork(substitute)), operation);
 	}
 
 	public int getPrecedence() {
@@ -256,11 +251,11 @@ public class AstLogic implements AstNode {
 			if (suboperation == Operation.Negation) {
 				return removeNegationOf(((AstLogic) left).left);
 			} else if (suboperation == Operation.Conjunct) {
-				return makeDisjunct(removeNegationOf(makeNegation(left, norm)),
-						removeNegationOf(makeNegation(right, norm)), norm);
+				return makeDisjunct(removeNegationOf(makeNegation(left)),
+						removeNegationOf(makeNegation(right)));
 			} else if (suboperation == Operation.Disjunct) {
-				return makeConjunct(removeNegationOf(makeNegation(left, norm)),
-						removeNegationOf(makeNegation(right, norm)), norm);
+				return makeConjunct(removeNegationOf(makeNegation(left)),
+						removeNegationOf(makeNegation(right)));
 			}
 		}
 		return this;
