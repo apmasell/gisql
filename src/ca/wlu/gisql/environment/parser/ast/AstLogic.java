@@ -26,18 +26,29 @@ public class AstLogic implements AstNode {
 		}
 	}
 
-	public static AstLogic makeConjunct(AstNode a, AstNode b,
-			TriangularNorm norm) {
-		return new AstLogic(a, b, Operation.Conjunct, norm);
-
+	public static AstNode makeConjunct(AstNode a, AstNode b, TriangularNorm norm) {
+		if (a.equals(b)) {
+			return a;
+		} else {
+			return new AstLogic(a, b, Operation.Conjunct, norm);
+		}
 	}
 
-	public static AstLogic makeDisjunct(AstNode a, AstNode b,
-			TriangularNorm norm) {
-		return new AstLogic(a, b, Operation.Disjunct, norm);
+	public static AstNode makeDisjunct(AstNode a, AstNode b, TriangularNorm norm) {
+		if (a.equals(b)) {
+			return a;
+		} else {
+			return new AstLogic(a, b, Operation.Disjunct, norm);
+		}
 	};
 
-	public static AstLogic makeNegation(AstNode a, TriangularNorm norm) {
+	public static AstNode makeNegation(AstNode a, TriangularNorm norm) {
+		if (a instanceof AstLogic) {
+			AstLogic n = (AstLogic) a;
+			if (n.operation == Operation.Negation) {
+				return n.left;
+			}
+		}
 		return new AstLogic(a, null, Operation.Negation, norm);
 	}
 
@@ -116,18 +127,29 @@ public class AstLogic implements AstNode {
 		}
 	}
 
-	private AstLogic distributeDisjunct() {
+	private AstNode distributeDisjunct() {
 		if (this.operation == Operation.Disjunct) {
 			if (operationOf(right) == Operation.Conjunct) {
-				return makeConjunct(makeDisjunct(((AstLogic) right).left, left,
-						norm).distributeDisjunct(), makeDisjunct(
-						((AstLogic) right).right, right, norm), norm);
-
+				if (left.equals(((AstLogic) right).left)
+						|| left.equals(((AstLogic) right).right)) {
+					return distributeDisjunctOf(left);
+				} else {
+					return makeConjunct(distributeDisjunctOf(makeDisjunct(left,
+							((AstLogic) right).left, norm)),
+							distributeDisjunctOf(makeDisjunct(left,
+									((AstLogic) right).right, norm)), norm);
+				}
 			} else if (operationOf(left) == Operation.Conjunct) {
-				return makeConjunct(makeDisjunct(((AstLogic) left).left, right,
-						norm).distributeDisjunct(), makeDisjunct(
-						((AstLogic) left).right, right, norm), norm);
+				if (right.equals(((AstLogic) left).left)
+						|| right.equals(((AstLogic) left).right)) {
+					return distributeDisjunctOf(right);
+				} else {
+					return makeConjunct(distributeDisjunctOf(makeDisjunct(
+							right, ((AstLogic) left).left, norm)),
+							distributeDisjunctOf(makeDisjunct(right,
+									((AstLogic) left).right, norm)), norm);
 
+				}
 			}
 
 			return makeDisjunct(distributeDisjunctOf(left),
@@ -219,11 +241,11 @@ public class AstLogic implements AstNode {
 			if (suboperation == Operation.Negation) {
 				return removeNegationOf(((AstLogic) left).left);
 			} else if (suboperation == Operation.Conjunct) {
-				return makeDisjunct(makeNegation(left, norm).removeNegation(),
-						makeNegation(right, norm).removeNegation(), norm);
+				return makeDisjunct(removeNegationOf(makeNegation(left, norm)),
+						removeNegationOf(makeNegation(right, norm)), norm);
 			} else if (suboperation == Operation.Disjunct) {
-				return makeConjunct(makeNegation(left, norm).removeNegation(),
-						makeNegation(right, norm).removeNegation(), norm);
+				return makeConjunct(removeNegationOf(makeNegation(left, norm)),
+						removeNegationOf(makeNegation(right, norm)), norm);
 			}
 		}
 		return this;

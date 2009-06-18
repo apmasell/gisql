@@ -59,7 +59,7 @@ public class ComputedInteractome implements Interactome {
 				if (firstProduct)
 					firstProduct = false;
 				else
-					print.print(" ∩ ");
+					print.print(" ∪ ");
 				print.print("¬");
 				print.print(interactomes.get(index), Complement.descriptor
 						.getPrecedence());
