@@ -1,5 +1,6 @@
 package ca.wlu.gisql.gui.output;
 
+import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
@@ -16,6 +17,7 @@ import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Interactome.Type;
+import ca.wlu.gisql.util.ToStringComparator;
 
 public class EnvironmentTreeView extends DefaultTreeModel implements
 		EnvironmentListener {
@@ -94,7 +96,9 @@ public class EnvironmentTreeView extends DefaultTreeModel implements
 				} else if (entry.getValue() instanceof AstList) {
 					DefaultMutableTreeNode list = new DefaultMutableTreeNode(
 							entry.getKey());
-					for (AstNode node : (AstList) entry.getValue()) {
+					AstList sourcelist = (AstList) entry.getValue();
+					Collections.sort(sourcelist, ToStringComparator.instance);
+					for (AstNode node : sourcelist) {
 						list.add(new AstNodeTreeNode(node.toString(), node));
 					}
 					lists.put(entry.getKey(), list);
