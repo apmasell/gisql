@@ -63,8 +63,11 @@ public class AstLogic implements AstNode {
 		} else {
 			prepareMatrix(productOfSums, productOfSumsNegated, parent, null);
 
-			productOfSums.get(productOfSums.size() - 1).add(
-					termini.indexOf(node));
+			List<Integer> term = productOfSums.get(productOfSums.size() - 1);
+			int index = termini.indexOf(node);
+			if (!term.contains(index)) {
+				term.add(index);
+			}
 		}
 	}
 
@@ -119,6 +122,18 @@ public class AstLogic implements AstNode {
 			normalForm.makeTermMatrix(productOfSums, productOfSumsNegated,
 					termini, Operation.Conjunct);
 			List<Interactome> interactomes = termini.asInteractomeList();
+
+			for (int index = 0; index < productOfSums.size(); index++) {
+				for (int subindex = index + 1; subindex < productOfSums.size(); subindex++) {
+					if (productOfSums.get(index).equals(
+							productOfSums.get(subindex))
+							&& productOfSumsNegated.get(index).equals(
+									productOfSumsNegated.get(subindex))) {
+						productOfSums.remove(subindex);
+						productOfSumsNegated.remove(subindex);
+					}
+				}
+			}
 
 			return new ComputedInteractome(norm, interactomes, productOfSums,
 					productOfSumsNegated);
