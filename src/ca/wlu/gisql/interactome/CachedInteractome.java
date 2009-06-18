@@ -145,10 +145,6 @@ public class CachedInteractome implements Interactome {
 		return source.membershipOfUnknown();
 	}
 
-	public final int numGenomes() {
-		return source.numGenomes();
-	}
-
 	public boolean postpare() {
 		first = false;
 		return source.postpare();

@@ -121,10 +121,6 @@ public class Cut implements Interactome {
 		return interactome.membershipOfUnknown();
 	}
 
-	public int numGenomes() {
-		return interactome.numGenomes();
-	}
-
 	public boolean postpare() {
 		return interactome.postpare();
 	}

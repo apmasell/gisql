@@ -18,8 +18,6 @@ public interface Interactome extends Prioritizable, Show {
 
 	public abstract double membershipOfUnknown();
 
-	public abstract int numGenomes();
-
 	public abstract boolean postpare();
 
 	public abstract boolean prepare();

@@ -135,10 +135,6 @@ public class Patch implements Interactome {
 		return source.membershipOfUnknown();
 	}
 
-	public int numGenomes() {
-		return source.numGenomes();
-	}
-
 	public boolean postpare() {
 		return source.postpare();
 	}

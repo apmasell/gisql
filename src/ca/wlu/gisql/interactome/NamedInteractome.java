@@ -11,16 +11,12 @@ public class NamedInteractome implements Interactome {
 
 	protected final String name;
 
-	private final int numGenomes;
-
 	private final Type type;
 
-	public NamedInteractome(String name, int numGenomes,
-			double membershipOfUnknown, Type type,
+	public NamedInteractome(String name, double membershipOfUnknown, Type type,
 			boolean zeroInteractionsWithOrthologs) {
 		super();
 		this.name = name;
-		this.numGenomes = numGenomes;
 		this.membershipOfUnknown = membershipOfUnknown;
 		this.type = type;
 	}
@@ -43,10 +39,6 @@ public class NamedInteractome implements Interactome {
 
 	public final double membershipOfUnknown() {
 		return membershipOfUnknown;
-	}
-
-	public final int numGenomes() {
-		return numGenomes;
 	}
 
 	public boolean postpare() {

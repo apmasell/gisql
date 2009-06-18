@@ -16,7 +16,6 @@ public class ComputedInteractome implements Interactome {
 	private final List<Interactome> interactomes;
 	private final List<List<Integer>> productOfSums;
 	private final List<List<Integer>> productOfSumsNegated;
-	private final int size;
 	private final double unknown;
 
 	public ComputedInteractome(final List<Interactome> interactomes,
@@ -26,7 +25,6 @@ public class ComputedInteractome implements Interactome {
 		this.interactomes = interactomes;
 		this.productOfSums = productOfSums;
 		this.productOfSumsNegated = productOfSumsNegated;
-		this.size = prepareSize();
 		this.unknown = prepareUnknown();
 
 		ShowableStringBuilder print = new ShowableStringBuilder();
@@ -136,10 +134,6 @@ public class ComputedInteractome implements Interactome {
 		return unknown;
 	}
 
-	public int numGenomes() {
-		return size;
-	}
-
 	public boolean postpare() {
 		for (Interactome interactome : interactomes) {
 			if (!interactome.postpare())
@@ -154,14 +148,6 @@ public class ComputedInteractome implements Interactome {
 				return false;
 		}
 		return true;
-	}
-
-	private int prepareSize() {
-		int sum = 0;
-		for (Interactome interactome : interactomes) {
-			sum += interactome.numGenomes();
-		}
-		return sum;
 	}
 
 	private double prepareUnknown() {
