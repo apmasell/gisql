@@ -18,7 +18,6 @@ import ca.wlu.gisql.db.DatabaseEnvironment;
 import ca.wlu.gisql.db.DatabaseManager;
 import ca.wlu.gisql.environment.EnvironmentUtils;
 import ca.wlu.gisql.environment.UserEnvironment;
-import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.gui.MainFrame;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
@@ -64,7 +63,7 @@ public class GisQL {
 		if (commandline.hasOption('h')) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("gisql", options);
-			System.out.println(Parser.getHelp());
+			System.out.println(environment.getParserKb().getHelp());
 			return;
 		}
 

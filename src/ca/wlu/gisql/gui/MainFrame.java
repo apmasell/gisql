@@ -64,7 +64,7 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 
 	private final JSeparator quitseparator = new JSeparator();
 
-	private final ResultTab results = new ResultTab();
+	private final ResultTab results;
 
 	private InteractomeTask<MainFrame> task = null;
 
@@ -90,6 +90,7 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		variablelistPane = new JScrollPane(variablelist);
 
+		results = new ResultTab(environment);
 		innersplitpane.setRightComponent(variablelistPane);
 		innersplitpane.setLeftComponent(results);
 

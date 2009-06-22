@@ -1,54 +1,18 @@
 package ca.wlu.gisql.environment.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 
-import ca.wlu.gisql.environment.ClearFunction;
-import ca.wlu.gisql.environment.EchoFunction;
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.FormatFunction;
-import ca.wlu.gisql.environment.LastInteractome;
-import ca.wlu.gisql.environment.OutputFunction;
-import ca.wlu.gisql.environment.RunFunction;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.environment.parser.ast.AstVoid;
-import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
-import ca.wlu.gisql.environment.parser.util.FoldOperator;
-import ca.wlu.gisql.interactome.Complement;
-import ca.wlu.gisql.interactome.Cut;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Patch;
-import ca.wlu.gisql.interactome.ToVar;
-import ca.wlu.gisql.interactome.binary.Difference;
-import ca.wlu.gisql.interactome.binary.Intersection;
-import ca.wlu.gisql.interactome.binary.Residuum;
-import ca.wlu.gisql.interactome.binary.SymmetricDifference;
-import ca.wlu.gisql.interactome.binary.Union;
-import ca.wlu.gisql.interactome.output.AbstractOutput;
-import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Parser {
 	public enum Result {
 		Executable, Failure, Interactome
 	};
-
-	private static String help;
-
-	static int maxdepth = 0;
-
-	private final static Parseable[] operators = new Parseable[] {
-			AbstractOutput.descriptor, ClearFunction.descriptor,
-			Complement.descriptor, Cut.descriptor, Difference.descriptor,
-			EchoFunction.descriptor, FormatFunction.descriptor,
-			Intersection.descriptor, LastInteractome.descriptor,
-			OutputFunction.descriptor, Patch.descriptor, Residuum.descriptor,
-			RunFunction.descriptor, SymmetricDifference.descriptor,
-			ToVar.descriptor, Union.descriptor };
-
-	private static Map<Integer, List<Parseable>> otherfixOperators = null;
 
 	public static final int PREC_ASSIGN = 1;
 
@@ -66,87 +30,6 @@ public class Parser {
 
 	public static final int PREC_UNARY_MANGLE = 5;
 
-	private static Map<Integer, List<Parseable>> prefixedOperators = null;
-
-	public static synchronized void addParseable(Parseable operator) {
-		prepareParser();
-		installOperator(operator);
-		buildHelp();
-	}
-
-	private static void buildHelp() {
-		ShowableStringBuilder print = new ShowableStringBuilder();
-		print.println("Syntax Help");
-		print.println();
-		print
-				.println("Each operator and it's membership function is described from lowest precedence to highest.");
-		print.println();
-		/* This also initialises every entry in the maps. */
-		for (int level = 0; level <= maxdepth; level++) {
-			for (Parseable operator : getList(prefixedOperators, level)) {
-				print.println(operator);
-			}
-			for (Parseable operator : getList(otherfixOperators, level)) {
-				print.println(operator);
-			}
-			print.println();
-
-		}
-		print.append("Lists may be any of the following:\n");
-		ListExpression.show(print);
-		print.println();
-		print
-				.println("Any other word will be interpreted as a identifier for a species or variable.");
-		print
-				.println("Parentheses may be used to control order of operations.");
-		help = print.toString();
-
-	}
-
-	public static String getHelp() {
-		prepareParser();
-		return help;
-	}
-
-	private static synchronized List<Parseable> getList(
-			Map<Integer, List<Parseable>> map, int level) {
-		List<Parseable> list = map.get(level);
-		if (list == null) {
-			list = new ArrayList<Parseable>();
-			map.put(level, list);
-		}
-		return list;
-	}
-
-	private static void installOperator(Parseable operator) {
-		int level = operator.getPrecedence();
-		if (level > maxdepth)
-			maxdepth = level;
-		List<Parseable> list = getList(
-				(operator.isPrefixed() ? prefixedOperators : otherfixOperators),
-				level);
-		if (list.contains(operator))
-			return;
-		list.add(operator);
-		if (operator instanceof ComputedInteractomeParser) {
-			getList(prefixedOperators, level).add(
-					new FoldOperator((ComputedInteractomeParser) operator));
-		}
-	}
-
-	private static synchronized void prepareParser() {
-		if (prefixedOperators != null)
-			return;
-
-		prefixedOperators = new HashMap<Integer, List<Parseable>>();
-		otherfixOperators = new HashMap<Integer, List<Parseable>>();
-		for (Parseable operator : operators) {
-			installOperator(operator);
-
-		}
-		buildHelp();
-	}
-
 	Environment environment;
 
 	final Stack<String> error = new Stack<String>();
@@ -161,7 +44,6 @@ public class Parser {
 	public Parser(Environment environment, String input) {
 		this.environment = environment;
 		this.input = input;
-		prepareParser();
 		reparse();
 	}
 
@@ -214,7 +96,7 @@ public class Parser {
 			return null;
 
 		int errorposition = error.size();
-		for (Parseable operator : prefixedOperators.get(level)) {
+		for (Parseable operator : environment.getParserKb().getPrefix(level)) {
 			int originalposition = position;
 			if (operator.isMatchingOperator(input.charAt(position))) {
 				position++;
@@ -228,7 +110,7 @@ public class Parser {
 		}
 
 		if (left == null)
-			left = (level >= maxdepth ? parseIdentifier()
+			left = (level >= environment.getParserKb().maxdepth ? parseIdentifier()
 					: parseAutoExpression(level + 1));
 
 		if (left == null) {
@@ -238,7 +120,8 @@ public class Parser {
 		consumeWhitespace(); /* Do this before testing input length. */
 		while (position < input.length()) {
 			boolean matched = false;
-			for (Parseable operator : otherfixOperators.get(level)) {
+			for (Parseable operator : environment.getParserKb().getOtherfix(
+					level)) {
 				int oldposition = position;
 				errorposition = error.size();
 				if (operator.isMatchingOperator(input.charAt(position))) {

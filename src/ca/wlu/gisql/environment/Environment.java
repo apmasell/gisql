@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.apache.commons.collections15.iterators.IteratorChain;
 import org.apache.commons.collections15.map.HashedMap;
 
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public abstract class Environment implements EnvironmentListener,
@@ -20,6 +21,8 @@ public abstract class Environment implements EnvironmentListener,
 
 	private final Environment parent;
 
+	private final ParserKnowledgebase parserkb;
+
 	private final Map<String, AstNode> variables = new HashedMap<String, AstNode>();
 
 	protected Environment(final Environment parent, boolean mutable,
@@ -28,6 +31,7 @@ public abstract class Environment implements EnvironmentListener,
 		this.parent = parent;
 		this.mutable = mutable;
 		this.alwaysPropagate = alwaysPropagate;
+		this.parserkb = new ParserKnowledgebase();
 
 		if (parent != null) {
 			parent.addListener(this);
@@ -76,6 +80,10 @@ public abstract class Environment implements EnvironmentListener,
 		for (EnvironmentListener listener : listeners.keySet()) {
 			listener.addedEnvironmentVariable(name, node);
 		}
+	}
+
+	public ParserKnowledgebase getParserKb() {
+		return parserkb;
 	}
 
 	public final AstNode getVariable(String name) {

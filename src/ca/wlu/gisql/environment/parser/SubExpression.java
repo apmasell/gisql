@@ -13,8 +13,9 @@ public class SubExpression extends Token {
 	}
 
 	boolean parse(int level, List<AstNode> results) {
-		AstNode result = (level == Parser.maxdepth ? this.parser
-				.parseIdentifier() : this.parser.parseAutoExpression(level + 1));
+		AstNode result = (level == parser.environment.getParserKb().maxdepth ? this.parser
+				.parseIdentifier()
+				: this.parser.parseAutoExpression(level + 1));
 		if (result == null)
 			return false;
 		results.add(result);

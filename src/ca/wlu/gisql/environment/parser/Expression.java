@@ -13,8 +13,9 @@ public class Expression extends Token {
 
 	boolean parse(int level, List<AstNode> results) {
 		int oldposition = this.parser.position;
-		AstNode result = (level == Parser.maxdepth ? this.parser
-				.parseIdentifier() : this.parser.parseAutoExpression(0));
+		AstNode result = (level == parser.environment.getParserKb().maxdepth ? this.parser
+				.parseIdentifier()
+				: this.parser.parseAutoExpression(0));
 		if (result == null) {
 			this.parser.error.push("Failed to parse expression. Position: "
 					+ oldposition);

@@ -12,7 +12,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.interactome.CachedInteractome;
 
 public class ResultTab extends JTabbedPane implements TableModelListener {
@@ -29,9 +29,7 @@ public class ResultTab extends JTabbedPane implements TableModelListener {
 
 	private final JScrollPane genesspane = new JScrollPane(genes);
 
-	private final JTextArea helptext = new JTextArea(Parser.getHelp());
-
-	private final JScrollPane helptextpane = new JScrollPane(helptext);
+	private final JTextArea helptext;
 
 	private final JTable interactions = new JTable();
 
@@ -49,16 +47,17 @@ public class ResultTab extends JTabbedPane implements TableModelListener {
 
 	private final Separator statusseparator = new Separator();
 
-	public ResultTab() {
+	public ResultTab(Environment environment) {
 		super();
 
 		interactions.setAutoCreateRowSorter(true);
 		genes.setAutoCreateRowSorter(true);
+		helptext = new JTextArea(environment.getParserKb().getHelp());
 		helptext.setEditable(false);
 
 		addTab("Interctions", interactionspane);
 		addTab("Genes", genesspane);
-		addTab("Help", helptextpane);
+		addTab("Help",  new JScrollPane(helptext));
 
 		statusbar.setFloatable(false);
 		statusbar.setRollover(true);
