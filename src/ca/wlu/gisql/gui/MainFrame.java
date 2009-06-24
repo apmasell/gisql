@@ -202,8 +202,9 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 					CachedInteractome interactome = CachedInteractome.wrap(node
 							.asInteractome(), null);
 					if (interactome != null) {
-						results.setInteractome(interactome);
-						interactome.process(); /* Probably processed. */
+						task = new InteractomeTask<MainFrame>(this, interactome);
+						task.execute();
+						progress.start(task.getMessage());
 					}
 				} else {
 					JOptionPane.showMessageDialog(this, node.toString(),
