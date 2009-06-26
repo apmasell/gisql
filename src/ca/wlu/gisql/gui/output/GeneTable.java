@@ -1,7 +1,9 @@
 package ca.wlu.gisql.gui.output;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.interactome.CachedInteractome;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class GeneTable extends AbstractTable {
 
@@ -22,7 +24,8 @@ public class GeneTable extends AbstractTable {
 
 		switch (colIndex) {
 		case 0:
-			return gene.toString();
+			return ShowableStringBuilder.toString(gene, GisQL
+					.collectAll(interactome));
 		case 1:
 			return gene.getMembership(interactome);
 		default:

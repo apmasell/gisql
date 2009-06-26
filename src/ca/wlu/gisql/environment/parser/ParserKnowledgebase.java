@@ -65,7 +65,8 @@ public class ParserKnowledgebase {
 	}
 
 	private void buildHelp() {
-		ShowableStringBuilder print = new ShowableStringBuilder();
+		ShowableStringBuilder<ParserKnowledgebase> print = new ShowableStringBuilder<ParserKnowledgebase>(
+				this);
 		print.println("Syntax Help");
 		print.println();
 		print

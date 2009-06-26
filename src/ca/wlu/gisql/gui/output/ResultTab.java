@@ -57,7 +57,7 @@ public class ResultTab extends JTabbedPane implements TableModelListener {
 
 		addTab("Interctions", interactionspane);
 		addTab("Genes", genesspane);
-		addTab("Help",  new JScrollPane(helptext));
+		addTab("Help", new JScrollPane(helptext));
 
 		statusbar.setFloatable(false);
 		statusbar.setRollover(true);

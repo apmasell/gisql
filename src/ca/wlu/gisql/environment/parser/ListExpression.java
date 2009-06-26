@@ -21,7 +21,7 @@ public class ListExpression extends Token {
 			new ApplyToAll(), new CrossJoin(), new FromFile(), new RawList(),
 			new Slice(), new ToVar(), new Variable(), new Zip() };
 
-	public static void show(ShowablePrintWriter print) {
+	public static void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		for (ListParseable operator : operators) {
 			print.println(operator);
 		}

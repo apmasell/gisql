@@ -1,6 +1,7 @@
 package ca.wlu.gisql.interactome.output;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import org.apache.log4j.Logger;
@@ -52,7 +53,7 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 			return true;
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<AstNode> print) {
 			print.print(interactome, getPrecedence());
 			print.print(" @ ");
 			print.print(format.name());
@@ -110,8 +111,7 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 	protected static final Logger log = Logger.getLogger(OutputGraph.class);
 
 	public static AbstractOutput wrap(Interactome interactome, String name,
-			FileFormat format,
-			String filename, boolean force) {
+			FileFormat format, String filename, boolean force) {
 		if (interactome == null)
 			return null;
 		if (!force && interactome instanceof AbstractOutput)
@@ -120,11 +120,9 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 		case genome:
 		case interactome:
 		case summary:
-			return new OutputText(interactome, name, 
-					format, filename);
+			return new OutputText(interactome, name, format, filename);
 		default:
-			return new OutputGraph(interactome, name, 
-					format, filename);
+			return new OutputGraph(interactome, name, format, filename);
 
 		}
 	}
@@ -135,6 +133,22 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 
 	protected final Interactome source;
 
+	protected AbstractOutput(Interactome source, String name,
+			FileFormat format, String filename) {
+		this.source = source;
+		this.format = format;
+		this.filename = filename;
+	}
+
+	public Set<Interactome> collectAll(Set<Interactome> set) {
+		set.add(this);
+		return source.collectAll(set);
+	}
+
+	public int getPrecedence() {
+		return descriptor.getPrecedence();
+	}
+
 	public Type getType() {
 		return source.getType();
 	}
@@ -143,19 +157,7 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 		return 0;
 	}
 
-	protected AbstractOutput(Interactome source, String name,
-			 FileFormat format,
-			String filename) {
-		this.source = source;
-		this.format = format;
-		this.filename = filename;
-	}
-
-	public int getPrecedence() {
-		return descriptor.getPrecedence();
-	}
-
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, this.getPrecedence());
 		print.print(" @ ");
 		print.print(format.name());

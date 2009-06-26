@@ -2,6 +2,8 @@ package ca.wlu.gisql.interactome.output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.HashSet;
+import java.util.Set;
 
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
@@ -13,7 +15,7 @@ class OutputText extends AbstractOutput {
 
 	private static final int STANDARD_BIN_COUNT = 10;
 
-	private ShowablePrintWriter print = null;
+	private ShowablePrintWriter<Set<Interactome>> print = null;
 
 	private Statistics statistics = null;
 
@@ -77,9 +79,13 @@ class OutputText extends AbstractOutput {
 		if (source.prepare()) {
 			statistics = new Statistics(STANDARD_BIN_COUNT);
 			try {
-				print = (filename == null ? new ShowablePrintWriter(System.out)
-						: new ShowablePrintWriter(new FileOutputStream(
-								filename, true)));
+				Set<Interactome> interactomes = this
+						.collectAll(new HashSet<Interactome>());
+				print = (filename == null ? new ShowablePrintWriter<Set<Interactome>>(
+						System.out, interactomes)
+						: new ShowablePrintWriter<Set<Interactome>>(
+								new FileOutputStream(filename, true),
+								interactomes));
 				print.print("# ");
 				print.print(source);
 				print.println();

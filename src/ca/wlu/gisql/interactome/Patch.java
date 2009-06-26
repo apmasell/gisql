@@ -1,6 +1,7 @@
 package ca.wlu.gisql.interactome;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import ca.wlu.gisql.GisQL;
@@ -43,7 +44,7 @@ public class Patch implements Interactome {
 			return true;
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<AstNode> print) {
 			print.print(parameter, descriptor.getPrecedence());
 			print.print(" $");
 			if (membership != null) {
@@ -123,6 +124,11 @@ public class Patch implements Interactome {
 		}
 	}
 
+	public Set<Interactome> collectAll(Set<Interactome> set) {
+		set.add(this);
+		return source.collectAll(set);
+	}
+
 	public int getPrecedence() {
 		return descriptor.getPrecedence();
 	}
@@ -143,7 +149,7 @@ public class Patch implements Interactome {
 		return source.prepare();
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, this.getPrecedence());
 		print.print(" $");
 		if (membership != null) {
@@ -153,6 +159,6 @@ public class Patch implements Interactome {
 	}
 
 	public String toString() {
-		return ShowableStringBuilder.toString(this);
+		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
 	}
 }

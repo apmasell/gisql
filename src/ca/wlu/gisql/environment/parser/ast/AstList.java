@@ -55,7 +55,7 @@ public class AstList extends ArrayList<AstNode> implements AstNode {
 		return false;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<AstNode> print) {
 		print.print("{");
 		boolean first = true;
 		for (AstNode node : this) {
@@ -75,6 +75,6 @@ public class AstList extends ArrayList<AstNode> implements AstNode {
 	}
 
 	public String toString() {
-		return ShowableStringBuilder.toString(this);
+		return ShowableStringBuilder.toString(this, null);
 	}
 }

@@ -31,6 +31,6 @@ public abstract class AstVoid implements AstNode {
 	}
 
 	public String toString() {
-		return ShowableStringBuilder.toString(this);
+		return ShowableStringBuilder.toString(this, null);
 	}
 }

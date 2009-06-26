@@ -3,6 +3,8 @@ package ca.wlu.gisql;
 import java.awt.EventQueue;
 import java.io.File;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
@@ -19,6 +21,7 @@ import ca.wlu.gisql.db.DatabaseManager;
 import ca.wlu.gisql.environment.EnvironmentUtils;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.gui.MainFrame;
+import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
 public class GisQL {
@@ -30,6 +33,10 @@ public class GisQL {
 	public static final double Missing = -1;
 
 	public static final double Undefined = -2;
+
+	public static Set<Interactome> collectAll(Interactome root) {
+		return root.collectAll(new HashSet<Interactome>());
+	}
 
 	public static boolean isMissing(double membership) {
 		return membership < 0;

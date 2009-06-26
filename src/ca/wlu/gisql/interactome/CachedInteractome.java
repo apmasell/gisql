@@ -1,6 +1,7 @@
 package ca.wlu.gisql.interactome;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
@@ -86,6 +87,11 @@ public class CachedInteractome extends ProcessableInteractome {
 		}
 	}
 
+	public Set<Interactome> collectAll(Set<Interactome> set) {
+		set.add(this);
+		return source.collectAll(set);
+	}
+
 	public final List<Gene> getGenes() {
 		process();
 		return genes.asList();
@@ -131,7 +137,7 @@ public class CachedInteractome extends ProcessableInteractome {
 		return source.prepare();
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source);
 	}
 

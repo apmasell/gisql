@@ -5,11 +5,12 @@ import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.Show;
 
-public interface ListParseable extends Show {
+public interface ListParseable extends Show<ParserKnowledgebase> {
 
 	public abstract boolean construct(Environment environment,
 			List<AstNode> params, Stack<String> error, List<AstNode> results);

@@ -1,49 +1,27 @@
 package ca.wlu.gisql.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
-public class ShowablePrintWriter extends PrintWriter {
+public class ShowablePrintWriter<E> extends PrintWriter {
+	private final E context;
 
-	public ShowablePrintWriter(File file) throws FileNotFoundException {
-		super(file);
-	}
-
-	public ShowablePrintWriter(File file, String csn)
-			throws FileNotFoundException, UnsupportedEncodingException {
-		super(file, csn);
-	}
-
-	public ShowablePrintWriter(OutputStream out) {
+	public ShowablePrintWriter(OutputStream out, E context) {
 		super(out);
+		this.context = context;
 	}
 
-	public ShowablePrintWriter(OutputStream out, boolean autoFlush) {
-		super(out, autoFlush);
-	}
-
-	public ShowablePrintWriter(String fileName) throws FileNotFoundException {
-		super(fileName);
-	}
-
-	public ShowablePrintWriter(String fileName, String csn)
-			throws FileNotFoundException, UnsupportedEncodingException {
-		super(fileName, csn);
-	}
-
-	public ShowablePrintWriter(Writer out) {
+	public ShowablePrintWriter(Writer out, E context) {
 		super(out);
+		this.context = context;
 	}
 
-	public ShowablePrintWriter(Writer out, boolean autoFlush) {
-		super(out, autoFlush);
+	public E getContext() {
+		return context;
 	}
 
-	public final void print(Prioritizable prioritizable, int precedence) {
+	public final void print(Prioritizable<E> prioritizable, int precedence) {
 		if (prioritizable.getPrecedence() < precedence)
 			print("(");
 		prioritizable.show(this);
@@ -51,16 +29,16 @@ public class ShowablePrintWriter extends PrintWriter {
 			print(")");
 	}
 
-	public final void print(Show showable) {
+	public final void print(Show<E> showable) {
 		showable.show(this);
 	}
 
-	public final void println(Prioritizable prioritizable, int precdence) {
+	public final void println(Prioritizable<E> prioritizable, int precdence) {
 		print(prioritizable, precdence);
 		println();
 	}
 
-	public final void println(Show showable) {
+	public final void println(Show<E> showable) {
 		print(showable);
 		println();
 	}

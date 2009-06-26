@@ -1,6 +1,7 @@
 package ca.wlu.gisql.interactome;
 
 import java.util.List;
+import java.util.Set;
 
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
@@ -27,7 +28,8 @@ public class ComputedInteractome implements Interactome {
 		this.productOfSumsNegated = productOfSumsNegated;
 		this.unknown = prepareUnknown();
 
-		ShowableStringBuilder print = new ShowableStringBuilder();
+		ShowableStringBuilder<Set<Interactome>> print = new ShowableStringBuilder<Set<Interactome>>(
+				GisQL.collectAll(this));
 		boolean firstSum = true;
 		for (int term = 0; term < productOfSums.size(); term++) {
 			if (firstSum)
@@ -120,6 +122,13 @@ public class ComputedInteractome implements Interactome {
 			return GisQL.Missing;
 		else
 			return calculateMembership(memberships);
+	}
+
+	public Set<Interactome> collectAll(Set<Interactome> set) {
+		set.add(this);
+		for (Interactome interactome : interactomes)
+			interactome.collectAll(set);
+		return set;
 	}
 
 	public int getPrecedence() {

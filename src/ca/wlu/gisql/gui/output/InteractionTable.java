@@ -1,7 +1,9 @@
 package ca.wlu.gisql.gui.output;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.CachedInteractome;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class InteractionTable extends AbstractTable {
 
@@ -23,13 +25,16 @@ public class InteractionTable extends AbstractTable {
 
 		switch (colIndex) {
 		case 0:
-			return interaction.getGene1().toString();
+			return ShowableStringBuilder.toString(interaction.getGene1(), GisQL
+					.collectAll(interactome));
 		case 1:
-			return interaction.getGene2().toString();
+			return ShowableStringBuilder.toString(interaction.getGene2(), GisQL
+					.collectAll(interactome));
 		case 2:
 			return interaction.getMembership(interactome);
 		case 3:
-			return interaction.toString();
+			return ShowableStringBuilder.toString(interaction, GisQL
+					.collectAll(interactome));
 		default:
 			return null;
 		}

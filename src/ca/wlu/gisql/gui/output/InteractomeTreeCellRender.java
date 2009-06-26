@@ -27,8 +27,8 @@ public class InteractomeTreeCellRender implements TreeCellRenderer {
 			if (value instanceof AstNodeTreeNode) {
 				AstNode node = ((AstNodeTreeNode) value).getNode();
 				if (node != null) {
-					treerenderer.setToolTipText(ShowableStringBuilder
-							.toString(node));
+					treerenderer.setToolTipText(ShowableStringBuilder.toString(
+							node, null));
 					return treerenderer;
 				}
 			}

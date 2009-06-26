@@ -1,12 +1,14 @@
 package ca.wlu.gisql.gui;
 
 import java.awt.Component;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowableStringBuilder;
@@ -24,7 +26,8 @@ public class InteractomeTask<P extends Component & TaskParent> extends
 	public InteractomeTask(P parent, CachedInteractome interactome) {
 		this.parent = parent;
 		this.interactome = interactome;
-		ShowableStringBuilder print = new ShowableStringBuilder();
+		ShowableStringBuilder<Set<Interactome>> print = new ShowableStringBuilder<Set<Interactome>>(
+				GisQL.collectAll(interactome));
 		print.append("Computing ");
 		print.print(interactome);
 		print.append("...");

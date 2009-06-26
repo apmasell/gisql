@@ -292,7 +292,7 @@ public class AstLogic implements AstNode {
 		return this;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<AstNode> print) {
 		switch (operation) {
 		case Negation:
 			print.print("!");
@@ -326,6 +326,6 @@ public class AstLogic implements AstNode {
 	}
 
 	public String toString() {
-		return ShowableStringBuilder.toString(this);
+		return ShowableStringBuilder.toString(this, null);
 	}
 }

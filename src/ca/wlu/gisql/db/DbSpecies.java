@@ -1,6 +1,9 @@
 package ca.wlu.gisql.db;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -9,6 +12,7 @@ import ca.wlu.gisql.graph.Accession;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
+import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.NamedInteractome;
 import ca.wlu.gisql.util.CliqueMerger;
 import ca.wlu.gisql.util.Counter;
@@ -52,13 +56,15 @@ public class DbSpecies extends NamedInteractome implements Master<Gene> {
 		} else {
 			if (counter.size() > 1) {
 				/* Attempt to merge duplicate entries. */
-				CliqueMerger<Gene> merger = new CliqueMerger<Gene>(counter
-						.set(), this);
+				CliqueMerger<Gene, Set<Interactome>> merger = new CliqueMerger<Gene, Set<Interactome>>(
+						counter.set(), this, new HashSet<Interactome>(
+								databaseManager.all));
 				merger.merge();
 			}
 
 			if (counter.size() > 1) {
-				ShowableStringBuilder print = new ShowableStringBuilder();
+				ShowableStringBuilder<Set<Interactome>> print = new ShowableStringBuilder<Set<Interactome>>(
+						Collections.singleton((Interactome) this));
 				print.print("Splitting accession ");
 				print.print(accession);
 				print.print(" among");

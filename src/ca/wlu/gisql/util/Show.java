@@ -1,5 +1,5 @@
 package ca.wlu.gisql.util;
 
-public interface Show {
-	public void show(ShowablePrintWriter print);
+public interface Show<Context> {
+	public void show(ShowablePrintWriter<Context> print);
 }

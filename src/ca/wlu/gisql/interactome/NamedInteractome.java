@@ -1,5 +1,7 @@
 package ca.wlu.gisql.interactome;
 
+import java.util.Set;
+
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
@@ -27,6 +29,11 @@ public class NamedInteractome implements Interactome {
 
 	public final double calculateMembership(Interaction interaction) {
 		return interaction.getMembership(this);
+	}
+
+	public Set<Interactome> collectAll(Set<Interactome> set) {
+		set.add(this);
+		return set;
 	}
 
 	public int getPrecedence() {

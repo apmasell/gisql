@@ -1,6 +1,7 @@
 package ca.wlu.gisql.interactome;
 
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 import ca.wlu.gisql.GisQL;
@@ -43,7 +44,7 @@ public class Cut implements Interactome {
 			return true;
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<AstNode> print) {
 			print.print(parameter, getPrecedence());
 			print.print(" [");
 			print.print(cutoff);
@@ -109,6 +110,11 @@ public class Cut implements Interactome {
 		return membership;
 	}
 
+	public Set<Interactome> collectAll(Set<Interactome> set) {
+		set.add(this);
+		return interactome.collectAll(set);
+	}
+
 	public int getPrecedence() {
 		return descriptor.getPrecedence();
 	}
@@ -129,7 +135,7 @@ public class Cut implements Interactome {
 		return interactome.prepare();
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(interactome, this.getPrecedence());
 		print.print(" [");
 		print.print(cutoff);
@@ -138,6 +144,6 @@ public class Cut implements Interactome {
 	}
 
 	public String toString() {
-		return ShowableStringBuilder.toString(this);
+		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
 	}
 }

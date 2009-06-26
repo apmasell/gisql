@@ -8,7 +8,8 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 
-public interface Parseable extends Prioritizable, Show {
+public interface Parseable extends Prioritizable<ParserKnowledgebase>,
+		Show<ParserKnowledgebase> {
 
 	public abstract AstNode construct(Environment environment,
 			List<AstNode> params, Stack<String> error);

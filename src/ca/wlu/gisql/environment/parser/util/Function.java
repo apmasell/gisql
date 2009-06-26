@@ -2,6 +2,7 @@ package ca.wlu.gisql.environment.parser.util;
 
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -34,7 +35,7 @@ public abstract class Function implements Parseable {
 
 	}
 
-	public static abstract class Parameter implements Show {
+	public static abstract class Parameter implements Show<ParserKnowledgebase> {
 		abstract Token createTask(Parser parser);
 	}
 
@@ -78,7 +79,7 @@ public abstract class Function implements Parseable {
 		return true;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		print.print(":");
 		print.print(word);
 		print.print("(");
@@ -90,7 +91,7 @@ public abstract class Function implements Parseable {
 				} else {
 					print.print(", ");
 				}
-				parameter.show(print);
+				print.print(parameter);
 			}
 		}
 		print.print(")");

@@ -20,7 +20,8 @@ import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
-public class Gene implements Iterable<Accession>, Mergeable, Show {
+public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
+		Show<Set<Interactome>> {
 
 	private static final Logger log = Logger.getLogger(Gene.class);
 
@@ -75,7 +76,8 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 			} else if (entry.getKey().getType() == Type.Computed) {
 				membership = entry.getKey().calculateMembership(gene);
 			} else {
-				ShowableStringBuilder print = new ShowableStringBuilder();
+				ShowableStringBuilder<Set<Interactome>> print = new ShowableStringBuilder<Set<Interactome>>(
+						null);
 				print.print("There is a duplicated value for the interactome ");
 				print.print(entry.getKey());
 				print.print(" where gene ");
@@ -124,21 +126,24 @@ public class Gene implements Iterable<Accession>, Mergeable, Show {
 
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		boolean first = true;
 		if (dead)
 			print.print("DEAD:");
 		print.print("{");
 		for (Accession accession : this) {
-			if (!first)
-				print.print(", ");
-			accession.show(print);
-			first = false;
+			if (print.getContext() == null
+					|| print.getContext().contains(accession.getSpecies())) {
+				if (!first)
+					print.print(", ");
+				accession.show(print);
+				first = false;
+			}
 		}
 		print.print("}");
 	}
 
 	public String toString() {
-		return ShowableStringBuilder.toString(this);
+		return ShowableStringBuilder.toString(this, null);
 	}
 }

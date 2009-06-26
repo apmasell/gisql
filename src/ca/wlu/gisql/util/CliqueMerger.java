@@ -9,7 +9,7 @@ import org.jgrapht.alg.BronKerboschCliqueFinder;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
-public class CliqueMerger<V extends Mergeable> {
+public class CliqueMerger<V extends Mergeable<E>, E> {
 	public interface Master<V> {
 
 		boolean merge(V gene, V victim);
@@ -17,11 +17,12 @@ public class CliqueMerger<V extends Mergeable> {
 
 	private static final Logger log = Logger.getLogger(CliqueMerger.class);
 
+	private final E context;
 	private final List<V> items;
-
 	private final Master<V> master;
 
-	public CliqueMerger(Set<V> nodes, Master<V> master) {
+	public CliqueMerger(Set<V> nodes, Master<V> master, E context) {
+		this.context = context;
 		items = new ArrayList<V>(nodes);
 		this.master = master;
 	}
@@ -33,7 +34,8 @@ public class CliqueMerger<V extends Mergeable> {
 				compatibility);
 
 		while (compatibility.edgeSet().size() > 0) {
-			ShowableStringBuilder print = new ShowableStringBuilder();
+			ShowableStringBuilder<E> print = new ShowableStringBuilder<E>(
+					context);
 			print.print("Finding cliques on a graph where |E| = ");
 			print.print(compatibility.edgeSet().size());
 			print.print(" and V = ");

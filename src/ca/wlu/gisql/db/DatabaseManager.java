@@ -9,9 +9,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -39,6 +41,7 @@ public class DatabaseManager {
 		return properties;
 	}
 
+	public Set<DbSpecies> all = new HashSet<DbSpecies>();
 	private final Connection connection;
 
 	public DatabaseManager(Properties properties) throws SQLException,
@@ -50,10 +53,9 @@ public class DatabaseManager {
 				properties);
 	}
 
-	public List<DbSpecies> getSpecies() {
+	public Set<DbSpecies> getSpecies() {
 
 		try {
-			List<DbSpecies> list = new ArrayList<DbSpecies>();
 			PreparedStatement statement = connection
 					.prepareStatement("SELECT id, name FROM species");
 			ResultSet rs = statement.executeQuery();
@@ -61,9 +63,9 @@ public class DatabaseManager {
 				int species_id = rs.getInt(1);
 				String species = rs.getString(2);
 				DbSpecies interactome = new DbSpecies(this, species, species_id);
-				list.add(interactome);
+				all.add(interactome);
 			}
-			return list;
+			return all;
 		} catch (SQLException e) {
 			log.error("Database error fetching species.", e);
 			return null;

@@ -5,7 +5,7 @@ import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
-public final class Accession implements Show {
+public final class Accession implements Show<Object> {
 	private final long identifier;
 
 	private final String name;
@@ -40,6 +40,6 @@ public final class Accession implements Show {
 	}
 
 	public String toString() {
-		return ShowableStringBuilder.toString(this);
+		return ShowableStringBuilder.toString(this, null);
 	}
 }
