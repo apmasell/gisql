@@ -39,11 +39,12 @@ public class Ubergraph implements Iterable<Interaction> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Collection<Gene> findGenes(long identifier) {
 		Collection<Gene> matches = geneByGi.get(identifier);
-		return (matches == null ? (Collection<Gene>) Collections.EMPTY_SET
-				: matches);
+		if (matches == null)
+			return Collections.emptySet();
+		else
+			return matches;
 	}
 
 	public Iterable<Gene> genes() {
