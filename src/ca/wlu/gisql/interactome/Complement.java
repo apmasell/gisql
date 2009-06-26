@@ -6,6 +6,7 @@ import java.util.Stack;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.SubExpression;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstLogic;
@@ -36,7 +37,7 @@ public class Complement implements Parseable {
 		return true;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		print.print("Complement (1-Ax): ¬A, !A");
 	}
 

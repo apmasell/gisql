@@ -41,7 +41,7 @@ public class AstDouble implements AstNode {
 		return false;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<AstNode> print) {
 		print.print(value);
 	}
 

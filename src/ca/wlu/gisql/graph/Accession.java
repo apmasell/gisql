@@ -1,11 +1,14 @@
 package ca.wlu.gisql.graph;
 
+import java.util.Set;
+
 import ca.wlu.gisql.db.DbSpecies;
+import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
-public final class Accession implements Show<Object> {
+public final class Accession implements Show<Set<Interactome>> {
 	private final long identifier;
 
 	private final String name;
@@ -30,7 +33,7 @@ public final class Accession implements Show<Object> {
 		return species;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(name);
 		print.print("[gi:");
 		print.print(identifier);

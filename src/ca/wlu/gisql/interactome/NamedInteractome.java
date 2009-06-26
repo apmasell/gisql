@@ -56,7 +56,7 @@ public class NamedInteractome implements Interactome {
 		return true;
 	}
 
-	public final void show(ShowablePrintWriter print) {
+	public final void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(name);
 	}
 

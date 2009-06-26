@@ -6,6 +6,7 @@ import java.util.Stack;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Name;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
@@ -26,7 +27,7 @@ public class Variable implements ListParseable {
 		}
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		print.print("Variable: name");
 	}
 

@@ -11,6 +11,7 @@ import ca.wlu.gisql.environment.parser.Maybe;
 import ca.wlu.gisql.environment.parser.Name;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.QuotedString;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
@@ -96,7 +97,7 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 			return false;
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 			print
 					.print("Write to file: A @ [lowerbound [upperbound]] [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
 		}

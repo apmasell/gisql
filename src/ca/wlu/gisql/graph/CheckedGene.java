@@ -2,6 +2,7 @@ package ca.wlu.gisql.graph;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Mergeable;
@@ -13,7 +14,7 @@ class CheckedGene extends Gene {
 		super.add(accession);
 	}
 
-	public boolean canMerge(Mergeable other) {
+	public boolean canMerge(Mergeable<Set<Interactome>> other) {
 		checkState();
 		return super.canMerge(other);
 	}

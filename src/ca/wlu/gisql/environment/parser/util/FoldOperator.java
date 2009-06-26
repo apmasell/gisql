@@ -7,6 +7,7 @@ import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
@@ -52,7 +53,7 @@ public final class FoldOperator implements Parseable {
 		return true;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		print.print(binary.getName());
 		print.print(" (Folded): ");
 		print.print(binary.getSymbol());

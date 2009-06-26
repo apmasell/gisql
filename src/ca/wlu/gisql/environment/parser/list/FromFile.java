@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.QuotedString;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
@@ -49,7 +50,7 @@ public class FromFile implements ListParseable {
 		}
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		print.print("Read List from File: \"filename\"");
 	}
 

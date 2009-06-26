@@ -8,6 +8,7 @@ import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Maybe;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Sequence;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.Word;
@@ -53,7 +54,7 @@ public class Slice implements ListParseable {
 		return true;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		print.print("slice(start, [ end,] list)");
 	}
 

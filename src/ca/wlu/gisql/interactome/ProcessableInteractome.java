@@ -12,6 +12,11 @@ public abstract class ProcessableInteractome implements Interactome {
 
 	private boolean first = true;
 
+	public boolean postpare() {
+		first = false;
+		return true;
+	}
+
 	public final boolean process() {
 		if (first) {
 			if (!prepare()) {
@@ -31,10 +36,5 @@ public abstract class ProcessableInteractome implements Interactome {
 		}
 		return true;
 
-	}
-
-	public boolean postpare() {
-		first = false;
-		return true;
 	}
 }

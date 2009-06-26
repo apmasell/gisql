@@ -13,7 +13,7 @@ public abstract class Function implements Parseable {
 			return new ca.wlu.gisql.environment.parser.Expression(parser);
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 			print.print("expression");
 		}
 	}
@@ -29,7 +29,7 @@ public abstract class Function implements Parseable {
 			return new ca.wlu.gisql.environment.parser.Name(parser);
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 			print.print(description);
 		}
 
@@ -50,7 +50,7 @@ public abstract class Function implements Parseable {
 			return new ca.wlu.gisql.environment.parser.QuotedString(parser);
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 			print.print("\"");
 			print.print(description);
 			print.print("\"");

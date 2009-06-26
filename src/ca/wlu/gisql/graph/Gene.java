@@ -42,7 +42,7 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 			throw new RuntimeException();
 	}
 
-	public boolean canMerge(Mergeable other) {
+	public boolean canMerge(Mergeable<Set<Interactome>> other) {
 		if (other instanceof Gene) {
 			Gene gene = (Gene) other;
 			Set<DbSpecies> knownSpecies = new HashSet<DbSpecies>();

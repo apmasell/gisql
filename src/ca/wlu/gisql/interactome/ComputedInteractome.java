@@ -167,7 +167,7 @@ public class ComputedInteractome implements Interactome {
 		return calculateMembership(unknowns);
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(expression);
 	}
 

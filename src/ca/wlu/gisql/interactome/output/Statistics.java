@@ -1,10 +1,13 @@
 package ca.wlu.gisql.interactome.output;
 
+import java.util.Set;
+
 import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-class Statistics implements Show {
+class Statistics implements Show<Set<Interactome>> {
 	private final int bincount;
 
 	private final int[] geneBins;
@@ -46,7 +49,7 @@ class Statistics implements Show {
 		interactionBins[calculateBin(membership)]++;
 	}
 
-	public void show(ShowablePrintWriter print) {
+	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print("# ");
 		print.print(genes);
 		print.print(" genes in ");

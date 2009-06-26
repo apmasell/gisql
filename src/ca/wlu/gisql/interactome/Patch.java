@@ -10,6 +10,7 @@ import ca.wlu.gisql.environment.parser.Decimal;
 import ca.wlu.gisql.environment.parser.Maybe;
 import ca.wlu.gisql.environment.parser.Parseable;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstDouble;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
@@ -85,7 +86,7 @@ public class Patch implements Interactome {
 			return false;
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 			print.print("Fill-in-the-blanks: A $ [value]");
 		}
 

@@ -35,7 +35,7 @@ public class TemporaryEnvironment extends Token {
 			return true;
 		}
 
-		public void show(ShowablePrintWriter print) {
+		public void show(ShowablePrintWriter<AstNode> print) {
 			print.print(depth);
 		}
 	}
