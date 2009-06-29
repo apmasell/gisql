@@ -122,6 +122,8 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 	}
 
 	public void setMembership(Interactome interactome, double membership) {
+		if (GisQL.isUndefined(membership))
+			membership = GisQL.Missing;
 		memberships.put(interactome, membership);
 
 	}

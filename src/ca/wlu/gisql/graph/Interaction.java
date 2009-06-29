@@ -95,6 +95,8 @@ public class Interaction implements Show<Set<Interactome>> {
 	}
 
 	public void setMembership(Interactome interactome, double membership) {
+		if (GisQL.isUndefined(membership))
+			membership = GisQL.Missing;
 		memberships.put(interactome, membership);
 	}
 
