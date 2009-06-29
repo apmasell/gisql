@@ -42,6 +42,10 @@ public class GisQL {
 		return membership < 0;
 	}
 
+	public static boolean isPresent(double membership) {
+		return membership > 0;
+	}
+
 	/*
 	 * Semantically, a missing thing is known to be not present in the
 	 * interactome while an undefined one could be unprocessed.
