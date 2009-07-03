@@ -63,7 +63,7 @@ public class AstList extends ArrayList<AstNode> implements AstNode {
 				first = false;
 			else
 				print.print(", ");
-			node.show(print);
+			print.print(node);
 		}
 		print.print("}");
 	}

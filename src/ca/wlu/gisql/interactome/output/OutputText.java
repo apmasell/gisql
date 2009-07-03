@@ -2,7 +2,6 @@ package ca.wlu.gisql.interactome.output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.HashSet;
 import java.util.Set;
 
 import ca.wlu.gisql.GisQL;
@@ -33,7 +32,7 @@ class OutputText extends AbstractOutput {
 				statistics.countGene(membership);
 
 				if (format == FileFormat.genome) {
-					gene.show(print);
+					print.print(gene);
 					print.print("; ");
 					print.print(membership);
 					print.println();
@@ -52,9 +51,9 @@ class OutputText extends AbstractOutput {
 			if (!GisQL.isMissing(membership)) {
 				statistics.countInteraction(membership);
 				if (format == FileFormat.interactome) {
-					interaction.getGene1().show(print);
+					print.print(interaction.getGene1());
 					print.print("; ");
-					interaction.getGene2().show(print);
+					print.print(interaction.getGene2());
 					print.print("; ");
 					print.print(membership);
 					print.println();
@@ -66,7 +65,7 @@ class OutputText extends AbstractOutput {
 
 	public boolean postpare() {
 		if (super.postpare() && source.postpare()) {
-			statistics.show(print);
+			print.print(statistics);
 			if (filename != null)
 				print.close();
 			return true;
@@ -79,8 +78,7 @@ class OutputText extends AbstractOutput {
 		if (source.prepare()) {
 			statistics = new Statistics(STANDARD_BIN_COUNT);
 			try {
-				Set<Interactome> interactomes = this
-						.collectAll(new HashSet<Interactome>());
+				Set<Interactome> interactomes = GisQL.collectAll(this);
 				print = (filename == null ? new ShowablePrintWriter<Set<Interactome>>(
 						System.out, interactomes)
 						: new ShowablePrintWriter<Set<Interactome>>(

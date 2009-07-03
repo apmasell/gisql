@@ -138,7 +138,7 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 					|| print.getContext().contains(accession.getSpecies())) {
 				if (!first)
 					print.print(", ");
-				accession.show(print);
+				print.print(accession);
 				first = false;
 			}
 		}

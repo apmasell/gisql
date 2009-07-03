@@ -6,6 +6,7 @@ import java.util.Stack;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Maybe;
 import ca.wlu.gisql.environment.parser.Name;
@@ -19,6 +20,7 @@ import ca.wlu.gisql.environment.parser.ast.AstString;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public abstract class AbstractOutput extends ProcessableInteractome {
 	private static class AstOutput implements AstNode {
@@ -166,5 +168,9 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 		print.print("\"");
 		print.print(filename == null ? "-" : filename);
 		print.print("\"");
+	}
+
+	public String toString() {
+		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
 	}
 }

@@ -38,7 +38,7 @@ public final class Accession implements Show<Set<Interactome>> {
 		print.print("[gi:");
 		print.print(identifier);
 		print.print("/");
-		species.show(print);
+		print.print(species);
 		print.print("]");
 	}
 
