@@ -1,7 +1,6 @@
 package ca.wlu.gisql.db;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -64,7 +63,7 @@ public class DbSpecies extends NamedInteractome implements Master<Gene> {
 
 			if (counter.size() > 1) {
 				ShowableStringBuilder<Set<Interactome>> print = new ShowableStringBuilder<Set<Interactome>>(
-						Collections.singleton((Interactome) this));
+						null);
 				print.print("Splitting accession ");
 				print.print(accession);
 				print.print(" among");
