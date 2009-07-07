@@ -15,6 +15,7 @@ import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
 import ca.wlu.gisql.environment.parser.util.FoldOperator;
 import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.Cut;
+import ca.wlu.gisql.interactome.Level;
 import ca.wlu.gisql.interactome.Patch;
 import ca.wlu.gisql.interactome.ToVar;
 import ca.wlu.gisql.interactome.binary.Difference;
@@ -48,6 +49,7 @@ public class ParserKnowledgebase {
 		installOperator(FormatFunction.descriptor);
 		installOperator(Intersection.descriptor);
 		installOperator(LastInteractome.descriptor);
+		installOperator(Level.descriptor);
 		installOperator(OutputFunction.descriptor);
 		installOperator(Patch.descriptor);
 		installOperator(Residuum.descriptor);
