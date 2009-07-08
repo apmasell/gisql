@@ -13,13 +13,18 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.gui.FilterBox;
 import ca.wlu.gisql.interactome.CachedInteractome;
+
+import com.sun.forums.filteringtable.FilteringTableModel;
 
 public class ResultTab extends JTabbedPane implements TableModelListener {
 
 	private static final TableModel emptyModel = new DefaultTableModel();
 
 	private static final long serialVersionUID = -5429564862842971330L;
+
+	private final FilterBox filter = new FilterBox();
 
 	private final JTable genes = new JTable();
 
@@ -55,7 +60,7 @@ public class ResultTab extends JTabbedPane implements TableModelListener {
 		helptext = new JTextArea(environment.getParserKb().getHelp());
 		helptext.setEditable(false);
 
-		addTab("Interctions", interactionspane);
+		addTab("Interactions", interactionspane);
 		addTab("Genes", genesspane);
 		addTab("Help", new JScrollPane(helptext));
 
@@ -77,6 +82,10 @@ public class ResultTab extends JTabbedPane implements TableModelListener {
 		return statusbar;
 	}
 
+	public JToolBar getToolBar() {
+		return filter;
+	}
+
 	public void setInteractome(CachedInteractome interactome) {
 		for (JTable table : new JTable[] { interactions, genes }) {
 			TableModel old = table.getModel();
@@ -91,8 +100,16 @@ public class ResultTab extends JTabbedPane implements TableModelListener {
 			interactions.setModel(emptyModel);
 			genes.setModel(emptyModel);
 		} else {
-			interactions.setModel(interactome.getInteractionTable());
-			genes.setModel(interactome.getGeneTable());
+			FilteringTableModel interactionModel = new FilteringTableModel(
+					interactome.getInteractionTable());
+			interactionModel.addFilter(filter);
+			interactions.setModel(interactionModel);
+
+			FilteringTableModel geneModel = new FilteringTableModel(interactome
+					.getGeneTable());
+			geneModel.addFilter(filter);
+			genes.setModel(geneModel);
+
 			interactome.getInteractionTable().addTableModelListener(this);
 			interactome.getGeneTable().addTableModelListener(this);
 			tableChanged(null);

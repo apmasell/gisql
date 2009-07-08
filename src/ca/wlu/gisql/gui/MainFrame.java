@@ -91,6 +91,7 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		variablelistPane = new JScrollPane(variablelist);
 
 		results = new ResultTab(environment);
+		command.add(results.getToolBar());
 		innersplitpane.setRightComponent(variablelistPane);
 		innersplitpane.setLeftComponent(results);
 
