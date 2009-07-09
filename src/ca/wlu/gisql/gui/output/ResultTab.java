@@ -93,6 +93,14 @@ public class ResultTab extends JTabbedPane implements TableModelListener {
 				old.removeTableModelListener(this);
 			}
 		}
+		if (interactome != null) {
+			genes.removeMouseListener(interactome.getGeneTable());
+			genes.getSelectionModel().removeListSelectionListener(
+					interactome.getGeneTable());
+			interactions.removeMouseListener(interactome.getInteractionTable());
+			interactions.getSelectionModel().removeListSelectionListener(
+					interactome.getInteractionTable());
+		}
 
 		this.interactome = interactome;
 
@@ -109,6 +117,13 @@ public class ResultTab extends JTabbedPane implements TableModelListener {
 					.getGeneTable());
 			geneModel.addFilter(filter);
 			genes.setModel(geneModel);
+
+			genes.addMouseListener(interactome.getGeneTable());
+			genes.getSelectionModel().addListSelectionListener(
+					interactome.getGeneTable());
+			interactions.addMouseListener(interactome.getInteractionTable());
+			interactions.getSelectionModel().addListSelectionListener(
+					interactome.getInteractionTable());
 
 			interactome.getInteractionTable().addTableModelListener(this);
 			interactome.getGeneTable().addTableModelListener(this);

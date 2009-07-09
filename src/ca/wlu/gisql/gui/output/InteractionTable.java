@@ -1,5 +1,7 @@
 package ca.wlu.gisql.gui.output;
 
+import javax.swing.JPopupMenu;
+
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.CachedInteractome;
@@ -11,6 +13,12 @@ public class InteractionTable extends AbstractTable {
 		super(interactome, new Class[] { String.class, String.class,
 				Double.class, String.class }, new String[] { "Gene1", "Gene2",
 				"Membership", "Description" });
+	}
+
+	protected JPopupMenu createMenu(int row) {
+		Interaction interaction = interactome.getInteractions().get(row);
+		return new GeneInfo(interaction.getGene1()).append(interaction
+				.getGene2());
 	}
 
 	public int getRowCount() {

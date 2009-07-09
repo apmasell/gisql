@@ -1,5 +1,7 @@
 package ca.wlu.gisql.gui.output;
 
+import javax.swing.JPopupMenu;
+
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.interactome.CachedInteractome;
@@ -10,6 +12,10 @@ public class GeneTable extends AbstractTable {
 	public GeneTable(CachedInteractome interactome) {
 		super(interactome, new Class[] { String.class, Double.class },
 				new String[] { "Identifiers", "Membership" });
+	}
+
+	protected JPopupMenu createMenu(int row) {
+		return new GeneInfo(interactome.getGenes().get(row));
 	}
 
 	public int getRowCount() {
