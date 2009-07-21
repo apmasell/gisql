@@ -78,8 +78,7 @@ class OutputGraph extends AbstractOutput {
 					matrixexporter.exportLaplacianMatrix(writer, graph);
 				}
 			}
-			if (filename != null)
-				writer.close();
+			writer.close();
 			return true;
 		} catch (IOException e) {
 			log.error("Could not write to file.", e);

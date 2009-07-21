@@ -1,7 +1,6 @@
 package ca.wlu.gisql.interactome.output;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.Set;
 
 import ca.wlu.gisql.GisQL;
@@ -67,8 +66,7 @@ class OutputText extends AbstractOutput {
 			for (Metrics metric : ((MetricsInteractome) source).getMetrics()) {
 				print.print(metric);
 			}
-			if (filename != null)
-				print.close();
+			print.close();
 			return true;
 		} else {
 			return false;
@@ -79,11 +77,8 @@ class OutputText extends AbstractOutput {
 		if (source.prepare()) {
 			try {
 				Set<Interactome> interactomes = GisQL.collectAll(this);
-				print = (filename == null ? new ShowablePrintWriter<Set<Interactome>>(
-						System.out, interactomes)
-						: new ShowablePrintWriter<Set<Interactome>>(
-								new FileOutputStream(filename, true),
-								interactomes));
+				print = new ShowablePrintWriter<Set<Interactome>>(filename,
+						interactomes);
 				print.print("# ");
 				print.print(source);
 				print.println();

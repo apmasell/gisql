@@ -1,7 +1,6 @@
 package ca.wlu.gisql.functions;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -61,14 +60,10 @@ public class PhylogenyGenerator extends Function {
 
 			try {
 				ShowablePrintWriter<Object> print;
-				print = (filename == null ? new ShowablePrintWriter<Object>(
-						System.out, interactomes)
-						: new ShowablePrintWriter<Object>(new FileOutputStream(
-								filename, true), interactomes));
+				print = new ShowablePrintWriter<Object>(filename, interactomes);
 				print.print(interactomes.get(0));
 				print.println(";");
-				if (filename != null)
-					print.close();
+				print.close();
 			} catch (FileNotFoundException e) {
 				log.error("Cannot save output.", e);
 			}
