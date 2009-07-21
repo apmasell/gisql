@@ -13,6 +13,7 @@ import ca.wlu.gisql.environment.OutputFunction;
 import ca.wlu.gisql.environment.RunFunction;
 import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
 import ca.wlu.gisql.environment.parser.util.FoldOperator;
+import ca.wlu.gisql.functions.PhylogenyGenerator;
 import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.Cut;
 import ca.wlu.gisql.interactome.Level;
@@ -52,6 +53,7 @@ public class ParserKnowledgebase {
 		installOperator(Level.descriptor);
 		installOperator(OutputFunction.descriptor);
 		installOperator(Patch.descriptor);
+		installOperator(PhylogenyGenerator.descriptor);
 		installOperator(Residuum.descriptor);
 		installOperator(RunFunction.descriptor);
 		installOperator(SymmetricDifference.descriptor);
