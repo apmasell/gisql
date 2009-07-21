@@ -12,6 +12,7 @@ import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.gui.output.GeneTable;
 import ca.wlu.gisql.gui.output.InteractionTable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class CachedInteractome extends ProcessableInteractome {
 
@@ -142,6 +143,7 @@ public class CachedInteractome extends ProcessableInteractome {
 	}
 
 	public String toString() {
-		return (name == null ? "<unknown>" : name);
+		return (name == null ? ShowableStringBuilder.toString(this, GisQL
+				.collectAll(this)) : name);
 	}
 }

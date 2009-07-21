@@ -14,6 +14,7 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Level implements Interactome {
 	static class AstLevel implements AstNode {
@@ -134,4 +135,7 @@ public class Level implements Interactome {
 		print.print(" =");
 	}
 
+	public String toString() {
+		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+	}
 }
