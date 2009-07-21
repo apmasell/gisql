@@ -18,6 +18,23 @@ public abstract class Function implements Parseable {
 		}
 	}
 
+	public static class ListExpression extends Parameter {
+		private final String description;
+
+		public ListExpression(String description) {
+			this.description = description;
+		}
+
+		Token createTask(Parser parser) {
+			return new ca.wlu.gisql.environment.parser.ListExpression(parser);
+		}
+
+		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
+			print.print(description);
+		}
+
+	}
+
 	public static class Name extends Parameter {
 		private final String description;
 
