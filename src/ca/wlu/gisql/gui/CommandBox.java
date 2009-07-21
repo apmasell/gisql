@@ -13,6 +13,7 @@ import javax.swing.JToolBar;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.Parser.Result;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class CommandBox extends JToolBar implements ActionListener, KeyListener {
@@ -22,9 +23,9 @@ public class CommandBox extends JToolBar implements ActionListener, KeyListener 
 	private final JTextField command = new JTextField();
 
 	private final Environment environment;
-	private Interactome interactome = null;
-
 	private ActionListener listener = null;
+
+	private Parser parser = null;
 
 	private final JButton run = new JButton("Run");
 
@@ -54,11 +55,11 @@ public class CommandBox extends JToolBar implements ActionListener, KeyListener 
 
 	public void clearCommand() {
 		command.setText("");
-		interactome = null;
+		parser = null;
 	}
 
-	public Interactome getInteractome() {
-		return interactome;
+	public Parser getParser() {
+		return parser;
 	}
 
 	public void keyPressed(KeyEvent evt) {
@@ -78,23 +79,22 @@ public class CommandBox extends JToolBar implements ActionListener, KeyListener 
 			return;
 		}
 		Parser parser = new Parser(environment, command.getText());
-		Interactome interactome = parser.get();
-
-		if (interactome == null) {
+		if (parser.getParseResult() == Result.Failure) {
 			JOptionPane.showMessageDialog(this, parser.getErrors(),
 					"Expression Error - gisQL", JOptionPane.ERROR_MESSAGE);
 			return;
+		} else if (parser.getParseResult() == Result.Interactome) {
+			Interactome interactome = parser.get();
+			if (interactome != null)
+				command.setText(interactome.toString());
 		}
 
-		command.setText(interactome.toString());
-
-		this.interactome = interactome;
+		this.parser = parser;
 
 		if (listener != null) {
 			listener
 					.actionPerformed(new ActionEvent(this, 0, command.getText()));
 		}
-
 	}
 
 	public void setActionListener(ActionListener listener) {

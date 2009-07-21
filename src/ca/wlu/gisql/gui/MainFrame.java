@@ -24,13 +24,15 @@ import javax.swing.tree.TreeSelectionModel;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.Parser.Result;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.gui.output.EnvironmentTreeView;
 import ca.wlu.gisql.gui.output.InteractomeTreeCellRender;
 import ca.wlu.gisql.gui.output.ResultTab;
 import ca.wlu.gisql.gui.output.EnvironmentTreeView.AstNodeTreeNode;
 import ca.wlu.gisql.interactome.CachedInteractome;
-import ca.wlu.gisql.interactome.Interactome;
 
 public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		TreeSelectionListener {
@@ -66,7 +68,7 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 
 	private final ResultTab results;
 
-	private InteractomeTask<MainFrame> task = null;
+	private ComputationalTask<MainFrame> task = null;
 
 	private final JTree variablelist;
 
@@ -131,14 +133,21 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 
 	public void actionPerformed(ActionEvent evt) {
 		if (evt.getSource() == command) {
-			Interactome interactome = command.getInteractome();
-			if (interactome == null) {
+			Parser parser = command.getParser();
+			if (parser == null) {
 				return;
 			}
 
-			results.setInteractome(null);
-			task = new InteractomeTask<MainFrame>(this, environment
-					.append(interactome));
+			if (parser.getParseResult() == Result.Interactome) {
+				results.setInteractome(null);
+				task = new InteractomeTask<MainFrame>(this, environment
+						.append(parser.get()));
+			} else if (parser.getParseResult() == Result.Executable) {
+				task = new ExecutableTask<MainFrame>(this, (AstVoid) parser
+						.getRaw());
+			} else {
+				return;
+			}
 			task.execute();
 			progress.start(task.getMessage());
 		} else if (evt.getSource() == menuName) {
