@@ -17,6 +17,7 @@ import ca.wlu.gisql.functions.PhylogenyGenerator;
 import ca.wlu.gisql.interactome.Complement;
 import ca.wlu.gisql.interactome.Cut;
 import ca.wlu.gisql.interactome.Level;
+import ca.wlu.gisql.interactome.Orphans;
 import ca.wlu.gisql.interactome.Patch;
 import ca.wlu.gisql.interactome.ToVar;
 import ca.wlu.gisql.interactome.binary.Difference;
@@ -52,6 +53,7 @@ public class ParserKnowledgebase {
 		installOperator(LastInteractome.descriptor);
 		installOperator(Level.descriptor);
 		installOperator(OutputFunction.descriptor);
+		installOperator(Orphans.descriptor);
 		installOperator(Patch.descriptor);
 		installOperator(PhylogenyGenerator.descriptor);
 		installOperator(Residuum.descriptor);
