@@ -10,34 +10,31 @@ public class ListOf extends Token {
 
 	private final char delimiter;
 
-	private final Parser parser;
-
-	public ListOf(Parser parser, Token child, char delimiter) {
+	public ListOf(Token child, char delimiter) {
 		super();
-		this.parser = parser;
 		this.child = child;
 		this.delimiter = delimiter;
 	}
 
-	boolean parse(int level, List<AstNode> results) {
+	boolean parse(Parser parser, int level, List<AstNode> results) {
 		AstList items = new AstList();
 
-		if (!child.parse(level, items)) {
+		if (!child.parse(parser, level, items)) {
 			return false;
 		}
 
-		this.parser.consumeWhitespace();
-		while (this.parser.position < this.parser.input.length()) {
-			if (this.parser.input.charAt(this.parser.position) == delimiter) {
-				this.parser.position++;
-				if (!child.parse(level, items)) {
+		parser.consumeWhitespace();
+		while (parser.position < parser.input.length()) {
+			if (parser.input.charAt(parser.position) == delimiter) {
+				parser.position++;
+				if (!child.parse(parser, level, items)) {
 					return false;
 				}
 			} else {
 				results.add(items);
 				return true;
 			}
-			this.parser.consumeWhitespace();
+			parser.consumeWhitespace();
 		}
 		results.add(items);
 		return true;

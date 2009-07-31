@@ -21,6 +21,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class FromFile implements ListParseable {
 	private static final Logger log = Logger.getLogger(FromFile.class);
 
+	private static final Token[] tokens = new Token[] { QuotedString.self };
+
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {
 		String filename = ((AstString) params.get(0)).getString();
@@ -54,8 +56,8 @@ public class FromFile implements ListParseable {
 		print.print("Read List from File: \"filename\"");
 	}
 
-	public Token[] tasks(Parser parser) {
-		return new Token[] { new QuotedString(parser) };
+	public Token[] tasks() {
+		return tokens;
 	}
 
 }

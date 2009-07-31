@@ -5,17 +5,16 @@ import java.util.List;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class SubExpression extends Token {
+	public static final SubExpression self = new SubExpression();
 
-	private final Parser parser;
-
-	public SubExpression(Parser parser) {
-		this.parser = parser;
+	private SubExpression() {
+		super();
 	}
 
-	boolean parse(int level, List<AstNode> results) {
-		AstNode result = (level == parser.environment.getParserKb().maxdepth ? this.parser
+	boolean parse(Parser parser, int level, List<AstNode> results) {
+		AstNode result = (level == parser.environment.getParserKb().maxdepth ? parser
 				.parseIdentifier()
-				: this.parser.parseAutoExpression(level + 1));
+				: parser.parseAutoExpression(level + 1));
 		if (result == null)
 			return false;
 		results.add(result);

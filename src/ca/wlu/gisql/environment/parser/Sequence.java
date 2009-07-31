@@ -16,8 +16,9 @@ public class Sequence extends Token {
 		this.second = second;
 	}
 
-	boolean parse(int level, List<AstNode> results) {
-		return first.parse(level, results) && second.parse(level, results);
+	boolean parse(Parser parser, int level, List<AstNode> results) {
+		return first.parse(parser, level, results)
+				&& second.parse(parser, level, results);
 	}
 
 }

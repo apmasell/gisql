@@ -6,15 +6,14 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.environment.parser.ast.AstString;
 
 public class QuotedString extends Token {
+	public static final QuotedString self = new QuotedString();
 
-	private final Parser parser;
-
-	public QuotedString(Parser parser) {
-		this.parser = parser;
+	private QuotedString() {
+		super();
 	}
 
-	boolean parse(int level, List<AstNode> results) {
-		int oldposition = this.parser.position;
+	boolean parse(Parser parser, int level, List<AstNode> results) {
+		int oldposition = parser.position;
 		parser.consumeWhitespace();
 		StringBuilder sb = null;
 		boolean success = false;
@@ -54,7 +53,7 @@ public class QuotedString extends Token {
 		}
 
 		if (!success) {
-			this.parser.error.push("Failed to parse quoted string. Position: "
+			parser.error.push("Failed to parse quoted string. Position: "
 					+ oldposition);
 			return false;
 		}

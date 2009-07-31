@@ -5,7 +5,6 @@ import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Name;
-import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
@@ -14,6 +13,8 @@ import ca.wlu.gisql.environment.parser.ast.AstString;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class Variable implements ListParseable {
+
+	private static final Token[] tokens = new Token[] { new Name() };
 
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {
@@ -31,8 +32,8 @@ public class Variable implements ListParseable {
 		print.print("Variable: name");
 	}
 
-	public Token[] tasks(Parser parser) {
-		return new Token[] { new Name(parser) };
+	public Token[] tasks() {
+		return tokens;
 	}
 
 }

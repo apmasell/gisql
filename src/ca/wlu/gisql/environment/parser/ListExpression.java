@@ -21,22 +21,22 @@ public class ListExpression extends Token {
 			new ApplyToAll(), new CrossJoin(), new FromFile(), new RawList(),
 			new Slice(), new ToVar(), new Variable(), new Zip() };
 
+	public static final ListExpression self = new ListExpression();
+
 	public static void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		for (ListParseable operator : operators) {
 			print.println(operator);
 		}
 	}
 
-	private final Parser parser;
-
-	public ListExpression(Parser parser) {
-		this.parser = parser;
+	private ListExpression() {
+		super();
 	}
 
-	boolean parse(int level, List<AstNode> results) {
+	boolean parse(Parser parser, int level, List<AstNode> results) {
 		for (ListParseable operator : operators) {
 			int oldposition = parser.position;
-			if (processOperator(operator, level, results)) {
+			if (processOperator(parser, operator, level, results)) {
 				return true;
 			}
 			parser.position = oldposition;
@@ -44,20 +44,20 @@ public class ListExpression extends Token {
 		return false;
 	}
 
-	private boolean processOperator(ListParseable operator, int level,
-			List<AstNode> results) {
-		Token[] todo = operator.tasks(this.parser);
+	private boolean processOperator(Parser parser, ListParseable operator,
+			int level, List<AstNode> results) {
+		Token[] todo = operator.tasks();
 		List<AstNode> params = new ArrayList<AstNode>();
 		int errorstate = parser.error.size();
 
 		for (Token task : todo) {
-			this.parser.consumeWhitespace();
-			if (!task.parse(level, params)) {
+			parser.consumeWhitespace();
+			if (!task.parse(parser, level, params)) {
 				parser.error.setSize(errorstate);
 				return false;
 			}
 		}
-		return operator.construct(this.parser.environment, params,
-				this.parser.error, results);
+		return operator.construct(parser.environment, params, parser.error,
+				results);
 	}
 }

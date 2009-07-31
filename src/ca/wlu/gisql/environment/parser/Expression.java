@@ -5,19 +5,20 @@ import java.util.List;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class Expression extends Token {
-	private final Parser parser;
 
-	public Expression(Parser parser) {
-		this.parser = parser;
+	public static final Expression self = new Expression();
+
+	private Expression() {
+		super();
 	}
 
-	boolean parse(int level, List<AstNode> results) {
-		int oldposition = this.parser.position;
-		AstNode result = (level == parser.environment.getParserKb().maxdepth ? this.parser
+	boolean parse(Parser parser, int level, List<AstNode> results) {
+		int oldposition = parser.position;
+		AstNode result = (level == parser.environment.getParserKb().maxdepth ? parser
 				.parseIdentifier()
-				: this.parser.parseAutoExpression(0));
+				: parser.parseAutoExpression(0));
 		if (result == null) {
-			this.parser.error.push("Failed to parse expression. Position: "
+			parser.error.push("Failed to parse expression. Position: "
 					+ oldposition);
 			return false;
 		}

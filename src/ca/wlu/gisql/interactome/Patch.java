@@ -57,6 +57,8 @@ public class Patch implements Interactome {
 
 	public final static Parseable descriptor = new Parseable() {
 
+		private final Token[] tokens = new Token[] { new Maybe(Decimal.self) };
+
 		public AstNode construct(Environment environment, List<AstNode> params,
 				Stack<String> error) {
 			AstNode interactome = params.get(0);
@@ -90,8 +92,8 @@ public class Patch implements Interactome {
 			print.print("Fill-in-the-blanks: A $ [value]");
 		}
 
-		public Token[] tasks(Parser parser) {
-			return new Token[] { new Maybe(parser, new Decimal(parser)) };
+		public Token[] tasks() {
+			return tokens;
 		}
 
 	};

@@ -16,6 +16,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class Complement implements Parseable {
 	public final static Parseable descriptor = new Complement();
 
+	private static final Token[] tokens = new Token[] { SubExpression.self };
+
 	public AstNode construct(Environment environment, List<AstNode> params,
 			Stack<String> error) {
 		AstNode interactome = params.get(0);
@@ -41,7 +43,7 @@ public class Complement implements Parseable {
 		print.print("Complement (1-Ax): ¬A, !A");
 	}
 
-	public Token[] tasks(Parser parser) {
-		return new Token[] { new SubExpression(parser) };
+	public Token[] tasks() {
+		return tokens;
 	}
 }

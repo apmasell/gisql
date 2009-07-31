@@ -5,5 +5,5 @@ import java.util.List;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public abstract class Token {
-	abstract boolean parse(int level, List<AstNode> results);
+	abstract boolean parse(Parser parser, int level, List<AstNode> results);
 }

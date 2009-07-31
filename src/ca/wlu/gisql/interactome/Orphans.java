@@ -51,6 +51,8 @@ public class Orphans implements Interactome {
 
 	public static final Parseable descriptor = new Parseable() {
 
+		private final Token[] tokens = new Token[] { new Word("orphans") };
+
 		public AstNode construct(Environment environment, List<AstNode> params,
 				Stack<String> error) {
 			return new AstOrphans(new Delay.AstDelay(params.get(0)));
@@ -72,8 +74,8 @@ public class Orphans implements Interactome {
 			print.print("Find disconnected nodes: A : orphans");
 		}
 
-		public Token[] tasks(Parser parser) {
-			return new Token[] { new Word(parser, "orphans") };
+		public Token[] tasks() {
+			return tokens;
 		}
 
 	};

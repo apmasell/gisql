@@ -7,7 +7,7 @@ import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Maybe;
-import ca.wlu.gisql.environment.parser.Parser;
+import ca.wlu.gisql.environment.parser.Number;
 import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Sequence;
 import ca.wlu.gisql.environment.parser.Token;
@@ -18,6 +18,11 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class Slice implements ListParseable {
+
+	private static final Token[] tokens = new Token[] { new Word("slice"),
+			Literal.get('('), Number.self, Literal.get(','),
+			new Maybe(new Sequence(Number.self, Literal.get(','))),
+			ListExpression.self, Literal.get(')') };
 
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {
@@ -58,15 +63,7 @@ public class Slice implements ListParseable {
 		print.print("slice(start, [ end,] list)");
 	}
 
-	public Token[] tasks(Parser parser) {
-		return new Token[] {
-				new Word(parser, "slice"),
-				new Literal(parser, '('),
-				new ca.wlu.gisql.environment.parser.Number(parser),
-				new Literal(parser, ','),
-				new Maybe(parser, new Sequence(
-						new ca.wlu.gisql.environment.parser.Number(parser),
-						new Literal(parser, ','))), new ListExpression(parser),
-				new Literal(parser, ')') };
+	public Token[] tasks() {
+		return tokens;
 	}
 }

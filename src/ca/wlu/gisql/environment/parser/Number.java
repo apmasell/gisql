@@ -6,15 +6,14 @@ import ca.wlu.gisql.environment.parser.ast.AstInteger;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class Number extends Token {
+	public static final Number self = new Number();
 
-	private final Parser parser;
-
-	public Number(Parser parser) {
-		this.parser = parser;
+	private Number() {
+		super();
 	}
 
-	boolean parse(int level, List<AstNode> results) {
-		int oldposition = this.parser.position;
+	boolean parse(Parser parser, int level, List<AstNode> results) {
+		int oldposition = parser.position;
 		parser.consumeWhitespace();
 		while (parser.position < parser.input.length()
 				&& Character.isDigit(parser.input.charAt(parser.position))) {
@@ -26,7 +25,7 @@ public class Number extends Token {
 					oldposition, parser.position))));
 			return true;
 		} catch (NumberFormatException e) {
-			this.parser.error.push("Failed to parse number. Position: "
+			parser.error.push("Failed to parse number. Position: "
 					+ oldposition);
 			return false;
 		}

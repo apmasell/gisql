@@ -50,7 +50,7 @@ public final class LastInteractome implements Parseable {
 		print.print("Last command: .");
 	}
 
-	public Token[] tasks(Parser parser) {
+	public Token[] tasks() {
 		return null;
 	}
 }

@@ -7,24 +7,21 @@ import ca.wlu.gisql.environment.parser.ast.AstString;
 
 public class Name extends Token {
 
-	private final Parser parser;
-
 	private String result;
 
-	public Name(Parser parser) {
-		this.parser = parser;
+	public Name() {
 	}
 
 	public String getResult() {
 		return result;
 	}
 
-	boolean parse(int level, List<AstNode> results) {
-		int oldposition = this.parser.position;
-		String name = this.parser.parseName();
+	boolean parse(Parser parser, int level, List<AstNode> results) {
+		int oldposition = parser.position;
+		String name = parser.parseName();
 		if (name == null) {
-			this.parser.error.push("Expected name missing. Position: "
-					+ oldposition);
+			parser.error
+					.push("Expected name missing. Position: " + oldposition);
 			return false;
 		}
 		result = name;

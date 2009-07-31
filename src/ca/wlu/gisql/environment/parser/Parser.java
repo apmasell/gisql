@@ -212,7 +212,7 @@ public class Parser {
 	}
 
 	private AstNode processOperator(Parseable operator, AstNode left, int level) {
-		Token[] todo = operator.tasks(this);
+		Token[] todo = operator.tasks();
 		List<AstNode> params = new ArrayList<AstNode>();
 
 		if (!operator.isPrefixed()) {
@@ -223,7 +223,7 @@ public class Parser {
 		if (todo != null) {
 			for (Token task : todo) {
 				consumeWhitespace();
-				if (!task.parse(level, params)) {
+				if (!task.parse(this, level, params)) {
 					return null;
 				}
 			}

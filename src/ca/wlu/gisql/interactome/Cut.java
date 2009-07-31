@@ -56,6 +56,9 @@ public class Cut implements Interactome {
 
 	public final static Parseable descriptor = new Parseable() {
 
+		private final Token[] tokens = new Token[] { Decimal.self,
+				Literal.get(']') };
+
 		public AstNode construct(Environment environment, List<AstNode> params,
 				Stack<String> error) {
 			AstNode interactome = params.get(0);
@@ -81,8 +84,8 @@ public class Cut implements Interactome {
 			print.print("Cut-off (Ax|x>c): A [c]");
 		}
 
-		public Token[] tasks(Parser parser) {
-			return new Token[] { new Decimal(parser), new Literal(parser, ']') };
+		public Token[] tasks() {
+			return tokens;
 		}
 
 	};

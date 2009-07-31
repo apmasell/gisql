@@ -56,6 +56,8 @@ public class ToVar implements Interactome {
 
 	public final static Parseable descriptor = new Parseable() {
 
+		private final Token[] tokens = new Token[] { new Name() };
+
 		public AstNode construct(Environment environment, List<AstNode> params,
 				Stack<String> error) {
 			AstNode interactome = params.get(0);
@@ -83,8 +85,8 @@ public class ToVar implements Interactome {
 			print.print("Assign to variable: A @ varname");
 		}
 
-		public Token[] tasks(Parser parser) {
-			return new Token[] { new Name(parser) };
+		public Token[] tasks() {
+			return tokens;
 		}
 
 	};

@@ -9,8 +9,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class Function implements Parseable {
 	public static class Expression extends Parameter {
-		Token createTask(Parser parser) {
-			return new ca.wlu.gisql.environment.parser.Expression(parser);
+		Token createTask() {
+			return ca.wlu.gisql.environment.parser.Expression.self;
 		}
 
 		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
@@ -25,8 +25,8 @@ public abstract class Function implements Parseable {
 			this.description = description;
 		}
 
-		Token createTask(Parser parser) {
-			return new ca.wlu.gisql.environment.parser.ListExpression(parser);
+		Token createTask() {
+			return ca.wlu.gisql.environment.parser.ListExpression.self;
 		}
 
 		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
@@ -42,8 +42,8 @@ public abstract class Function implements Parseable {
 			this.description = description;
 		}
 
-		Token createTask(Parser parser) {
-			return new ca.wlu.gisql.environment.parser.Name(parser);
+		Token createTask() {
+			return new ca.wlu.gisql.environment.parser.Name();
 		}
 
 		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
@@ -53,7 +53,7 @@ public abstract class Function implements Parseable {
 	}
 
 	public static abstract class Parameter implements Show<ParserKnowledgebase> {
-		abstract Token createTask(Parser parser);
+		abstract Token createTask();
 	}
 
 	public static class QuotedString extends Parameter {
@@ -63,8 +63,8 @@ public abstract class Function implements Parseable {
 			this.description = description;
 		}
 
-		Token createTask(Parser parser) {
-			return new ca.wlu.gisql.environment.parser.QuotedString(parser);
+		Token createTask() {
+			return ca.wlu.gisql.environment.parser.QuotedString.self;
 		}
 
 		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
@@ -75,13 +75,38 @@ public abstract class Function implements Parseable {
 
 	}
 
+	private static final Token TOKEN_CLOSEPAREN = ca.wlu.gisql.environment.parser.Literal
+			.get(')');
+	private static final Token TOKEN_COMMA = ca.wlu.gisql.environment.parser.Literal
+			.get(',');
+	private static final Token TOKEN_OPENPAREN = ca.wlu.gisql.environment.parser.Literal
+			.get('(');
 	private final Parameter[] parameters;
 
+	private final Token[] tasks;
 	private final String word;
 
 	protected Function(String word, Parameter[] parameters) {
 		this.word = word;
 		this.parameters = parameters;
+		tasks = new Token[3 + (parameters == null ? 0
+				: 2 * parameters.length - 1)];
+		int index = 0;
+		tasks[index++] = new ca.wlu.gisql.environment.parser.Word(word);
+		tasks[index++] = TOKEN_OPENPAREN;
+		if (parameters != null) {
+			boolean first = true;
+			for (Parameter parameter : parameters) {
+				if (first) {
+					first = false;
+				} else {
+					tasks[index++] = TOKEN_COMMA;
+				}
+				tasks[index++] = parameter.createTask();
+			}
+		}
+		tasks[index++] = TOKEN_CLOSEPAREN;
+
 	}
 
 	public int getPrecedence() {
@@ -114,28 +139,7 @@ public abstract class Function implements Parseable {
 		print.print(")");
 	}
 
-	public Token[] tasks(Parser parser) {
-		Token[] tasks = new Token[3 + (parameters == null ? 0
-				: 2 * parameters.length - 1)];
-		int index = 0;
-		tasks[index++] = new ca.wlu.gisql.environment.parser.Word(parser, word);
-		tasks[index++] = new ca.wlu.gisql.environment.parser.Literal(parser,
-				'(');
-		if (parameters != null) {
-			boolean first = true;
-			for (Parameter parameter : parameters) {
-				if (first) {
-					first = false;
-				} else {
-					tasks[index++] = new ca.wlu.gisql.environment.parser.Literal(
-							parser, ',');
-				}
-				tasks[index++] = parameter.createTask(parser);
-			}
-		}
-		tasks[index++] = new ca.wlu.gisql.environment.parser.Literal(parser,
-				')');
-
+	public Token[] tasks() {
 		return tasks;
 	}
 }

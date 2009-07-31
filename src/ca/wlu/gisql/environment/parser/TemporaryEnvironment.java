@@ -62,20 +62,17 @@ public class TemporaryEnvironment extends Token {
 
 	private final Name name;
 
-	private final Parser parser;
-
-	public TemporaryEnvironment(Parser parser, Name name, Token expression) {
-		this.parser = parser;
+	public TemporaryEnvironment(Name name, Token expression) {
 		this.name = name;
 		this.expression = expression;
 	}
 
-	boolean parse(int level, List<AstNode> results) {
+	boolean parse(Parser parser, int level, List<AstNode> results) {
 		Environment oldEnvironment = parser.environment;
 		parser.environment = new MaskedEnvironment(oldEnvironment);
 		boolean result;
 
-		result = expression.parse(level, results);
+		result = expression.parse(parser, level, results);
 
 		parser.environment = oldEnvironment;
 		return result;

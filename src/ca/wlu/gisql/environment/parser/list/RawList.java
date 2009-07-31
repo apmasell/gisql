@@ -7,13 +7,15 @@ import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Expression;
 import ca.wlu.gisql.environment.parser.ListOf;
 import ca.wlu.gisql.environment.parser.Literal;
-import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class RawList implements ListParseable {
+
+	private static final Token[] tokens = new Token[] { Literal.get('{'),
+			new ListOf(Expression.self, ','), Literal.get('}') };
 
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {
@@ -25,10 +27,8 @@ public class RawList implements ListParseable {
 		print.print("List: {A, B, C, ...}");
 	}
 
-	public Token[] tasks(Parser parser) {
-		return new Token[] { new Literal(parser, '{'),
-				new ListOf(parser, new Expression(parser), ','),
-				new Literal(parser, '}') };
+	public Token[] tasks() {
+		return tokens;
 	}
 
 }

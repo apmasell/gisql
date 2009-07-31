@@ -5,7 +5,6 @@ import java.util.Stack;
 
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.Parseable;
-import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.SubExpression;
 import ca.wlu.gisql.environment.parser.Token;
@@ -13,6 +12,8 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class ComputedInteractomeParser implements Parseable {
+
+	private static final Token[] tokens = new Token[] { SubExpression.self };
 
 	private final char[] alternateoperators;
 
@@ -94,8 +95,8 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		}
 	}
 
-	public final Token[] tasks(Parser parser) {
-		return new Token[] { new SubExpression(parser) };
+	public final Token[] tasks() {
+		return tokens;
 	}
 
 }

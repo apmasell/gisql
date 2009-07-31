@@ -6,7 +6,6 @@ import java.util.Stack;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Parseable;
-import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.Token;
 import ca.wlu.gisql.environment.parser.ast.AstList;
@@ -14,6 +13,8 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public final class FoldOperator implements Parseable {
+	private static final Token[] tokens = new Token[] { ListExpression.self };
+
 	private final ComputedInteractomeParser binary;
 
 	public FoldOperator(ComputedInteractomeParser binary) {
@@ -68,8 +69,8 @@ public final class FoldOperator implements Parseable {
 		}
 	}
 
-	public Token[] tasks(Parser parser) {
-		return new Token[] { new ListExpression(parser) };
+	public Token[] tasks() {
+		return tokens;
 	}
 
 }

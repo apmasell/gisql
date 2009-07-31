@@ -8,7 +8,6 @@ import ca.wlu.gisql.environment.parser.Expression;
 import ca.wlu.gisql.environment.parser.ListExpression;
 import ca.wlu.gisql.environment.parser.Literal;
 import ca.wlu.gisql.environment.parser.Name;
-import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
 import ca.wlu.gisql.environment.parser.TemporaryEnvironment;
 import ca.wlu.gisql.environment.parser.Token;
@@ -48,20 +47,18 @@ public class Zip implements ListParseable {
 				.print("Zip: < variable1 , variable2 . expression : list1, list2 >");
 	}
 
-	public Token[] tasks(Parser parser) {
-		Name outername = new Name(parser);
-		Name innername = new Name(parser);
+	public Token[] tasks() {
+		Name outername = new Name();
+		Name innername = new Name();
 		return new Token[] {
-				new Literal(parser, '<'),
+				Literal.get('<'),
 				outername,
-				new Literal(parser, ','),
+				Literal.get(','),
 				innername,
-				new Literal(parser, '.'),
-				new TemporaryEnvironment(parser, outername,
-						new TemporaryEnvironment(parser, innername,
-								new Expression(parser))),
-				new Literal(parser, ':'), new ListExpression(parser),
-				new ListExpression(parser), new Literal(parser, '>') };
+				Literal.get('.'),
+				new TemporaryEnvironment(outername, new TemporaryEnvironment(
+						innername, Expression.self)), Literal.get(':'),
+				ListExpression.self, ListExpression.self, Literal.get('>') };
 	}
 
 }

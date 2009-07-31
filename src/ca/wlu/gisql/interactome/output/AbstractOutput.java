@@ -69,6 +69,9 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 
 	public static final Parseable descriptor = new Parseable() {
 
+		private final Token[] tokens = new Token[] { new Maybe(new Name()),
+				QuotedString.self };
+
 		public AstNode construct(Environment environment, List<AstNode> params,
 				Stack<String> error) {
 			AstNode interactome = params.get(0);
@@ -101,12 +104,11 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 
 		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 			print
-					.print("Write to file: A @ [lowerbound [upperbound]] [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
+					.print("Write to file: A @ [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
 		}
 
-		public Token[] tasks(Parser parser) {
-			return new Token[] { new Maybe(parser, new Name(parser)),
-					new QuotedString(parser) };
+		public Token[] tasks() {
+			return tokens;
 		}
 
 	};

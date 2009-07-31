@@ -18,5 +18,5 @@ public interface Parseable extends Prioritizable<ParserKnowledgebase>,
 
 	public abstract boolean isPrefixed();
 
-	public abstract Token[] tasks(Parser parser);
+	public abstract Token[] tasks();
 }

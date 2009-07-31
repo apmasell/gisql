@@ -75,7 +75,7 @@ public class Level implements Interactome {
 			print.print("Defuzzify memberships: A =");
 		}
 
-		public Token[] tasks(Parser parser) {
+		public Token[] tasks() {
 			return null;
 		}
 

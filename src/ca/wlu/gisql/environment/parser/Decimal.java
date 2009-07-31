@@ -6,15 +6,14 @@ import ca.wlu.gisql.environment.parser.ast.AstDouble;
 import ca.wlu.gisql.environment.parser.ast.AstNode;
 
 public class Decimal extends Token {
+	public static final Decimal self = new Decimal();
 
-	private final Parser parser;
-
-	public Decimal(Parser parser) {
-		this.parser = parser;
+	private Decimal() {
+		super();
 	}
 
-	boolean parse(int level, List<AstNode> results) {
-		int oldposition = this.parser.position;
+	boolean parse(Parser parser, int level, List<AstNode> results) {
+		int oldposition = parser.position;
 		parser.consumeWhitespace();
 		while (parser.position < parser.input.length()
 				&& Character.isDigit(parser.input.charAt(parser.position))) {
@@ -34,7 +33,7 @@ public class Decimal extends Token {
 					.substring(oldposition, parser.position))));
 			return true;
 		} catch (NumberFormatException e) {
-			this.parser.error.push("Failed to parse double. Position: "
+			parser.error.push("Failed to parse double. Position: "
 					+ oldposition);
 			return false;
 		}
