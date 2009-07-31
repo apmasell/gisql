@@ -17,6 +17,16 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class CrossJoin implements ListParseable {
 
+	private final static Token[] tokens = new Token[] {
+			Literal.get('['),
+			new Name(),
+			Literal.get(','),
+			new Name(),
+			Literal.get('.'),
+			new TemporaryEnvironment(1, new TemporaryEnvironment(0,
+					Expression.self)), Literal.get(':'), ListExpression.self,
+			Literal.get(','), ListExpression.self, Literal.get(']') };
+
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {
 		/* String outername = (String) params.get(0); */
@@ -49,17 +59,7 @@ public class CrossJoin implements ListParseable {
 	}
 
 	public Token[] tasks() {
-		Name outername = new Name();
-		Name innername = new Name();
-		return new Token[] {
-				Literal.get('['),
-				outername,
-				Literal.get(','),
-				innername,
-				Literal.get('.'),
-				new TemporaryEnvironment(outername, new TemporaryEnvironment(
-						innername, Expression.self)), Literal.get(':'),
-				ListExpression.self, ListExpression.self, Literal.get(']') };
+		return tokens;
 	}
 
 }

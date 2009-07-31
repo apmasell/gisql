@@ -17,6 +17,11 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class ApplyToAll implements ListParseable {
 
+	private final static Token[] tokens = new Token[] { Literal.get('['),
+			new Name(), Literal.get('.'),
+			new TemporaryEnvironment(0, Expression.self), Literal.get(':'),
+			ListExpression.self, Literal.get(']') };
+
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {
 		/* AstString name = (AstString) params.get(0); */
@@ -39,9 +44,6 @@ public class ApplyToAll implements ListParseable {
 	}
 
 	public Token[] tasks() {
-		Name name = new Name();
-		return new Token[] { Literal.get('['), name, Literal.get('.'),
-				new TemporaryEnvironment(name, Expression.self),
-				Literal.get(':'), ListExpression.self, Literal.get(']') };
+		return tokens;
 	}
 }
