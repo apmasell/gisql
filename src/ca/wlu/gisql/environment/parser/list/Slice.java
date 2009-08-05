@@ -31,9 +31,9 @@ public class Slice implements ListParseable {
 		 * inclusive on the start and exclusive on the end. Negative indicies on
 		 * the end.
 		 */
-		int start = ((AstInteger) params.get(0)).getInt();
+		int start = (int) ((AstInteger) params.get(0)).getInt();
 		AstInteger endNode = (AstInteger) params.get(1);
-		Integer end = (endNode == null ? null : endNode.getInt());
+		Integer end = (endNode == null ? null : (int) endNode.getInt());
 		AstList list = (AstList) params.get(2);
 
 		/* Fix 0-base. */

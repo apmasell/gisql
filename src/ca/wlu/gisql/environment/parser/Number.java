@@ -21,7 +21,7 @@ public class Number extends Token {
 		}
 
 		try {
-			results.add(new AstInteger(Integer.parseInt(parser.input.substring(
+			results.add(new AstInteger(Long.parseLong(parser.input.substring(
 					oldposition, parser.position))));
 			return true;
 		} catch (NumberFormatException e) {

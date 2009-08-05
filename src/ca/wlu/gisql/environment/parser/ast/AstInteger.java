@@ -5,11 +5,11 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class AstInteger implements AstNode {
-	private int value;
+	private long value;
 
-	public AstInteger(int value) {
+	public AstInteger(long l) {
 		super();
-		this.value = value;
+		this.value = l;
 	}
 
 	public Interactome asInteractome() {
@@ -29,7 +29,7 @@ public class AstInteger implements AstNode {
 		return this;
 	}
 
-	public int getInt() {
+	public long getInt() {
 		return value;
 	}
 
@@ -46,7 +46,7 @@ public class AstInteger implements AstNode {
 	}
 
 	public String toString() {
-		return Integer.toString(value);
+		return Long.toString(value);
 	}
 
 }
