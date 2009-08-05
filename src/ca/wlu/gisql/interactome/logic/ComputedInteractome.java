@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome;
+package ca.wlu.gisql.interactome.logic;
 
 import java.util.List;
 import java.util.Set;
@@ -6,8 +6,7 @@ import java.util.Set;
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
-import ca.wlu.gisql.interactome.binary.Intersection;
-import ca.wlu.gisql.interactome.binary.Union;
+import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 

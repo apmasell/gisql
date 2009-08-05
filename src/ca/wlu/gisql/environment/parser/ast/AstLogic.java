@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ca.wlu.gisql.interactome.Complement;
-import ca.wlu.gisql.interactome.ComputedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.binary.Intersection;
-import ca.wlu.gisql.interactome.binary.Union;
+import ca.wlu.gisql.interactome.logic.Complement;
+import ca.wlu.gisql.interactome.logic.ComputedInteractome;
+import ca.wlu.gisql.interactome.logic.Intersection;
+import ca.wlu.gisql.interactome.logic.Union;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 import ca.wlu.gisql.util.ToStringComparator;

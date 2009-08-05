@@ -14,19 +14,16 @@ import org.jgrapht.ext.MatrixExporter;
 import org.jgrapht.graph.SimpleWeightedGraph;
 import org.xml.sax.SAXException;
 
-import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.interactome.GraphedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 
 class OutputGraph extends AbstractOutput {
 
-	private final SimpleWeightedGraph<Gene, Interaction> graph = new SimpleWeightedGraph<Gene, Interaction>(
-			Interaction.class);
-
 	OutputGraph(Interactome source, String name, FileFormat format,
 			String filename) {
-		super(source, name, format, filename);
+		super(new GraphedInteractome(source), name, format, filename);
 	}
 
 	public double calculateMembership(Gene gene) {

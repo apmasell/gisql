@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome.binary;
+package ca.wlu.gisql.interactome.logic;
 
 import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.environment.parser.ast.AstLogic;
