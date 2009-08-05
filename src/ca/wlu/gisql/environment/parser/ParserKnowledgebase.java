@@ -25,6 +25,7 @@ import ca.wlu.gisql.interactome.logic.Union;
 import ca.wlu.gisql.interactome.orphans.Orphans;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
 import ca.wlu.gisql.interactome.patch.Patch;
+import ca.wlu.gisql.interactome.proximity.Proximity;
 import ca.wlu.gisql.interactome.tovar.ToVar;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
@@ -55,6 +56,7 @@ public class ParserKnowledgebase {
 		installOperator(OutputFunction.descriptor);
 		installOperator(Orphans.descriptor);
 		installOperator(Patch.descriptor);
+		installOperator(Proximity.descriptor);
 		installOperator(PhylogenyGenerator.descriptor);
 		installOperator(Residuum.descriptor);
 		installOperator(RunFunction.descriptor);
