@@ -31,14 +31,7 @@ class OutputGraph extends AbstractOutput {
 	}
 
 	public double calculateMembership(Interaction interaction) {
-		double membership = source.calculateMembership(interaction);
-		if (!GisQL.isMissing(membership)) {
-			graph.addVertex(interaction.getGene1());
-			graph.addVertex(interaction.getGene2());
-			graph.addEdge(interaction.getGene1(), interaction.getGene2(),
-					interaction);
-		}
-		return membership;
+		return source.calculateMembership(interaction);
 	}
 
 	public boolean postpare() {
@@ -47,6 +40,8 @@ class OutputGraph extends AbstractOutput {
 		try {
 			Writer writer = (filename == null ? new PrintWriter(System.out)
 					: new FileWriter(filename));
+			SimpleWeightedGraph<Gene, Interaction> graph = ((GraphedInteractome) source)
+					.getGraph();
 			switch (format) {
 			case dot:
 				DOTExporter<Gene, Interaction> dotexporter = new DOTExporter<Gene, Interaction>(
