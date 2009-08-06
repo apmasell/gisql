@@ -3,7 +3,6 @@ package ca.wlu.gisql.interactome.proximity;
 import java.util.Set;
 
 import ca.wlu.gisql.environment.parser.ast.AstNode;
-import ca.wlu.gisql.interactome.GraphedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.delay.Delay;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -21,10 +20,8 @@ public class AstProximity implements AstNode {
 	}
 
 	public Interactome asInteractome() {
-		GraphedInteractome graphed = new GraphedInteractome(parameter
-				.asInteractome());
-		Delay delayed = new Delay(graphed);
-		return new Proximity(delayed, graphed.getGraph(), radius, accessions);
+		return new Proximity(new Delay(parameter.asInteractome()), radius,
+				accessions);
 	}
 
 	public AstNode fork(AstNode substitute) {

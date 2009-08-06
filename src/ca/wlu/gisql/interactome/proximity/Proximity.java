@@ -1,11 +1,9 @@
 package ca.wlu.gisql.interactome.proximity;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.graph.SimpleWeightedGraph;
 
 import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.environment.parser.Parseable;
@@ -20,64 +18,32 @@ public class Proximity implements Interactome {
 
 	public final static Parseable descriptor = new ProximityDescriptor();
 
-	private static final Logger log = Logger.getLogger(Proximity.class);
 	private final Set<Long> accessions;
-	private Set<Interactome> context;
-	private final SimpleWeightedGraph<Gene, Interaction> graph;
+
+	private Set<Gene> connectedGenes = new HashSet<Gene>();
+
 	private final int radius;
 
 	private final Interactome source;
 
-	public Proximity(Interactome source,
-			SimpleWeightedGraph<Gene, Interaction> graph, int radius,
-			Set<Long> accessions) {
+	public Proximity(Interactome source, int radius, Set<Long> accessions) {
 		this.source = source;
-		this.graph = graph;
 		this.radius = radius;
 		this.accessions = accessions;
-		this.context = GisQL.collectAll(this);
 	}
 
 	public double calculateMembership(Gene gene) {
-		double membership = source.calculateMembership(gene);
-		if (GisQL.isPresent(membership) && graph.containsVertex(gene)) {
-			for (long accession : accessions) {
-				for (Gene destination : Ubergraph.getInstance().findGenes(
-						accession)) {
-					if (source == destination) {
-						gene.setMembership(this, membership);
-						return membership;
-					}
-					if (graph.containsVertex(destination)) {
-						ShowableStringBuilder<Set<Interactome>> print = new ShowableStringBuilder<Set<Interactome>>(
-								context);
-						print.print("Searching for path between ");
-						print.print(gene);
-						print.print(" and ");
-						print.print(destination);
-						log.error(print);
-						DijkstraShortestPath<Gene, Interaction> dijkstra = new DijkstraShortestPath<Gene, Interaction>(
-								graph, gene, destination);
-						List<Interaction> path = dijkstra.getPathEdgeList();
-						if (path != null && path.size() <= radius) {
-							log.warn("There is a path of length = "
-									+ path.size() + " and weight = "
-									+ dijkstra.getPathLength());
-							gene.setMembership(this, membership);
-							return membership;
-						}
-					}
-				}
-			}
+		if (connectedGenes.contains(gene)) {
+			return source.calculateMembership(gene);
+		} else {
+			return GisQL.Missing;
 		}
-		gene.setMembership(this, GisQL.Missing);
-		return GisQL.Missing;
 	}
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
-		if (GisQL.isPresent(interaction.getGene1().getMembership(this))
-				&& GisQL.isPresent(interaction.getGene2().getMembership(this))) {
+		if (connectedGenes.contains(interaction.getGene1())
+				&& connectedGenes.contains(interaction.getGene2())) {
 			return membership;
 		} else {
 			return GisQL.Missing;
@@ -107,9 +73,34 @@ public class Proximity implements Interactome {
 
 	public boolean prepare() {
 		boolean result = source.prepare();
-		log
-				.info("We are going to have a run Dijkstra's algorithm N times on a graph of N nodes where N = "
-						+ graph.edgeSet().size());
+		if (result) {
+			Queue<Gene> queue = new LinkedList<Gene>();
+			for (long accession : accessions) {
+				queue.addAll(Ubergraph.getInstance().findGenes(accession));
+			}
+			/* Null acts as a sentinal when we complete a level in the tree. */
+			queue.add(null);
+
+			int depth = 0;
+			while (depth <= radius && queue.size() > 1) {
+				Gene current = queue.poll();
+				if (current == null) {
+					depth++;
+					queue.add(null);
+				} else {
+					for (Interaction interaction : current.getInteractions()) {
+						Gene other = interaction.getOther(current);
+						if (GisQL.isPresent(source
+								.calculateMembership(interaction))
+								&& !connectedGenes.contains(other)
+								&& !queue.contains(other)) {
+							queue.add(other);
+						}
+					}
+					connectedGenes.add(current);
+				}
+			}
+		}
 		return result;
 	}
 
