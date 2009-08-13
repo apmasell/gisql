@@ -34,10 +34,6 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
 
 	void add(Accession accession) {
-		for (Accession existingaccession : this) {
-			if (existingaccession.getSpecies() == accession.getSpecies())
-				throw new IllegalArgumentException("Duplicate species in gene.");
-		}
 		if (!ids.add(accession))
 			throw new RuntimeException();
 	}

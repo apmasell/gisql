@@ -8,9 +8,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -22,11 +21,12 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.graph.Accession;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Ubergraph;
-import ca.wlu.gisql.util.Counter;
 
 public class DatabaseManager {
 
 	private static final Logger log = Logger.getLogger(DatabaseManager.class);
+
+	private static final Map<Integer, Gene> orthogroups = new HashMap<Integer, Gene>();
 
 	public static Properties getPropertiesFromFile() throws IOException {
 		Properties properties = new Properties();
@@ -42,6 +42,7 @@ public class DatabaseManager {
 	}
 
 	public Set<DbSpecies> all = new HashSet<DbSpecies>();
+
 	private final Connection connection;
 
 	public DatabaseManager(Properties properties) throws SQLException,
@@ -105,18 +106,29 @@ public class DatabaseManager {
 		}
 	}
 
-	List<Accession> pullAccessions(DbSpecies species) throws SQLException {
-		List<Accession> list = new ArrayList<Accession>();
+	void pullGenes(DbSpecies species) throws SQLException {
 		PreparedStatement statement = connection
-				.prepareStatement("SELECT id, name FROM gene WHERE species = ?");
+				.prepareStatement("SELECT id, name, ogrp FROM gene WHERE species = ?");
 		statement.setInt(1, species.getId());
 		ResultSet rs = statement.executeQuery();
 		while (rs.next()) {
-			list.add(new Accession(rs.getLong(1), species, rs.getString(2)));
+			Accession accession = new Accession(rs.getLong(1), species, rs
+					.getString(2));
+			int orthogroup = rs.getInt(3);
+			
+			Gene gene;
+			if (orthogroup == 0 || !orthogroups.containsKey(orthogroup)) {
+				gene = Ubergraph.getInstance().newGene(accession);
+			} else {
+				gene = Ubergraph.getInstance().addOrtholog(
+						orthogroups.get(orthogroup), accession);
+			}
+			gene.setMembership(species, 1);
+			if (orthogroup != 0) {
+				orthogroups.put(orthogroup, gene);
+			}
 		}
 		rs.close();
-
-		return list;
 	}
 
 	void pullInteractions(DbSpecies interactome) throws SQLException {
@@ -131,36 +143,5 @@ public class DatabaseManager {
 			interactome.addInteraction(identifier1, identifier2, membership);
 		}
 		rs.close();
-	}
-
-	void pullOrthologs(Counter<Gene> counter, long identifier, DbSpecies species)
-			throws SQLException {
-		for (String query : new String[] {
-				"SELECT match_gene FROM ortholog WHERE query_gene = ?",
-				"SELECT query_gene FROM ortholog WHERE match_gene = ?" }) {
-
-			PreparedStatement statement = connection.prepareStatement(query);
-			statement.setLong(1, identifier);
-
-			ResultSet rs = statement.executeQuery();
-			while (rs.next()) {
-				long ortholog = rs.getLong(1);
-				if (ortholog != identifier) {
-					for (Gene match : Ubergraph.getInstance().findGenes(
-							ortholog)) {
-						boolean add = true;
-						for (Accession accession : match) {
-							if (accession.getSpecies() == species) {
-								add = false;
-								break;
-							}
-						}
-						if (add)
-							counter.add(match);
-					}
-				}
-			}
-			rs.close();
-		}
 	}
 }

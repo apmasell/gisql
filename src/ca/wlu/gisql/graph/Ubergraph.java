@@ -102,12 +102,14 @@ public class Ubergraph implements Iterable<Interaction> {
 
 		for (Gene gene1 : geneByGi.get(identifier1)) {
 			for (Gene gene2 : geneByGi.get(identifier2)) {
-				Interaction interaction = gene1.getInteractionWith(gene2);
-				if (interaction == null) {
-					interaction = new Interaction(gene1, gene2);
-					interactions.add(interaction);
+				if (gene1 != gene2) {
+					Interaction interaction = gene1.getInteractionWith(gene2);
+					if (interaction == null) {
+						interaction = new Interaction(gene1, gene2);
+						interactions.add(interaction);
+					}
+					results.add(interaction);
 				}
-				results.add(interaction);
 			}
 		}
 
