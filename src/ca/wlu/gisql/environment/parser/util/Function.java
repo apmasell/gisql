@@ -26,7 +26,7 @@ public abstract class Function implements Parseable {
 		}
 
 		Token createTask() {
-			return ca.wlu.gisql.environment.parser.ListExpression.self;
+			return ca.wlu.gisql.environment.parser.ListExpression.instance;
 		}
 
 		public void show(ShowablePrintWriter<ParserKnowledgebase> print) {

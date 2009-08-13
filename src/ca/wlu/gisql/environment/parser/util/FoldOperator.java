@@ -13,7 +13,7 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public final class FoldOperator implements Parseable {
-	private static final Token[] tokens = new Token[] { ListExpression.self };
+	private static final Token[] tokens = new Token[] { ListExpression.instance };
 
 	private final ComputedInteractomeParser binary;
 

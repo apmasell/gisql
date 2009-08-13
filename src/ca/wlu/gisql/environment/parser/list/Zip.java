@@ -17,15 +17,15 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class Zip implements ListParseable {
 
-	private static final Token[] tokens = new Token[] {
+	private final Token[] tokens = new Token[] {
 			Literal.get('<'),
 			new Name(),
 			Literal.get(','),
 			new Name(),
 			Literal.get('.'),
 			new TemporaryEnvironment(1, new TemporaryEnvironment(0,
-					Expression.self)), Literal.get(':'), ListExpression.self,
-			Literal.get(','), ListExpression.self, Literal.get('>') };
+					Expression.self)), Literal.get(':'), ListExpression.instance,
+			Literal.get(','), ListExpression.instance, Literal.get('>') };
 
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {

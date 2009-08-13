@@ -22,7 +22,7 @@ public class Slice implements ListParseable {
 	private static final Token[] tokens = new Token[] { new Word("slice"),
 			Literal.get('('), Number.self, Literal.get(','),
 			new Maybe(new Sequence(Number.self, Literal.get(','))),
-			ListExpression.self, Literal.get(')') };
+			ListExpression.instance, Literal.get(')') };
 
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {

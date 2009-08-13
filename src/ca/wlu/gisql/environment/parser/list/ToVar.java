@@ -17,7 +17,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class ToVar implements ListParseable {
 
 	private static final Token[] tokens = new Token[] { new Name(),
-			Literal.get('='), ListExpression.self };
+			Literal.get('='), ListExpression.instance };
 
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {

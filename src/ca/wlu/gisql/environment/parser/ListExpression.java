@@ -17,11 +17,12 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class ListExpression extends Token {
 
+	/* This field must load before operators or it will be null and crashy. */
+	public static final ListExpression instance = new ListExpression();
+
 	private static final ListParseable[] operators = new ListParseable[] {
 			new ApplyToAll(), new CrossJoin(), new FromFile(), new RawList(),
 			new Slice(), new ToVar(), new Variable(), new Zip() };
-
-	public static final ListExpression self = new ListExpression();
 
 	public static void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		for (ListParseable operator : operators) {

@@ -17,10 +17,10 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class ApplyToAll implements ListParseable {
 
-	private final static Token[] tokens = new Token[] { Literal.get('['),
+	private final Token[] tokens = new Token[] { Literal.get('['),
 			new Name(), Literal.get('.'),
 			new TemporaryEnvironment(0, Expression.self), Literal.get(':'),
-			ListExpression.self, Literal.get(']') };
+			ListExpression.instance, Literal.get(']') };
 
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {
