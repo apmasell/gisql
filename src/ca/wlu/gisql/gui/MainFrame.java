@@ -3,6 +3,8 @@ package ca.wlu.gisql.gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -31,11 +33,13 @@ import ca.wlu.gisql.environment.parser.ast.AstVoid;
 import ca.wlu.gisql.gui.output.EnvironmentTreeView;
 import ca.wlu.gisql.gui.output.InteractomeTreeCellRender;
 import ca.wlu.gisql.gui.output.ResultTab;
+import ca.wlu.gisql.gui.output.TreePopupMenu;
 import ca.wlu.gisql.gui.output.EnvironmentTreeView.AstNodeTreeNode;
+import ca.wlu.gisql.gui.output.TreePopupMenu.OpenInteractomeListener;
 import ca.wlu.gisql.interactome.CachedInteractome;
 
-public class MainFrame extends JFrame implements ActionListener, TaskParent,
-		TreeSelectionListener {
+public class MainFrame extends JFrame implements ActionListener, MouseListener,
+		OpenInteractomeListener, TaskParent, TreeSelectionListener {
 
 	private static final Logger log = Logger.getLogger(MainFrame.class);
 
@@ -70,6 +74,8 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 
 	private ComputationalTask<MainFrame> task = null;
 
+	private final TreePopupMenu treepopup;
+
 	private final JTree variablelist;
 
 	private final JScrollPane variablelistPane;
@@ -86,6 +92,7 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		environmentTree = new EnvironmentTreeView(environment);
 		variablelist = new JTree(environmentTree);
 		variablelist.addTreeSelectionListener(this);
+		variablelist.addMouseListener(this);
 		ToolTipManager.sharedInstance().registerComponent(variablelist);
 		variablelist.setCellRenderer(new InteractomeTreeCellRender());
 		variablelist.getSelectionModel().setSelectionMode(
@@ -101,6 +108,8 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		getContentPane().add(command, BorderLayout.NORTH);
 		getContentPane().add(results.getStatusBar(), BorderLayout.SOUTH);
 		getContentPane().add(innersplitpane, BorderLayout.CENTER);
+
+		treepopup = new TreePopupMenu(command, this);
 
 		menuName.setAccelerator(KeyStroke.getKeyStroke(
 				java.awt.event.KeyEvent.VK_N,
@@ -194,6 +203,33 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		}
 	}
 
+	public void mouseClicked(MouseEvent e) {
+	}
+
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	public void mouseExited(MouseEvent e) {
+	}
+
+	public void mousePressed(MouseEvent e) {
+		showPopup(e);
+	}
+
+	public void mouseReleased(MouseEvent e) {
+		showPopup(e);
+	}
+
+	public void openInteractome(AstNode node) {
+		CachedInteractome interactome = CachedInteractome.wrap(node
+				.asInteractome(), null);
+		if (interactome != null) {
+			task = new InteractomeTask<MainFrame>(this, interactome);
+			task.execute();
+			progress.start(task.getMessage());
+		}
+	}
+
 	public void processedInteractome(CachedInteractome interactome) {
 		results.setInteractome(interactome);
 		command.clearCommand();
@@ -201,22 +237,22 @@ public class MainFrame extends JFrame implements ActionListener, TaskParent,
 		task = null;
 	}
 
+	private void showPopup(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			Object selected = variablelist.getLastSelectedPathComponent();
+			if (selected instanceof AstNodeTreeNode) {
+				treepopup.show(e.getComponent(), e.getX(), e.getY(),
+						((AstNodeTreeNode) selected).getNode());
+			}
+		}
+	}
+
 	public void valueChanged(TreeSelectionEvent evt) {
 		try {
 			Object selected = variablelist.getLastSelectedPathComponent();
 			if (selected instanceof AstNodeTreeNode) {
 				AstNode node = ((AstNodeTreeNode) selected).getNode();
-				if (node == null) {
-					/* Do nothing. */
-				} else if (node.isInteractome()) {
-					CachedInteractome interactome = CachedInteractome.wrap(node
-							.asInteractome(), null);
-					if (interactome != null) {
-						task = new InteractomeTask<MainFrame>(this, interactome);
-						task.execute();
-						progress.start(task.getMessage());
-					}
-				} else {
+				if (node != null && !node.isInteractome()) {
 					JOptionPane.showMessageDialog(this, node.toString(),
 							"Inspection - GisQL",
 							JOptionPane.INFORMATION_MESSAGE);

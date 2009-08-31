@@ -53,6 +53,18 @@ public class CommandBox extends JToolBar implements ActionListener, KeyListener 
 			prepareCommand();
 	}
 
+	public void appendText(String text) {
+		String existing = command.getText();
+		if (existing.length() > 0
+				&& !Character.isWhitespace(existing
+						.charAt(existing.length() - 1))) {
+			existing += " ";
+		}
+		existing += text;
+		command.setText(existing);
+
+	}
+
 	public void clearCommand() {
 		command.setText("");
 		parser = null;
@@ -100,5 +112,4 @@ public class CommandBox extends JToolBar implements ActionListener, KeyListener 
 	public void setActionListener(ActionListener listener) {
 		this.listener = listener;
 	}
-
 }
