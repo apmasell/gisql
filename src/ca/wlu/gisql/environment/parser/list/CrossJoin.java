@@ -24,8 +24,9 @@ public class CrossJoin implements ListParseable {
 			new Name(),
 			Literal.get('.'),
 			new TemporaryEnvironment(1, new TemporaryEnvironment(0,
-					Expression.self)), Literal.get(':'), ListExpression.instance,
-			Literal.get(','), ListExpression.instance, Literal.get(']') };
+					Expression.self)), Literal.get(':'),
+			ListExpression.instance, Literal.get(','), ListExpression.instance,
+			Literal.get(']') };
 
 	public boolean construct(Environment environment, List<AstNode> params,
 			Stack<String> error, List<AstNode> results) {

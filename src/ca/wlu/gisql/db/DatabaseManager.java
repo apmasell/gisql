@@ -115,7 +115,7 @@ public class DatabaseManager {
 			Accession accession = new Accession(rs.getLong(1), species, rs
 					.getString(2));
 			int orthogroup = rs.getInt(3);
-			
+
 			Gene gene;
 			if (orthogroup == 0 || !orthogroups.containsKey(orthogroup)) {
 				gene = Ubergraph.getInstance().newGene(accession);
