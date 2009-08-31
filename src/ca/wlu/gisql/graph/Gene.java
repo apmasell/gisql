@@ -33,9 +33,12 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 
 	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
 
+	private final Set<DbSpecies> species = new HashSet<DbSpecies>();
+
 	void add(Accession accession) {
 		if (!ids.add(accession))
 			throw new RuntimeException();
+		species.add(accession.getSpecies());
 	}
 
 	public boolean canMerge(Mergeable<Set<Interactome>> other) {
@@ -97,6 +100,10 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 		dead = true;
 	}
 
+	public int getCoreicity() {
+		return species.size();
+	}
+
 	public Collection<Interaction> getInteractions() {
 		return edges.values();
 	}
@@ -129,6 +136,14 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 		if (dead)
 			print.print("DEAD:");
 		print.print("{");
+
+		if (species.size() > 1) {
+			print.print("coreicity:");
+			print.print(species.size());
+			print.print(' ');
+			first = false;
+		}
+
 		for (Accession accession : this) {
 			if (print.getContext() == null
 					|| print.getContext().contains(accession.getSpecies())) {
