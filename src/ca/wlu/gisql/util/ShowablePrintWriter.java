@@ -16,9 +16,9 @@ public class ShowablePrintWriter<E> extends PrintWriter {
 		closeable = true;
 	}
 
-	public ShowablePrintWriter(String filename, E context)
+	public ShowablePrintWriter(String filename, boolean append, E context)
 			throws FileNotFoundException {
-		super((filename == null ? System.out : new FileOutputStream(filename)));
+		super((filename == null ? System.out : new FileOutputStream(filename, append)));
 		this.context = context;
 		closeable = filename == null;
 	}

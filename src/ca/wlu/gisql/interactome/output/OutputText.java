@@ -78,7 +78,7 @@ class OutputText extends AbstractOutput {
 			try {
 				Set<Interactome> interactomes = GisQL.collectAll(this);
 				print = new ShowablePrintWriter<Set<Interactome>>(filename,
-						interactomes);
+						true, interactomes);
 				print.print("# ");
 				print.print(source);
 				print.println();

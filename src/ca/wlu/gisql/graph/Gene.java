@@ -140,7 +140,6 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 		if (species.size() > 1) {
 			print.print("coreicity:");
 			print.print(species.size());
-			print.print(' ');
 			first = false;
 		}
 

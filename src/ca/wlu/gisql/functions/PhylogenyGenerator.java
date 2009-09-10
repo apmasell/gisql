@@ -60,7 +60,8 @@ public class PhylogenyGenerator extends Function {
 
 			try {
 				ShowablePrintWriter<Object> print;
-				print = new ShowablePrintWriter<Object>(filename, interactomes);
+				print = new ShowablePrintWriter<Object>(filename, false,
+						interactomes);
 				print.print(interactomes.get(0));
 				print.println(";");
 				print.close();
