@@ -4,26 +4,26 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class AstDeltaCoreicity implements AstNode {
+public class AstCoreicity implements AstNode {
 
-	private final int delta;
+	private final int threshold;
 	private final AstNode parameter;
 	private final NumericComparison comparison;
 
-	public AstDeltaCoreicity(AstNode parameter, NumericComparison comparison,
-			int delta) {
+	public AstCoreicity(AstNode parameter, NumericComparison comparison,
+			int threshold) {
 		this.parameter = parameter;
 		this.comparison = comparison;
-		this.delta = delta;
+		this.threshold = threshold;
 	}
 
 	public Interactome asInteractome() {
-		return new DeltaCoreicity(parameter.asInteractome(), comparison, delta);
+		return new Coreicity(parameter.asInteractome(), comparison, threshold);
 	}
 
 	public AstNode fork(AstNode substitute) {
-		return new AstDeltaCoreicity(parameter.fork(substitute), comparison,
-				delta);
+		return new AstCoreicity(parameter.fork(substitute), comparison,
+				threshold);
 	}
 
 	public int getPrecedence() {
@@ -36,10 +36,10 @@ public class AstDeltaCoreicity implements AstNode {
 
 	public void show(ShowablePrintWriter<AstNode> print) {
 		print.print(parameter, getPrecedence());
-		print.print(" :deltacore ");
+		print.print(" :core ");
 		print.print(comparison);
 		print.print(' ');
-		print.print(delta);
+		print.print(threshold);
 
 	}
 

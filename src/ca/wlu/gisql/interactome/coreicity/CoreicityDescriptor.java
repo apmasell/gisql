@@ -16,9 +16,9 @@ import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.environment.parser.ast.AstString;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class DeltaCoreicityDescriptor implements Parseable {
+public class CoreicityDescriptor implements Parseable {
 
-	private static final Token[] tokens = new Token[] { new Word("deltacore"),
+	private static final Token[] tokens = new Token[] { new Word("core"),
 			new Name(), Number.self };
 
 	public AstNode construct(Environment environment, List<AstNode> params,
@@ -29,7 +29,7 @@ public class DeltaCoreicityDescriptor implements Parseable {
 				.fromString(((AstString) params.get(1)).getString());
 
 		if (comparison != null && interactome.isInteractome()) {
-			return new AstDeltaCoreicity(interactome, comparison, (int) delta);
+			return new AstCoreicity(interactome, comparison, (int) delta);
 		} else {
 			return null;
 		}

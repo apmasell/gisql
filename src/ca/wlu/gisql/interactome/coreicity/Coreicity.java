@@ -10,31 +10,36 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
-public class DeltaCoreicity implements Interactome {
+public class Coreicity implements Interactome {
 
-	public static final Parseable descriptor = new DeltaCoreicityDescriptor();
-	private final int delta;
+	public static final Parseable descriptor = new CoreicityDescriptor();
+	private final int threshold;
 	private final Interactome source;
 	private final NumericComparison comparison;
 
-	public DeltaCoreicity(Interactome source, NumericComparison comparison,
-			int delta) {
+	public Coreicity(Interactome source, NumericComparison comparison,
+			int threshold) {
 		this.source = source;
 		this.comparison = comparison;
-		this.delta = delta;
+		this.threshold = threshold;
 	}
 
 	public double calculateMembership(Gene gene) {
-		return source.calculateMembership(gene);
+		double membership = source.calculateMembership(gene);
+		if (!GisQL.isMissing(membership)
+				&& !comparison.compare(gene.getCoreicity(), threshold)) {
+			membership = 0;
+		}
+		gene.setMembership(this, membership);
+		return membership;
 	}
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
-		if (!GisQL.isMissing(membership)) {
-			int value = Math.abs(interaction.getGene1().getCoreicity()
-					- interaction.getGene2().getCoreicity());
-			if (comparison.compare(value, delta))
-				return membership;
+		if (!GisQL.isMissing(membership)
+				&& (GisQL.isPresent(interaction.getGene1().getMembership(this)) || GisQL
+						.isPresent(interaction.getGene2().getMembership(this)))) {
+			return membership;
 		}
 		return GisQL.Missing;
 	}
@@ -66,10 +71,10 @@ public class DeltaCoreicity implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(" :deltacore ");
+		print.print(" :core ");
 		print.print(comparison);
 		print.print(' ');
-		print.print(delta);
+		print.print(threshold);
 	}
 
 	public String toString() {
