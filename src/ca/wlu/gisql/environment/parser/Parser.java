@@ -247,4 +247,21 @@ public class Parser {
 			state = Result.Failure;
 		}
 	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Parser: ");
+		if (position > 0) {
+			sb.append('"');
+			sb.append(input.substring(0, position));
+			sb.append('"');
+		}
+		sb.append(" >").append(input.charAt(position)).append("< ");
+		if (position < sb.length()) {
+			sb.append('"');
+			sb.append(input.substring(position + 1));
+			sb.append('"');
+		}
+		return sb.toString();
+	}
 }
