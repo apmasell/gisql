@@ -27,6 +27,7 @@ public class ListOf extends Token {
 		while (parser.position < parser.input.length()) {
 			if (parser.input.charAt(parser.position) == delimiter) {
 				parser.position++;
+				parser.consumeWhitespace();
 				if (!child.parse(parser, level, items)) {
 					return false;
 				}
