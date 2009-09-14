@@ -11,6 +11,7 @@ import ca.wlu.gisql.environment.FormatFunction;
 import ca.wlu.gisql.environment.LastInteractome;
 import ca.wlu.gisql.environment.OutputFunction;
 import ca.wlu.gisql.environment.RunFunction;
+import ca.wlu.gisql.environment.SilentFunction;
 import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
 import ca.wlu.gisql.environment.parser.util.FoldOperator;
 import ca.wlu.gisql.functions.PhylogenyGenerator;
@@ -64,6 +65,7 @@ public class ParserKnowledgebase {
 		installOperator(PhylogenyGenerator.descriptor);
 		installOperator(Residuum.descriptor);
 		installOperator(RunFunction.descriptor);
+		installOperator(SilentFunction.descriptor);
 		installOperator(SymmetricDifference.descriptor);
 		installOperator(ToVar.descriptor);
 		installOperator(Union.descriptor);
