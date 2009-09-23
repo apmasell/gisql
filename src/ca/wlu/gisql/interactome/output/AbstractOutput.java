@@ -146,7 +146,6 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 	}
 
 	public Set<Interactome> collectAll(Set<Interactome> set) {
-		set.add(this);
 		return source.collectAll(set);
 	}
 

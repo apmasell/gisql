@@ -22,6 +22,7 @@ import ca.wlu.gisql.environment.EnvironmentUtils;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.gui.MainFrame;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
 public class GisQL {
@@ -36,6 +37,17 @@ public class GisQL {
 
 	public static Set<Interactome> collectAll(Interactome root) {
 		return root.collectAll(new HashSet<Interactome>());
+	}
+
+	public static Set<Interactome> collectSpecies(Interactome root) {
+		Set<Interactome> all = root.collectAll(new HashSet<Interactome>());
+		Set<Interactome> result = new HashSet<Interactome>();
+		for (Interactome interactome : all) {
+			if (interactome.getType() == Type.Species) {
+				result.add(interactome);
+			}
+		}
+		return result;
 	}
 
 	public static boolean isMissing(double membership) {

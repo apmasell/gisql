@@ -31,7 +31,6 @@ public class Delay implements Interactome {
 	}
 
 	public Set<Interactome> collectAll(Set<Interactome> set) {
-		set.add(this);
 		return source.collectAll(set);
 	}
 
