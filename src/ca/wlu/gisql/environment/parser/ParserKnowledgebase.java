@@ -17,6 +17,7 @@ import ca.wlu.gisql.environment.parser.util.FoldOperator;
 import ca.wlu.gisql.functions.PhylogenyGenerator;
 import ca.wlu.gisql.interactome.coreicity.Coreicity;
 import ca.wlu.gisql.interactome.coreicity.DeltaCoreicity;
+import ca.wlu.gisql.interactome.coreicity.JaccardCoreicity;
 import ca.wlu.gisql.interactome.cut.Cut;
 import ca.wlu.gisql.interactome.level.Level;
 import ca.wlu.gisql.interactome.logic.Complement;
@@ -56,6 +57,7 @@ public class ParserKnowledgebase {
 		installOperator(EchoFunction.descriptor);
 		installOperator(FormatFunction.descriptor);
 		installOperator(Intersection.descriptor);
+		installOperator(JaccardCoreicity.descriptor);
 		installOperator(LastInteractome.descriptor);
 		installOperator(Level.descriptor);
 		installOperator(OutputFunction.descriptor);
