@@ -27,7 +27,7 @@ public abstract class AstVoid implements AstNode {
 
 	public void show(ShowablePrintWriter<AstNode> print) {
 		print.print(':');
-		print.print(this.getClass().getName());
+		print.print(this.getClass().getSimpleName());
 	}
 
 	public String toString() {
