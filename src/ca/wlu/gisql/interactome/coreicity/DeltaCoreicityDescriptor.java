@@ -48,8 +48,8 @@ public class DeltaCoreicityDescriptor implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		// TODO Auto-generated method stub
-
+		print
+				.print("Delta Coreicity Scorer: A:deltacore {lt|gt|le|ge|eq|ne} threshold");
 	}
 
 	public Token[] tasks() {
