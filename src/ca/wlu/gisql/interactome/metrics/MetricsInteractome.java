@@ -2,7 +2,7 @@ package ca.wlu.gisql.interactome.metrics;
 
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -46,6 +46,10 @@ public class MetricsInteractome extends ProcessableInteractome {
 		return source.collectAll(set);
 	}
 
+	public Construction getConstruction() {
+		return source.getConstruction();
+	}
+
 	public Metrics[] getMetrics() {
 		return metrics;
 	}
@@ -54,14 +58,11 @@ public class MetricsInteractome extends ProcessableInteractome {
 		return source.getPrecedence();
 	}
 
-	public Type getType() {
-		return source.getType();
-	}
-
 	public double membershipOfUnknown() {
 		return source.membershipOfUnknown();
 	}
 
+	@Override
 	public boolean postpare() {
 		return source.postpare();
 	}
@@ -74,7 +75,9 @@ public class MetricsInteractome extends ProcessableInteractome {
 		print.print(source);
 	}
 
+	@Override
 	public String toString() {
-		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 }

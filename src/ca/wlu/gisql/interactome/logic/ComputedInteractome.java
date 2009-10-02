@@ -3,7 +3,7 @@ package ca.wlu.gisql.interactome.logic;
 import java.util.List;
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -25,42 +25,47 @@ public class ComputedInteractome implements Interactome {
 		this.interactomes = interactomes;
 		this.productOfSums = productOfSums;
 		this.productOfSumsNegated = productOfSumsNegated;
-		this.unknown = prepareUnknown();
+		unknown = prepareUnknown();
 
 		ShowableStringBuilder<Set<Interactome>> print = new ShowableStringBuilder<Set<Interactome>>(
-				GisQL.collectAll(this));
+				Membership.collectAll(this));
 		boolean firstSum = true;
 		for (int term = 0; term < productOfSums.size(); term++) {
-			if (firstSum)
+			if (firstSum) {
 				firstSum = false;
-			else
+			} else {
 				print.print(" ∩ ");
+			}
 			boolean hasBrackets = productOfSums.size() > 1
 					&& productOfSums.get(term).size()
 							+ productOfSumsNegated.get(term).size() > 1;
-			if (hasBrackets)
+			if (hasBrackets) {
 				print.print("(");
+			}
 			boolean firstProduct = true;
 			for (int index : productOfSums.get(term)) {
-				if (firstProduct)
+				if (firstProduct) {
 					firstProduct = false;
-				else
+				} else {
 					print.print(" ∪ ");
+				}
 				print.print(interactomes.get(index), Union.descriptor
 						.getPrecedence());
 			}
 
 			for (int index : productOfSumsNegated.get(term)) {
-				if (firstProduct)
+				if (firstProduct) {
 					firstProduct = false;
-				else
+				} else {
 					print.print(" ∪ ");
+				}
 				print.print("¬");
 				print.print(interactomes.get(index), Complement.descriptor
 						.getPrecedence());
 			}
-			if (hasBrackets)
+			if (hasBrackets) {
 				print.print(")");
+			}
 		}
 		expression = print.toString();
 	}
@@ -89,7 +94,7 @@ public class ComputedInteractome implements Interactome {
 		for (int index = 0; index < interactomes.size(); index++) {
 			memberships[index] = interactomes.get(index).calculateMembership(
 					gene);
-			if (GisQL.isMissing(memberships[index])) {
+			if (Membership.isMissing(memberships[index])) {
 				memberships[index] = interactomes.get(index)
 						.membershipOfUnknown();
 			} else {
@@ -97,10 +102,11 @@ public class ComputedInteractome implements Interactome {
 			}
 
 		}
-		if (allmissing)
-			return GisQL.Missing;
-		else
+		if (allmissing) {
+			return Membership.Missing;
+		} else {
 			return calculateMembership(memberships);
+		}
 	}
 
 	public double calculateMembership(Interaction interaction) {
@@ -109,7 +115,7 @@ public class ComputedInteractome implements Interactome {
 		for (int index = 0; index < interactomes.size(); index++) {
 			memberships[index] = interactomes.get(index).calculateMembership(
 					interaction);
-			if (GisQL.isMissing(memberships[index])) {
+			if (Membership.isMissing(memberships[index])) {
 				memberships[index] = interactomes.get(index)
 						.membershipOfUnknown();
 			} else {
@@ -117,25 +123,27 @@ public class ComputedInteractome implements Interactome {
 			}
 
 		}
-		if (allmissing)
-			return GisQL.Missing;
-		else
+		if (allmissing) {
+			return Membership.Missing;
+		} else {
 			return calculateMembership(memberships);
+		}
 	}
 
 	public Set<Interactome> collectAll(Set<Interactome> set) {
 		set.add(this);
-		for (Interactome interactome : interactomes)
+		for (Interactome interactome : interactomes) {
 			interactome.collectAll(set);
+		}
 		return set;
 	}
 
-	public int getPrecedence() {
-		return (Intersection.descriptor.getPrecedence());
+	public Construction getConstruction() {
+		return Construction.Computed;
 	}
 
-	public Type getType() {
-		return Type.Computed;
+	public int getPrecedence() {
+		return Intersection.descriptor.getPrecedence();
 	}
 
 	public double membershipOfUnknown() {
@@ -144,16 +152,18 @@ public class ComputedInteractome implements Interactome {
 
 	public boolean postpare() {
 		for (Interactome interactome : interactomes) {
-			if (!interactome.postpare())
+			if (!interactome.postpare()) {
 				return false;
+			}
 		}
 		return true;
 	}
 
 	public boolean prepare() {
 		for (Interactome interactome : interactomes) {
-			if (!interactome.prepare())
+			if (!interactome.prepare()) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -170,6 +180,7 @@ public class ComputedInteractome implements Interactome {
 		print.print(expression);
 	}
 
+	@Override
 	public String toString() {
 		return expression;
 	}

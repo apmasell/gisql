@@ -1,6 +1,7 @@
 package ca.wlu.gisql.environment;
 
-import ca.wlu.gisql.environment.parser.ast.AstInteractome;
+import ca.wlu.gisql.ast.AstLiteral;
+import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.output.FileFormat;
@@ -8,7 +9,7 @@ import ca.wlu.gisql.interactome.output.FileFormat;
 public class UserEnvironment extends Environment {
 	private FileFormat format = FileFormat.summary;
 
-	private AstInteractome last = null;
+	private AstLiteral last = null;
 
 	private int numCommands = 1;
 
@@ -24,7 +25,7 @@ public class UserEnvironment extends Environment {
 		}
 		String name = "_" + numCommands++;
 		CachedInteractome result = CachedInteractome.wrap(interactome, name);
-		last = new AstInteractome(result);
+		last = new AstLiteral(Type.InteractomeType, result);
 		setVariable(name, last);
 
 		return result;
@@ -34,7 +35,7 @@ public class UserEnvironment extends Environment {
 		return format;
 	}
 
-	public AstInteractome getLast() {
+	public AstLiteral getLast() {
 		return last;
 	}
 

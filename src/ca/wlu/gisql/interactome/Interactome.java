@@ -9,7 +9,7 @@ import ca.wlu.gisql.util.Show;
 
 public interface Interactome extends Prioritizable<Set<Interactome>>,
 		Show<Set<Interactome>> {
-	public enum Type {
+	public enum Construction {
 		Computed, Species
 	}
 
@@ -19,7 +19,7 @@ public interface Interactome extends Prioritizable<Set<Interactome>>,
 
 	public abstract Set<Interactome> collectAll(Set<Interactome> set);
 
-	public abstract Type getType();
+	public abstract Construction getConstruction();
 
 	public abstract double membershipOfUnknown();
 

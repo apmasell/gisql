@@ -8,19 +8,20 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.environment.parser.ast.AstList;
-import ca.wlu.gisql.environment.parser.ast.AstNode;
 import ca.wlu.gisql.graph.Accession;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Ubergraph;
+import ca.wlu.gisql.interactome.Interactome;
 
 public class DatabaseManager {
 
@@ -41,7 +42,7 @@ public class DatabaseManager {
 		return properties;
 	}
 
-	public Set<DbSpecies> all = new HashSet<DbSpecies>();
+	private final Set<DbSpecies> all = new HashSet<DbSpecies>();
 
 	private final Connection connection;
 
@@ -74,7 +75,7 @@ public class DatabaseManager {
 	}
 
 	protected void populateArrays(DatabaseEnvironment environment,
-			Map<Integer, AstNode> speciesById) {
+			Map<Integer, Interactome> speciesById) {
 		try {
 			PreparedStatement arrayStatement = connection
 					.prepareStatement("SELECT id, name FROM userarray");
@@ -82,16 +83,18 @@ public class DatabaseManager {
 			while (arrayrs.next()) {
 				int arrayid = arrayrs.getInt(1);
 				String name = arrayrs.getString(2);
-				AstList list = new AstList();
+				List<Interactome> list = new ArrayList<Interactome>();
 				try {
 					PreparedStatement membersStatement = connection
 							.prepareStatement("SELECT species FROM arraymembers WHERE userarray = ?");
 					membersStatement.setInt(1, arrayid);
 					ResultSet memberrs = membersStatement.executeQuery();
 					while (memberrs.next()) {
-						AstNode node = speciesById.get(memberrs.getInt(1));
-						if (node != null)
-							list.add(node);
+						Interactome interactome = speciesById.get(memberrs
+								.getInt(1));
+						if (interactome != null) {
+							list.add(interactome);
+						}
 					}
 					memberrs.close();
 					environment.putArray(name, list);

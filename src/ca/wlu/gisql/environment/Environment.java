@@ -7,12 +7,15 @@ import java.util.Map.Entry;
 
 import org.apache.commons.collections15.iterators.IteratorChain;
 import org.apache.commons.collections15.map.HashedMap;
+import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
-import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.parser.ParserKnowledgebase;
 
 public abstract class Environment implements EnvironmentListener,
 		Iterable<Entry<String, AstNode>> {
+	private static final Logger log = Logger.getLogger(Environment.class);
+
 	private final boolean alwaysPropagate;
 
 	private final Map<EnvironmentListener, Boolean> listeners = new WeakHashMap<EnvironmentListener, Boolean>();
@@ -31,7 +34,7 @@ public abstract class Environment implements EnvironmentListener,
 		this.parent = parent;
 		this.mutable = mutable;
 		this.alwaysPropagate = alwaysPropagate;
-		this.parserkb = new ParserKnowledgebase();
+		parserkb = new ParserKnowledgebase();
 
 		if (parent != null) {
 			parent.addListener(this);
@@ -56,8 +59,9 @@ public abstract class Environment implements EnvironmentListener,
 	}
 
 	public final void addedEnvironmentVariable(String name, AstNode node) {
-		if (variables.containsKey(name))
+		if (variables.containsKey(name)) {
 			return;
+		}
 		for (EnvironmentListener listener : listeners.keySet()) {
 			listener.addedEnvironmentVariable(name, node);
 		}
@@ -67,16 +71,23 @@ public abstract class Environment implements EnvironmentListener,
 		listeners.put(listener, Boolean.TRUE);
 	}
 
+	public final void assertWarning(String message) {
+		log.warn(message);
+	}
+
 	public final void clear() {
-		if (mutable)
+		if (mutable) {
 			variables.clear();
-		if (alwaysPropagate && parent != null)
+		}
+		if (alwaysPropagate && parent != null) {
 			parent.clear();
+		}
 	}
 
 	public final void droppedEnvironmentVariable(String name, AstNode node) {
-		if (variables.containsKey(name))
+		if (variables.containsKey(name)) {
 			return;
+		}
 		for (EnvironmentListener listener : listeners.keySet()) {
 			listener.addedEnvironmentVariable(name, node);
 		}
@@ -88,18 +99,20 @@ public abstract class Environment implements EnvironmentListener,
 
 	public final AstNode getVariable(String name) {
 		AstNode node = variables.get(name);
-		if (node == null && parent != null)
+		if (node == null && parent != null) {
 			return parent.getVariable(name);
-		else
+		} else {
 			return node;
+		}
 
 	}
 
 	public final Iterator<Entry<String, AstNode>> iterator() {
 		Iterator<Entry<String, AstNode>> thisit = variables.entrySet()
 				.iterator();
-		if (parent == null)
+		if (parent == null) {
 			return thisit;
+		}
 		return new IteratorChain<Entry<String, AstNode>>(thisit, parent
 				.iterator());
 	}

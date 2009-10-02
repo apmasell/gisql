@@ -2,32 +2,34 @@ package ca.wlu.gisql.interactome.coreicity;
 
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
-import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.Membership;
+import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
+import ca.wlu.gisql.vm.Machine;
+import ca.wlu.gisql.vm.Program;
 
 public class Coreicity implements Interactome {
 
-	public static final Parseable descriptor = new CoreicityDescriptor();
-	private final int threshold;
+	public static final Function function = new CoreicityDescriptor();
+	private final Program comparison;
+	private final Machine machine;
 	private final Interactome source;
-	private final NumericComparison comparison;
 
-	public Coreicity(Interactome source, NumericComparison comparison,
-			int threshold) {
+	public Coreicity(Interactome source, Machine machine, Program comparison) {
 		this.source = source;
+		this.machine = machine;
 		this.comparison = comparison;
-		this.threshold = threshold;
 	}
 
 	public double calculateMembership(Gene gene) {
 		double membership = source.calculateMembership(gene);
-		if (!GisQL.isMissing(membership)
-				&& !comparison.compare(gene.getCoreicity(), threshold)) {
+		if (!Membership.isMissing(membership)
+				&& !(Boolean) comparison.run(machine, (long) gene
+						.getCoreicity())) {
 			membership = 0;
 		}
 		gene.setMembership(this, membership);
@@ -36,12 +38,13 @@ public class Coreicity implements Interactome {
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
-		if (!GisQL.isMissing(membership)
-				&& (GisQL.isPresent(interaction.getGene1().getMembership(this)) || GisQL
-						.isPresent(interaction.getGene2().getMembership(this)))) {
+		if (!Membership.isMissing(membership)
+				&& (Membership.isPresent(interaction.getGene1().getMembership(
+						this)) || Membership.isPresent(interaction.getGene2()
+						.getMembership(this)))) {
 			return membership;
 		}
-		return GisQL.Missing;
+		return Membership.Missing;
 	}
 
 	public Set<Interactome> collectAll(Set<Interactome> set) {
@@ -49,12 +52,12 @@ public class Coreicity implements Interactome {
 		return source.collectAll(set);
 	}
 
-	public int getPrecedence() {
-		return descriptor.getPrecedence();
+	public Construction getConstruction() {
+		return Construction.Computed;
 	}
 
-	public Type getType() {
-		return Type.Computed;
+	public int getPrecedence() {
+		return function.getPrecedence();
 	}
 
 	public double membershipOfUnknown() {
@@ -73,12 +76,12 @@ public class Coreicity implements Interactome {
 		print.print(source, getPrecedence());
 		print.print(" :core ");
 		print.print(comparison);
-		print.print(' ');
-		print.print(threshold);
 	}
 
+	@Override
 	public String toString() {
-		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 
 }

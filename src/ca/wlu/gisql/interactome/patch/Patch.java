@@ -2,8 +2,8 @@ package ca.wlu.gisql.interactome.patch;
 
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
-import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.Membership;
+import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -11,7 +11,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Patch implements Interactome {
-	public final static Parseable descriptor = new PatchDescriptor();
+	public static final Function function = new PatchFunction();
+	public static final Function functionAverage = new AveragePatchFunction();
 
 	private final Double membership;
 	private final Interactome source;
@@ -27,10 +28,10 @@ public class Patch implements Interactome {
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
-		if (GisQL.isMissing(membership)
-				&& !GisQL.isMissing(source.calculateMembership(interaction
+		if (Membership.isMissing(membership)
+				&& !Membership.isMissing(source.calculateMembership(interaction
 						.getGene1()))
-				&& !GisQL.isMissing(source.calculateMembership(interaction
+				&& !Membership.isMissing(source.calculateMembership(interaction
 						.getGene2()))) {
 			if (this.membership == null) {
 				return interaction.getAverageMembership();
@@ -47,12 +48,12 @@ public class Patch implements Interactome {
 		return source.collectAll(set);
 	}
 
-	public int getPrecedence() {
-		return descriptor.getPrecedence();
+	public Construction getConstruction() {
+		return Construction.Computed;
 	}
 
-	public Type getType() {
-		return Type.Computed;
+	public int getPrecedence() {
+		return function.getPrecedence();
 	}
 
 	public double membershipOfUnknown() {
@@ -68,15 +69,17 @@ public class Patch implements Interactome {
 	}
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
-		print.print(source, this.getPrecedence());
-		print.print(" $");
+		print.print(source, getPrecedence());
+		print.print(" :blanks");
 		if (membership != null) {
 			print.print(" ");
 			print.print(membership);
 		}
 	}
 
+	@Override
 	public String toString() {
-		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 }

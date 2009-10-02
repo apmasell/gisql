@@ -11,10 +11,10 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.db.DbSpecies;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Interactome.Type;
+import ca.wlu.gisql.interactome.Interactome.Construction;
 import ca.wlu.gisql.util.Mergeable;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -36,8 +36,9 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 	private final Set<DbSpecies> species = new HashSet<DbSpecies>();
 
 	void add(Accession accession) {
-		if (!ids.add(accession))
+		if (!ids.add(accession)) {
 			throw new RuntimeException();
+		}
 		species.add(accession.getSpecies());
 	}
 
@@ -70,9 +71,9 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 	void copyMembership(Gene gene) {
 		for (Entry<Interactome, Double> entry : gene.memberships.entrySet()) {
 			Double membership = memberships.get(entry.getKey());
-			if (membership == null || GisQL.isMissing(membership)) {
+			if (membership == null || Membership.isMissing(membership)) {
 				membership = entry.getValue();
-			} else if (entry.getKey().getType() == Type.Computed) {
+			} else if (entry.getKey().getConstruction() == Construction.Computed) {
 				membership = entry.getKey().calculateMembership(gene);
 			} else {
 				ShowableStringBuilder<Set<Interactome>> print = new ShowableStringBuilder<Set<Interactome>>(
@@ -114,10 +115,11 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 
 	public double getMembership(Interactome interactome) {
 		Double value = memberships.get(interactome);
-		if (value == null)
-			return GisQL.Undefined;
-		else
+		if (value == null) {
+			return Membership.Undefined;
+		} else {
 			return value;
+		}
 	}
 
 	public Iterator<Accession> iterator() {
@@ -125,16 +127,18 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 	}
 
 	public void setMembership(Interactome interactome, double membership) {
-		if (GisQL.isUndefined(membership))
-			membership = GisQL.Missing;
+		if (Membership.isUndefined(membership)) {
+			membership = Membership.Missing;
+		}
 		memberships.put(interactome, membership);
 
 	}
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		boolean first = true;
-		if (dead)
+		if (dead) {
 			print.print("DEAD:");
+		}
 		print.print("{");
 
 		if (species.size() > 1) {
@@ -146,8 +150,9 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 		for (Accession accession : this) {
 			if (print.getContext() == null
 					|| print.getContext().contains(accession.getSpecies())) {
-				if (!first)
+				if (!first) {
 					print.print(", ");
+				}
 				print.print(accession);
 				first = false;
 			}
@@ -155,6 +160,7 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 		print.print("}");
 	}
 
+	@Override
 	public String toString() {
 		return ShowableStringBuilder.toString(this, null);
 	}

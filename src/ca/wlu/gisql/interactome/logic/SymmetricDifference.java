@@ -1,18 +1,19 @@
 package ca.wlu.gisql.interactome.logic;
 
-import ca.wlu.gisql.environment.parser.ast.AstLogic;
-import ca.wlu.gisql.environment.parser.ast.AstNode;
-import ca.wlu.gisql.environment.parser.util.ComputedInteractomeParser;
+import ca.wlu.gisql.ast.AstLogic;
+import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.parser.util.ComputedInteractomeParser;
 
 public class SymmetricDifference extends ComputedInteractomeParser {
 
-	public final static ComputedInteractomeParser descriptor = new SymmetricDifference();
+	public static final ComputedInteractomeParser descriptor = new SymmetricDifference();
 
 	public SymmetricDifference() {
 		super(4, '∆', new char[] { '^' },
-				"Symmetric Difference ((Ax t v(Bx)) s (Bx t v(Ax)))");
+				"Symmetric Difference ((Ax t v(Bx)) s (Bx t v(Ax)))", "symdiff");
 	}
 
+	@Override
 	protected AstNode construct(AstNode left, AstNode right) {
 		return AstLogic.makeDisjunct(AstLogic.makeConjunct(left, AstLogic
 				.makeNegation(right)), AstLogic.makeConjunct(right, AstLogic

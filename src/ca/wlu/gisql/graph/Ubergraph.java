@@ -12,7 +12,7 @@ import org.apache.commons.collections15.multimap.MultiHashMap;
 
 public class Ubergraph implements Iterable<Interaction> {
 
-	private final static Ubergraph self = new Ubergraph();
+	private static final Ubergraph self = new Ubergraph();
 
 	public static Ubergraph getInstance() {
 		return self;
@@ -41,10 +41,11 @@ public class Ubergraph implements Iterable<Interaction> {
 
 	public Collection<Gene> findGenes(long identifier) {
 		Collection<Gene> matches = geneByGi.get(identifier);
-		if (matches == null)
+		if (matches == null) {
 			return Collections.emptySet();
-		else
+		} else {
 			return matches;
+		}
 	}
 
 	public Iterable<Gene> genes() {
@@ -55,41 +56,8 @@ public class Ubergraph implements Iterable<Interaction> {
 		return interactions.iterator();
 	}
 
-	public boolean merge(Gene gene, Gene victim) {
-		if (!gene.canMerge(victim))
-			return false;
-
-		/* Merge the genes. */
-		gene.copyMembership(victim);
-
-		for (Accession accession : victim) {
-			geneByGi.remove(accession.getIdentifier(), victim);
-			addOrtholog(gene, accession);
-		}
-
-		/* Merge any interactions. */
-		for (Interaction interaction : new ArrayList<Interaction>(victim
-				.getInteractions())) {
-			Gene other = interaction.getOther(victim);
-
-			Interaction duplicate = other.getInteractionWith(gene);
-
-			if (duplicate == null) {
-				interaction.replace(victim, gene);
-			} else {
-				/* This edge has been duplicated by merging. */
-				duplicate.copyMembership(interaction);
-				interactions.remove(interaction);
-				other.edges.remove(victim);
-			}
-		}
-		genes.remove(victim);
-		victim.dispose();
-		return true;
-	}
-
 	public Gene newGene(Accession accession) {
-		Gene gene = (safeMode ? new CheckedGene() : new Gene());
+		Gene gene = safeMode ? new CheckedGene() : new Gene();
 		gene.add(accession);
 		genes.add(gene);
 		geneByGi.put(accession.getIdentifier(), gene);

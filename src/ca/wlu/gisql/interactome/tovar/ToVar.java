@@ -2,18 +2,19 @@ package ca.wlu.gisql.interactome.tovar;
 
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
+import ca.wlu.gisql.ast.AstLiteral;
+import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.parser.Parseable;
-import ca.wlu.gisql.environment.parser.ast.AstInteractome;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class ToVar implements Interactome {
-	public final static Parseable descriptor = new ToVarDescriptor();
+	public static final Parseable descriptor = new ToVarDescriptor();
 
 	private final Environment environment;
 
@@ -29,7 +30,7 @@ public class ToVar implements Interactome {
 
 	public double calculateMembership(Gene gene) {
 		double membership = gene.getMembership(this);
-		if (GisQL.isUndefined(membership)) {
+		if (Membership.isUndefined(membership)) {
 			membership = source.calculateMembership(gene);
 			gene.setMembership(this, membership);
 		}
@@ -38,7 +39,7 @@ public class ToVar implements Interactome {
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = interaction.getMembership(this);
-		if (GisQL.isUndefined(membership)) {
+		if (Membership.isUndefined(membership)) {
 			membership = source.calculateMembership(interaction);
 			interaction.setMembership(this, membership);
 		}
@@ -49,12 +50,12 @@ public class ToVar implements Interactome {
 		return source.collectAll(set);
 	}
 
-	public int getPrecedence() {
-		return descriptor.getPrecedence();
+	public Construction getConstruction() {
+		return source.getConstruction();
 	}
 
-	public Type getType() {
-		return source.getType();
+	public int getPrecedence() {
+		return descriptor.getPrecedence();
 	}
 
 	public double membershipOfUnknown() {
@@ -62,9 +63,11 @@ public class ToVar implements Interactome {
 	}
 
 	public boolean postpare() {
-		if (!source.postpare())
+		if (!source.postpare()) {
 			return false;
-		return environment.setVariable(name, new AstInteractome(this));
+		}
+		return environment.setVariable(name, new AstLiteral(
+				Type.InteractomeType, this));
 	}
 
 	public boolean prepare() {
@@ -72,13 +75,15 @@ public class ToVar implements Interactome {
 	}
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
-		print.print(source, this.getPrecedence());
+		print.print(source, getPrecedence());
 		print.print(" @ ");
 		print.print(name);
 	}
 
+	@Override
 	public String toString() {
-		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 
 }

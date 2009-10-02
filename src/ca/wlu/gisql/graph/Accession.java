@@ -42,6 +42,7 @@ public final class Accession implements Show<Set<Interactome>> {
 		print.print("]");
 	}
 
+	@Override
 	public String toString() {
 		return ShowableStringBuilder.toString(this, null);
 	}

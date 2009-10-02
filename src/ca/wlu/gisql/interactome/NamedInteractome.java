@@ -2,9 +2,9 @@ package ca.wlu.gisql.interactome;
 
 import java.util.Set;
 
-import ca.wlu.gisql.environment.parser.Parser;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class NamedInteractome implements Interactome {
@@ -13,10 +13,10 @@ public class NamedInteractome implements Interactome {
 
 	protected final String name;
 
-	private final Type type;
+	private final Construction type;
 
-	public NamedInteractome(String name, double membershipOfUnknown, Type type,
-			boolean zeroInteractionsWithOrthologs) {
+	public NamedInteractome(String name, double membershipOfUnknown,
+			Construction type, boolean zeroInteractionsWithOrthologs) {
 		super();
 		this.name = name;
 		this.membershipOfUnknown = membershipOfUnknown;
@@ -36,12 +36,12 @@ public class NamedInteractome implements Interactome {
 		return set;
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_LITERAL;
+	public final Construction getConstruction() {
+		return type;
 	}
 
-	public final Type getType() {
-		return type;
+	public int getPrecedence() {
+		return Parser.PREC_LITERAL;
 	}
 
 	public final double membershipOfUnknown() {
@@ -60,6 +60,7 @@ public class NamedInteractome implements Interactome {
 		print.print(name);
 	}
 
+	@Override
 	public final String toString() {
 		return name;
 	}

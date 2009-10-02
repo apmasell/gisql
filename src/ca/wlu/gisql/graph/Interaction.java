@@ -5,9 +5,9 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Interactome.Type;
+import ca.wlu.gisql.interactome.Interactome.Construction;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
@@ -20,9 +20,10 @@ public class Interaction implements Show<Set<Interactome>> {
 	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
 
 	Interaction(Gene gene1, Gene gene2) {
-		if (gene1 == gene2)
+		if (gene1 == gene2) {
 			throw new IllegalArgumentException(
 					"A gene cannot interact with itself.");
+		}
 		this.gene1 = gene1;
 		this.gene2 = gene2;
 		gene1.edges.put(gene2, this);
@@ -36,7 +37,7 @@ public class Interaction implements Show<Set<Interactome>> {
 			Double thisMembership = memberships.get(entry.getKey());
 			if (thisMembership == null) {
 				membership = entry.getValue();
-			} else if (entry.getKey().getType() == Type.Computed) {
+			} else if (entry.getKey().getConstruction() == Construction.Computed) {
 				membership = entry.getKey().calculateMembership(interaction);
 			} else {
 				membership = Math.max(entry.getValue(), thisMembership);
@@ -47,8 +48,9 @@ public class Interaction implements Show<Set<Interactome>> {
 
 	public double getAverageMembership() {
 		double sum = 0;
-		for (double value : memberships.values())
+		for (double value : memberships.values()) {
 			sum += value;
+		}
 		return sum / memberships.size();
 	}
 
@@ -62,17 +64,20 @@ public class Interaction implements Show<Set<Interactome>> {
 
 	public double getMembership(Interactome interactome) {
 		Double value = memberships.get(interactome);
-		if (value == null)
-			return GisQL.Undefined;
-		else
+		if (value == null) {
+			return Membership.Undefined;
+		} else {
 			return value;
+		}
 	}
 
 	public Gene getOther(Gene gene) {
-		if (gene == gene1)
+		if (gene == gene1) {
 			return gene2;
-		if (gene == gene2)
+		}
+		if (gene == gene2) {
 			return gene1;
+		}
 		return null;
 	}
 
@@ -95,8 +100,9 @@ public class Interaction implements Show<Set<Interactome>> {
 	}
 
 	public void setMembership(Interactome interactome, double membership) {
-		if (GisQL.isUndefined(membership))
-			membership = GisQL.Missing;
+		if (Membership.isUndefined(membership)) {
+			membership = Membership.Missing;
+		}
 		memberships.put(interactome, membership);
 	}
 
@@ -108,6 +114,7 @@ public class Interaction implements Show<Set<Interactome>> {
 		print.print(")");
 	}
 
+	@Override
 	public String toString() {
 		return ShowableStringBuilder.toString(this, null);
 	}

@@ -2,8 +2,8 @@ package ca.wlu.gisql.interactome.orphans;
 
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
-import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.Membership;
+import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -11,7 +11,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Orphans implements Interactome {
-	public static final Parseable descriptor = new OrphansDescriptor();
+	public static final Function function = new OrphansFunction();
 
 	private final Interactome source;
 
@@ -21,14 +21,16 @@ public class Orphans implements Interactome {
 
 	public double calculateMembership(Gene gene) {
 		double membership = source.calculateMembership(gene);
-		if (GisQL.isPresent(membership)) {
+		if (Membership.isPresent(membership)) {
 			for (Interaction interaction : gene.getInteractions()) {
-				if (GisQL.isPresent(source.calculateMembership(interaction)))
-					return GisQL.Missing;
+				if (Membership.isPresent(source
+						.calculateMembership(interaction))) {
+					return Membership.Missing;
+				}
 			}
 			return membership;
 		}
-		return GisQL.Missing;
+		return Membership.Missing;
 	}
 
 	public double calculateMembership(Interaction interaction) {
@@ -40,12 +42,12 @@ public class Orphans implements Interactome {
 		return source.collectAll(set);
 	}
 
-	public int getPrecedence() {
-		return descriptor.getPrecedence();
+	public Construction getConstruction() {
+		return Construction.Computed;
 	}
 
-	public Type getType() {
-		return Type.Computed;
+	public int getPrecedence() {
+		return function.getPrecedence();
 	}
 
 	public double membershipOfUnknown() {
@@ -65,7 +67,9 @@ public class Orphans implements Interactome {
 		print.print(" : orphans");
 	}
 
+	@Override
 	public String toString() {
-		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 }

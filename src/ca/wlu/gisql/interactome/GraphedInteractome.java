@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.jgrapht.graph.SimpleWeightedGraph;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -26,7 +26,7 @@ public class GraphedInteractome implements Interactome {
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
-		if (!GisQL.isMissing(membership)) {
+		if (!Membership.isMissing(membership)) {
 			graph.addVertex(interaction.getGene1());
 			graph.addVertex(interaction.getGene2());
 			graph.addEdge(interaction.getGene1(), interaction.getGene2(),
@@ -40,16 +40,16 @@ public class GraphedInteractome implements Interactome {
 		return source.collectAll(set);
 	}
 
+	public Construction getConstruction() {
+		return source.getConstruction();
+	}
+
 	public SimpleWeightedGraph<Gene, Interaction> getGraph() {
 		return graph;
 	}
 
 	public int getPrecedence() {
 		return source.getPrecedence();
-	}
-
-	public Type getType() {
-		return source.getType();
 	}
 
 	public double membershipOfUnknown() {

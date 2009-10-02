@@ -3,7 +3,7 @@ package ca.wlu.gisql.interactome.output;
 import java.io.FileNotFoundException;
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -25,10 +25,10 @@ class OutputText extends AbstractOutput {
 
 	public double calculateMembership(Gene gene) {
 		double membership = gene.getMembership(this);
-		if (GisQL.isUndefined(membership)) {
+		if (Membership.isUndefined(membership)) {
 			membership = source.calculateMembership(gene);
 
-			if (!GisQL.isMissing(membership)) {
+			if (!Membership.isMissing(membership)) {
 
 				if (format == FileFormat.genome) {
 					print.print(gene);
@@ -43,11 +43,11 @@ class OutputText extends AbstractOutput {
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = interaction.getMembership(this);
-		if (GisQL.isUndefined(membership)) {
+		if (Membership.isUndefined(membership)) {
 			membership = source.calculateMembership(interaction);
 			interaction.setMembership(this, membership);
 
-			if (!GisQL.isMissing(membership)) {
+			if (!Membership.isMissing(membership)) {
 				if (format == FileFormat.interactome) {
 					print.print(interaction.getGene1());
 					print.print("; ");
@@ -61,6 +61,7 @@ class OutputText extends AbstractOutput {
 		return membership;
 	}
 
+	@Override
 	public boolean postpare() {
 		if (super.postpare() && source.postpare()) {
 			for (Metrics metric : ((MetricsInteractome) source).getMetrics()) {
@@ -76,7 +77,7 @@ class OutputText extends AbstractOutput {
 	public boolean prepare() {
 		if (source.prepare()) {
 			try {
-				Set<Interactome> interactomes = GisQL.collectAll(this);
+				Set<Interactome> interactomes = Membership.collectAll(this);
 				print = new ShowablePrintWriter<Set<Interactome>>(filename,
 						true, interactomes);
 				print.print("# ");

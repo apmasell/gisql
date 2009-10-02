@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
-import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.Membership;
+import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
@@ -16,17 +16,17 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class Proximity implements Interactome {
 
-	public final static Parseable descriptor = new ProximityDescriptor();
+	public static final Function function = new ProximityFunction();
 
 	private final Set<Long> accessions;
 
-	private Set<Gene> connectedGenes = new HashSet<Gene>();
+	private final Set<Gene> connectedGenes = new HashSet<Gene>();
 
-	private final int radius;
+	private final long radius;
 
 	private final Interactome source;
 
-	public Proximity(Interactome source, int radius, Set<Long> accessions) {
+	public Proximity(Interactome source, long radius, Set<Long> accessions) {
 		this.source = source;
 		this.radius = radius;
 		this.accessions = accessions;
@@ -36,7 +36,7 @@ public class Proximity implements Interactome {
 		if (connectedGenes.contains(gene)) {
 			return source.calculateMembership(gene);
 		} else {
-			return GisQL.Missing;
+			return Membership.Missing;
 		}
 	}
 
@@ -46,7 +46,7 @@ public class Proximity implements Interactome {
 				&& connectedGenes.contains(interaction.getGene2())) {
 			return membership;
 		} else {
-			return GisQL.Missing;
+			return Membership.Missing;
 		}
 	}
 
@@ -55,12 +55,12 @@ public class Proximity implements Interactome {
 		return source.collectAll(set);
 	}
 
-	public int getPrecedence() {
-		return descriptor.getPrecedence();
+	public Construction getConstruction() {
+		return Construction.Computed;
 	}
 
-	public Type getType() {
-		return Type.Computed;
+	public int getPrecedence() {
+		return function.getPrecedence();
 	}
 
 	public double membershipOfUnknown() {
@@ -90,7 +90,7 @@ public class Proximity implements Interactome {
 				} else {
 					for (Interaction interaction : current.getInteractions()) {
 						Gene other = interaction.getOther(current);
-						if (GisQL.isPresent(source
+						if (Membership.isPresent(source
 								.calculateMembership(interaction))
 								&& !connectedGenes.contains(other)
 								&& !queue.contains(other)) {
@@ -106,7 +106,7 @@ public class Proximity implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(":near (");
+		print.print(":near ({");
 		boolean first = true;
 		for (long accession : accessions) {
 			if (first) {
@@ -116,14 +116,17 @@ public class Proximity implements Interactome {
 			}
 			print.print(accession);
 		}
-		print.print(")");
-		if (radius < Integer.MAX_VALUE) {
-			print.print(' ');
+		print.print("}) ");
+		if (radius < Long.MAX_VALUE) {
 			print.print(radius);
+		} else {
+			print.print("iinf");
 		}
 	}
 
+	@Override
 	public String toString() {
-		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 }

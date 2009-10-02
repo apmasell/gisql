@@ -2,7 +2,7 @@ package ca.wlu.gisql.interactome.metrics;
 
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
@@ -29,13 +29,15 @@ public class Histogram implements Metrics {
 	}
 
 	public void countGene(double membership) {
-		if (!GisQL.isMissing(membership))
+		if (!Membership.isMissing(membership)) {
 			geneBins[calculateBin(membership)]++;
+		}
 	}
 
 	public void countInteraction(double membership) {
-		if (!GisQL.isMissing(membership))
+		if (!Membership.isMissing(membership)) {
 			interactionBins[calculateBin(membership)]++;
+		}
 	}
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {

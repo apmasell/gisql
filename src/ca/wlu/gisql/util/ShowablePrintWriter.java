@@ -18,9 +18,10 @@ public class ShowablePrintWriter<E> extends PrintWriter {
 
 	public ShowablePrintWriter(String filename, boolean append, E context)
 			throws FileNotFoundException {
-		super((filename == null ? System.out : new FileOutputStream(filename, append)));
+		super(filename == null ? System.out : new FileOutputStream(filename,
+				append));
 		this.context = context;
-		closeable = filename == null;
+		closeable = filename != null;
 	}
 
 	public ShowablePrintWriter(Writer out, E context) {
@@ -29,11 +30,13 @@ public class ShowablePrintWriter<E> extends PrintWriter {
 		closeable = true;
 	}
 
+	@Override
 	public void close() {
-		if (closeable)
+		if (closeable) {
 			super.close();
-		else
+		} else {
 			flush();
+		}
 	}
 
 	public E getContext() {
@@ -41,11 +44,13 @@ public class ShowablePrintWriter<E> extends PrintWriter {
 	}
 
 	public final void print(Prioritizable<E> prioritizable, int precedence) {
-		if (prioritizable.getPrecedence() < precedence)
+		if (prioritizable.getPrecedence() < precedence) {
 			print("(");
+		}
 		prioritizable.show(this);
-		if (prioritizable.getPrecedence() < precedence)
+		if (prioritizable.getPrecedence() < precedence) {
 			print(")");
+		}
 	}
 
 	public final void print(Show<E> showable) {

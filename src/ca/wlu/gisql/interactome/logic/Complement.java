@@ -3,28 +3,28 @@ package ca.wlu.gisql.interactome.logic;
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.parser.Parseable;
-import ca.wlu.gisql.environment.parser.Parser;
-import ca.wlu.gisql.environment.parser.ParserKnowledgebase;
-import ca.wlu.gisql.environment.parser.SubExpression;
-import ca.wlu.gisql.environment.parser.Token;
-import ca.wlu.gisql.environment.parser.ast.AstLogic;
-import ca.wlu.gisql.environment.parser.ast.AstNode;
+import ca.wlu.gisql.ast.AstLogic;
+import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.parser.Parseable;
+import ca.wlu.gisql.parser.Parser;
+import ca.wlu.gisql.parser.ParserKnowledgebase;
+import ca.wlu.gisql.parser.Token;
+import ca.wlu.gisql.parser.TokenSubExpression;
+import ca.wlu.gisql.runner.ExpressionContext;
+import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class Complement implements Parseable {
-	public final static Parseable descriptor = new Complement();
+	public static final Parseable descriptor = new Complement();
 
-	private static final Token[] tokens = new Token[] { SubExpression.self };
+	private static final Token[] tokens = new Token[] { TokenSubExpression.self };
 
-	public AstNode construct(Environment environment, List<AstNode> params,
-			Stack<String> error) {
+	public AstNode construct(UserEnvironment environment, List<AstNode> params,
+			Stack<ExpressionError> error, ExpressionContext context) {
 		AstNode interactome = params.get(0);
-		if (interactome.isInteractome())
-			return AstLogic.makeNegation(interactome);
-		else
-			return null;
+
+		return AstLogic.makeNegation(interactome);
 	}
 
 	public int getPrecedence() {

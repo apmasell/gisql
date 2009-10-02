@@ -18,7 +18,7 @@ public class DbSpecies extends NamedInteractome {
 
 	protected DbSpecies(DatabaseManager databaseManager, String species,
 			int species_id) {
-		super(species, 0.0, Type.Species, true);
+		super(species, 0.0, Construction.Species, true);
 		this.species_id = species_id;
 		this.databaseManager = databaseManager;
 	}
@@ -35,6 +35,7 @@ public class DbSpecies extends NamedInteractome {
 		return species_id;
 	}
 
+	@Override
 	public boolean prepare() {
 		if (databaseManager == null) {
 			return true;

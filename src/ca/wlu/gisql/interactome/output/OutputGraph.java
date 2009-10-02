@@ -34,12 +34,14 @@ class OutputGraph extends AbstractOutput {
 		return source.calculateMembership(interaction);
 	}
 
+	@Override
 	public boolean postpare() {
-		if (!super.postpare() || !source.postpare())
+		if (!super.postpare() || !source.postpare()) {
 			return false;
+		}
 		try {
-			Writer writer = (filename == null ? new PrintWriter(System.out)
-					: new FileWriter(filename));
+			Writer writer = filename == null ? new PrintWriter(System.out)
+					: new FileWriter(filename);
 			SimpleWeightedGraph<Gene, Interaction> graph = ((GraphedInteractome) source)
 					.getGraph();
 			switch (format) {

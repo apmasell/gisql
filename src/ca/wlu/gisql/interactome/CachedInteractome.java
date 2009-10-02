@@ -6,11 +6,9 @@ import java.util.Set;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
-import ca.wlu.gisql.gui.output.GeneTable;
-import ca.wlu.gisql.gui.output.InteractionTable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
@@ -19,8 +17,9 @@ public class CachedInteractome extends ProcessableInteractome {
 	private static final Logger log = Logger.getLogger(CachedInteractome.class);
 
 	public static CachedInteractome wrap(Interactome interactome, String name) {
-		if (interactome == null)
+		if (interactome == null) {
 			return null;
+		}
 
 		if (interactome instanceof CachedInteractome) {
 			CachedInteractome cachedInteractome = (CachedInteractome) interactome;
@@ -37,21 +36,15 @@ public class CachedInteractome extends ProcessableInteractome {
 
 	private ListOrderedSet<Gene> genes;
 
-	private final GeneTable geneTable;
-
 	private ListOrderedSet<Interaction> interactions;
-
-	private final InteractionTable interactionTable;
 
 	private String name;
 
-	protected final Interactome source;
+	private final Interactome source;
 
-	public CachedInteractome(Interactome source, String name) {
+	private CachedInteractome(Interactome source, String name) {
 		super();
 		this.source = source;
-		geneTable = new GeneTable(this);
-		interactionTable = new InteractionTable(this);
 		this.name = name;
 	}
 
@@ -60,7 +53,7 @@ public class CachedInteractome extends ProcessableInteractome {
 			return gene.getMembership(this);
 		} else {
 			double membership = source.calculateMembership(gene);
-			if (!GisQL.isMissing(membership)) {
+			if (!Membership.isMissing(membership)) {
 				gene.setMembership(this, membership);
 				genes.add(gene);
 			}
@@ -73,12 +66,12 @@ public class CachedInteractome extends ProcessableInteractome {
 			return interaction.getMembership(this);
 		} else {
 			double membership = source.calculateMembership(interaction);
-			if (!GisQL.isMissing(membership)) {
+			if (!Membership.isMissing(membership)) {
 				interaction.setMembership(this, membership);
 				interactions.add(interaction);
 				for (Gene gene : new Gene[] { interaction.getGene1(),
 						interaction.getGene2() }) {
-					if (GisQL.isMissing(gene.getMembership(this))) {
+					if (Membership.isMissing(gene.getMembership(this))) {
 						gene.setMembership(this, 0);
 						genes.add(gene);
 					}
@@ -92,14 +85,13 @@ public class CachedInteractome extends ProcessableInteractome {
 		return source.collectAll(set);
 	}
 
+	public Construction getConstruction() {
+		return source.getConstruction();
+	}
+
 	public final List<Gene> getGenes() {
 		process();
 		return genes.asList();
-	}
-
-	public final GeneTable getGeneTable() {
-		process();
-		return geneTable;
 	}
 
 	public final List<Interaction> getInteractions() {
@@ -107,26 +99,15 @@ public class CachedInteractome extends ProcessableInteractome {
 		return interactions.asList();
 	}
 
-	public final InteractionTable getInteractionTable() {
-		return interactionTable;
-	}
-
-	protected final String getName() {
-		return name;
-	}
-
 	public int getPrecedence() {
 		return source.getPrecedence();
-	}
-
-	public Type getType() {
-		return source.getType();
 	}
 
 	public final double membershipOfUnknown() {
 		return source.membershipOfUnknown();
 	}
 
+	@Override
 	public boolean postpare() {
 		return super.postpare() && source.postpare();
 	}
@@ -141,8 +122,9 @@ public class CachedInteractome extends ProcessableInteractome {
 		print.print(source);
 	}
 
+	@Override
 	public String toString() {
-		return (name == null ? ShowableStringBuilder.toString(this, GisQL
-				.collectAll(this)) : name);
+		return name == null ? ShowableStringBuilder.toString(this, Membership
+				.collectAll(this)) : name;
 	}
 }

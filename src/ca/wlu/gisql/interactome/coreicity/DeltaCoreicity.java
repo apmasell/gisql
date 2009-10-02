@@ -2,26 +2,28 @@ package ca.wlu.gisql.interactome.coreicity;
 
 import java.util.Set;
 
-import ca.wlu.gisql.GisQL;
-import ca.wlu.gisql.environment.parser.Parseable;
+import ca.wlu.gisql.Membership;
+import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
+import ca.wlu.gisql.vm.Machine;
+import ca.wlu.gisql.vm.Program;
 
 public class DeltaCoreicity implements Interactome {
 
-	public static final Parseable descriptor = new DeltaCoreicityDescriptor();
-	private final int delta;
+	public static final Function function = new DeltaCoreicityDescriptor();
+	private final Program comparison;
+	private final Machine machine;
 	private final Interactome source;
-	private final NumericComparison comparison;
 
-	public DeltaCoreicity(Interactome source, NumericComparison comparison,
-			int delta) {
+	public DeltaCoreicity(Interactome source, Machine machine,
+			Program comparison) {
 		this.source = source;
+		this.machine = machine;
 		this.comparison = comparison;
-		this.delta = delta;
 	}
 
 	public double calculateMembership(Gene gene) {
@@ -30,13 +32,14 @@ public class DeltaCoreicity implements Interactome {
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
-		if (!GisQL.isMissing(membership)) {
-			int value = Math.abs(interaction.getGene1().getCoreicity()
+		if (!Membership.isMissing(membership)) {
+			long value = Math.abs(interaction.getGene1().getCoreicity()
 					- interaction.getGene2().getCoreicity());
-			if (comparison.compare(value, delta))
+			if ((Boolean) comparison.run(machine, value)) {
 				return membership;
+			}
 		}
-		return GisQL.Missing;
+		return Membership.Missing;
 	}
 
 	public Set<Interactome> collectAll(Set<Interactome> set) {
@@ -44,12 +47,12 @@ public class DeltaCoreicity implements Interactome {
 		return source.collectAll(set);
 	}
 
-	public int getPrecedence() {
-		return descriptor.getPrecedence();
+	public Construction getConstruction() {
+		return Construction.Computed;
 	}
 
-	public Type getType() {
-		return Type.Computed;
+	public int getPrecedence() {
+		return function.getPrecedence();
 	}
 
 	public double membershipOfUnknown() {
@@ -68,12 +71,12 @@ public class DeltaCoreicity implements Interactome {
 		print.print(source, getPrecedence());
 		print.print(" :deltacore ");
 		print.print(comparison);
-		print.print(' ');
-		print.print(delta);
 	}
 
+	@Override
 	public String toString() {
-		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 
 }

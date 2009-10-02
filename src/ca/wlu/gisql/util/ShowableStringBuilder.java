@@ -16,6 +16,7 @@ public class ShowableStringBuilder<E> extends ShowablePrintWriter<E> {
 		writer = (StringWriter) super.out;
 	}
 
+	@Override
 	public String toString() {
 		return writer.toString();
 	}

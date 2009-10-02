@@ -4,7 +4,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
@@ -34,12 +34,12 @@ public class Delay implements Interactome {
 		return source.collectAll(set);
 	}
 
-	public int getPrecedence() {
-		return source.getPrecedence();
+	public Construction getConstruction() {
+		return source.getConstruction();
 	}
 
-	public Type getType() {
-		return source.getType();
+	public int getPrecedence() {
+		return source.getPrecedence();
 	}
 
 	public double membershipOfUnknown() {
@@ -73,7 +73,9 @@ public class Delay implements Interactome {
 		print.print(source);
 	}
 
+	@Override
 	public String toString() {
-		return ShowableStringBuilder.toString(this, GisQL.collectAll(this));
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 }

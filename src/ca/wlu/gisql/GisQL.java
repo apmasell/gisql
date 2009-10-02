@@ -1,10 +1,7 @@
 package ca.wlu.gisql;
 
-import java.awt.EventQueue;
 import java.io.File;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
@@ -18,57 +15,36 @@ import org.apache.log4j.PatternLayout;
 
 import ca.wlu.gisql.db.DatabaseEnvironment;
 import ca.wlu.gisql.db.DatabaseManager;
-import ca.wlu.gisql.environment.EnvironmentUtils;
+import ca.wlu.gisql.environment.ParserEnvironment;
 import ca.wlu.gisql.environment.UserEnvironment;
-import ca.wlu.gisql.gui.MainFrame;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.Interactome.Type;
 import ca.wlu.gisql.interactome.output.FileFormat;
+import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class GisQL {
 
-	private static UserEnvironment environment;
-
 	private static final Logger log = Logger.getLogger(GisQL.class);
-
-	public static final double Missing = -1;
-
-	public static final double Undefined = -2;
-
-	public static Set<Interactome> collectAll(Interactome root) {
-		return root.collectAll(new HashSet<Interactome>());
-	}
-
-	public static Set<Interactome> collectSpecies(Interactome root) {
-		Set<Interactome> all = root.collectAll(new HashSet<Interactome>());
-		Set<Interactome> result = new HashSet<Interactome>();
-		for (Interactome interactome : all) {
-			if (interactome.getType() == Type.Species) {
-				result.add(interactome);
-			}
-		}
-		return result;
-	}
-
-	public static boolean isMissing(double membership) {
-		return membership < 0;
-	}
-
-	public static boolean isPresent(double membership) {
-		return membership > 0;
-	}
-
-	/*
-	 * Semantically, a missing thing is known to be not present in the
-	 * interactome while an undefined one could be unprocessed.
-	 */
-	public static boolean isUndefined(double membership) {
-		return membership < -1;
-	}
 
 	public static void main(String[] args) throws Exception {
 		ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
 		Logger.getRootLogger().addAppender(appender);
+
+		Options options = makeOptions();
+		CommandLine commandline;
+
+		try {
+			commandline = new GnuParser().parse(options, args);
+		} catch (ParseException e) {
+			log.error("Parsing failed.", e);
+			return;
+		}
+
+		if (commandline.hasOption('h') || commandline.getArgs().length == 0
+				&& !commandline.hasOption('c')) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("gisql", options);
+			System.out.println(ParserEnvironment.self.getParserKb().getHelp());
+			return;
+		}
 
 		DatabaseManager dm;
 		try {
@@ -78,46 +54,35 @@ public class GisQL {
 			return;
 		}
 
-		environment = new UserEnvironment(new DatabaseEnvironment(dm));
-
-		Options options = makeOptions();
-		CommandLine commandline = processCommandLine(options, args);
-
-		if (commandline.hasOption('h')) {
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("gisql", options);
-			System.out.println(environment.getParserKb().getHelp());
-			return;
-		}
+		UserEnvironment environment = new UserEnvironment(
+				new DatabaseEnvironment(dm));
 
 		if (commandline.hasOption('o')) {
 			environment.setOutput(commandline.getOptionValue('o'));
 		}
+		if (commandline.hasOption('F')) {
+			FileFormat fileformat = FileFormat.valueOf(commandline
+					.getOptionValue('F'));
+			if (fileformat == null) {
+				fileformat = FileFormat.interactome;
+			}
+			environment.setFormat(fileformat);
+		}
+
+		ConsoleRunListener listener = new ConsoleRunListener(environment);
+		ExpressionRunner runner = new ExpressionRunner(environment, listener);
+
 		for (String argument : commandline.getArgs()) {
-			boolean success = EnvironmentUtils.runExpression(environment,
-					argument, true);
-			if (!success)
+			if (!runner.run(argument, null)) {
 				return;
+			}
 		}
 
 		if (commandline.hasOption('c')) {
-			EnvironmentUtils.runFile(environment, new File(commandline
-					.getOptionValue('c')));
+			runner.run(new File(commandline.getOptionValue('c')), null);
+			return;
 		}
 
-		if (commandline.hasOption('o')) {
-			environment.setOutput(null);
-		}
-
-		if (commandline.hasOption('g')
-				|| (commandline.getArgs().length == 0 && !commandline
-						.hasOption('c'))) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					new MainFrame(GisQL.environment).setVisible(true);
-				}
-			});
-		}
 	}
 
 	private static Options makeOptions() {
@@ -143,23 +108,5 @@ public class GisQL {
 		options.addOption(format);
 		options.addOption(gui);
 		return options;
-	}
-
-	private static CommandLine processCommandLine(Options options, String[] args) {
-		try {
-			CommandLine command = new GnuParser().parse(options, args);
-			if (command.hasOption('F')) {
-				FileFormat fileformat = FileFormat.valueOf(command
-						.getOptionValue('F'));
-				if (fileformat == null) {
-					fileformat = FileFormat.interactome;
-				}
-				GisQL.environment.setFormat(fileformat);
-			}
-			return command;
-		} catch (ParseException e) {
-			log.error("Parsing failed.", e);
-		}
-		return null;
 	}
 }
