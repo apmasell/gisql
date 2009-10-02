@@ -53,9 +53,7 @@ public class ParserEnvironment extends Environment {
 		AstParameter not = new AstParameter("__not");
 		add("not", new AstLambda2(not, AstLogic.makeNegation(not)));
 
-		for (FileFormat format : FileFormat.values()) {
-			add(format.name(), new AstLiteral(Type.FormatType, format));
-		}
+		add(Type.FormatType, FileFormat.values());
 
 		add(NumericComparison.Eq);
 		add(NumericComparison.GE);
@@ -105,5 +103,11 @@ public class ParserEnvironment extends Environment {
 
 	public void add(Function function) {
 		add(function.toString(), function);
+	}
+
+	private <E extends Enum<E>> void add(Type type, E[] values) {
+		for (E item : values) {
+			add(item.name(), new AstLiteral(type, item));
+		}
 	}
 }
