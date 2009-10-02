@@ -100,13 +100,10 @@ public class GisQL {
 		Option format = new Option("F", "format", true, "Output result format.");
 		format.setArgName("layout");
 
-		Option gui = new Option("g", "gui", false, "Use graphical interface.");
-
 		options.addOption(help);
 		options.addOption(file);
 		options.addOption(output);
 		options.addOption(format);
-		options.addOption(gui);
 		return options;
 	}
 }
