@@ -11,7 +11,6 @@ import ca.wlu.gisql.vm.InstructionStore;
 public class AstToVar extends AstNode {
 	private final String name;
 	private AstNode node;
-	private Type type = null;
 
 	public AstToVar(AstNode node, String name) {
 		this.node = node;
@@ -37,7 +36,7 @@ public class AstToVar extends AstNode {
 		if (!node.render(program, depth, debrujin)) {
 			return false;
 		}
-		return program.instructions.add(new InstructionStore(name, type));
+		return program.instructions.add(new InstructionStore(name, node.getType()));
 	}
 
 	@Override
