@@ -3,6 +3,8 @@ package ca.wlu.gisql;
 import java.io.File;
 import java.sql.SQLException;
 
+import jline.ConsoleReader;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -38,8 +40,7 @@ public class GisQL {
 			return;
 		}
 
-		if (commandline.hasOption('h') || commandline.getArgs().length == 0
-				&& !commandline.hasOption('c')) {
+		if (commandline.hasOption('h')) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("gisql", options);
 			System.out.println(ParserEnvironment.self.getParserKb().getHelp());
@@ -76,11 +77,32 @@ public class GisQL {
 			if (!runner.run(argument, null)) {
 				return;
 			}
+			return;
 		}
 
 		if (commandline.hasOption('c')) {
 			runner.run(new File(commandline.getOptionValue('c')), null);
 			return;
+		} else {
+			ConsoleReader reader = new ConsoleReader();
+			reader.setBellEnabled(true);
+			reader.setDefaultPrompt("gisql> ");
+			reader.addCompletor(new EnvironmentCompletor(environment));
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				if (line.equalsIgnoreCase("quit")
+						|| line.equalsIgnoreCase("exit")) {
+					break;
+				}
+				if (line.equalsIgnoreCase("help")) {
+					System.out.println(ParserEnvironment.self.getParserKb()
+							.getHelp());
+				} else {
+					runner.run(line, null);
+				}
+			}
+			System.out.println();
 		}
 
 	}
