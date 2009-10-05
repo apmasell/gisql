@@ -45,8 +45,7 @@ public class TypeVariable extends Type {
 				print.getContext().add(this);
 			}
 
-			print.print("'");
-			print.print((char) ('a' + index));
+			print.print((char) ('α' + index));
 		} else {
 			print.print(self);
 		}
