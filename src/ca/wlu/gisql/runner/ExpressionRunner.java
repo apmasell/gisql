@@ -21,7 +21,7 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
 public class ExpressionRunner {
 	private final UserEnvironment environment;
 
-	private List<ExpressionError> errors = new ArrayList<ExpressionError>();
+	private final List<ExpressionError> errors = new ArrayList<ExpressionError>();
 
 	private final ExpressionRunListener listener;
 

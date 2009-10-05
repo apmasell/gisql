@@ -40,7 +40,7 @@ public class Parser {
 
 	private final LineContext context;
 
-	private UserEnvironment environment;
+	private final UserEnvironment environment;
 
 	final Stack<ExpressionError> error = new Stack<ExpressionError>();
 

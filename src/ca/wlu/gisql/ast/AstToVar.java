@@ -36,7 +36,8 @@ public class AstToVar extends AstNode {
 		if (!node.render(program, depth, debrujin)) {
 			return false;
 		}
-		return program.instructions.add(new InstructionStore(name, node.getType()));
+		return program.instructions.add(new InstructionStore(name, node
+				.getType()));
 	}
 
 	@Override

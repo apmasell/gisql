@@ -11,7 +11,7 @@ import ca.wlu.gisql.runner.ExpressionRunListener;
 
 public class ListFromFileListener implements ExpressionRunListener {
 
-	private List<Object> list = new ArrayList<Object>();
+	private final List<Object> list = new ArrayList<Object>();
 	private final ExpressionRunListener listener;
 
 	public ListFromFileListener(ExpressionRunListener listener) {
