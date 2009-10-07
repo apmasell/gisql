@@ -90,12 +90,6 @@ public final class AstConstructor extends AstNative {
 		constructor = clazz.getConstructors()[0];
 	}
 
-	private AstConstructor(Constructor<?> constructor, String name,
-			String description, Type[] types) {
-		super(name, description, types);
-		this.constructor = constructor;
-	}
-
 	@Override
 	public final boolean render(ProgramRoutine program, int depth, int debrujin) {
 		return program.instructions.add(new InstructionConstruct(constructor));
