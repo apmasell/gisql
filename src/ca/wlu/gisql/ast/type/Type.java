@@ -23,6 +23,17 @@ public abstract class Type implements Show<List<TypeVariable>> {
 
 	public static final Type UnitType = new UnitType();
 
+	@Override
+	public Type clone() {
+		List<TypeVariable> variables = new ArrayList<TypeVariable>();
+		ShowableStringBuilder.toString(this, variables);
+		Type result = this;
+		for (TypeVariable variable : variables) {
+			result = result.freshen(variable, new TypeVariable());
+		}
+		return result;
+	}
+
 	protected Type freshen(Type needle, Type replacement) {
 		return this;
 	}
