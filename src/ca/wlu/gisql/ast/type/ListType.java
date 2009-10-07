@@ -17,17 +17,6 @@ public class ListType extends Type {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		} else if (obj instanceof ListType) {
-			ListType other = (ListType) obj;
-			return other.contents.equals(contents);
-		}
-		return false;
-	}
-
-	@Override
 	protected Type freshen(Type needle, Type replacement) {
 		Type freshContents = contents.freshen(needle, replacement);
 		if (freshContents == contents) {

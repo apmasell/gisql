@@ -42,19 +42,16 @@ public abstract class Type implements Show<List<TypeVariable>> {
 	 * sensitive.
 	 */
 	public boolean unify(Type that) {
-		while (true) {
-			if (this == that) {
-				return true;
-			} else if (that instanceof TypeVariable) {
-				return ((TypeVariable) that).reverseUnify(this);
-			} else {
-				return false;
-			}
+		if (this == that) {
+			return true;
+		} else if (that instanceof TypeVariable) {
+			return ((TypeVariable) that).reverseUnify(this);
+		} else {
+			return false;
 		}
 	}
 
 	public boolean validate(Object value) {
 		return false;
 	}
-
 }
