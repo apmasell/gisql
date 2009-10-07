@@ -1,6 +1,7 @@
 package ca.wlu.gisql.graph;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,7 +32,11 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 
 	private final Set<Accession> ids = new HashSet<Accession>();
 
+	private final Map<BiologicalFunction, Double> knownFunctions = new HashMap<BiologicalFunction, Double>();
+
 	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
+
+	private final Map<Interactome, Map<BiologicalFunction, Double>> predictedFunctions = new WeakHashMap<Interactome, Map<BiologicalFunction, Double>>();
 
 	private final Set<DbSpecies> species = new HashSet<DbSpecies>();
 
@@ -40,6 +45,38 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 			throw new RuntimeException();
 		}
 		species.add(accession.getSpecies());
+	}
+
+	public void add(BiologicalFunction function, Interactome knower,
+			double membership) {
+		if (Membership.isUndefined(membership)) {
+			membership = Membership.Missing;
+		}
+		if (knower == null) {
+			for (Map<BiologicalFunction, Double> predictions : predictedFunctions
+					.values()) {
+				predictions.remove(function);
+			}
+			knownFunctions.put(function, membership);
+		} else {
+			if (knownFunctions.containsKey(function)) {
+				return;
+			}
+			Map<BiologicalFunction, Double> predictions = predictedFunctions
+					.get(knower);
+			if (predictions == null) {
+				predictions = new HashMap<BiologicalFunction, Double>();
+				predictedFunctions.put(knower, predictions);
+			}
+			predictions.put(function, membership);
+		}
+	}
+
+	public void add(Iterable<BiologicalFunction> functions, Interactome knower,
+			double membership) {
+		for (BiologicalFunction function : functions) {
+			add(function, knower, membership);
+		}
 	}
 
 	public boolean canMerge(Mergeable<Set<Interactome>> other) {
@@ -105,6 +142,18 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 		return species.size();
 	}
 
+	public Map<BiologicalFunction, Double> getFunctions(Interactome knower) {
+		if (knower == null) {
+			return knownFunctions;
+		}
+		Map<BiologicalFunction, Double> predictions = predictedFunctions
+				.get(knower);
+		if (predictions == null) {
+			return Collections.emptyMap();
+		}
+		return predictions;
+	}
+
 	public Collection<Interaction> getInteractions() {
 		return edges.values();
 	}
@@ -120,6 +169,23 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 		} else {
 			return value;
 		}
+	}
+
+	public double hasFunction(BiologicalFunction function, Interactome knower) {
+		if (knower == null) {
+			Double membership = knownFunctions.get(function);
+			if (membership == null) {
+				return Membership.Undefined;
+			} else {
+				return membership;
+			}
+		}
+		Map<BiologicalFunction, Double> predictions = predictedFunctions
+				.get(knower);
+		if (predictions == null) {
+			return Membership.Undefined;
+		}
+		return predictions.get(function);
 	}
 
 	public Iterator<Accession> iterator() {
@@ -157,6 +223,45 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 				first = false;
 			}
 		}
+
+		for (Entry<BiologicalFunction, Double> entry : knownFunctions
+				.entrySet()) {
+			if (!first) {
+				print.print(", ");
+			}
+			print.print(entry.getValue());
+			print.print("/");
+			print.print(entry.getKey());
+		}
+
+		Map<BiologicalFunction, Double> relevantPredictions = new HashMap<BiologicalFunction, Double>();
+		for (Entry<Interactome, Map<BiologicalFunction, Double>> entry : predictedFunctions
+				.entrySet()) {
+			if (print.getContext() == null
+					|| print.getContext().contains(entry.getKey())) {
+				for (Entry<BiologicalFunction, Double> subentry : entry
+						.getValue().entrySet()) {
+					double old = 0;
+					if (relevantPredictions.containsKey(subentry.getKey())) {
+						old = relevantPredictions.get(subentry.getKey());
+					}
+					relevantPredictions.put(subentry.getKey(), Math.max(old,
+							subentry.getValue()));
+				}
+			}
+		}
+
+		for (Entry<BiologicalFunction, Double> entry : relevantPredictions
+				.entrySet()) {
+			if (!first) {
+				print.print(", ¿");
+			}
+			print.print(entry.getValue());
+			print.print("/");
+			print.print(entry.getKey());
+			print.print("?");
+		}
+
 		print.print("}");
 	}
 

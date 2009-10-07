@@ -12,13 +12,23 @@ import org.apache.commons.collections15.multimap.MultiHashMap;
 
 public class Ubergraph implements Iterable<Interaction> {
 
+	private static Set<BiologicalFunction> functions = new HashSet<BiologicalFunction>();
 	private static final Ubergraph self = new Ubergraph();
+
+	public static void add(BiologicalFunction function) {
+		functions.add(function);
+	}
+
+	public static Set<BiologicalFunction> getAllFunctions() {
+		return functions;
+	}
 
 	public static Ubergraph getInstance() {
 		return self;
 	}
 
 	private final MultiMap<Long, Gene> geneByGi = new MultiHashMap<Long, Gene>();
+
 	private final Set<Gene> genes = new HashSet<Gene>();
 
 	private final Set<Interaction> interactions = new HashSet<Interaction>();
@@ -83,5 +93,4 @@ public class Ubergraph implements Iterable<Interaction> {
 
 		return results;
 	}
-
 }
