@@ -2,7 +2,6 @@ package ca.wlu.gisql.ast;
 
 import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -14,8 +13,6 @@ public class AstLambda2 extends AstNode {
 
 	private final AstNode expression;
 
-	private final Type resulttype = new TypeVariable();
-
 	private final Type type;
 
 	private final AstParameter variable;
@@ -23,7 +20,7 @@ public class AstLambda2 extends AstNode {
 	public AstLambda2(AstParameter variable, AstNode expression) {
 		this.variable = variable;
 		this.expression = expression;
-		type = new ArrowType(variable.type, resulttype);
+		type = new ArrowType(variable.type, expression.getType());
 	}
 
 	@Override
