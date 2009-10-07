@@ -25,7 +25,8 @@ public class AstLambda2 extends AstNode {
 
 	@Override
 	protected int getNeededParameterCount() {
-		return expression.getNeededParameterCount() + 1;
+		return (expression instanceof AstLambda2 ? expression
+				.getNeededParameterCount() : 0) + 1;
 	}
 
 	public int getPrecedence() {
