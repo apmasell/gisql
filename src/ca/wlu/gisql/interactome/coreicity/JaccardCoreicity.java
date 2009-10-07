@@ -3,16 +3,17 @@ package ca.wlu.gisql.interactome.coreicity;
 import java.util.Set;
 
 import ca.wlu.gisql.Membership;
-import ca.wlu.gisql.ast.Function;
+import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+@GisqlConstructorFunction(name = "jaccardcore", description = "Compute membership values of interactions as a Jaccard index of the species in their genes")
 public class JaccardCoreicity implements Interactome {
 
-	public static final Function function = new JaccardCoreicityFunction();
 	private final Set<Interactome> interactomes;
 	private final Interactome source;
 
@@ -62,7 +63,7 @@ public class JaccardCoreicity implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return function.getPrecedence();
+		return Parser.PREC_UNARY_MANGLE;
 	}
 
 	public double membershipOfUnknown() {

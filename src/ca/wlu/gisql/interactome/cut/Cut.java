@@ -3,7 +3,8 @@ package ca.wlu.gisql.interactome.cut;
 import java.util.Set;
 
 import ca.wlu.gisql.Membership;
-import ca.wlu.gisql.ast.Function;
+import ca.wlu.gisql.annotation.GisqlConstructorFunction;
+import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -11,15 +12,16 @@ import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+@GisqlConstructorFunction(name = "cut", description = "Filter interactions and genes with a score lower than threshold")
 public class Cut implements Interactome {
 	public static final Parseable descriptor = new CutDescriptor();
-	public static final Function function = new CutFunction();
 
 	private final double cutoff;
 
 	private final Interactome interactome;
 
-	public Cut(Interactome interactome, double cutoff) {
+	public Cut(Interactome interactome,
+			@GisqlType(type = "membership") double cutoff) {
 		super();
 		this.interactome = interactome;
 		this.cutoff = cutoff;

@@ -3,15 +3,16 @@ package ca.wlu.gisql.interactome.defuzzify;
 import java.util.Set;
 
 import ca.wlu.gisql.Membership;
-import ca.wlu.gisql.ast.Function;
+import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+@GisqlConstructorFunction(name = "defuzz", description = "Defuzzify memberships of genes and interactions into crisp 0 and 1.")
 public class Defuzzify implements Interactome {
-	public static final Function function = new DefuzzifyFunction();
 
 	private final Interactome source;
 
@@ -47,7 +48,7 @@ public class Defuzzify implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return function.getPrecedence();
+		return Parser.PREC_UNARY_MANGLE;
 	}
 
 	public double membershipOfUnknown() {

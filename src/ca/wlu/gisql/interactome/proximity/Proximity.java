@@ -2,21 +2,22 @@ package ca.wlu.gisql.interactome.proximity;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
 import ca.wlu.gisql.Membership;
-import ca.wlu.gisql.ast.Function;
+import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+@GisqlConstructorFunction(name = "near", description = "Find genes with in a specified number of degrees from genes specified by a list of gi numbers. Use iinf for maximum radius.")
 public class Proximity implements Interactome {
-
-	public static final Function function = new ProximityFunction();
 
 	private final Set<Long> accessions;
 
@@ -26,10 +27,10 @@ public class Proximity implements Interactome {
 
 	private final Interactome source;
 
-	public Proximity(Interactome source, long radius, Set<Long> accessions) {
+	public Proximity(Interactome source, Long radius, List<Long> accessions) {
 		this.source = source;
 		this.radius = radius;
-		this.accessions = accessions;
+		this.accessions = new HashSet<Long>(accessions);
 	}
 
 	public double calculateMembership(Gene gene) {
@@ -60,7 +61,7 @@ public class Proximity implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return function.getPrecedence();
+		return Parser.PREC_UNARY_MANGLE;
 	}
 
 	public double membershipOfUnknown() {

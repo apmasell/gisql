@@ -3,6 +3,8 @@ package ca.wlu.gisql.interactome.coreicity;
 import java.util.Set;
 
 import ca.wlu.gisql.Membership;
+import ca.wlu.gisql.annotation.GisqlConstructorFunction;
+import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
@@ -12,6 +14,7 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
 import ca.wlu.gisql.vm.Machine;
 import ca.wlu.gisql.vm.Program;
 
+@GisqlConstructorFunction(name = "deltacore", description = "Filter interactions based on the coreicity difference of their genes")
 public class DeltaCoreicity implements Interactome {
 
 	public static final Function function = new DeltaCoreicityDescriptor();
@@ -19,10 +22,10 @@ public class DeltaCoreicity implements Interactome {
 	private final Machine machine;
 	private final Interactome source;
 
-	public DeltaCoreicity(Interactome source, Machine machine,
-			Program comparison) {
-		this.source = source;
+	public DeltaCoreicity(Machine machine, Interactome source,
+			@GisqlType(type = "number → boolean") Program comparison) {
 		this.machine = machine;
+		this.source = source;
 		this.comparison = comparison;
 	}
 

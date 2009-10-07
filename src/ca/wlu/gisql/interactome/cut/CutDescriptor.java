@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstApplication;
+import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
@@ -22,7 +23,8 @@ final class CutDescriptor implements Parseable {
 
 	public AstNode construct(UserEnvironment environment, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
-		return new AstApplication(Cut.function, params.get(0), params.get(1));
+		return new AstApplication(new AstName("cut"), params.get(0), params
+				.get(1));
 	}
 
 	public int getPrecedence() {

@@ -18,7 +18,7 @@ public class DeltaCoreicityDescriptor extends Function {
 
 	@Override
 	public Object run(Machine machine, Object... parameters) {
-		return new DeltaCoreicity((Interactome) parameters[0], machine
-				.duplicate(), (Program) parameters[1]);
+		return new DeltaCoreicity(machine.duplicate(),
+				(Interactome) parameters[0], (Program) parameters[1]);
 	}
 }
