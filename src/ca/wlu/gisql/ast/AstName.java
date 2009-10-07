@@ -47,8 +47,9 @@ public class AstName extends AstNode {
 		AstNode self = environment.getVariable(name);
 		if (self == null) {
 			runner.appendResolutionError("Undefined name", this, context);
+			return null;
 		}
-		return self;
+		return self.resolve(runner, context, environment);
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {

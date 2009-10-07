@@ -44,8 +44,7 @@ public class AstParameter extends AstNode {
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			Environment environment) {
-		throw new IllegalStateException(
-				"Lambda parameters should not exist yet.");
+		return this;
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {
