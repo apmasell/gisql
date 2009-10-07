@@ -3,6 +3,7 @@ package ca.wlu.gisql;
 import java.io.File;
 import java.sql.SQLException;
 
+import jline.ArgumentCompletor;
 import jline.ConsoleReader;
 
 import org.apache.commons.cli.CommandLine;
@@ -87,18 +88,18 @@ public class GisQL {
 			ConsoleReader reader = new ConsoleReader();
 			reader.setBellEnabled(true);
 			reader.setDefaultPrompt("gisql> ");
-			reader.addCompletor(new EnvironmentCompletor(environment));
+			reader.addCompletor(new ArgumentCompletor(new EnvironmentCompletor(
+					environment), new NonIdentifierArgumentDelimiter()));
 
 			String line;
 			while ((line = reader.readLine()) != null) {
 				if (line.equalsIgnoreCase("quit")
 						|| line.equalsIgnoreCase("exit")) {
 					break;
-				}
-				if (line.equalsIgnoreCase("help")) {
+				} else if (line.equalsIgnoreCase("help")) {
 					System.out.println(ParserEnvironment.self.getParserKb()
 							.getHelp());
-				} else {
+				} else if (line.trim().length() > 0) {
 					runner.run(line, null);
 				}
 			}

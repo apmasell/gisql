@@ -27,11 +27,11 @@ public class EnvironmentCompletor implements Completor, EnvironmentListener {
 	@SuppressWarnings("unchecked")
 	public int complete(final String buffer, final int cursor,
 			final List candidatelist) {
-		String start = (buffer == null) ? "" : buffer;
+		String start = buffer == null ? "" : buffer;
 
 		for (String candidate : candidates.tailSet(start)) {
 
-			if (!(candidate.startsWith(start))) {
+			if (!candidate.startsWith(start)) {
 				break;
 			}
 
@@ -44,10 +44,10 @@ public class EnvironmentCompletor implements Completor, EnvironmentListener {
 			candidatelist.add(candidate);
 		}
 		if (candidatelist.size() == 1) {
-			candidatelist.set(0, ((String) candidatelist.get(0)) + " ");
+			candidatelist.set(0, (String) candidatelist.get(0) + " ");
 		}
 
-		return (candidatelist.size() == 0) ? (-1) : 0;
+		return candidatelist.size() == 0 ? -1 : 0;
 	}
 
 	public void droppedEnvironmentVariable(String name, AstNode node) {
