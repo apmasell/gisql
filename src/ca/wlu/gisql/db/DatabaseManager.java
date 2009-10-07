@@ -19,8 +19,11 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.graph.Accession;
+import ca.wlu.gisql.graph.BiologicalFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Ubergraph;
+import ca.wlu.gisql.graph.biologicalfunctions.Cog;
+import ca.wlu.gisql.graph.biologicalfunctions.GeneOntology;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class DatabaseManager {
@@ -109,6 +112,35 @@ public class DatabaseManager {
 		}
 	}
 
+	Set<BiologicalFunction> pullFunctions(Accession accession)
+			throws SQLException {
+		Set<BiologicalFunction> functions = new HashSet<BiologicalFunction>();
+		PreparedStatement interactionStatement = connection
+				.prepareStatement("SELECT function FROM cog WHERE gene = ?");
+		interactionStatement.setLong(1, accession.getIdentifier());
+		ResultSet rs = interactionStatement.executeQuery();
+		while (rs.next()) {
+			String s = rs.getString(1);
+			for (Character id : s.toCharArray()) {
+				Cog cog = Cog.makeCog(id);
+				functions.add(cog);
+			}
+		}
+		rs.close();
+
+		interactionStatement = connection
+				.prepareStatement("SELECT term FROM go WHERE gene = ?");
+		interactionStatement.setLong(1, accession.getIdentifier());
+		rs = interactionStatement.executeQuery();
+		while (rs.next()) {
+			int term = rs.getInt(1);
+			functions.add(GeneOntology.makeGO(term));
+		}
+		rs.close();
+
+		return functions;
+	}
+
 	void pullGenes(DbSpecies species) throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement("SELECT id, name, ogrp FROM gene WHERE species = ?");
@@ -129,6 +161,9 @@ public class DatabaseManager {
 			gene.setMembership(species, 1);
 			if (orthogroup != 0) {
 				orthogroups.put(orthogroup, gene);
+			}
+			for (BiologicalFunction function : pullFunctions(accession)) {
+				gene.add(function, species, 1);
 			}
 		}
 		rs.close();
