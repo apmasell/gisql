@@ -74,6 +74,7 @@ public class AstApplication extends AstNode {
 		if (operand == null) {
 			return null;
 		}
+
 		return new AstApplication(operator, operand);
 	}
 

@@ -1,4 +1,5 @@
 *.class
-gisql.properties
-bin
-dist
+/.settings
+/bin
+/dist
+/gisql.properties
