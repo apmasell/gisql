@@ -196,7 +196,11 @@ public class Parser {
 					position++;
 					results.push(Unit.nilAst);
 				} else {
-					results.push(parseExpression(')'));
+					AstNode subexpression = parseExpression(')');
+					if (subexpression == null) {
+						return null;
+					}
+					results.push(subexpression);
 				}
 			} else if (codepoint == ':') {
 				position++;
