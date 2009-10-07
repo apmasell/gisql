@@ -1,10 +1,11 @@
 package ca.wlu.gisql.environment;
 
+import ca.wlu.gisql.ast.AstConstructor;
 import ca.wlu.gisql.ast.AstLambda2;
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstLogic;
+import ca.wlu.gisql.ast.AstNative;
 import ca.wlu.gisql.ast.AstParameter;
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.functions.ClearFunction;
 import ca.wlu.gisql.environment.functions.DefinedFunction;
@@ -101,8 +102,12 @@ public class ParserEnvironment extends Environment {
 		}
 	}
 
-	public void add(Function function) {
+	public void add(AstNative function) {
 		add(function.toString(), function);
+	}
+
+	public void add(Class<?> clazz) {
+		add(new AstConstructor(clazz));
 	}
 
 	private <E extends Enum<E>> void add(Type type, E[] values) {

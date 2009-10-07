@@ -5,8 +5,8 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstName;
+import ca.wlu.gisql.ast.AstNative;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
@@ -34,8 +34,8 @@ public class HelpDescriptor implements Parseable {
 		String result;
 		if (variable == null) {
 			result = "undefined name";
-		} else if (variable instanceof Function) {
-			Function function = (Function) variable;
+		} else if (variable instanceof AstNative) {
+			AstNative function = (AstNative) variable;
 			result = function.getName() + " :: " + function.getType() + "\n\t"
 					+ function.getDescription();
 		} else if (variable instanceof AstLiteral) {
