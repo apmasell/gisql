@@ -27,6 +27,10 @@ public abstract class Type implements Show<List<TypeVariable>> {
 		return this;
 	}
 
+	protected boolean isArrow() {
+		return false;
+	}
+
 	protected boolean occurs(Type needle) {
 		return false;
 	}

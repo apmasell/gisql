@@ -42,12 +42,17 @@ public class ArrowType extends Type {
 	}
 
 	@Override
+	protected boolean isArrow() {
+		return true;
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return operand.occurs(needle) || result.occurs(needle);
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
-		boolean brackets = operand instanceof ArrowType;
+		boolean brackets = operand.isArrow();
 		if (brackets) {
 			print.print("(");
 		}

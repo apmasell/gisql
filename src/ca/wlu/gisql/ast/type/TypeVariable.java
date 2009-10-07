@@ -22,6 +22,11 @@ public class TypeVariable extends Type {
 	}
 
 	@Override
+	protected boolean isArrow() {
+		return self == null ? false : self.isArrow();
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return this == needle;
 	}
