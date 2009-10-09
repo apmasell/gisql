@@ -52,6 +52,7 @@ public class ParserEnvironment extends Environment {
 		add("false", new AstLiteral(Type.BooleanType, false));
 		add("iinf", new AstLiteral(Type.NumberType, Long.MAX_VALUE));
 		AstParameter not = new AstParameter("__not");
+		not.getType().unify(Type.InteractomeType);
 		add("not", new AstLambda2(not, AstLogic.makeNegation(not)));
 
 		add(Type.FormatType, FileFormat.values());
