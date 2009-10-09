@@ -88,21 +88,21 @@ public class ExpressionRunner {
 
 		result = result.resolve(this, context, environment);
 		if (result == null || !result.type(this, context)) {
-			listener.reportErrors(errors);
+			listener.reportErrors(new ArrayList<ExpressionError>(errors));
 			errors.clear();
 			return false;
 		}
 
 		if (type != null && !type.unify(result.getType())) {
 			appendTypeError(result.getType(), type, result, context);
-			listener.reportErrors(errors);
+			listener.reportErrors(new ArrayList<ExpressionError>(errors));
 			errors.clear();
 			return false;
 		}
 
 		ProgramRoutine program = new ProgramRoutine(result.toString());
 		if (!result.render(program, 0, -1)) {
-			listener.reportErrors(errors);
+			listener.reportErrors(new ArrayList<ExpressionError>(errors));
 			errors.clear();
 			return false;
 		}
