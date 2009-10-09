@@ -43,8 +43,13 @@ public class AstToVar extends AstNode {
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			Environment environment) {
-		node = node.resolve(runner, context, environment);
-		return this;
+		AstNode node = this.node.resolve(runner, context, environment);
+		if (node == null) {
+			return null;
+		} else {
+			this.node = node;
+			return this;
+		}
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {

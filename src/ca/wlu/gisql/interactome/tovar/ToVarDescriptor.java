@@ -21,9 +21,13 @@ final class ToVarDescriptor implements Parseable {
 
 	public AstNode construct(UserEnvironment environment, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
-		AstNode interactome = params.get(0);
+		AstNode value = params.get(0);
 		String name = ((AstName) params.get(1)).getName();
-		return new AstToVar(interactome, name);
+		if (value == null) {
+			return null;
+		} else {
+			return new AstToVar(value, name);
+		}
 	}
 
 	public int getPrecedence() {
