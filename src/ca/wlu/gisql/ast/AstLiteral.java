@@ -58,7 +58,14 @@ public class AstLiteral extends AstNode {
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {
+		boolean isString = value instanceof String;
+		if (isString) {
+			print.print('"');
+		}
 		print.print(value);
+		if (isString) {
+			print.print('"');
+		}
 	}
 
 	@Override
