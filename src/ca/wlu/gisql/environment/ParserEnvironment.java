@@ -30,6 +30,8 @@ import ca.wlu.gisql.function.metrics.GenomeSize;
 import ca.wlu.gisql.function.metrics.InteractomeCardinality;
 import ca.wlu.gisql.function.metrics.InteractomeFuzziness;
 import ca.wlu.gisql.function.metrics.InteractomeSize;
+import ca.wlu.gisql.interactome.CompleteInteractome;
+import ca.wlu.gisql.interactome.EmptyInteractome;
 import ca.wlu.gisql.interactome.coreicity.Coreicity;
 import ca.wlu.gisql.interactome.coreicity.DeltaCoreicity;
 import ca.wlu.gisql.interactome.coreicity.JaccardCoreicity;
@@ -54,6 +56,9 @@ public class ParserEnvironment extends Environment {
 		AstParameter not = new AstParameter("__not");
 		not.getType().unify(Type.InteractomeType);
 		add("not", new AstLambda2(not, AstLogic.makeNegation(not)));
+		add("null", new AstLiteral(Type.InteractomeType, EmptyInteractome.self));
+		add("universe", new AstLiteral(Type.InteractomeType,
+				CompleteInteractome.self));
 
 		add(Type.FormatType, FileFormat.values());
 
