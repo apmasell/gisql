@@ -7,18 +7,12 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.ast.type.Unit;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunListener;
 import ca.wlu.gisql.runner.LineContext;
 
 public class Parser {
-
-	private static final Token[] literals = new Token[] { TokenName.self,
-			TokenReal.self, TokenNumber.self, TokenQuotedString.self };
-
-	public static final int PREC_APPLICATION = 8;
 
 	public static final int PREC_ASSIGN = 1;
 
@@ -30,9 +24,7 @@ public class Parser {
 
 	public static final int PREC_FUNCTION = 0;
 
-	public static final int PREC_LIST = 7;
-
-	public static final int PREC_LITERAL = 9;
+	public static final int PREC_LITERAL = 7;
 
 	public static final int PREC_UNARY = 6;
 
@@ -85,49 +77,35 @@ public class Parser {
 	}
 
 	AstNode parseAutoExpression(int level) {
-		if (level >= environment.getParserKb().maxdepth) {
-			return parseLiterals();
-		}
-
-		AstNode left = null;
-		if (position >= input.length()) {
+		if (level > environment.getParserKb().maxdepth) {
 			return null;
 		}
 
-		int errorposition = error.size();
-		for (Parseable operator : environment.getParserKb().getPrefix(level)) {
-			int originalposition = position;
-			if (operator.isMatchingOperator(input.charAt(position))) {
-				position++;
-				left = processOperator(operator, null, level);
-				if (left != null) {
-					error.setSize(errorposition);
-					break;
-				}
-				position = originalposition;
-			}
-		}
-
-		if (left == null) {
-			left = parseAutoExpression(level + 1);
-		}
-
-		if (left == null) {
-			return null;
-		}
+		Stack<AstNode> results = new Stack<AstNode>();
 
 		consumeWhitespace(); /* Do this before testing input length. */
-		while (position < input.length()) {
-			boolean matched = false;
-			for (Parseable operator : environment.getParserKb().getOtherfix(
+		boolean matched = true;
+		while (matched && position < input.length()) {
+			matched = false;
+			for (Parseable operator : environment.getParserKb().getOperators(
 					level)) {
 				int oldposition = position;
-				errorposition = error.size();
-				if (operator.isMatchingOperator(input.charAt(position))) {
-					position++;
-					AstNode result = processOperator(operator, left, level);
+				int errorposition = error.size();
+				if (operator.isPrefixed() == null
+						|| operator.isMatchingOperator(input.charAt(position))
+						&& (operator.isPrefixed() || results.size() > 0)) {
+					if (operator.isPrefixed() != null) {
+						position++;
+					}
+					boolean pop = operator.isPrefixed() != null
+							&& !operator.isPrefixed();
+					AstNode result = processOperator(operator, (pop ? results
+							.peek() : null), level);
 					if (result != null) {
-						left = result;
+						if (pop) {
+							results.pop();
+						}
+						results.push(result);
 						matched = true;
 						break;
 					}
@@ -136,15 +114,25 @@ public class Parser {
 				}
 			}
 
-			if (!matched) {
-				return left;
+			if (!matched && level < environment.getParserKb().maxdepth) {
+				AstNode result = parseAutoExpression(level + 1);
+				if (result != null) {
+					results.add(result);
+					matched = true;
+				}
 			}
 			consumeWhitespace(); /* Do this before testing input length. */
 		}
-		return left;
+		if (results.size() == 0) {
+			return null;
+		}
+		if (results.size() == 1) {
+			return results.firstElement();
+		}
+		return new AstApplication(results.toArray(new AstNode[results.size()]));
 	}
 
-	private AstNode parseExpression(Character endofexpression) {
+	AstNode parseExpression(Character endofexpression) {
 		AstNode e = parseAutoExpression(0);
 
 		if (e == null) {
@@ -170,76 +158,11 @@ public class Parser {
 		}
 	}
 
-	private boolean parseLiteral(List<AstNode> results) {
-		int oldposition = position;
-		for (Token token : literals) {
-			position = oldposition;
-			if (token.parse(this, PREC_LITERAL, results)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private AstNode parseLiterals() {
-		consumeWhitespace();
-		Stack<AstNode> results = new Stack<AstNode>();
-		int errorposition = error.size();
-
-		while (position < input.length()) {
-			char codepoint = input.charAt(position);
-
-			if (codepoint == '(') {
-				position++;
-				consumeWhitespace();
-				if (position < input.length() && input.charAt(position) == ')') {
-					position++;
-					results.push(Unit.nilAst);
-				} else {
-					AstNode subexpression = parseExpression(')');
-					if (subexpression == null) {
-						return null;
-					}
-					results.push(subexpression);
-				}
-			} else if (codepoint == ':') {
-				position++;
-				consumeWhitespace();
-				if (position >= input.length()) {
-					return null;
-				}
-				AstNode last = results.pop();
-				if (parseLiteral(results)) {
-					results.push(last);
-				} else {
-					pushError("Expected literal.");
-					return null;
-				}
-			} else {
-				if (!parseLiteral(results)) {
-					break;
-				}
-			}
-			consumeWhitespace();
-		}
-		error.setSize(errorposition);
-		if (results.size() == 0) {
-			return null;
-		}
-		if (results.size() == 1) {
-			return results.firstElement();
-		}
-		return new AstApplication(results.toArray(new AstNode[results.size()]));
-	}
-
 	private AstNode processOperator(Parseable operator, AstNode left, int level) {
 		Token[] todo = operator.tasks();
 		List<AstNode> params = new ArrayList<AstNode>();
 
-		if (!operator.isPrefixed()) {
-			if (left == null) {
-				return null;
-			}
+		if (left != null) {
 			params.add(left);
 		}
 		if (todo != null) {

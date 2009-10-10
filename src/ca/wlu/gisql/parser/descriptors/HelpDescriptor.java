@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.util;
+package ca.wlu.gisql.parser.descriptors;
 
 import java.util.List;
 import java.util.Stack;
@@ -55,7 +55,7 @@ public class HelpDescriptor implements Parseable {
 		return c == '?';
 	}
 
-	public boolean isPrefixed() {
+	public Boolean isPrefixed() {
 		return true;
 	}
 

@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.util;
+package ca.wlu.gisql.parser.descriptors;
 
 import java.util.List;
 import java.util.Stack;
@@ -10,7 +10,7 @@ import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
-import ca.wlu.gisql.parser.TokenExpression;
+import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -19,7 +19,7 @@ public class TypeOfDescriptor implements Parseable {
 
 	public static final Parseable descriptor = new TypeOfDescriptor();
 
-	private static final Token[] tokens = new Token[] { TokenExpression.self };
+	private static final Token[] tokens = new Token[] { TokenExpressionRight.self };
 
 	private TypeOfDescriptor() {
 	}
@@ -42,7 +42,7 @@ public class TypeOfDescriptor implements Parseable {
 		return c == '#';
 	}
 
-	public boolean isPrefixed() {
+	public Boolean isPrefixed() {
 		return true;
 	}
 

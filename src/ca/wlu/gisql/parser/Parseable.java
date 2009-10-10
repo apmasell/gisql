@@ -19,7 +19,7 @@ public interface Parseable extends Prioritizable<ParserKnowledgebase>,
 
 	public abstract boolean isMatchingOperator(char c);
 
-	public abstract boolean isPrefixed();
+	public abstract Boolean isPrefixed();
 
 	public abstract Token[] tasks();
 }

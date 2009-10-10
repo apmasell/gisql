@@ -45,7 +45,7 @@ public class AstApplication extends AstNode {
 	}
 
 	public int getPrecedence() {
-		return Parser.PREC_APPLICATION;
+		return Parser.PREC_LITERAL;
 	}
 
 	@Override

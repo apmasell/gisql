@@ -12,7 +12,7 @@ import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
-import ca.wlu.gisql.parser.TokenExpression;
+import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenMaybe;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -20,7 +20,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 final class OutputDescriptor implements Parseable {
 	private static final Token[] tokens = new Token[] {
-			new TokenMaybe(TokenExpression.self), TokenExpression.self };
+			new TokenMaybe(TokenExpressionRight.self),
+			TokenExpressionRight.self };
 
 	public AstNode construct(UserEnvironment environment, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
@@ -44,7 +45,7 @@ final class OutputDescriptor implements Parseable {
 		return c == '@';
 	}
 
-	public boolean isPrefixed() {
+	public Boolean isPrefixed() {
 		return false;
 	}
 

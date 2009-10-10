@@ -1,53 +1,57 @@
-package ca.wlu.gisql.parser.util;
+package ca.wlu.gisql.parser.descriptors;
 
 import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.type.Unit;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
-import ca.wlu.gisql.parser.TokenExpression;
-import ca.wlu.gisql.parser.TokenListOf;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class LiteralList implements Parseable {
+public class UnitDescriptor implements Parseable {
+	public static final Parseable descriptor = new UnitDescriptor();
 
-	public static final Parseable descriptor = new LiteralList();
-	private static final Token[] tokens = new Token[] {
-			new TokenListOf(TokenExpression.self, ','),
-			TokenMatchCharacter.get('}') };
+	private static final Token[] tokens = new Token[] { TokenMatchCharacter
+			.get(')') };
 
-	private LiteralList() {
+	private UnitDescriptor() {
 		super();
 	}
 
+	@Override
 	public AstNode construct(UserEnvironment environment, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
-		return params.get(0);
+		return Unit.nilAst;
 	}
 
+	@Override
 	public int getPrecedence() {
-		return Parser.PREC_LIST;
+		return Parser.PREC_LITERAL;
 	}
 
+	@Override
 	public boolean isMatchingOperator(char c) {
-		return c == '{';
+		return c == '(';
 	}
 
-	public boolean isPrefixed() {
+	@Override
+	public Boolean isPrefixed() {
 		return true;
 	}
 
+	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("List: {A, B, C, ...}");
+		print.print("Unit: ()");
 	}
 
+	@Override
 	public Token[] tasks() {
 		return tokens;
 	}

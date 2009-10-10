@@ -19,7 +19,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 final class CutDescriptor implements Parseable {
 	private final Token[] tokens = new Token[] { TokenReal.self,
-			TokenMatchCharacter.get(']') };
+			TokenMatchCharacter.get('}') };
 
 	public AstNode construct(UserEnvironment environment, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
@@ -32,15 +32,15 @@ final class CutDescriptor implements Parseable {
 	}
 
 	public boolean isMatchingOperator(char c) {
-		return c == '[';
+		return c == '{';
 	}
 
-	public boolean isPrefixed() {
+	public Boolean isPrefixed() {
 		return false;
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Cut-off (Ax|x>c): A [c]");
+		print.print("Cut-off (Ax|x>c): A {c}");
 	}
 
 	public Token[] tasks() {

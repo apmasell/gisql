@@ -1,55 +1,59 @@
-package ca.wlu.gisql.parser.util;
+package ca.wlu.gisql.parser.descriptors;
 
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.ast.AstLambda1;
-import ca.wlu.gisql.ast.AstName;
+import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
-import ca.wlu.gisql.parser.TokenExpression;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class LambdaDescriptor implements Parseable {
+public class ColonOrderDescriptor implements Parseable {
+	public static final Parseable descriptor = new ColonOrderDescriptor();
 
-	public static final Parseable descriptor = new LambdaDescriptor();
+	private static final Token[] tokens = new Token[] { TokenName.self };
 
-	private static final Token[] tokens = new Token[] { TokenName.self,
-			TokenExpression.self };
-
-	private LambdaDescriptor() {
+	private ColonOrderDescriptor() {
+		super();
 	}
 
+	@Override
 	public AstNode construct(UserEnvironment environment, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
-		AstName name = (AstName) params.get(0);
-		AstNode expression = params.get(1);
-		return new AstLambda1(name.getName(), expression);
+		AstNode operand = params.get(0);
+		AstNode operator = params.get(1);
+		return new AstApplication(operator, operand);
 	}
 
+	@Override
 	public int getPrecedence() {
-		return Parser.PREC_FUNCTION;
+		return Parser.PREC_LITERAL;
 	}
 
+	@Override
 	public boolean isMatchingOperator(char c) {
-		return c == '\'';
+		return c == ':';
 	}
 
-	public boolean isPrefixed() {
-		return true;
+	@Override
+	public Boolean isPrefixed() {
+		return false;
 	}
 
+	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Anonymous function: 'variable expression");
+		print.print("Function in postfix: expression :function\n");
+		print.print("\tEquivalent to: function expresssion");
 	}
 
+	@Override
 	public Token[] tasks() {
 		return tokens;
 	}

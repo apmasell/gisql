@@ -11,14 +11,14 @@ import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
-import ca.wlu.gisql.parser.TokenSubExpression;
+import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class ComputedInteractomeParser implements Parseable {
 
-	private static final Token[] tokens = new Token[] { TokenSubExpression.self };
+	private static final Token[] tokens = new Token[] { TokenExpressionChild.self };
 
 	private final char[] alternateoperators;
 
@@ -94,7 +94,7 @@ public abstract class ComputedInteractomeParser implements Parseable {
 		return false;
 	}
 
-	public final boolean isPrefixed() {
+	public final Boolean isPrefixed() {
 		return false;
 	}
 

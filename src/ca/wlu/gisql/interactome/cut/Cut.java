@@ -70,9 +70,9 @@ public class Cut implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(interactome, getPrecedence());
-		print.print(" [");
+		print.print(" {");
 		print.print(cutoff);
-		print.print("]");
+		print.print("}");
 
 	}
 

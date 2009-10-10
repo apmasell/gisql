@@ -4,17 +4,16 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
 
-public class TokenExpression extends Token {
+public class TokenExpressionChild extends Token {
+	public static final TokenExpressionChild self = new TokenExpressionChild();
 
-	public static final TokenExpression self = new TokenExpression();
-
-	private TokenExpression() {
+	private TokenExpressionChild() {
 		super();
 	}
 
 	@Override
 	boolean parse(Parser parser, int level, List<AstNode> results) {
-		AstNode result = parser.parseAutoExpression(level);
+		AstNode result = parser.parseAutoExpression(level + 1);
 		if (result == null) {
 			return false;
 		}

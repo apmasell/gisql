@@ -10,7 +10,7 @@ import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
-import ca.wlu.gisql.parser.TokenSubExpression;
+import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -18,7 +18,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class Complement implements Parseable {
 	public static final Parseable descriptor = new Complement();
 
-	private static final Token[] tokens = new Token[] { TokenSubExpression.self };
+	private static final Token[] tokens = new Token[] { TokenExpressionChild.self };
 
 	public AstNode construct(UserEnvironment environment, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
@@ -35,7 +35,7 @@ public class Complement implements Parseable {
 		return c == '!' || c == '¬';
 	}
 
-	public boolean isPrefixed() {
+	public Boolean isPrefixed() {
 		return true;
 	}
 

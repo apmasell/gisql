@@ -1,9 +1,11 @@
 package ca.wlu.gisql.parser;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections15.OrderedMap;
+import org.apache.commons.collections15.map.ListOrderedMap;
 
 import ca.wlu.gisql.environment.functions.LastInteractome;
 import ca.wlu.gisql.interactome.cut.Cut;
@@ -15,11 +17,15 @@ import ca.wlu.gisql.interactome.logic.SymmetricDifference;
 import ca.wlu.gisql.interactome.logic.Union;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
 import ca.wlu.gisql.interactome.tovar.ToVar;
+import ca.wlu.gisql.parser.descriptors.BracketedExpressionDescriptor;
+import ca.wlu.gisql.parser.descriptors.ColonOrderDescriptor;
+import ca.wlu.gisql.parser.descriptors.HelpDescriptor;
+import ca.wlu.gisql.parser.descriptors.LambdaDescriptor;
+import ca.wlu.gisql.parser.descriptors.LiteralList;
+import ca.wlu.gisql.parser.descriptors.LiteralTokenDescriptor;
+import ca.wlu.gisql.parser.descriptors.TypeOfDescriptor;
+import ca.wlu.gisql.parser.descriptors.UnitDescriptor;
 import ca.wlu.gisql.parser.util.ComputedInteractomeParser;
-import ca.wlu.gisql.parser.util.HelpDescriptor;
-import ca.wlu.gisql.parser.util.LambdaDescriptor;
-import ca.wlu.gisql.parser.util.LiteralList;
-import ca.wlu.gisql.parser.util.TypeOfDescriptor;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class ParserKnowledgebase {
@@ -30,11 +36,12 @@ public class ParserKnowledgebase {
 
 	int maxdepth = 0;
 
-	private final Map<Integer, List<Parseable>> otherfixOperators = new HashMap<Integer, List<Parseable>>();
-	private final Map<Integer, List<Parseable>> prefixedOperators = new HashMap<Integer, List<Parseable>>();
+	private final OrderedMap<Integer, List<Parseable>> operators = new ListOrderedMap<Integer, List<Parseable>>();
 
 	public ParserKnowledgebase() {
 		installOperator(AbstractOutput.descriptor);
+		installOperator(BracketedExpressionDescriptor.descriptor);
+		installOperator(ColonOrderDescriptor.descriptor);
 		installOperator(Complement.descriptor);
 		installOperator(Cut.descriptor);
 		installOperator(Difference.descriptor);
@@ -48,6 +55,12 @@ public class ParserKnowledgebase {
 		installOperator(ToVar.descriptor);
 		installOperator(TypeOfDescriptor.descriptor);
 		installOperator(Union.descriptor);
+		installOperator(UnitDescriptor.descriptor);
+
+		installOperator(new LiteralTokenDescriptor(TokenName.self));
+		installOperator(new LiteralTokenDescriptor(TokenReal.self));
+		installOperator(new LiteralTokenDescriptor(TokenNumber.self));
+		installOperator(new LiteralTokenDescriptor(TokenQuotedString.self));
 
 		buildHelp();
 	}
@@ -67,10 +80,7 @@ public class ParserKnowledgebase {
 		print.println();
 		/* This also initialises every entry in the maps. */
 		for (int level = 0; level <= maxdepth; level++) {
-			for (Parseable operator : getList(prefixedOperators, level)) {
-				print.println(operator);
-			}
-			for (Parseable operator : getList(otherfixOperators, level)) {
+			for (Parseable operator : getList(operators, level)) {
 				print.println(operator);
 			}
 			print.println();
@@ -102,12 +112,8 @@ public class ParserKnowledgebase {
 		return list;
 	}
 
-	protected List<Parseable> getOtherfix(int level) {
-		return otherfixOperators.get(level);
-	}
-
-	protected List<Parseable> getPrefix(int level) {
-		return prefixedOperators.get(level);
+	protected List<Parseable> getOperators(int level) {
+		return operators.get(level);
 	}
 
 	private void installOperator(Parseable operator) {
@@ -115,9 +121,7 @@ public class ParserKnowledgebase {
 		if (level > maxdepth) {
 			maxdepth = level;
 		}
-		List<Parseable> list = getList(
-				(operator.isPrefixed() ? prefixedOperators : otherfixOperators),
-				level);
+		List<Parseable> list = getList(operators, level);
 		if (list.contains(operator)) {
 			return;
 		}

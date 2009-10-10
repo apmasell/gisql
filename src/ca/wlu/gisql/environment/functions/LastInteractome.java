@@ -40,7 +40,7 @@ public final class LastInteractome implements Parseable {
 		return c == '.';
 	}
 
-	public boolean isPrefixed() {
+	public Boolean isPrefixed() {
 		return true;
 	}
 
