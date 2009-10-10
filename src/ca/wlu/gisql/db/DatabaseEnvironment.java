@@ -1,5 +1,6 @@
 package ca.wlu.gisql.db;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ public class DatabaseEnvironment extends Environment {
 			add(interactome.toString(), node);
 			speciesById.put(interactome.getId(), interactome);
 		}
+		putArray("all", new ArrayList<Interactome>(speciesById.values()));
 		databaseManager.populateArrays(this, speciesById);
 	}
 
