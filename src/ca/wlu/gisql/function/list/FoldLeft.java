@@ -11,25 +11,26 @@ import ca.wlu.gisql.vm.Program;
 
 public class FoldLeft extends Function {
 	private static final TypeVariable a = new TypeVariable();
+
+	private static final TypeVariable b = new TypeVariable();
+
 	public static final Function self = new FoldLeft();
 
+	/* From Haskell: foldl :: (a -> b -> a) -> a -> [b] -> a */
+
 	private FoldLeft() {
-		super("foldl", "Left-recursive fold/reduce", new ArrowType(a, a, a),
-				new ListType(a), a);
+		super("foldl", "Left-recursive fold/reduce", new ArrowType(a, b, a), a,
+				new ListType(b), a);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object run(Machine machine, Object... parameters) {
 		Program function = (Program) parameters[0];
-		List input = (List) parameters[1];
-		Object left = null;
+		Object left = parameters[1];
+		List input = (List) parameters[2];
 		for (Object right : input) {
-			if (left == null) {
-				left = right;
-			} else {
-				left = function.run(machine, left, right);
-			}
+			left = function.run(machine, left, right);
 		}
 		return left;
 	}
