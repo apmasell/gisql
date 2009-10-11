@@ -6,11 +6,16 @@ import java.util.List;
 import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.TypeVariable;
+import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.vm.Machine;
 
 public class Cons extends Function {
 	private static final TypeVariable a = new TypeVariable();
+
 	private static final ListType alist = new ListType(a);
+
+	public static final Parseable descriptor = new ConsDescriptor();
+
 	public static final Function function = new Cons();
 
 	private Cons() {

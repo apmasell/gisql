@@ -8,6 +8,7 @@ import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 
 import ca.wlu.gisql.environment.functions.LastInteractome;
+import ca.wlu.gisql.function.list.Cons;
 import ca.wlu.gisql.interactome.cut.Cut;
 import ca.wlu.gisql.interactome.logic.Complement;
 import ca.wlu.gisql.interactome.logic.Difference;
@@ -43,6 +44,7 @@ public class ParserKnowledgebase {
 		installOperator(AbstractOutput.descriptor);
 		installOperator(BracketedExpressionDescriptor.descriptor);
 		installOperator(ColonOrderDescriptor.descriptor);
+		installOperator(Cons.descriptor);
 		installOperator(Complement.descriptor);
 		installOperator(Cut.descriptor);
 		installOperator(Difference.descriptor);
