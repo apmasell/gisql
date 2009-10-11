@@ -145,7 +145,7 @@ public class AstList extends AstNode implements List<AstNode> {
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {
-		print.print("{");
+		print.print("[");
 		boolean first = true;
 		for (AstNode node : this) {
 			if (first) {
@@ -155,7 +155,7 @@ public class AstList extends AstNode implements List<AstNode> {
 			}
 			print.print(node);
 		}
-		print.print("}");
+		print.print("]");
 	}
 
 	public int size() {
