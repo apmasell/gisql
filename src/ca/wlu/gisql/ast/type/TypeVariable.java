@@ -58,7 +58,9 @@ public class TypeVariable extends Type {
 
 	@Override
 	public boolean unify(Type that) {
-		if (that.occurs(this)) {
+		if (this == that) {
+			return true;
+		} else if (that.occurs(this)) {
 			return false;
 		} else if (self == null) {
 			self = that;
