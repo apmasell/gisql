@@ -74,9 +74,11 @@ public class GisQL {
 		ConsoleRunListener listener = new ConsoleRunListener(environment);
 		ExpressionRunner runner = new ExpressionRunner(environment, listener);
 
-		for (String argument : commandline.getArgs()) {
-			if (!runner.run(argument, null)) {
-				return;
+		if (commandline.getArgs().length > 0) {
+			for (String argument : commandline.getArgs()) {
+				if (!runner.run(argument, null)) {
+					return;
+				}
 			}
 			return;
 		}
