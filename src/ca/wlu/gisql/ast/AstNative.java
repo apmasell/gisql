@@ -20,6 +20,11 @@ public abstract class AstNative extends AstNode {
 		if (types.length < 2) {
 			throw new IllegalArgumentException("Need at least two types.");
 		}
+		for (Type type : types) {
+			if (type == null) {
+				throw new IllegalArgumentException("Type cannot be null.");
+			}
+		}
 		this.name = name;
 		this.types = types;
 		this.description = description;
