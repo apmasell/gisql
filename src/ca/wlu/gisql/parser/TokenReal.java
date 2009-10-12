@@ -5,6 +5,8 @@ import java.util.List;
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.type.TypeVariable;
+import ca.wlu.gisql.ast.typeclasses.TypeClass;
 
 public class TokenReal extends Token {
 	public static final TokenReal self = new TokenReal();
@@ -35,8 +37,8 @@ public class TokenReal extends Token {
 		try {
 			double value = Double.parseDouble(parser.input.substring(
 					oldposition, parser.position));
-			Type type = Type.MembershipType.validate(value) ? Type.MembershipType
-					: Type.RealType;
+			Type type = Type.MembershipType.validate(value) ? new TypeVariable(
+					TypeClass.Fractional) : Type.RealType;
 			results.add(new AstLiteral(type, value));
 			return true;
 		} catch (NumberFormatException e) {

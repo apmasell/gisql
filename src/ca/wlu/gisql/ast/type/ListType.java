@@ -17,6 +17,12 @@ public class ListType extends Type {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof ListType ? contents
+				.equals(((ListType) obj).contents) : super.equals(obj);
+	}
+
+	@Override
 	protected Type freshen(Type needle, Type replacement) {
 		Type freshContents = contents.freshen(needle, replacement);
 		if (freshContents == contents) {
@@ -41,13 +47,11 @@ public class ListType extends Type {
 	public boolean unify(Type that) {
 		if (this == that) {
 			return true;
-		} else if (that instanceof TypeVariable) {
-			return ((TypeVariable) that).reverseUnify(this);
 		} else if (that instanceof ListType) {
 			ListType other = (ListType) that;
 			return contents.unify(other.contents);
 		} else {
-			return false;
+			return super.unify(that);
 		}
 	}
 

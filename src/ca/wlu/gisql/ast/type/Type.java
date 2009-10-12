@@ -29,9 +29,20 @@ public abstract class Type implements Show<List<TypeVariable>> {
 		ShowableStringBuilder.toString(this, variables);
 		Type result = this;
 		for (TypeVariable variable : variables) {
-			result = result.freshen(variable, new TypeVariable());
+			result = result.freshen(variable, variable.clone());
 		}
 		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		} else if (obj instanceof TypeVariable) {
+			return obj.equals(this);
+		} else {
+			return false;
+		}
 	}
 
 	protected Type freshen(Type needle, Type replacement) {

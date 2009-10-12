@@ -5,17 +5,13 @@ import java.util.List;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class MembershipType extends Type {
-	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
-		print.print("membership");
+	@Override
+	public boolean equals(Object obj) {
+		return obj.equals(Type.RealType) || super.equals(obj);
 	}
 
-	@Override
-	public boolean unify(Type that) {
-		if (that == Type.RealType) {
-			return true;
-		} else {
-			return super.unify(that);
-		}
+	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
+		print.print("membership");
 	}
 
 	@Override

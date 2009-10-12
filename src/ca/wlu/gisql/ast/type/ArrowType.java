@@ -31,6 +31,13 @@ public class ArrowType extends Type {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		return obj instanceof ArrowType ? operand
+				.equals(((ArrowType) obj).operand)
+				&& result.equals(((ArrowType) obj).result) : super.equals(obj);
+	}
+
+	@Override
 	protected Type freshen(Type needle, Type replacement) {
 		Type freshOperand = operand.freshen(needle, replacement);
 		Type freshResult = result.freshen(needle, replacement);
@@ -68,13 +75,11 @@ public class ArrowType extends Type {
 	public boolean unify(Type that) {
 		if (this == that) {
 			return true;
-		} else if (that instanceof TypeVariable) {
-			return ((TypeVariable) that).reverseUnify(this);
 		} else if (that instanceof ArrowType) {
 			ArrowType other = (ArrowType) that;
 			return operand.unify(other.operand) && result.unify(other.result);
 		} else {
-			return false;
+			return super.unify(that);
 		}
 	}
 
