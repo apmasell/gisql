@@ -21,16 +21,16 @@ public class TypeVariable extends Type {
 	}
 
 	@Override
+	public boolean canUnify(Object obj) {
+		return self == null && obj instanceof Type || self.canUnify(obj)
+				&& TypeClass.hasInstance((Type) obj, typeclasses);
+	}
+
+	@Override
 	public TypeVariable clone() {
 		TypeVariable variable = new TypeVariable();
 		variable.typeclasses.addAll(typeclasses);
 		return variable;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return self == null && obj instanceof Type || self.equals(obj)
-				&& TypeClass.hasInstance((Type) obj, typeclasses);
 	}
 
 	@Override

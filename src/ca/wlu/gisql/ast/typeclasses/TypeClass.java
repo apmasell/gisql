@@ -17,7 +17,7 @@ public class TypeClass<T> {
 	public static boolean hasInstance(Type type, Set<TypeClass<?>> typeclasses) {
 		if (typeclasses.size() > 0) {
 			for (Type t : matchingTypes(typeclasses)) {
-				if (t.equals(type)) {
+				if (t.canUnify(type)) {
 					return true;
 				}
 			}
@@ -62,7 +62,7 @@ public class TypeClass<T> {
 
 	public boolean hasInstance(Type type) {
 		for (Type t : allowed) {
-			if (t.equals(type)) {
+			if (t.canUnify(type)) {
 				return true;
 			}
 		}

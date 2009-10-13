@@ -17,9 +17,9 @@ public class ListType extends Type {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean canUnify(Object obj) {
 		return obj instanceof ListType ? contents
-				.equals(((ListType) obj).contents) : super.equals(obj);
+				.canUnify(((ListType) obj).contents) : super.canUnify(obj);
 	}
 
 	@Override

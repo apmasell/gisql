@@ -31,10 +31,11 @@ public class ArrowType extends Type {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean canUnify(Object obj) {
 		return obj instanceof ArrowType ? operand
-				.equals(((ArrowType) obj).operand)
-				&& result.equals(((ArrowType) obj).result) : super.equals(obj);
+				.canUnify(((ArrowType) obj).operand)
+				&& result.canUnify(((ArrowType) obj).result) : super
+				.canUnify(obj);
 	}
 
 	@Override
