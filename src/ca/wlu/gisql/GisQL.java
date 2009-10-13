@@ -1,7 +1,9 @@
 package ca.wlu.gisql;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import jline.ArgumentCompletor;
 import jline.ConsoleReader;
@@ -48,13 +50,53 @@ public class GisQL {
 			return;
 		}
 
-		DatabaseManager dm;
+		ConsoleReader reader = new ConsoleReader();
+		reader.setBellEnabled(true);
+
+		DatabaseManager dm = null;
+		boolean prompt = commandline.hasOption('l');
+		Properties properties = null;
+
 		try {
-			dm = new DatabaseManager(DatabaseManager.getPropertiesFromFile());
-		} catch (SQLException e) {
-			log.error("Failed to connect to database.", e);
-			return;
+			properties = DatabaseManager.getPropertiesFromFile();
+		} catch (IOException e) {
+			properties = new Properties();
+			prompt = true;
 		}
+		do {
+			if (prompt) {
+				properties.setProperty("url", reader.readLine("JDBC Path: "));
+				if (properties.getProperty("url") == null) {
+					return;
+				}
+
+				properties.setProperty("user", reader.readLine("Username: "));
+				if (properties.getProperty("user") == null) {
+					return;
+				}
+
+				properties.setProperty("password", reader.readLine(
+						"Password: ", '*'));
+				if (properties.getProperty("password") == null) {
+					return;
+				}
+
+			}
+			try {
+				dm = new DatabaseManager(properties);
+				prompt = false;
+			} catch (SQLException e) {
+				log.error("Failed to connect to database.", e);
+				prompt = true;
+				reader.putString("Try again? (y/n)");
+				int result = reader.readCharacter(new char[] { 'y', 'Y', 'n',
+						'N' });
+				reader.printNewline();
+				if (result < 2) {
+					return;
+				}
+			}
+		} while (prompt);
 
 		UserEnvironment environment = new UserEnvironment(
 				new DatabaseEnvironment(dm));
@@ -87,8 +129,6 @@ public class GisQL {
 			runner.run(new File(commandline.getOptionValue('c')), null);
 			return;
 		} else {
-			ConsoleReader reader = new ConsoleReader();
-			reader.setBellEnabled(true);
 			reader.setDefaultPrompt("gisql> ");
 			reader.addCompletor(new ArgumentCompletor(new EnvironmentCompletor(
 					environment), new NonIdentifierArgumentDelimiter()));
@@ -115,6 +155,9 @@ public class GisQL {
 
 		Option help = new Option("h", "help", false, "Display this non-sense.");
 
+		Option login = new Option("l", "login", false,
+				"Prompt for database login.");
+
 		Option file = new Option("c", "command", true, "Run queries in file.");
 		file.setArgName("file");
 
@@ -126,6 +169,7 @@ public class GisQL {
 		format.setArgName("layout");
 
 		options.addOption(help);
+		options.addOption(login);
 		options.addOption(file);
 		options.addOption(output);
 		options.addOption(format);
