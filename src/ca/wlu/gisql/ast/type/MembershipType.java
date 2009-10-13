@@ -5,10 +5,6 @@ import java.util.List;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class MembershipType extends Type {
-	@Override
-	public boolean equals(Object obj) {
-		return obj.equals(Type.RealType) || super.equals(obj);
-	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
 		print.print("membership");

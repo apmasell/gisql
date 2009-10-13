@@ -23,6 +23,16 @@ public abstract class Type implements Show<List<TypeVariable>> {
 
 	public static final Type UnitType = new UnitType();
 
+	public boolean canUnify(Object obj) {
+		if (this == obj) {
+			return true;
+		} else if (obj instanceof TypeVariable) {
+			return ((TypeVariable) obj).canUnify(this);
+		} else {
+			return false;
+		}
+	}
+
 	@Override
 	public Type clone() {
 		List<TypeVariable> variables = new ArrayList<TypeVariable>();
@@ -32,17 +42,6 @@ public abstract class Type implements Show<List<TypeVariable>> {
 			result = result.freshen(variable, variable.clone());
 		}
 		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		} else if (obj instanceof TypeVariable) {
-			return obj.equals(this);
-		} else {
-			return false;
-		}
 	}
 
 	protected Type freshen(Type needle, Type replacement) {
