@@ -117,11 +117,16 @@ public class ExpressionRunner {
 
 		}
 
-		if (result.getType().unify(Type.InteractomeType)) {
+		if (result.getType().canUnify(Type.InteractomeType)) {
 			listener.processInteractome((Interactome) value);
-		} else if (result.getType().unify(new ListType(Type.InteractomeType))) {
-			for (Object interactome : (List) value) {
-				listener.processInteractome((Interactome) interactome);
+		} else if (result.getType()
+				.canUnify(new ListType(Type.InteractomeType))) {
+			if (((List) value).size() > 0) {
+				for (Object interactome : (List) value) {
+					listener.processInteractome((Interactome) interactome);
+				}
+			} else {
+				listener.processOther(type, value);
 			}
 		} else {
 			listener.processOther(result.getType(), value);
