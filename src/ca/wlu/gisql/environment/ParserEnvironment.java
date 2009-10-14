@@ -17,6 +17,7 @@ import ca.wlu.gisql.environment.functions.SilentFunction;
 import ca.wlu.gisql.function.Comparison;
 import ca.wlu.gisql.function.NumericComparison;
 import ca.wlu.gisql.function.Range;
+import ca.wlu.gisql.function.Venn;
 import ca.wlu.gisql.function.list.Cons;
 import ca.wlu.gisql.function.list.FoldLeft;
 import ca.wlu.gisql.function.list.FoldRight;
@@ -101,6 +102,7 @@ public class ParserEnvironment extends Environment {
 		add(RunFunction.self);
 		add(SilentFunction.self);
 		add(Slice.self);
+		add(Venn.self);
 		add(Zip.self);
 
 		for (ComputedInteractomeParser operator : getParserKb()
