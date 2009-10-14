@@ -1,6 +1,7 @@
 package ca.wlu.gisql;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -60,6 +61,28 @@ public class ConsoleRunListener implements ExpressionRunListener {
 		}
 	}
 
+	private void print(Object value) {
+		if (value instanceof String) {
+			System.out.print('"');
+			System.out.print(value);
+			System.out.print('"');
+		} else if (value instanceof List) {
+			System.out.print("[");
+			boolean first = true;
+			for (Object item : (List<?>) value) {
+				if (first) {
+					first = false;
+				} else {
+					System.out.print(", ");
+				}
+				print(item);
+			}
+			System.out.print("]");
+		} else {
+			System.out.print(value.toString());
+		}
+	}
+
 	public void processInteractome(Interactome value) {
 		ProcessableInteractome interactome = AbstractOutput.wrap(value, null,
 				environment.getFormat(), environment.getOutput(), false);
@@ -69,7 +92,8 @@ public class ConsoleRunListener implements ExpressionRunListener {
 	}
 
 	public void processOther(Type type, Object value) {
-		System.out.println(value.toString());
+		print(value);
+		System.out.println();
 	}
 
 	public void reportErrors(Collection<ExpressionError> errors) {
