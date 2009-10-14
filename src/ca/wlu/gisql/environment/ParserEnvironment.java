@@ -21,6 +21,7 @@ import ca.wlu.gisql.function.Venn;
 import ca.wlu.gisql.function.list.Cons;
 import ca.wlu.gisql.function.list.FoldLeft;
 import ca.wlu.gisql.function.list.FoldRight;
+import ca.wlu.gisql.function.list.Join;
 import ca.wlu.gisql.function.list.ListFromFile;
 import ca.wlu.gisql.function.list.ListLength;
 import ca.wlu.gisql.function.list.Map;
@@ -91,6 +92,7 @@ public class ParserEnvironment extends Environment {
 		add(InteractomeFuzziness.self);
 		add(InteractomeSize.self);
 		add(JaccardCoreicity.class);
+		add(Join.function);
 		add(ListFromFile.function);
 		add(ListLength.function);
 		add(Map.function);

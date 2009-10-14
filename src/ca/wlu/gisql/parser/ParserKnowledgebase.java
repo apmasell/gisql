@@ -9,6 +9,7 @@ import org.apache.commons.collections15.map.ListOrderedMap;
 
 import ca.wlu.gisql.environment.functions.LastInteractome;
 import ca.wlu.gisql.function.list.Cons;
+import ca.wlu.gisql.function.list.Join;
 import ca.wlu.gisql.interactome.cut.Cut;
 import ca.wlu.gisql.interactome.logic.Complement;
 import ca.wlu.gisql.interactome.logic.Difference;
@@ -51,6 +52,7 @@ public class ParserKnowledgebase {
 		installOperator(EmptyList.descriptor);
 		installOperator(Intersection.descriptor);
 		installOperator(HelpDescriptor.descriptor);
+		installOperator(Join.descriptor);
 		installOperator(LambdaDescriptor.descriptor);
 		installOperator(LastInteractome.descriptor);
 		installOperator(LiteralList.descriptor);
