@@ -53,9 +53,16 @@ public class Venn extends Function {
 				return "";
 			}
 
-			sb.append("venn").append(vennstate).append(" = ").append(
-					genes ? totals.getGeneCount() : totals
-							.getInteractionCount()).append("; ");
+			String number = Integer.toBinaryString(vennstate);
+			sb.append("venn");
+			for (int i = number.length(); i < interactomes.size(); i++) {
+				sb.append('0');
+			}
+			sb.append(number);
+			sb.append(" = ");
+			sb.append(genes ? totals.getGeneCount() : totals
+					.getInteractionCount());
+			sb.append("; ");
 		}
 		return sb.toString();
 	}
