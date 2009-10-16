@@ -27,7 +27,7 @@ public class TypeParser {
 				return type;
 			} else if (Character.isWhitespace(codepoint)) {
 				position++;
-			} else if (Character.isJavaIdentifierPart(codepoint)) {
+			} else if (Character.isJavaIdentifierStart(codepoint)) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(codepoint);
 				position++;
@@ -41,7 +41,7 @@ public class TypeParser {
 				String typename = sb.toString();
 				for (Field field : Type.class.getFields()) {
 					if (Modifier.isStatic(field.getModifiers())
-							&& field.getType() == Type.class) {
+							&& Type.class.isAssignableFrom(field.getType())) {
 						Type matchtype;
 						try {
 							matchtype = (Type) field.get(null);

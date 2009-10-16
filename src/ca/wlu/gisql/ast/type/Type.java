@@ -3,25 +3,37 @@ package ca.wlu.gisql.ast.type;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.wlu.gisql.graph.Gene;
+import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.output.FileFormat;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public abstract class Type implements Show<List<TypeVariable>> {
-	public static final Type BooleanType = new BooleanType();
+	public static final NativeType BooleanType = new NativeType("boolean",
+			Boolean.class);
 
-	public static final Type FormatType = new FormatType();
 
-	public static final Type InteractomeType = new InteractomeType();
+	public static final NativeType FormatType = new NativeType("format",
+			FileFormat.class);
+
+	public static final NativeType GeneType = new NativeType("gene", Gene.class);
+
+	public static final NativeType InteractomeType = new NativeType(
+			"interactome", Interactome.class);
 
 	public static final Type MembershipType = new MembershipType();
 
-	public static final Type NumberType = new NumberType();
+	public static final NativeType NumberType = new NativeType("number",
+			Long.class);
 
-	public static final Type RealType = new RealType();
+	public static final NativeType RealType = new NativeType("real",
+			Double.class);
 
-	public static final Type StringType = new StringType();
+	public static final NativeType StringType = new NativeType("string",
+			String.class);
 
-	public static final Type UnitType = new UnitType();
+	public static final NativeType UnitType = new NativeType("unit", Unit.class);
 
 	public boolean canUnify(Object obj) {
 		if (this == obj) {

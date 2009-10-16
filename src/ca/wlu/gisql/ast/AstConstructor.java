@@ -2,17 +2,17 @@ package ca.wlu.gisql.ast;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.ast.type.ListType;
+import ca.wlu.gisql.ast.type.NativeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeParser;
-import ca.wlu.gisql.ast.type.Unit;
-import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.output.FileFormat;
 import ca.wlu.gisql.vm.InstructionConstruct;
 import ca.wlu.gisql.vm.Machine;
 
@@ -21,21 +21,25 @@ public final class AstConstructor extends AstNative {
 		if (javatype instanceof Class<?>) {
 			Class<?> clazz = (Class<?>) javatype;
 
-			if (Interactome.class.isAssignableFrom(clazz)) {
-				return Type.InteractomeType;
-			} else if (Long.class.isAssignableFrom(clazz)) {
-				return Type.NumberType;
-			} else if (Double.class.isAssignableFrom(clazz)) {
-				return Type.RealType;
-			} else if (FileFormat.class.isAssignableFrom(clazz)) {
-				return Type.FormatType;
-			} else if (Boolean.class.isAssignableFrom(clazz)) {
-				return Type.BooleanType;
-			} else if (String.class.isAssignableFrom(clazz)) {
-				return Type.StringType;
-			} else if (Unit.class.isAssignableFrom(clazz)) {
-				return Type.UnitType;
+			for (Field field : Type.class.getFields()) {
+				if (Modifier.isStatic(field.getModifiers())
+						&& NativeType.class.isAssignableFrom(field.getType())) {
+					NativeType matchtype;
+					try {
+						matchtype = (NativeType) field.get(null);
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+						return null;
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+						return null;
+					}
+					if (matchtype.handlesNativeType(clazz)) {
+						return matchtype;
+					}
+				}
 			}
+
 			throw new IllegalArgumentException("Class " + clazz.getName()
 					+ " as not compatible representation");
 
