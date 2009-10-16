@@ -10,7 +10,6 @@ import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
-import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -19,18 +18,18 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
 @GisqlConstructorFunction(name = "near", description = "Find genes with in a specified number of degrees from genes specified by a list of gi numbers. Use iinf for maximum radius.")
 public class Proximity implements Interactome {
 
-	private final Set<Long> accessions;
-
 	private final Set<Gene> connectedGenes = new HashSet<Gene>();
+
+	private final Set<Gene> genes;
 
 	private final long radius;
 
 	private final Interactome source;
 
-	public Proximity(Interactome source, Long radius, List<Long> accessions) {
+	public Proximity(Interactome source, Long radius, List<Gene> genes) {
 		this.source = source;
 		this.radius = radius;
-		this.accessions = new HashSet<Long>(accessions);
+		this.genes = new HashSet<Gene>(genes);
 	}
 
 	public double calculateMembership(Gene gene) {
@@ -76,9 +75,7 @@ public class Proximity implements Interactome {
 		boolean result = source.prepare();
 		if (result) {
 			Queue<Gene> queue = new LinkedList<Gene>();
-			for (long accession : accessions) {
-				queue.addAll(Ubergraph.getInstance().findGenes(accession));
-			}
+			queue.addAll(genes);
 			/* Null acts as a sentinal when we complete a level in the tree. */
 			queue.add(null);
 
@@ -107,17 +104,9 @@ public class Proximity implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(":near ({");
-		boolean first = true;
-		for (long accession : accessions) {
-			if (first) {
-				first = false;
-			} else {
-				print.print(", ");
-			}
-			print.print(accession);
-		}
-		print.print("}) ");
+		print.print(":near ");
+		print.print(genes);
+		print.print(" ");
 		if (radius < Long.MAX_VALUE) {
 			print.print(radius);
 		} else {
