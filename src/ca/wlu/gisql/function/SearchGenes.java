@@ -21,15 +21,27 @@ public class SearchGenes extends Function {
 				Type.StringType, new ListType(Type.GeneType));
 	}
 
+	private boolean matches(String regex, Accession accession) {
+		if (Pattern.matches(regex, accession.getName())) {
+			return true;
+		}
+		for (String alternativename : accession.getAlternativeNames()) {
+			if (Pattern.matches(regex, alternativename)) {
+				return true;
+
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public Object run(Machine machine, Object... parameters) {
 		String regex = (String) parameters[0];
 		Set<Gene> genes = new HashSet<Gene>();
 		for (Gene gene : Ubergraph.getInstance().genes()) {
 			for (Accession accession : gene) {
-				if (Pattern.matches(regex, accession.getName())) {
+				if (matches(regex, accession)) {
 					genes.add(gene);
-					break;
 				}
 			}
 		}

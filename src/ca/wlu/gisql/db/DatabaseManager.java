@@ -148,7 +148,7 @@ public class DatabaseManager {
 		ResultSet rs = statement.executeQuery();
 		while (rs.next()) {
 			Accession accession = new Accession(rs.getLong(1), species, rs
-					.getString(2));
+					.getString(2), new AltNamesSet(rs.getLong(1), connection));
 			int orthogroup = rs.getInt(3);
 
 			Gene gene;
