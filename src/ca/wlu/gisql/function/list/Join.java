@@ -19,15 +19,14 @@ public class Join extends Function {
 	public static final Function function = new Join();
 
 	private Join() {
-		super("join", "Concatenates two lists", alist, alist,
-				alist);
+		super("join", "Concatenates two lists", alist, alist, alist);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Object run(Machine machine, Object... parameters) {
 		List result = new ArrayList();
-		result.addAll((List)parameters[0]);
+		result.addAll((List) parameters[0]);
 		result.addAll((List) parameters[1]);
 		return result;
 	}
