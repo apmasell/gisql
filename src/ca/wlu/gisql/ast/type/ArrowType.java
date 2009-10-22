@@ -3,6 +3,7 @@ package ca.wlu.gisql.ast.type;
 import java.util.List;
 
 import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.vm.Program;
 
 public class ArrowType extends Type {
 	private final Type operand;
@@ -50,8 +51,8 @@ public class ArrowType extends Type {
 	}
 
 	@Override
-	protected boolean isArrow() {
-		return true;
+	public int getArrowDepth() {
+		return 1 + result.getArrowDepth();
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public class ArrowType extends Type {
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
-		boolean brackets = operand.isArrow();
+		boolean brackets = operand.getArrowDepth() > 0;
 		if (brackets) {
 			print.print("(");
 		}
@@ -82,6 +83,12 @@ public class ArrowType extends Type {
 		} else {
 			return super.unify(that);
 		}
+	}
+
+	@Override
+	public boolean validate(Object value) {
+		/* WARNING: This does not check the actual type really. */
+		return value instanceof Program;
 	}
 
 }

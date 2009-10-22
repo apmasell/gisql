@@ -6,6 +6,7 @@ import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.vm.Instruction;
 import ca.wlu.gisql.vm.InstructionPush;
 
 public class AstLiteral extends AstNode {
@@ -48,7 +49,15 @@ public class AstLiteral extends AstNode {
 
 	@Override
 	public boolean render(ProgramRoutine program, int depth, int debrujin) {
-		return program.instructions.add(new InstructionPush(value));
+		if (!program.instructions.add(new InstructionPush(value))) {
+			return false;
+		}
+		for (int counter = Math.min(type.getArrowDepth(), depth); counter > 0; counter--) {
+			if (!program.instructions.add(Instruction.Apply)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

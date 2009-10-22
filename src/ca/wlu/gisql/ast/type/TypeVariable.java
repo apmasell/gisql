@@ -43,13 +43,13 @@ public class TypeVariable extends Type {
 		}
 	}
 
-	public Type getDeterminedType() {
-		return self;
+	@Override
+	public int getArrowDepth() {
+		return self == null ? 0 : self.getArrowDepth();
 	}
 
-	@Override
-	protected boolean isArrow() {
-		return self == null ? false : self.isArrow();
+	public Type getDeterminedType() {
+		return self;
 	}
 
 	@Override

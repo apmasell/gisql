@@ -60,8 +60,8 @@ public abstract class Type implements Show<List<TypeVariable>> {
 		return this;
 	}
 
-	protected boolean isArrow() {
-		return false;
+	public int getArrowDepth() {
+		return 0;
 	}
 
 	protected boolean occurs(Type needle) {
