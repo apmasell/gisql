@@ -1,8 +1,9 @@
 package ca.wlu.gisql.vm;
 
-public class InstructionEnter extends Instruction {
+/* Moves an object from the operand stack to the variable stack. Used when entering a function. */
+public class InstructionVariablePush extends Instruction {
 
-	InstructionEnter() {
+	InstructionVariablePush() {
 	}
 
 	@Override

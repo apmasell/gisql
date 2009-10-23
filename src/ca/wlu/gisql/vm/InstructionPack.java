@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Pop a specified number of items off of the operand stack, package them in a
+ * list, and push the resulting list onto the operand stack.
+ */
 public class InstructionPack extends Instruction {
 
 	private final int size;

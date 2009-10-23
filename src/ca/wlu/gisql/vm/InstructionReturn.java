@@ -1,5 +1,6 @@
 package ca.wlu.gisql.vm;
 
+/** Return to the caller by popping the current call stack frame. */
 class InstructionReturn extends Instruction {
 
 	@Override

@@ -3,10 +3,19 @@ package ca.wlu.gisql.vm;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Call a Java constructor, popping an appropriate number of objects from the
+ * operand stack and pushing the newly created Java object on the stack.
+ */
 public class InstructionConstruct extends Instruction {
 
 	private final Constructor<?> constructor;
 	private final int length;
+	/**
+	 * Some Java objects need a copy of the current {@link Machine}. This will
+	 * determine if the first parameters should be a duplicate of the current
+	 * machine.
+	 */
 	private final boolean needsmachine;
 
 	public InstructionConstruct(Constructor<?> constructor) {

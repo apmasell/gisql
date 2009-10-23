@@ -4,6 +4,10 @@ import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.runner.ExpressionRunListener;
 import ca.wlu.gisql.util.Show;
 
+/**
+ * Represents a program to be executed on a virtual {@link Machine}, made of
+ * {@link Instruction}s.
+ */
 public abstract class Program implements Show<Object> {
 
 	public Program() {

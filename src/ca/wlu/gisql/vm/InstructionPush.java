@@ -1,5 +1,6 @@
 package ca.wlu.gisql.vm;
 
+/** Pushes an object on to the operand stack. */
 public class InstructionPush extends Instruction {
 
 	final Object value;

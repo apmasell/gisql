@@ -3,6 +3,10 @@ package ca.wlu.gisql.vm;
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.type.Type;
 
+/**
+ * Copy the object on the top of the operand stack into the environment with the
+ * specified name.
+ */
 public class InstructionStore extends Instruction {
 
 	private final String name;

@@ -2,6 +2,10 @@ package ca.wlu.gisql.vm;
 
 import ca.wlu.gisql.ast.Function;
 
+/**
+ * Calls a class extending {@link Function}, popping an appropriate number of
+ * objects from the operand stack.
+ */
 public class InstructionFunction extends Instruction {
 
 	private final Function function;

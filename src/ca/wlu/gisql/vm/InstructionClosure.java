@@ -2,6 +2,10 @@ package ca.wlu.gisql.vm;
 
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * This creates a closure by popping a program and an object from the operand
+ * stack, creating a closure, and pushing the result on the operand stack.
+ */
 class InstructionClosure extends Instruction {
 
 	private static class Closure extends Program {
@@ -9,6 +13,10 @@ class InstructionClosure extends Instruction {
 		private final Program program;
 		private final InstructionPush push;
 
+		/**
+		 * A program that represents a closure. It will push a stored object
+		 * onto the operand stack and delegate to another program.
+		 */
 		private Closure(Object value, Program program) {
 			push = new InstructionPush(value);
 			this.program = program;

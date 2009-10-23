@@ -1,5 +1,6 @@
 package ca.wlu.gisql.vm;
 
+/** Copy an arbitrary object from the variable stack on to the operand stack. */
 public class InstructionVariable extends Instruction {
 
 	private final int debrujin;

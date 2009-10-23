@@ -2,6 +2,10 @@ package ca.wlu.gisql.vm;
 
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * A special type of {@link Program} that is an arbitrary number of
+ * {@link InstructionApply}, followed by {@link InstructionReturn}.
+ */
 class ApplyProgram extends Program {
 	private final int count;
 
