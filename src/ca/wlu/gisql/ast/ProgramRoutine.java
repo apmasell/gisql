@@ -7,6 +7,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.Instruction;
 import ca.wlu.gisql.vm.Program;
 
+/** A {@link Program} genereated by {@link AstNode}s. */
 public class ProgramRoutine extends Program {
 
 	private final String command;
@@ -18,6 +19,7 @@ public class ProgramRoutine extends Program {
 		this.command = command;
 	}
 
+	/** Finalizes a program by adding a return statement. */
 	public ProgramRoutine finish() {
 		instructions.add(Instruction.Return);
 		return this;

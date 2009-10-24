@@ -8,6 +8,10 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.InstructionPush;
 
+/**
+ * Special node that returns the type of its argument rather than the value of
+ * the argument.
+ */
 public class AstTypeOf extends AstNode {
 	private final AstNode parameter;
 

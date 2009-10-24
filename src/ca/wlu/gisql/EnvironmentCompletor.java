@@ -7,9 +7,11 @@ import java.util.Map.Entry;
 
 import jline.Completor;
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.EnvironmentListener;
 import ca.wlu.gisql.environment.UserEnvironment;
 
+/** JLine tab-completion module for {@link Environment}. */
 public class EnvironmentCompletor implements Completor, EnvironmentListener {
 	private final SortedSet<String> candidates = new TreeSet<String>();
 

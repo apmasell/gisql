@@ -9,6 +9,10 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.Instruction;
 import ca.wlu.gisql.vm.InstructionPush;
 
+/**
+ * An {@link AstNode} that represents a literal value of some particular type.
+ * The value will be checked against the supplied type.
+ */
 public class AstLiteral extends AstNode {
 	private final Type type;
 	private final Object value;

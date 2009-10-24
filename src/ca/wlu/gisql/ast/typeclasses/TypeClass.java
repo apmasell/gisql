@@ -5,6 +5,11 @@ import java.util.Set;
 
 import ca.wlu.gisql.ast.type.Type;
 
+/**
+ * A type class is a group of types that can all be used in certain situations.
+ * {@link http://en.wikipedia.org/wiki/Type_class} They are called traits in
+ * Scala and concepts in C++0x. Each must be backed by a Java interface.
+ */
 public class TypeClass<T> {
 
 	@SuppressWarnings("unchecked")
@@ -27,6 +32,10 @@ public class TypeClass<T> {
 		}
 	}
 
+	/**
+	 * Find the types that exist in the intersection of a list of type classes.
+	 * If no type classes are provided, the result will be empty.
+	 */
 	public static Set<Type> matchingTypes(Set<TypeClass<?>> typeclasses) {
 		Set<Type> types = new HashSet<Type>();
 		boolean first = true;

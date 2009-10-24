@@ -2,11 +2,16 @@ package ca.wlu.gisql.ast.type;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import ca.wlu.gisql.ast.typeclasses.TypeClass;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * The query language type of an unknown/generic type. A type variable may
+ * belone to one or more {@link TypeClass}.
+ */
 public class TypeVariable extends Type {
 	private Type self = null;
 	private final Set<TypeClass<?>> typeclasses = new HashSet<TypeClass<?>>();
@@ -21,9 +26,10 @@ public class TypeVariable extends Type {
 	}
 
 	@Override
-	public boolean canUnify(Object obj) {
-		return self == null && obj instanceof Type || self.canUnify(obj)
-				&& TypeClass.hasInstance((Type) obj, typeclasses);
+	public boolean canUnify(Type othertype) {
+		return self == null && othertype instanceof Type
+				|| self.canUnify(othertype)
+				&& TypeClass.hasInstance((Type) othertype, typeclasses);
 	}
 
 	@Override
@@ -34,11 +40,12 @@ public class TypeVariable extends Type {
 	}
 
 	@Override
-	protected Type freshen(Type needle, Type replacement) {
-		if (this == needle) {
-			return replacement;
+	protected Type freshen(Map<Type, Type> replacement) {
+		if (self != null) {
+			return self.freshen(replacement);
+		} else if (replacement.containsKey(this)) {
+			return replacement.get(this);
 		} else {
-
 			return this;
 		}
 	}
@@ -48,17 +55,9 @@ public class TypeVariable extends Type {
 		return self == null ? 0 : self.getArrowDepth();
 	}
 
-	public Type getDeterminedType() {
-		return self;
-	}
-
 	@Override
 	protected boolean occurs(Type needle) {
 		return this == needle;
-	}
-
-	protected boolean reverseUnify(Type that) {
-		return unify(that, false);
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
@@ -91,10 +90,6 @@ public class TypeVariable extends Type {
 
 	@Override
 	public boolean unify(Type that) {
-		return unify(that, true);
-	}
-
-	private boolean unify(Type that, boolean direction) {
 		if (this == that) {
 			return true;
 		} else if (that.occurs(this)) {
@@ -126,7 +121,7 @@ public class TypeVariable extends Type {
 				return false;
 			}
 		} else {
-			return direction ? self.unify(that) : that.unify(self);
+			return self.unify(that);
 		}
 	}
 

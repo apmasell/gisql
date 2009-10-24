@@ -9,6 +9,10 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.InstructionVariable;
 
+/**
+ * The variable represented by a lambda expression. (i.e., the <b>x</b> in (λx.
+ * f <b>x</b> y).
+ */
 public class AstParameter extends AstNode {
 
 	int debrujin = -1;
@@ -35,6 +39,14 @@ public class AstParameter extends AstNode {
 		return type;
 	}
 
+	/**
+	 * Adds an instruction to copy a variable from the variable on the operand
+	 * stack. The debujin index field is the number of item on the variable
+	 * stack when our containing lambda captured a variable, while the debrujin
+	 * parameter is the number of items currently on the variable stack. The
+	 * difference will give the appropriate offset into the stack for our
+	 * value.
+	 */
 	@Override
 	public boolean render(ProgramRoutine program, int depth, int debrujin) {
 		return program.instructions.add(new InstructionVariable(debrujin

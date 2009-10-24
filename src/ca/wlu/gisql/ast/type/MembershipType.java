@@ -4,6 +4,7 @@ import java.util.List;
 
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** The query language type of a double value ∈ [0,1]. */
 public class MembershipType extends Type {
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {

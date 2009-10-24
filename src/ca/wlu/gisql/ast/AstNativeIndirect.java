@@ -7,6 +7,10 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * Wraps an {@link AstNative} node to make copies of the type so that the
+ * original generic type is not polluted.
+ */
 public class AstNativeIndirect extends AstNode {
 
 	private final AstNative self;

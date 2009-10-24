@@ -13,10 +13,17 @@ import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.NativeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeParser;
+import ca.wlu.gisql.environment.ParserEnvironment;
 import ca.wlu.gisql.vm.InstructionConstruct;
 import ca.wlu.gisql.vm.Machine;
 
+/**
+ * Represents a native fuction that really corresponds to a Java constructor.
+ * See {@link GisqlConstructorFunction} and {@link ParserEnvironment}.
+ */
 public final class AstConstructor extends AstNative {
+
+	/** Use reflected Java type to determine the equivalent query language type. */
 	private static Type convertType(java.lang.reflect.Type javatype) {
 		if (javatype instanceof Class<?>) {
 			Class<?> clazz = (Class<?>) javatype;
@@ -58,6 +65,10 @@ public final class AstConstructor extends AstNative {
 		}
 	}
 
+	/**
+	 * Construct a list of type (to generate an arrow type) for this function,
+	 * based on the constructor's signature.
+	 */
 	private static Type[] generateTypes(Constructor<?> constructor) {
 		java.lang.reflect.Type[] parameters = constructor
 				.getGenericParameterTypes();

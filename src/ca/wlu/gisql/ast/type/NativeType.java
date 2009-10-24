@@ -4,6 +4,7 @@ import java.util.List;
 
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** A query language type that is exactly the same as a Java type. */
 public class NativeType extends Type {
 	private final Class<?> java;
 

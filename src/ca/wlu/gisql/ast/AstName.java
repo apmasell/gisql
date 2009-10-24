@@ -7,6 +7,7 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** The {@link AstNode} of an unresolved symbol. */
 public class AstName extends AstNode {
 
 	private final String name;

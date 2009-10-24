@@ -1,9 +1,11 @@
 package ca.wlu.gisql.ast.type;
 
 import java.util.List;
+import java.util.Map;
 
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** The query language type of a list, synonymous with Java's {@link List} */
 public class ListType extends Type {
 	private final Type contents;
 
@@ -17,14 +19,15 @@ public class ListType extends Type {
 	}
 
 	@Override
-	public boolean canUnify(Object obj) {
-		return obj instanceof ListType ? contents
-				.canUnify(((ListType) obj).contents) : super.canUnify(obj);
+	public boolean canUnify(Type othertype) {
+		return othertype instanceof ListType ? contents
+				.canUnify(((ListType) othertype).contents) : super
+				.canUnify(othertype);
 	}
 
 	@Override
-	protected Type freshen(Type needle, Type replacement) {
-		Type freshContents = contents.freshen(needle, replacement);
+	protected Type freshen(Map<Type, Type> replacement) {
+		Type freshContents = contents.freshen(replacement);
 		if (freshContents == contents) {
 			return this;
 		}

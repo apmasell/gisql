@@ -1,14 +1,20 @@
 package ca.wlu.gisql.ast.type;
 
 import java.util.List;
+import java.util.Map;
 
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.Program;
 
+/** The query language type of a function. */
 public class ArrowType extends Type {
 	private final Type operand;
 	private final Type result;
 
+	/**
+	 * Convience constructor to create a function with type "α → β → γ → ..." in
+	 * one step, rather than "α → (β → (γ → ...))".
+	 */
 	public ArrowType(Type... arguments) {
 		if (arguments.length < 2) {
 			throw new IllegalArgumentException("Need 2 or more arguments.");
@@ -22,6 +28,10 @@ public class ArrowType extends Type {
 		this.result = result;
 	}
 
+	/**
+	 * Create a type which takes a parameter of type <tt>operand</tt> and
+	 * returns a result of type <tt>result</tt>.
+	 */
 	public ArrowType(Type operand, Type result) {
 		if (operand == null || result == null) {
 			throw new IllegalArgumentException(
@@ -32,17 +42,17 @@ public class ArrowType extends Type {
 	}
 
 	@Override
-	public boolean canUnify(Object obj) {
-		return obj instanceof ArrowType ? operand
-				.canUnify(((ArrowType) obj).operand)
-				&& result.canUnify(((ArrowType) obj).result) : super
-				.canUnify(obj);
+	public boolean canUnify(Type othertype) {
+		return othertype instanceof ArrowType ? operand
+				.canUnify(((ArrowType) othertype).operand)
+				&& result.canUnify(((ArrowType) othertype).result) : super
+				.canUnify(othertype);
 	}
 
 	@Override
-	protected Type freshen(Type needle, Type replacement) {
-		Type freshOperand = operand.freshen(needle, replacement);
-		Type freshResult = result.freshen(needle, replacement);
+	protected Type freshen(Map<Type, Type> replacement) {
+		Type freshOperand = operand.freshen(replacement);
+		Type freshResult = result.freshen(replacement);
 		if (freshOperand == operand && freshResult == result) {
 			return this;
 		} else {
@@ -85,9 +95,13 @@ public class ArrowType extends Type {
 		}
 	}
 
+	/**
+	 * This is supposed to check whether an object is a valid instance of this
+	 * type. Since {@link Program} has no type information, this <b>does not
+	 * check</b> the actual type really, only that it is a program.
+	 */
 	@Override
 	public boolean validate(Object value) {
-		/* WARNING: This does not check the actual type really. */
 		return value instanceof Program;
 	}
 

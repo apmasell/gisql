@@ -19,6 +19,7 @@ import ca.wlu.gisql.runner.FileLineContext;
 import ca.wlu.gisql.runner.PositionContext;
 import ca.wlu.gisql.runner.SingleLineContext;
 
+/** Puts results of computation on to the console. */
 public class ConsoleRunListener implements ExpressionRunListener {
 	private static final Logger log = Logger
 			.getLogger(ConsoleRunListener.class);
@@ -29,6 +30,7 @@ public class ConsoleRunListener implements ExpressionRunListener {
 		this.environment = environment;
 	}
 
+	/** Convert an {@link ExpressionContext} into a text representation. */
 	private void buildContext(StringBuilder sb, ExpressionContext context) {
 		if (context instanceof PositionContext) {
 			PositionContext positioncontext = (PositionContext) context;

@@ -2,12 +2,17 @@ package ca.wlu.gisql.ast;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.interactome.tovar.ToVar;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.InstructionStore;
 
+/**
+ * Mostly a pass-through node that will make a copy of a value as a variable in
+ * the {@link UserEnvironment}.
+ */
 public class AstToVar extends AstNode {
 	private final String name;
 	private AstNode node;

@@ -7,6 +7,10 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * Phase 1 representation of a lambda expression. There will be cleaned during
+ * resolution and replaced with phase 2 lambda expressions.
+ */
 public class AstLambda1 extends AstNode {
 	private class MaskedEnvironment extends Environment {
 		private final AstParameter variable;
@@ -48,6 +52,10 @@ public class AstLambda1 extends AstNode {
 				"AstLambda1 must be cleaned before rendering.");
 	}
 
+	/**
+	 * Set up a fake environment where the variable name is mapped to a
+	 * {@link AstParameter}. Then encapsulate the result in a phase 2 lambda.
+	 */
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			Environment environment) {

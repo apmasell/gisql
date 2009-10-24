@@ -9,9 +9,14 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * The application of a function to an operand. (i.e., the node representing (f
+ * x))
+ */
 public class AstApplication extends AstNode {
 
 	private final AstNode operand;
+
 	private final Type operandtype = new TypeVariable();
 
 	private final AstNode operator;
@@ -39,6 +44,10 @@ public class AstApplication extends AstNode {
 		this.operand = operand;
 	}
 
+	/**
+	 * This node is providing a parameter, so we decrement the number needed by
+	 * our the operator.
+	 */
 	@Override
 	protected int getNeededParameterCount() {
 		return operator.getNeededParameterCount() - 1;
@@ -53,6 +62,12 @@ public class AstApplication extends AstNode {
 		return returntype;
 	}
 
+	/**
+	 * If there are an insufficient number of parameters, call
+	 * {@link #wrap(ProgramRoutine, int, int)} to create closures. If not,
+	 * render the operand, so that its value will be on the stack, then render
+	 * the operator.
+	 */
 	@Override
 	public boolean render(ProgramRoutine program, int depth, int debrujin) {
 		if (operator.getNeededParameterCount() - depth > 1) {
@@ -91,6 +106,10 @@ public class AstApplication extends AstNode {
 		}
 	}
 
+	/**
+	 * Ensure that this node is of type β given the operator is of type (α → β)
+	 * and the operand is of type α.
+	 */
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
 		if (!(operator.type(runner, context) && operand.type(runner, context))) {

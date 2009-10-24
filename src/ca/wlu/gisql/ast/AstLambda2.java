@@ -9,6 +9,10 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.Instruction;
 
+/**
+ * Phase 2 representation of a lambda expression where the parameter is
+ * encapsulated as an {@link AstParameter}.
+ */
 public class AstLambda2 extends AstNode {
 
 	private final AstNode expression;
@@ -23,6 +27,12 @@ public class AstLambda2 extends AstNode {
 		type = new ArrowType(variable.type, expression.getType());
 	}
 
+	/**
+	 * This node will consume a parameter, so we incremented the needed
+	 * parameter count. If our child node is also a lambda node, we should
+	 * recuse. Otherwise, the type checker has ensured that it does not require
+	 * any parameters, so recursion must stop.
+	 */
 	@Override
 	protected int getNeededParameterCount() {
 		return (expression instanceof AstLambda2 ? expression
@@ -38,6 +48,10 @@ public class AstLambda2 extends AstNode {
 		return type;
 	}
 
+	/**
+	 * A lambda expression move a variable to from the operand stack to the
+	 * variable stack, run the inner code, then restores the variable stack.
+	 */
 	@Override
 	public boolean render(ProgramRoutine program, int depth, int debrujin) {
 		if (depth > 0) {

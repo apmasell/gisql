@@ -9,6 +9,10 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * Represents a Java function of some kind that is embedded in the query
+ * language. f
+ */
 public abstract class AstNative extends AstNode {
 
 	private final String description;
@@ -42,6 +46,10 @@ public abstract class AstNative extends AstNode {
 		return name;
 	}
 
+	/**
+	 * The number of parameters needed by this node is the number of arguments
+	 * that it expects.
+	 */
 	@Override
 	protected final int getNeededParameterCount() {
 		return types.length - 1;

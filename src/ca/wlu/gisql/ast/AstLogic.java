@@ -6,6 +6,7 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.logic.Complement;
 import ca.wlu.gisql.interactome.logic.ComputedInteractome;
 import ca.wlu.gisql.interactome.logic.Intersection;
@@ -18,12 +19,18 @@ import ca.wlu.gisql.vm.InstructionConstruct;
 import ca.wlu.gisql.vm.InstructionPack;
 import ca.wlu.gisql.vm.InstructionPush;
 
+/**
+ * Represents any set operation on {@link Interactome}s. All set operations are
+ * broken down into conjunction(intersection), disjunction(union), and negation.
+ * All operations are converted into conjunctive normal form.
+ */
 public class AstLogic extends AstNode {
 
 	private enum Operation {
 		Conjunct, Disjunct, Negation
 	}
 
+	/** Convience function for normalization. */
 	private static AstNode distributeDisjunctOf(AstNode node) {
 		if (node instanceof AstLogic) {
 			return ((AstLogic) node).distributeDisjunct();
@@ -32,6 +39,7 @@ public class AstLogic extends AstNode {
 		}
 	}
 
+	/** Conveince function to make a new intersection node. */
 	public static AstNode makeConjunct(AstNode a, AstNode b) {
 		if (a.equals(b)) {
 			return a;
@@ -40,6 +48,7 @@ public class AstLogic extends AstNode {
 		}
 	}
 
+	/** Conveince function to make a new union node. */
 	public static AstNode makeDisjunct(AstNode a, AstNode b) {
 		if (a.equals(b)) {
 			return a;
@@ -48,6 +57,7 @@ public class AstLogic extends AstNode {
 		}
 	};
 
+	/** Conveince function to make a new complement node. */
 	public static AstNode makeNegation(AstNode a) {
 		if (a instanceof AstLogic) {
 			AstLogic n = (AstLogic) a;
@@ -58,6 +68,10 @@ public class AstLogic extends AstNode {
 		return new AstLogic(a, null, Operation.Negation);
 	}
 
+	/**
+	 * Populate a matrix of terms as needed by {@link ComputedInteractome} from
+	 * an expression.
+	 */
 	private static void makeTermMatrixOf(AstNode node,
 			List<List<Integer>> productOfSums,
 			List<List<Integer>> productOfSumsNegated, List<AstNode> termini,
@@ -85,6 +99,10 @@ public class AstLogic extends AstNode {
 		}
 	}
 
+	/**
+	 * Helper function to create new terms in the matrix when switching form one
+	 * type of term to another.
+	 */
 	private static void prepareMatrix(List<List<Integer>> productOfSums,
 			List<List<Integer>> productOfSumsNegated, Operation parent,
 			Operation operation) {
@@ -94,6 +112,7 @@ public class AstLogic extends AstNode {
 		}
 	}
 
+	/** Pushes negation operators to the leaves of the AstLogic tree. */
 	private static AstNode removeNegationOf(AstNode node) {
 		if (node instanceof AstLogic) {
 			return ((AstLogic) node).removeNegation();
@@ -112,6 +131,7 @@ public class AstLogic extends AstNode {
 		this.operation = operation;
 	}
 
+	/** This function is the meat of converting terms to conjunctive normal form. */
 	private AstNode distributeDisjunct() {
 		if (operation == Operation.Disjunct) {
 			if (operationOf(right) == Operation.Conjunct) {
@@ -182,6 +202,10 @@ public class AstLogic extends AstNode {
 		return Type.InteractomeType;
 	}
 
+	/**
+	 * Populate a matrix of terms as needed by {@link ComputedInteractome} from
+	 * an expression.
+	 */
 	private void makeTermMatrix(List<List<Integer>> productOfSums,
 			List<List<Integer>> productOfSumsNegated, List<AstNode> termini,
 			Operation parent) {
@@ -205,6 +229,10 @@ public class AstLogic extends AstNode {
 		}
 	}
 
+	/**
+	 * Collect all the leaves of a AstLogic tree (i.e., AstNode children which
+	 * are not AstLogic).
+	 */
 	private void prepareInteractomes(List<AstNode> termini) {
 		if (left instanceof AstLogic) {
 			((AstLogic) left).prepareInteractomes(termini);
@@ -221,6 +249,7 @@ public class AstLogic extends AstNode {
 		}
 	}
 
+	/** Sorts two parallel lists. */
 	private void quicksort(List<List<Integer>> list1,
 			List<List<Integer>> list2, int left, int right) {
 		if (right > left) {
@@ -247,6 +276,7 @@ public class AstLogic extends AstNode {
 		}
 	}
 
+	/** Pushes negation operators to the leaves of the AstLogic tree. */
 	private AstNode removeNegation() {
 		if (operation == Operation.Negation) {
 			Operation suboperation = operationOf(left);
@@ -263,6 +293,11 @@ public class AstLogic extends AstNode {
 		return this;
 	}
 
+	/**
+	 * Render this AstLogic tree by rendering all the leaves, creating a
+	 * conjunctive normal form matrix of operations, and then calling the
+	 * {@link ComputedInteractome} constructor.
+	 */
 	@Override
 	public boolean render(ProgramRoutine program, int depth, int debrujin) {
 		AstNode baseNormalForm = distributeDisjunctOf(removeNegation());
@@ -359,6 +394,7 @@ public class AstLogic extends AstNode {
 		}
 	}
 
+	/** Parallel list swap operation for {@link #quicksort(List, List, int, int)}. */
 	private void swap(List<List<Integer>> list1, List<List<Integer>> list2,
 			int left, int right) {
 		List<Integer> value1 = list1.get(left);
@@ -370,6 +406,7 @@ public class AstLogic extends AstNode {
 		list2.set(right, value2);
 	}
 
+	/** Checks that the arguments are well-typed and of type Interactome. */
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
 		if (!(left.type(runner, context) && right.type(runner, context))) {

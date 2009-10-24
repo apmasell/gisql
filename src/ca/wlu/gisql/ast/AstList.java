@@ -16,6 +16,10 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.InstructionPack;
 
+/**
+ * An {@link AstNode} that is a list of other {@link AstNode}. This corresponds
+ * to a literal list in the syntax.
+ */
 public class AstList extends AstNode implements List<AstNode> {
 
 	private final Type contents = new TypeVariable();
@@ -176,6 +180,7 @@ public class AstList extends AstNode implements List<AstNode> {
 		return list.toArray(a);
 	}
 
+	/** Ensure that all the items in this list have the correct type. */
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
 		for (AstNode node : list) {

@@ -25,6 +25,10 @@ import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.interactome.output.FileFormat;
 import ca.wlu.gisql.runner.ExpressionRunner;
 
+/**
+ * Main entry point of command line interface. All command line processing
+ * should be done here.
+ */
 public class GisQL {
 
 	private static final Logger log = Logger.getLogger(GisQL.class);
