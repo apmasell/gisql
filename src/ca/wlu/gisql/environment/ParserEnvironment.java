@@ -21,6 +21,7 @@ import ca.wlu.gisql.function.Range;
 import ca.wlu.gisql.function.SearchGenes;
 import ca.wlu.gisql.function.Venn;
 import ca.wlu.gisql.function.list.Cons;
+import ca.wlu.gisql.function.list.Flatten;
 import ca.wlu.gisql.function.list.FoldLeft;
 import ca.wlu.gisql.function.list.FoldRight;
 import ca.wlu.gisql.function.list.Join;
@@ -84,6 +85,7 @@ public class ParserEnvironment extends Environment {
 		add(Defuzzify.class);
 		add(DeltaCoreicity.class);
 		add(EchoFunction.self);
+		add(Flatten.function);
 		add(FoldLeft.self);
 		add(FoldRight.self);
 		add(FormatFunction.self);
