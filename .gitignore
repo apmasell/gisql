@@ -2,4 +2,5 @@
 /.settings
 /bin
 /dist
+/doc
 /gisql.properties
