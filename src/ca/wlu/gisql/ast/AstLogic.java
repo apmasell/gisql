@@ -131,7 +131,9 @@ public class AstLogic extends AstNode {
 		this.operation = operation;
 	}
 
-	/** This function is the meat of converting terms to conjunctive normal form. */
+	/**
+	 * This function is the meat of converting terms to conjunctive normal form.
+	 */
 	private AstNode distributeDisjunct() {
 		if (operation == Operation.Disjunct) {
 			if (operationOf(right) == Operation.Conjunct) {
@@ -394,7 +396,10 @@ public class AstLogic extends AstNode {
 		}
 	}
 
-	/** Parallel list swap operation for {@link #quicksort(List, List, int, int)}. */
+	/**
+	 * Parallel list swap operation for {@link #quicksort(List, List, int, int)}
+	 * .
+	 */
 	private void swap(List<List<Integer>> list1, List<List<Integer>> list2,
 			int left, int right) {
 		List<Integer> value1 = list1.get(left);

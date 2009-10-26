@@ -19,7 +19,6 @@ public abstract class Type implements Show<List<TypeVariable>> {
 	public static final NativeType BooleanType = new NativeType("boolean",
 			Boolean.class);
 
-
 	public static final NativeType FormatType = new NativeType("format",
 			FileFormat.class);
 

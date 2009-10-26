@@ -29,7 +29,7 @@ public class TypeVariable extends Type {
 	public boolean canUnify(Type othertype) {
 		return self == null && othertype instanceof Type
 				|| self.canUnify(othertype)
-				&& TypeClass.hasInstance((Type) othertype, typeclasses);
+				&& TypeClass.hasInstance(othertype, typeclasses);
 	}
 
 	@Override

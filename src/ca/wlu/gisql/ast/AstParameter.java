@@ -44,8 +44,7 @@ public class AstParameter extends AstNode {
 	 * stack. The debujin index field is the number of item on the variable
 	 * stack when our containing lambda captured a variable, while the debrujin
 	 * parameter is the number of items currently on the variable stack. The
-	 * difference will give the appropriate offset into the stack for our
-	 * value.
+	 * difference will give the appropriate offset into the stack for our value.
 	 */
 	@Override
 	public boolean render(ProgramRoutine program, int depth, int debrujin) {
