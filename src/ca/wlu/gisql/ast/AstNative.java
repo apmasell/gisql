@@ -11,7 +11,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Represents a Java function of some kind that is embedded in the query
- * language. f
+ * language. 
  */
 public abstract class AstNative extends AstNode {
 
