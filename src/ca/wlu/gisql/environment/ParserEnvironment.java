@@ -48,6 +48,7 @@ import ca.wlu.gisql.interactome.output.AbstractOutput;
 import ca.wlu.gisql.interactome.output.FileFormat;
 import ca.wlu.gisql.interactome.patch.Patch;
 import ca.wlu.gisql.interactome.proximity.Proximity;
+import ca.wlu.gisql.interactome.snap.Snap;
 import ca.wlu.gisql.parser.util.ComputedInteractomeParser;
 
 public class ParserEnvironment extends Environment {
@@ -110,6 +111,7 @@ public class ParserEnvironment extends Environment {
 		add(SearchGenes.self);
 		add(SilentFunction.self);
 		add(Slice.self);
+		add(Snap.class);
 		add(Venn.self);
 		add(Zip.self);
 
