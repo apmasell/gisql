@@ -107,7 +107,12 @@ public final class AstConstructor extends AstNative {
 
 	@Override
 	public final boolean render(ProgramRoutine program, int depth, int debrujin) {
-		return program.instructions.add(new InstructionConstruct(constructor));
+		if (depth >= types.length - 1) {
+			return program.instructions.add(new InstructionConstruct(
+					constructor));
+		} else {
+			return wrap(program, depth, debrujin);
+		}
 	}
 
 }
