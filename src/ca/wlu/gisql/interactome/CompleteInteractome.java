@@ -8,6 +8,7 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** An interactome that contains all genes and interactions known to the system. */
 public class CompleteInteractome implements Interactome {
 	public static final CompleteInteractome self = new CompleteInteractome();
 

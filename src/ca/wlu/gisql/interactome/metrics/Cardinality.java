@@ -6,6 +6,10 @@ import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * Measure sum-cardinality of the genes/interactions. In a crisp set, this is
+ * identical to {@link Totals}.
+ */
 public class Cardinality implements Metrics {
 
 	private double geneCardinality = 0;

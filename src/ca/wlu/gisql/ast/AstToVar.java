@@ -3,7 +3,7 @@ package ca.wlu.gisql.ast;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.UserEnvironment;
-import ca.wlu.gisql.interactome.tovar.ToVar;
+import ca.wlu.gisql.parser.descriptors.ToVarDescriptor;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -28,7 +28,7 @@ public class AstToVar extends AstNode {
 	}
 
 	public int getPrecedence() {
-		return ToVar.descriptor.getPrecedence();
+		return ToVarDescriptor.self.getPrecedence();
 	}
 
 	@Override

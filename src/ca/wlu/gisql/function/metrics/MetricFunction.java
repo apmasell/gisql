@@ -7,6 +7,7 @@ import ca.wlu.gisql.interactome.metrics.Metrics;
 import ca.wlu.gisql.interactome.metrics.MetricsInteractome;
 import ca.wlu.gisql.vm.Machine;
 
+/** Convience wrapper to convert {@link Metrics} into {@link Function}s. */
 public abstract class MetricFunction<M extends Metrics> extends Function {
 
 	private final Class<M> metricclass;

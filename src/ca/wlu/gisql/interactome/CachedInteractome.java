@@ -12,6 +12,10 @@ import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * An interactome which will build a list of all genes and interactions which
+ * have defined membership.
+ */
 public class CachedInteractome extends ProcessableInteractome {
 
 	private static final Logger log = Logger.getLogger(CachedInteractome.class);

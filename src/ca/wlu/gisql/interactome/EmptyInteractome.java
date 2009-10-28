@@ -8,6 +8,7 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** An interacome which contains no genes or edges. */
 public class EmptyInteractome implements Interactome {
 	public static final EmptyInteractome self = new EmptyInteractome();
 

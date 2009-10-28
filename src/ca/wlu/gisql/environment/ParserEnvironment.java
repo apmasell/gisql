@@ -1,5 +1,6 @@
 package ca.wlu.gisql.environment;
 
+import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.ast.AstConstructor;
 import ca.wlu.gisql.ast.AstLambda2;
 import ca.wlu.gisql.ast.AstLiteral;
@@ -49,8 +50,13 @@ import ca.wlu.gisql.interactome.output.FileFormat;
 import ca.wlu.gisql.interactome.patch.Patch;
 import ca.wlu.gisql.interactome.proximity.Proximity;
 import ca.wlu.gisql.interactome.snap.Snap;
-import ca.wlu.gisql.parser.util.ComputedInteractomeParser;
+import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
 
+/**
+ * All values and functions that are part of the query language should be
+ * defined in this environment. All {@link Environment}s should use this a the
+ * root environment.
+ */
 public class ParserEnvironment extends Environment {
 	public static final ParserEnvironment self = new ParserEnvironment(null);
 
@@ -80,7 +86,7 @@ public class ParserEnvironment extends Environment {
 		add(ClearFunction.self);
 		add(Comparison.self);
 		add(Cons.function);
-		add(Coreicity.function);
+		add(Coreicity.class);
 		add(Cut.class);
 		add(DefinedFunction.self);
 		add(Defuzzify.class);
@@ -115,17 +121,25 @@ public class ParserEnvironment extends Environment {
 		add(Venn.self);
 		add(Zip.self);
 
-		for (ComputedInteractomeParser operator : getParserKb()
+		for (ComputedInteractomeDescriptor operator : getParserKb()
 				.getComputedInteractomeParsers()) {
 			add(operator.getFunctionName(), operator.getFunction());
 
 		}
 	}
 
+	/**
+	 * Convience method to define any {@link AstNative} type using the built-in
+	 * name.
+	 */
 	public void add(AstNative function) {
 		add(function.toString(), function);
 	}
 
+	/**
+	 * Convience method to define any class which is decorated with
+	 * {@link GisqlConstructorFunction}.
+	 */
 	public void add(Class<?> clazz) {
 		add(new AstConstructor(clazz));
 	}

@@ -18,7 +18,6 @@ import ca.wlu.gisql.interactome.logic.Residuum;
 import ca.wlu.gisql.interactome.logic.SymmetricDifference;
 import ca.wlu.gisql.interactome.logic.Union;
 import ca.wlu.gisql.interactome.output.AbstractOutput;
-import ca.wlu.gisql.interactome.tovar.ToVar;
 import ca.wlu.gisql.parser.descriptors.BracketedExpressionDescriptor;
 import ca.wlu.gisql.parser.descriptors.ColonOrderDescriptor;
 import ca.wlu.gisql.parser.descriptors.EmptyList;
@@ -26,14 +25,15 @@ import ca.wlu.gisql.parser.descriptors.HelpDescriptor;
 import ca.wlu.gisql.parser.descriptors.LambdaDescriptor;
 import ca.wlu.gisql.parser.descriptors.LiteralList;
 import ca.wlu.gisql.parser.descriptors.LiteralTokenDescriptor;
+import ca.wlu.gisql.parser.descriptors.ToVarDescriptor;
 import ca.wlu.gisql.parser.descriptors.TypeOfDescriptor;
 import ca.wlu.gisql.parser.descriptors.UnitDescriptor;
-import ca.wlu.gisql.parser.util.ComputedInteractomeParser;
+import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public class ParserKnowledgebase {
 
-	private final List<ComputedInteractomeParser> computedInteractomeParsers = new ArrayList<ComputedInteractomeParser>();
+	private final List<ComputedInteractomeDescriptor> computedInteractomeParsers = new ArrayList<ComputedInteractomeDescriptor>();
 
 	private String help;
 
@@ -58,7 +58,7 @@ public class ParserKnowledgebase {
 		installOperator(LiteralList.descriptor);
 		installOperator(Residuum.descriptor);
 		installOperator(SymmetricDifference.descriptor);
-		installOperator(ToVar.descriptor);
+		installOperator(ToVarDescriptor.self);
 		installOperator(TypeOfDescriptor.descriptor);
 		installOperator(Union.descriptor);
 		installOperator(UnitDescriptor.descriptor);
@@ -100,7 +100,7 @@ public class ParserKnowledgebase {
 
 	}
 
-	public List<ComputedInteractomeParser> getComputedInteractomeParsers() {
+	public List<ComputedInteractomeDescriptor> getComputedInteractomeParsers() {
 		return computedInteractomeParsers;
 	}
 
@@ -132,9 +132,9 @@ public class ParserKnowledgebase {
 			return;
 		}
 		list.add(operator);
-		if (operator instanceof ComputedInteractomeParser) {
+		if (operator instanceof ComputedInteractomeDescriptor) {
 			computedInteractomeParsers
-					.add((ComputedInteractomeParser) operator);
+					.add((ComputedInteractomeDescriptor) operator);
 		}
 	}
 

@@ -10,6 +10,7 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/** Worker class representing all fuzzy set-theoretic computations. */
 public class ComputedInteractome implements Interactome {
 
 	private final String expression;
@@ -18,6 +19,27 @@ public class ComputedInteractome implements Interactome {
 	private final List<List<Integer>> productOfSumsNegated;
 	private final double unknown;
 
+	/**
+	 * Create a computed interactome with the supplied terms.
+	 * 
+	 * @param interactomes
+	 *            The interactomes used as leaves in this expression.
+	 * @param productOfSums
+	 *            A list of terms in product of sum form. That is, each inner
+	 *            list represents a term of leaves, based on index, that will be
+	 *            summed, and then all these sums will be producted.
+	 * @param productOfSumsNegated
+	 *            A list identical to the above, but representing terms whose
+	 *            negated form is part of the term.
+	 * 
+	 *            Note that the length of the productOfSums must be the same as
+	 *            the productOfSumsNegated, as each index in both lists,
+	 *            represent one term. Also, each integer in both lists must be
+	 *            an index into the interactome list.
+	 * 
+	 *            For example, an XOR of two interactomes would look like this:
+	 *            {@code new ComputedInteractome([A,B], [[0][1]], [[1][0]])}
+	 */
 	public ComputedInteractome(final List<Interactome> interactomes,
 			final List<List<Integer>> productOfSums,
 			final List<List<Integer>> productOfSumsNegated) {

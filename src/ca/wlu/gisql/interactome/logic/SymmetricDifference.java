@@ -2,11 +2,11 @@ package ca.wlu.gisql.interactome.logic;
 
 import ca.wlu.gisql.ast.AstLogic;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.parser.util.ComputedInteractomeParser;
+import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
 
-public class SymmetricDifference extends ComputedInteractomeParser {
+public class SymmetricDifference extends ComputedInteractomeDescriptor {
 
-	public static final ComputedInteractomeParser descriptor = new SymmetricDifference();
+	public static final ComputedInteractomeDescriptor descriptor = new SymmetricDifference();
 
 	public SymmetricDifference() {
 		super(4, '∆', new char[] { '^' },

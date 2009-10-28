@@ -33,8 +33,6 @@ public class Ubergraph implements Iterable<Interaction> {
 
 	private final Set<Interaction> interactions = new HashSet<Interaction>();
 
-	private final boolean safeMode = false;
-
 	private Ubergraph() {
 		super();
 	}
@@ -67,7 +65,7 @@ public class Ubergraph implements Iterable<Interaction> {
 	}
 
 	public Gene newGene(Accession accession) {
-		Gene gene = safeMode ? new CheckedGene() : new Gene();
+		Gene gene = new Gene();
 		gene.add(accession);
 		genes.add(gene);
 		geneByGi.put(accession.getIdentifier(), gene);

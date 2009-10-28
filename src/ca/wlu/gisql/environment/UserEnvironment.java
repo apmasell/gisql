@@ -6,6 +6,7 @@ import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.output.FileFormat;
 
+/** This environment is where the user should be making definitions. */
 public class UserEnvironment extends Environment {
 	private FileFormat format = FileFormat.summary;
 
@@ -19,6 +20,10 @@ public class UserEnvironment extends Environment {
 		super(parent, true, false);
 	}
 
+	/**
+	 * Appending an interactome will create a history-numbered version of the
+	 * interactome in this environment.
+	 */
 	public CachedInteractome append(Interactome interactome) {
 		if (interactome == null) {
 			return null;

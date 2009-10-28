@@ -6,6 +6,10 @@ import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * Compute the “fuzziness” of the gene/interactions scores. Essentially, this is
+ * a measure of distribution.
+ */
 public class Fuzziness implements Metrics {
 	private double geneFuziness = 0;
 

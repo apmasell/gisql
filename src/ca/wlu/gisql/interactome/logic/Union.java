@@ -3,10 +3,10 @@ package ca.wlu.gisql.interactome.logic;
 import ca.wlu.gisql.ast.AstLogic;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parser;
-import ca.wlu.gisql.parser.util.ComputedInteractomeParser;
+import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
 
-public class Union extends ComputedInteractomeParser {
-	public static final ComputedInteractomeParser descriptor = new Union();
+public class Union extends ComputedInteractomeDescriptor {
+	public static final ComputedInteractomeDescriptor descriptor = new Union();
 
 	private Union() {
 		super(Parser.PREC_DISJUNCT, '∪', new char[] { '|' }, "Union (Ax s Bx)",

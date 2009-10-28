@@ -9,6 +9,7 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** Generate jgrapht objects from an interactome. */
 public class GraphedInteractome implements Interactome {
 	private final SimpleWeightedGraph<Gene, Interaction> graph = new SimpleWeightedGraph<Gene, Interaction>(
 			Interaction.class);

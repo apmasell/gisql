@@ -3,10 +3,10 @@ package ca.wlu.gisql.interactome.logic;
 import ca.wlu.gisql.ast.AstLogic;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parser;
-import ca.wlu.gisql.parser.util.ComputedInteractomeParser;
+import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
 
-public class Difference extends ComputedInteractomeParser {
-	public static final ComputedInteractomeParser descriptor = new Difference();
+public class Difference extends ComputedInteractomeDescriptor {
+	public static final ComputedInteractomeDescriptor descriptor = new Difference();
 
 	Difference() {
 		super(Parser.PREC_DIFF, '∖', new char[] { '-', '\\' },

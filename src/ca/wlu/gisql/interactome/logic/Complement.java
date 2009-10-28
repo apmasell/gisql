@@ -15,6 +15,7 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** This is a special syntax parseable to handle complemented/negated sets. */
 public class Complement implements Parseable {
 	public static final Parseable descriptor = new Complement();
 

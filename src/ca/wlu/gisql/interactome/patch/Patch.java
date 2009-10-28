@@ -10,6 +10,10 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * Patch up missing interactions that probably should be there, based on other
+ * species.
+ */
 public class Patch implements Interactome {
 	public static final Function function = new PatchFunction();
 	public static final Function functionAverage = new AveragePatchFunction();

@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome.tovar;
+package ca.wlu.gisql.parser.descriptors;
 
 import java.util.List;
 import java.util.Stack;
@@ -16,7 +16,9 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-final class ToVarDescriptor implements Parseable {
+public final class ToVarDescriptor implements Parseable {
+	public static final Parseable self = new ToVarDescriptor();
+
 	private static final Token[] tokens = new Token[] { TokenName.self };
 
 	public AstNode construct(UserEnvironment environment, List<AstNode> params,

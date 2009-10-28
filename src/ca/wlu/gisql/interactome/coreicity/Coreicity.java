@@ -3,23 +3,26 @@ package ca.wlu.gisql.interactome.coreicity;
 import java.util.Set;
 
 import ca.wlu.gisql.Membership;
-import ca.wlu.gisql.ast.Function;
+import ca.wlu.gisql.annotation.GisqlConstructorFunction;
+import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 import ca.wlu.gisql.vm.Machine;
 import ca.wlu.gisql.vm.Program;
 
+@GisqlConstructorFunction(name = "core", description = "Filter genes based on their coreicity")
 public class Coreicity implements Interactome {
 
-	public static final Function function = new CoreicityDescriptor();
 	private final Program comparison;
 	private final Machine machine;
 	private final Interactome source;
 
-	public Coreicity(Interactome source, Machine machine, Program comparison) {
+	public Coreicity(Machine machine, Interactome source,
+			@GisqlType(type = "number → boolean") Program comparison) {
 		this.source = source;
 		this.machine = machine;
 		this.comparison = comparison;
@@ -57,7 +60,7 @@ public class Coreicity implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return function.getPrecedence();
+		return Parser.PREC_LITERAL;
 	}
 
 	public double membershipOfUnknown() {

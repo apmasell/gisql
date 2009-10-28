@@ -7,6 +7,7 @@ import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.interactome.delay.Delay;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
@@ -17,7 +18,7 @@ public class Orphans implements Interactome {
 	private final Interactome source;
 
 	public Orphans(Interactome source) {
-		this.source = source;
+		this.source = new Delay(source);
 	}
 
 	public double calculateMembership(Gene gene) {

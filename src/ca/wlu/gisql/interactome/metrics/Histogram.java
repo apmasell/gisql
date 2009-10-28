@@ -6,6 +6,7 @@ import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** Produce a little histogram of gene/interaction scores. */
 public class Histogram implements Metrics {
 	private final int bincount;
 

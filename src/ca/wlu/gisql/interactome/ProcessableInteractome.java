@@ -6,6 +6,7 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
 
+/** An interactome that can have all the genes and edges visited once. */
 public abstract class ProcessableInteractome implements Interactome {
 	private static final Logger log = Logger
 			.getLogger(ProcessableInteractome.class);
@@ -17,6 +18,11 @@ public abstract class ProcessableInteractome implements Interactome {
 		return true;
 	}
 
+	/**
+	 * Visit all genes and edges.
+	 * 
+	 * @return false if there is a failure.
+	 */
 	public final boolean process() {
 		if (first) {
 			if (!prepare()) {

@@ -4,9 +4,14 @@ import java.util.Set;
 
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * An interactome whose memberships are all defined (named) in the
+ * {@link Ubergraph}.
+ */
 public class NamedInteractome implements Interactome {
 
 	private final double membershipOfUnknown;

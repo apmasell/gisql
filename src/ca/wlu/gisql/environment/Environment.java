@@ -12,6 +12,12 @@ import org.apache.log4j.Logger;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 
+/**
+ * Environment hold defined variables for interactions with the user.
+ * Environments can also be overlayed so that multiple environment can share
+ * common definitions. All environments should have a {@link ParserEnvironment}
+ * as the root environment.
+ */
 public abstract class Environment implements EnvironmentListener,
 		Iterable<Entry<String, AstNode>> {
 	private static final Logger log = Logger.getLogger(Environment.class);

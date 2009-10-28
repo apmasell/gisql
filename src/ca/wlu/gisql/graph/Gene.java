@@ -16,13 +16,11 @@ import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.db.DbSpecies;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.Interactome.Construction;
-import ca.wlu.gisql.util.Mergeable;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
-public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
-		Show<Set<Interactome>> {
+public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 
 	private static final Logger log = Logger.getLogger(Gene.class);
 
@@ -63,26 +61,6 @@ public class Gene implements Iterable<Accession>, Mergeable<Set<Interactome>>,
 		for (BiologicalFunction function : functions) {
 			add(function, knower, membership);
 		}
-	}
-
-	public boolean canMerge(Mergeable<Set<Interactome>> other) {
-		if (other instanceof Gene) {
-			Gene gene = (Gene) other;
-			Set<DbSpecies> knownSpecies = new HashSet<DbSpecies>();
-
-			/* Determine if we can merge these genes. */
-			for (Accession accession : this) {
-				knownSpecies.add(accession.getSpecies());
-			}
-			for (Accession accession : gene) {
-				if (knownSpecies.contains(accession.getSpecies())) {
-					return false;
-				}
-			}
-			return true;
-
-		}
-		return false;
 	}
 
 	protected final void checkState() {

@@ -10,6 +10,10 @@ import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * An interactome for which we compute user-specified statistics (
+ * {@link Metrics}).
+ */
 public class MetricsInteractome extends ProcessableInteractome {
 
 	private final Metrics[] metrics;

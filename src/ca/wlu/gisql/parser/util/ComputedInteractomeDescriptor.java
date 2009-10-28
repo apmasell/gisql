@@ -16,7 +16,7 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public abstract class ComputedInteractomeParser implements Parseable {
+public abstract class ComputedInteractomeDescriptor implements Parseable {
 
 	private static final Token[] tokens = new Token[] { TokenExpressionChild.self };
 
@@ -29,7 +29,7 @@ public abstract class ComputedInteractomeParser implements Parseable {
 
 	private final char symbol;
 
-	public ComputedInteractomeParser(int nestinglevel, char symbol,
+	public ComputedInteractomeDescriptor(int nestinglevel, char symbol,
 			char[] alternateoperators, String name, String function) {
 		super();
 		this.nestinglevel = nestinglevel;

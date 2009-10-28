@@ -6,6 +6,7 @@ import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** Count the number of present genes/interaction in an interactome. */
 public class Totals implements Metrics {
 
 	private int genes = 0;
