@@ -43,6 +43,13 @@ public class AstName extends AstNode {
 	}
 
 	@Override
+	public void resetType() {
+		throw new IllegalStateException(
+				"Names should be cleaned from the parse tree.");
+
+	}
+
+	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			Environment environment) {
 		AstNode self = environment.getVariable(name);

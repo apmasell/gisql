@@ -67,6 +67,11 @@ public class AstLambda2 extends AstNode {
 	}
 
 	@Override
+	public void resetType() {
+		expression.resetType();
+	}
+
+	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			Environment environment) {
 		AstNode resultexpression = expression.resolve(runner, context,

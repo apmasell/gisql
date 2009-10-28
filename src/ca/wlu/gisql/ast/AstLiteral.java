@@ -1,6 +1,7 @@
 package ca.wlu.gisql.ast;
 
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -62,6 +63,13 @@ public class AstLiteral extends AstNode {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void resetType() {
+		if (type instanceof TypeVariable) {
+			((TypeVariable) type).reset();
+		}
 	}
 
 	@Override

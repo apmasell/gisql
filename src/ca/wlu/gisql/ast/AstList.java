@@ -22,7 +22,7 @@ import ca.wlu.gisql.vm.InstructionPack;
  */
 public class AstList extends AstNode implements List<AstNode> {
 
-	private final Type contents = new TypeVariable();
+	private final TypeVariable contents = new TypeVariable();
 
 	private final List<AstNode> list = new ArrayList<AstNode>();
 
@@ -128,6 +128,14 @@ public class AstList extends AstNode implements List<AstNode> {
 			}
 		}
 		return program.instructions.add(new InstructionPack(list.size()));
+	}
+
+	@Override
+	public void resetType() {
+		contents.reset();
+		for (AstNode node : list) {
+			node.resetType();
+		}
 	}
 
 	@Override

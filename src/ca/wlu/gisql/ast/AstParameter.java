@@ -19,7 +19,7 @@ public class AstParameter extends AstNode {
 
 	final String name;
 
-	final Type type = new TypeVariable();
+	final TypeVariable type = new TypeVariable();
 
 	public AstParameter(String name) {
 		this.name = name;
@@ -50,6 +50,11 @@ public class AstParameter extends AstNode {
 	public boolean render(ProgramRoutine program, int depth, int debrujin) {
 		return program.instructions.add(new InstructionVariable(debrujin
 				- this.debrujin));
+	}
+
+	@Override
+	public void resetType() {
+		type.reset();
 	}
 
 	@Override

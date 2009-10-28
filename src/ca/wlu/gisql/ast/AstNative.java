@@ -11,11 +11,12 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Represents a Java function of some kind that is embedded in the query
- * language. 
+ * language.
  */
 public abstract class AstNative extends AstNode {
 
 	private final String description;
+
 	protected final String name;
 	protected final Type[] types;
 
@@ -68,6 +69,10 @@ public abstract class AstNative extends AstNode {
 			}
 		}
 		return type;
+	}
+
+	@Override
+	public final void resetType() {
 	}
 
 	@Override

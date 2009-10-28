@@ -46,6 +46,9 @@ public abstract class AstNode implements Prioritizable<AstNode>, Show<AstNode> {
 	public abstract boolean render(ProgramRoutine program, int depth,
 			int debrujin);
 
+	/** Resets the state of the type system so that type checking may be redone. */
+	public abstract void resetType();
+
 	/**
 	 * Perform any name resolution. A parse tree after resolution should contain
 	 * no {@link AstName} nodes. If a node contains errors, it should return

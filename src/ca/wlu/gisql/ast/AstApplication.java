@@ -17,11 +17,11 @@ public class AstApplication extends AstNode {
 
 	private final AstNode operand;
 
-	private final Type operandtype = new TypeVariable();
+	private final TypeVariable operandtype = new TypeVariable();
 
 	private final AstNode operator;
 
-	private final Type returntype = new TypeVariable();
+	private final TypeVariable returntype = new TypeVariable();
 
 	public AstApplication(AstNode... arguments) {
 		if (arguments.length < 2) {
@@ -76,6 +76,14 @@ public class AstApplication extends AstNode {
 			return operand.render(program, 0, debrujin)
 					&& operator.render(program, depth + 1, debrujin);
 		}
+	}
+
+	@Override
+	public void resetType() {
+		operandtype.reset();
+		returntype.reset();
+		operand.resetType();
+		operator.resetType();
 	}
 
 	@Override

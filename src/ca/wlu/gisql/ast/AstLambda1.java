@@ -52,6 +52,12 @@ public class AstLambda1 extends AstNode {
 				"AstLambda1 must be cleaned before rendering.");
 	}
 
+	@Override
+	public void resetType() {
+		throw new IllegalStateException(
+				"AstLambda1 must be cleaned before typing.");
+	}
+
 	/**
 	 * Set up a fake environment where the variable name is mapped to a
 	 * {@link AstParameter}. Then encapsulate the result in a phase 2 lambda.

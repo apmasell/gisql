@@ -10,19 +10,24 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * The query language type of an unknown/generic type. A type variable may
- * belone to one or more {@link TypeClass}.
+ * belong to one or more {@link TypeClass}.
  */
 public class TypeVariable extends Type {
+	private final TypeClass<?> originaltypeclass;
+	
 	private Type self = null;
+	
 	private final Set<TypeClass<?>> typeclasses = new HashSet<TypeClass<?>>();
 
 	public TypeVariable() {
 		super();
+		originaltypeclass = null;
 	}
 
 	public TypeVariable(TypeClass<?> typeclass) {
 		super();
 		typeclasses.add(typeclass);
+		originaltypeclass = typeclass;
 	}
 
 	@Override
@@ -58,6 +63,19 @@ public class TypeVariable extends Type {
 	@Override
 	protected boolean occurs(Type needle) {
 		return this == needle;
+	}
+
+	/**
+	 * Undoes the type unification of this variable. This is potentially very
+	 * dangerous. Use wisely.
+	 */
+	public void reset() {
+		self = null;
+		typeclasses.clear();
+		if (originaltypeclass != null) {
+			typeclasses.add(originaltypeclass);
+		}
+
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {

@@ -14,7 +14,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class AstNativeIndirect extends AstNode {
 
 	private final AstNative self;
-	private final Type type;
+	private Type type;
 
 	AstNativeIndirect(AstNative self) {
 		this.self = self;
@@ -38,6 +38,11 @@ public class AstNativeIndirect extends AstNode {
 	@Override
 	public boolean render(ProgramRoutine program, int depth, int debrujin) {
 		return self.render(program, depth, debrujin);
+	}
+
+	@Override
+	public void resetType() {
+		type = self.getType().clone();
 	}
 
 	@Override

@@ -50,6 +50,11 @@ public class AstTypeOf extends AstNode {
 	}
 
 	@Override
+	public void resetType() {
+		parameter.resetType();
+	}
+
+	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			Environment environment) {
 		AstNode parameter = this.parameter

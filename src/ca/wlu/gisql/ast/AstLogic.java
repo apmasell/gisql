@@ -359,6 +359,14 @@ public class AstLogic extends AstNode {
 	}
 
 	@Override
+	public void resetType() {
+		left.resetType();
+		if (right != null) {
+			right.resetType();
+		}
+	}
+
+	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			Environment environment) {
 		AstNode left = this.left.resolve(runner, context, environment);

@@ -46,6 +46,11 @@ public class AstToVar extends AstNode {
 	}
 
 	@Override
+	public void resetType() {
+		node.resetType();
+	}
+
+	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			Environment environment) {
 		AstNode node = this.node.resolve(runner, context, environment);
