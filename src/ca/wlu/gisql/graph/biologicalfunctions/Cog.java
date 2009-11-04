@@ -10,6 +10,10 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * Represents a Cluster of Orthologous Genes-assigned function. Each COG is
+ * represented by a single character.
+ */
 public class Cog implements BiologicalFunction {
 	private static final Map<Character, Cog> library = new HashMap<Character, Cog>();
 

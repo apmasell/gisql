@@ -12,6 +12,11 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * Helper class to cause all gene/interaction processing to be done in the
+ * {@link #prepare()} method so that the "genes before interactions" constraint
+ * may be violated.
+ */
 public class Delay implements Interactome {
 	protected static final Logger log = Logger.getLogger(Delay.class);
 

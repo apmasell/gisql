@@ -15,6 +15,10 @@ import ca.wlu.gisql.util.multimap.BackedMultiMap;
 import ca.wlu.gisql.util.multimap.EmptyMultiMap;
 import ca.wlu.gisql.util.multimap.SimpleMultiMap;
 
+/**
+ * Represents a Gene Ontoloy (GO)-assigned function. The GO term heirarchy must
+ * be provided to make comparisons.
+ */
 public class GeneOntology implements BiologicalFunction {
 
 	private static final SimpleMultiMap hierarchy;
