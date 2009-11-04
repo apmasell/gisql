@@ -68,7 +68,7 @@ public class ConsoleRunListener implements ExpressionRunListener {
 			System.out.print('"');
 			System.out.print(value);
 			System.out.print('"');
-		} else if (value instanceof List) {
+		} else if (value instanceof List<?>) {
 			System.out.print("[");
 			boolean first = true;
 			for (Object item : (List<?>) value) {

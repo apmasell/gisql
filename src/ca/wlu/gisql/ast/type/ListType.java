@@ -60,7 +60,7 @@ public class ListType extends Type {
 
 	@Override
 	public boolean validate(Object value) {
-		if (value instanceof List) {
+		if (value instanceof List<?>) {
 			List<?> list = (List<?>) value;
 			for (Object object : list) {
 				if (!contents.validate(object)) {

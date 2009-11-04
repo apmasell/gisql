@@ -73,7 +73,7 @@ public final class AstConstructor extends AstNative {
 		java.lang.reflect.Type[] parameters = constructor
 				.getGenericParameterTypes();
 		Annotation[][] annotations = constructor.getParameterAnnotations();
-		boolean needsmachine = parameters[0] instanceof Class
+		boolean needsmachine = parameters[0] instanceof Class<?>
 				&& Machine.class.isAssignableFrom((Class<?>) parameters[0]);
 
 		Type[] types = new Type[parameters.length + 1 - (needsmachine ? 1 : 0)];
