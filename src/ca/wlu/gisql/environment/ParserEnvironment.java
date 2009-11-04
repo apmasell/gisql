@@ -113,10 +113,10 @@ public class ParserEnvironment extends Environment {
 		add(Map.function);
 		add(Orphans.class);
 		add(OutputFileFunction.self);
-		add(Range.self);
 		add(Patch.function);
 		add(Proximity.class);
 		add(PullGi.self);
+		add(Range.self);
 		add(RunFunction.self);
 		add(SearchGenes.self);
 		add(SilentFunction.self);

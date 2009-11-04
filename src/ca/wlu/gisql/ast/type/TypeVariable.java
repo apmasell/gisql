@@ -14,9 +14,9 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  */
 public class TypeVariable extends Type {
 	private final TypeClass<?> originaltypeclass;
-	
+
 	private Type self = null;
-	
+
 	private final Set<TypeClass<?>> typeclasses = new HashSet<TypeClass<?>>();
 
 	public TypeVariable() {
