@@ -21,6 +21,8 @@ import ca.wlu.gisql.function.PullGi;
 import ca.wlu.gisql.function.Range;
 import ca.wlu.gisql.function.SearchGenes;
 import ca.wlu.gisql.function.Venn;
+import ca.wlu.gisql.function.list.BigIntersection;
+import ca.wlu.gisql.function.list.BigUnion;
 import ca.wlu.gisql.function.list.Cons;
 import ca.wlu.gisql.function.list.Flatten;
 import ca.wlu.gisql.function.list.FoldLeft;
@@ -83,6 +85,8 @@ public class ParserEnvironment extends Environment {
 		add(NumericComparison.NE);
 
 		add(AbstractOutput.function);
+		add(BigIntersection.self);
+		add(BigUnion.self);
 		add(ClearFunction.self);
 		add(Comparison.self);
 		add(Cons.function);
