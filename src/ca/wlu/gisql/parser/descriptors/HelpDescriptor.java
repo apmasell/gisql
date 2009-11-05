@@ -18,6 +18,7 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** This operator extracts the help information from a function and returns it. */
 public class HelpDescriptor implements Parseable {
 
 	public static final Parseable descriptor = new HelpDescriptor();

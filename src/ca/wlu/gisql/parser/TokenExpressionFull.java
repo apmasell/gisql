@@ -4,6 +4,7 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
 
+/** Parser an expression level starting at the root precedence level. */
 public class TokenExpressionFull extends Token {
 	private final char end;
 

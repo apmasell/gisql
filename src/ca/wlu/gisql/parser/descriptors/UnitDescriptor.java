@@ -15,6 +15,7 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** Parses the empty list written as “()”. */
 public class UnitDescriptor implements Parseable {
 	public static final Parseable descriptor = new UnitDescriptor();
 

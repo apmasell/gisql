@@ -4,6 +4,10 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
 
+/**
+ * Optionally match a token. If the token is not matched, the result will be
+ * null. This is equivalent to the ? operator in regular expressions.
+ */
 public class TokenMaybe extends Token {
 	private final Token child;
 

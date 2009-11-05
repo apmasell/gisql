@@ -4,6 +4,10 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
 
+/**
+ * Parser an expression at the same level as the current precedence. This us
+ * useful in right-hand productions of the form: E_n = E_{n+1} operator E_n
+ */
 public class TokenExpressionRight extends Token {
 
 	public static final TokenExpressionRight self = new TokenExpressionRight();

@@ -4,6 +4,9 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
 
+/**
+ * Find exactly some word in the input. The word is not included in the results.
+ */
 public class TokenMatchWord extends TokenName {
 	private final String word;
 

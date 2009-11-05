@@ -6,6 +6,7 @@ import java.util.Map;
 
 import ca.wlu.gisql.ast.AstNode;
 
+/** Find exactly some character. The character is not included in the results. */
 public class TokenMatchCharacter extends Token {
 	private static final Map<Character, TokenMatchCharacter> literals = new HashMap<Character, TokenMatchCharacter>();
 

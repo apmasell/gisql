@@ -18,7 +18,7 @@ import ca.wlu.gisql.vm.InstructionConstruct;
 import ca.wlu.gisql.vm.Machine;
 
 /**
- * Represents a native fuction that really corresponds to a Java constructor.
+ * Represents a native function that really corresponds to a Java constructor.
  * See {@link GisqlConstructorFunction} and {@link ParserEnvironment}.
  */
 public final class AstConstructor extends AstNative {

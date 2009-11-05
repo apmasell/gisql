@@ -16,6 +16,11 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * Allows assignment via (expression @ var). This is kind of awkward, but mostly
+ * convenient. Assignment in a functional language is always awkward. This is
+ * mostly a relic from he early versions of the query language.
+ */
 public final class ToVarDescriptor implements Parseable {
 	public static final Parseable self = new ToVarDescriptor();
 

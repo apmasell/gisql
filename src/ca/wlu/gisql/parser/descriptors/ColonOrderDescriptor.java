@@ -15,6 +15,10 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * Parsers the convenience syntax for functions. A function (f x y), may be
+ * written has (x:f y). This is convenient for interactome expressions.
+ */
 public class ColonOrderDescriptor implements Parseable {
 	public static final Parseable descriptor = new ColonOrderDescriptor();
 

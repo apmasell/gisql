@@ -5,6 +5,7 @@ import java.util.List;
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 
+/** Matches a valid Java identifier. */
 public class TokenName extends Token {
 
 	public static final Token self = new TokenName();

@@ -4,6 +4,7 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
 
+/** Parsers an expression at a precedence level greater than the current level. */
 public class TokenExpressionChild extends Token {
 	public static final TokenExpressionChild self = new TokenExpressionChild();
 

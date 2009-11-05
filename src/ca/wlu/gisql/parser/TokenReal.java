@@ -8,6 +8,7 @@ import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.typeclasses.TypeClass;
 
+/** Parser a decimal number. It cannot include an exponent. */
 public class TokenReal extends Token {
 	public static final TokenReal self = new TokenReal();
 

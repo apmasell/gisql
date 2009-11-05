@@ -6,6 +6,7 @@ import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 
+/** Matches a whole number. */
 public class TokenNumber extends Token {
 	public static final TokenNumber self = new TokenNumber();
 

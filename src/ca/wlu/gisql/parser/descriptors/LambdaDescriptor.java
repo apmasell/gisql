@@ -17,6 +17,12 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * This operator parses anonymous functions (aka lambdas). The syntax ('var
+ * expression) was chosen because \ is used for set division, so Haskell's (\var
+ * -> expression), was not possible and LISP/Scheme (lambda var expression) is
+ * bulky.
+ */
 public class LambdaDescriptor implements Parseable {
 
 	public static final Parseable descriptor = new LambdaDescriptor();

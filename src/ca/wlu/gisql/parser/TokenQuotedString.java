@@ -6,6 +6,9 @@ import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 
+/**
+ * Matches a quoted string. Escape sequences are permitted.
+ */
 public class TokenQuotedString extends Token {
 	public static final TokenQuotedString self = new TokenQuotedString();
 

@@ -5,6 +5,11 @@ import java.util.List;
 import ca.wlu.gisql.ast.AstList;
 import ca.wlu.gisql.ast.AstNode;
 
+/**
+ * Finds a list of tokens delimited by a specific character. Whitespace may
+ * appear around the delimiter. This must match at least on token. That is, it
+ * behaves like the regular expression + operator.
+ */
 public class TokenListOf extends Token {
 	private final Token child;
 

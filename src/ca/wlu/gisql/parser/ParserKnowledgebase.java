@@ -31,6 +31,11 @@ import ca.wlu.gisql.parser.descriptors.UnitDescriptor;
 import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * This a collection of {@link Parseable}s for the {@link Parser} to find. This
+ * class has the core syntax, but new syntax may be added to instances of this
+ * class.
+ */
 public class ParserKnowledgebase {
 
 	private final List<ComputedInteractomeDescriptor> computedInteractomeParsers = new ArrayList<ComputedInteractomeDescriptor>();
@@ -71,6 +76,7 @@ public class ParserKnowledgebase {
 		buildHelp();
 	}
 
+	/** Add a new syntax element to the current language. */
 	public synchronized void addParseable(Parseable operator) {
 		installOperator(operator);
 		buildHelp();
@@ -104,6 +110,7 @@ public class ParserKnowledgebase {
 		return computedInteractomeParsers;
 	}
 
+	/** Provide help text collected from the {@link Parseable}s. */
 	public String getHelp() {
 		return help;
 	}

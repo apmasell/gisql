@@ -14,6 +14,7 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/** Parses a bracketed subexpression. */
 public class BracketedExpressionDescriptor implements Parseable {
 	public static final Parseable descriptor = new BracketedExpressionDescriptor();
 

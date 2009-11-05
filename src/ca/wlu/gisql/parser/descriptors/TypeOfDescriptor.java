@@ -15,6 +15,10 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
+/**
+ * This allows the user to introspect the inferred type of an operation. It is
+ * probably not useful to most users, but it is to developers.
+ */
 public class TypeOfDescriptor implements Parseable {
 
 	public static final Parseable descriptor = new TypeOfDescriptor();

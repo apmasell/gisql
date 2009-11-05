@@ -12,6 +12,14 @@ import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunListener;
 import ca.wlu.gisql.runner.LineContext;
 
+/**
+ * Parser use input and constructs an abstract syntax tree. The parser is,
+ * mostly, an LL(1) recursive descent parser, however, “prefixing” allows it to
+ * behave like a pack-rat parser in certain situations involving regular
+ * right-hand rules. It is built from {@link Parseable}s which convert tokens
+ * into {@link AstNode}s. The parser has a built-in notion of precedence, so
+ * each Parseable belongs to a specific precedence level.
+ */
 public class Parser {
 
 	public static final int PREC_ASSIGN = 1;
@@ -76,6 +84,10 @@ public class Parser {
 
 	}
 
+	/**
+	 * Parse an expression from the current position for a specific precedence
+	 * level.
+	 */
 	AstNode parseAutoExpression(int level) {
 		if (level > environment.getParserKb().maxdepth) {
 			return null;
@@ -87,8 +99,10 @@ public class Parser {
 		boolean matched = true;
 		while (matched && position < input.length()) {
 			matched = false;
+			/* Consider all the parseables in this precedence level... */
 			for (Parseable operator : environment.getParserKb().getOperators(
 					level)) {
+				/* Attempt to determine if it has a matching operator... */
 				int oldposition = position;
 				int errorposition = error.size();
 				if (operator.isPrefixed() == null
@@ -99,8 +113,13 @@ public class Parser {
 					}
 					boolean pop = operator.isPrefixed() != null
 							&& !operator.isPrefixed();
+					/* Then get the result. */
 					AstNode result = processOperator(operator, (pop ? results
 							.peek() : null), level);
+					/*
+					 * If successful, put the results on the stack and parse the
+					 * next chunk of input.
+					 */
 					if (result != null) {
 						if (pop) {
 							results.pop();
@@ -109,11 +128,19 @@ public class Parser {
 						matched = true;
 						break;
 					}
+					/*
+					 * If unsuccessful, reset the parser state and try the next
+					 * operator.
+					 */
 					error.setSize(errorposition);
 					position = oldposition;
 				}
 			}
 
+			/*
+			 * If we have failed to match any operators at the current level,
+			 * recurse...
+			 */
 			if (!matched && level < environment.getParserKb().maxdepth) {
 				AstNode result = parseAutoExpression(level + 1);
 				if (result != null) {
@@ -123,15 +150,30 @@ public class Parser {
 			}
 			consumeWhitespace(); /* Do this before testing input length. */
 		}
+
+		/* If nothing has been parsed, this has failed. */
 		if (results.size() == 0) {
 			return null;
 		}
+		/* If only one item has been parse, return it. */
 		if (results.size() == 1) {
 			return results.firstElement();
 		}
+		/*
+		 * If multiple items have been found, assume they are functions and
+		 * build an expession .
+		 */
 		return new AstApplication(results.toArray(new AstNode[results.size()]));
 	}
 
+	/**
+	 * Parse a complete expression.
+	 * 
+	 * @param endofexpression
+	 *            The character that indicates a complete expression has been
+	 *            found (e.g., ')' when matching a bracketed subexpression). If
+	 *            null, the expression must be terminated with the end of input.
+	 */
 	AstNode parseExpression(Character endofexpression) {
 		AstNode e = parseAutoExpression(0);
 
@@ -158,6 +200,11 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * Attempt to parse one operator by parsing its tokens, then calling
+	 * {@link Parseable#construct(UserEnvironment, List, Stack, ca.wlu.gisql.runner.ExpressionContext)}
+	 * .
+	 */
 	private AstNode processOperator(Parseable operator, AstNode left, int level) {
 		Token[] todo = operator.tasks();
 		List<AstNode> params = new ArrayList<AstNode>();

@@ -2,6 +2,7 @@ package ca.wlu.gisql.util;
 
 import java.util.Comparator;
 
+/** Generic comparator based on the {@link #toString()} method. */
 public class ToStringComparator implements Comparator<Object> {
 
 	public static final ToStringComparator instance = new ToStringComparator();

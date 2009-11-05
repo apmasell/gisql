@@ -6,6 +6,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.Writer;
 
+/**
+ * Provides an interface to write classes implementing {@link Show} to an
+ * {@link OutputStream}. Printing may optionally have some kind of context.
+ * Classes implementing {@link Prioritizable} will be written out with brackets.
+ */
 public class ShowablePrintWriter<E> extends PrintWriter {
 	private final boolean closeable;
 	private final E context;
