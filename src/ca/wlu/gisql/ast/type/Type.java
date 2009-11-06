@@ -98,9 +98,10 @@ public abstract class Type implements Show<List<TypeVariable>> {
 	/**
 	 * Unifies two types. This essentially checks that two types are identical
 	 * and, if they can be made by substituting a value for a type variable. The
-	 * substitution is made. This is the Hindly-Milner algorithm. Details:
-	 * {@link http://en.wikipedia.org/wiki/Type_inference} Extending methods
-	 * must always call super.unify() to deal with type variables.
+	 * substitution is made. This is the <a
+	 * href="http://en.wikipedia.org/wiki/Type_inference">Hindly-Milner
+	 * algorithm</a>. Extending methods must always call super.unify() to deal
+	 * with type variables.
 	 */
 	public boolean unify(Type that) {
 		if (this == that) {

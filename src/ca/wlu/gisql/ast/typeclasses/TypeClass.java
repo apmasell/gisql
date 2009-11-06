@@ -6,9 +6,9 @@ import java.util.Set;
 import ca.wlu.gisql.ast.type.Type;
 
 /**
- * A type class is a group of types that can all be used in certain situations.
- * {@link http://en.wikipedia.org/wiki/Type_class} They are called traits in
- * Scala and concepts in C++0x. Each must be backed by a Java interface.
+ * A <a href="http://en.wikipedia.org/wiki/Type_class">type class</a> is a group
+ * of types that can all be used in certain situations. They are called traits
+ * in Scala and concepts in C++0x. Each must be backed by a Java interface.
  */
 public class TypeClass<T> {
 
