@@ -40,6 +40,12 @@ public class AstApplication extends AstNode {
 
 	public AstApplication(AstNode operator, AstNode operand) {
 		super();
+		if (operator == null) {
+			throw new IllegalArgumentException("Operator cannot be null.");
+		}
+		if (operand == null) {
+			throw new IllegalArgumentException("Operand cannot be null.");
+		}
 		this.operator = operator;
 		this.operand = operand;
 	}

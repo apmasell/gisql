@@ -93,7 +93,7 @@ public class Parser {
 			return null;
 		}
 
-		Stack<AstNode> results = new Stack<AstNode>();
+		AstNode result = null;
 
 		consumeWhitespace(); /* Do this before testing input length. */
 		boolean matched = true;
@@ -107,24 +107,25 @@ public class Parser {
 				int errorposition = error.size();
 				if (operator.isPrefixed() == null
 						|| operator.isMatchingOperator(input.charAt(position))
-						&& (operator.isPrefixed() || results.size() > 0)) {
+						&& (operator.isPrefixed() || result != null)) {
 					if (operator.isPrefixed() != null) {
 						position++;
 					}
 					boolean pop = operator.isPrefixed() != null
 							&& !operator.isPrefixed();
 					/* Then get the result. */
-					AstNode result = processOperator(operator, (pop ? results
-							.peek() : null), level);
+					AstNode child = processOperator(operator, (pop ? result
+							: null), level);
 					/*
 					 * If successful, put the results on the stack and parse the
 					 * next chunk of input.
 					 */
-					if (result != null) {
-						if (pop) {
-							results.pop();
+					if (child != null) {
+						if (pop || result == null) {
+							result = child;
+						} else {
+							result = new AstApplication(result, child);
 						}
-						results.push(result);
 						matched = true;
 						break;
 					}
@@ -142,28 +143,20 @@ public class Parser {
 			 * recurse...
 			 */
 			if (!matched && level < environment.getParserKb().maxdepth) {
-				AstNode result = parseAutoExpression(level + 1);
-				if (result != null) {
-					results.add(result);
+				AstNode child = parseAutoExpression(level + 1);
+				if (child != null) {
+					if (result == null) {
+						result = child;
+					} else {
+						result = new AstApplication(result, child);
+					}
 					matched = true;
 				}
 			}
 			consumeWhitespace(); /* Do this before testing input length. */
 		}
 
-		/* If nothing has been parsed, this has failed. */
-		if (results.size() == 0) {
-			return null;
-		}
-		/* If only one item has been parse, return it. */
-		if (results.size() == 1) {
-			return results.firstElement();
-		}
-		/*
-		 * If multiple items have been found, assume they are functions and
-		 * build an expession .
-		 */
-		return new AstApplication(results.toArray(new AstNode[results.size()]));
+		return result;
 	}
 
 	/**
