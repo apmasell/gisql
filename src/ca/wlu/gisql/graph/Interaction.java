@@ -12,10 +12,14 @@ import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * Represents an interaction between two genes. There is no directionality to
+ * interactions and interactions are guaranteed to be singleton.
+ */
 public class Interaction implements Show<Set<Interactome>> {
-	private Gene gene1;
+	private final Gene gene1;
 
-	private Gene gene2;
+	private final Gene gene2;
 
 	private final Map<Interactome, Double> memberships = new WeakHashMap<Interactome, Double>();
 
@@ -30,38 +34,37 @@ public class Interaction implements Show<Set<Interactome>> {
 		gene2.edges.put(gene1, this);
 	}
 
-	void copyMembership(Interaction interaction) {
-		for (Entry<Interactome, Double> entry : interaction.memberships
-				.entrySet()) {
-			double membership;
-			Double thisMembership = memberships.get(entry.getKey());
-			if (thisMembership == null) {
-				membership = entry.getValue();
-			} else if (entry.getKey().getConstruction() == Construction.Computed) {
-				membership = entry.getKey().calculateMembership(interaction);
-			} else {
-				membership = Math.max(entry.getValue(), thisMembership);
-			}
-			memberships.put(entry.getKey(), membership);
-		}
-	}
-
+	/**
+	 * Calculates the memberships of all the species interactomes for this
+	 * interaction.
+	 */
 	public double getAverageMembership() {
 		double sum = 0;
-		for (double value : memberships.values()) {
-			sum += value;
+		int count = 0;
+		for (Entry<Interactome, Double> entry : memberships.entrySet()) {
+			if (entry.getKey().getConstruction() == Construction.Species) {
+				sum += entry.getValue();
+				count++;
+			}
 		}
-		return sum / memberships.size();
+		return sum / count;
 	}
 
+	/** Gets one of the genes in this interaction. The order is arbitrary. */
 	public Gene getGene1() {
 		return gene1;
 	}
 
+	/** Gets one of the genes in this interaction. The order is arbitrary. */
 	public Gene getGene2() {
 		return gene2;
 	}
 
+	/**
+	 * Determine the stored membership of this interaction in a particular
+	 * interactome. If the value has not been recorded, it will be
+	 * {@link Membership#Undefined}.
+	 */
 	public double getMembership(Interactome interactome) {
 		Double value = memberships.get(interactome);
 		if (value == null) {
@@ -71,6 +74,7 @@ public class Interaction implements Show<Set<Interactome>> {
 		}
 	}
 
+	/** Returns the other gene in this interaction (i.e., the one not provided). */
 	public Gene getOther(Gene gene) {
 		if (gene == gene1) {
 			return gene2;
@@ -81,24 +85,11 @@ public class Interaction implements Show<Set<Interactome>> {
 		return null;
 	}
 
-	protected void replace(Gene original, Gene replacement) {
-		Gene partner;
-		if (gene1 == original && gene2 != replacement) {
-			gene1 = replacement;
-			partner = gene2;
-		} else if (gene2 == original && gene1 != replacement) {
-			gene2 = replacement;
-			partner = gene1;
-		} else {
-			throw new IllegalArgumentException(
-					"Trying to replace a gene that is not in this interaction or using a replacement that already is.");
-		}
-		original.edges.remove(partner);
-		replacement.edges.put(partner, this);
-		partner.edges.remove(original);
-		partner.edges.put(replacement, this);
-	}
-
+	/**
+	 * Associate a membership value for the current gene in an interactome.
+	 * There is no need to “delete” values as the memberships are stored as weak
+	 * references and will be cleaned by the garbage collector.
+	 */
 	public void setMembership(Interactome interactome, double membership) {
 		if (Membership.isUndefined(membership)) {
 			membership = Membership.Missing;

@@ -10,19 +10,27 @@ import java.util.Set;
 import org.apache.commons.collections15.MultiMap;
 import org.apache.commons.collections15.multimap.MultiHashMap;
 
+/**
+ * Super-structure that holds all interactions and genes in the system. This
+ * provides the only interface by which to create genes and interactions and,
+ * therefore, enforces all constraints.
+ */
 public class Ubergraph implements Iterable<Interaction> {
 
 	private static Set<BiologicalFunction> functions = new HashSet<BiologicalFunction>();
 	private static final Ubergraph self = new Ubergraph();
 
+	/** Register a biological function so that it can be iterated over later. */
 	public static void add(BiologicalFunction function) {
 		functions.add(function);
 	}
 
+	/** View all registered biological functions. */
 	public static Set<BiologicalFunction> getAllFunctions() {
 		return functions;
 	}
 
+	/** Return the singleton instance of the Ubergraph. */
 	public static Ubergraph getInstance() {
 		return self;
 	}
@@ -37,6 +45,10 @@ public class Ubergraph implements Iterable<Interaction> {
 		super();
 	}
 
+	/**
+	 * Registers an accession as an “ortholog” of a gene. This effectively means
+	 * that this “real” gene belongs to a particular gene group.
+	 */
 	public Gene addOrtholog(Gene gene, Accession accession) {
 		if (genes.contains(gene)) {
 			gene.add(accession);
@@ -47,6 +59,7 @@ public class Ubergraph implements Iterable<Interaction> {
 		}
 	}
 
+	/** Find all genes to which a partiuclar gene identifier are attached. */
 	public Collection<Gene> findGenes(long identifier) {
 		Collection<Gene> matches = geneByGi.get(identifier);
 		if (matches == null) {
@@ -56,6 +69,7 @@ public class Ubergraph implements Iterable<Interaction> {
 		}
 	}
 
+	/** Get all of the genes in the system. */
 	public Iterable<Gene> genes() {
 		return genes;
 	}
@@ -64,6 +78,7 @@ public class Ubergraph implements Iterable<Interaction> {
 		return interactions.iterator();
 	}
 
+	/** Create a new gene (group) with at least one “real” gene in it. */
 	public Gene newGene(Accession accession) {
 		Gene gene = new Gene();
 		gene.add(accession);
@@ -72,6 +87,10 @@ public class Ubergraph implements Iterable<Interaction> {
 		return gene;
 	}
 
+	/**
+	 * Get the interaction between two genes, or create it if it doesn't yet
+	 * exist.
+	 */
 	public Collection<Interaction> upsertInteraction(long identifier1,
 			long identifier2) {
 		Collection<Interaction> results = new ArrayList<Interaction>();

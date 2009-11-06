@@ -20,6 +20,12 @@ import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * Represenation of a cluster of genes (under whatever definition of orthology
+ * is supplied). Effectively, these are the “genes” under which we define
+ * interactions despite not having a 1-to-1 correspondence with actual
+ * {@link Accession}s, even though represent true genes.
+ */
 public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 
 	private static final Logger log = Logger.getLogger(Gene.class);
@@ -43,6 +49,10 @@ public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 		species.add(accession.getSpecies());
 	}
 
+	/**
+	 * Associate a biological function with this gene. All functions exist with
+	 * in a context, that is, the interactome that claims them.
+	 */
 	public void add(BiologicalFunction function, Interactome knower,
 			double membership) {
 		if (Membership.isUndefined(membership)) {
@@ -56,6 +66,10 @@ public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 		predictions.put(function, membership);
 	}
 
+	/**
+	 * Adds a collection of functions in the same manner as
+	 * {@link #add(BiologicalFunction, Interactome, double)}.
+	 */
 	public void add(Iterable<BiologicalFunction> functions, Interactome knower,
 			double membership) {
 		for (BiologicalFunction function : functions) {
@@ -102,10 +116,18 @@ public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 		dead = true;
 	}
 
+	/**
+	 * Determine the coreicity of this genes. The coreicity is defined by Gabo
+	 * as the number of unique species represented by this gene.
+	 */
 	public int getCoreicity() {
 		return species.size();
 	}
 
+	/**
+	 * Inspect the biological function membership in this gene for a particular
+	 * context.
+	 */
 	public Map<BiologicalFunction, Double> getFunctions(Interactome knower) {
 		Map<BiologicalFunction, Double> predictions = functions.get(knower);
 		if (predictions == null) {
@@ -114,14 +136,26 @@ public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 		return predictions;
 	}
 
+	/** Find all the interactions in which this gene participates. */
 	public Collection<Interaction> getInteractions() {
 		return edges.values();
 	}
 
+	/**
+	 * Find the interaction in which this gene and the supplied gene particpate.
+	 * 
+	 * @return The interaction in which both genes participate or null if the
+	 *         genes do not interact.
+	 */
 	protected Interaction getInteractionWith(Gene gene) {
 		return edges.get(gene);
 	}
 
+	/**
+	 * Determine the stored membership of this gene in a particular interactome.
+	 * If the value has not been recorded, it will be
+	 * {@link Membership#Undefined}.
+	 */
 	public double getMembership(Interactome interactome) {
 		Double value = memberships.get(interactome);
 		if (value == null) {
@@ -131,6 +165,10 @@ public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 		}
 	}
 
+	/**
+	 * Determine the membership of a biological function to this gene in some
+	 * context.
+	 */
 	public double hasFunction(BiologicalFunction function, Interactome knower) {
 		Map<BiologicalFunction, Double> predictions = functions.get(knower);
 		if (predictions == null) {
@@ -143,6 +181,11 @@ public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 		return ids.iterator();
 	}
 
+	/**
+	 * Associate a membership value for the current gene in an interactome.
+	 * There is no need to “delete” values as the memberships are stored as weak
+	 * references and will be cleaned by the garbage collector.
+	 */
 	public void setMembership(Interactome interactome, double membership) {
 		if (Membership.isUndefined(membership)) {
 			membership = Membership.Missing;

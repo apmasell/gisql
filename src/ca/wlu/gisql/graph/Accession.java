@@ -8,6 +8,10 @@ import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/**
+ * Representation of a single gene, identified by a gi, in a single species.
+ * This matches NCBI's vision of a gene.
+ */
 public final class Accession implements Show<Set<Interactome>> {
 	private final Set<String> altnames;
 
