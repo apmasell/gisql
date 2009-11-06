@@ -2,6 +2,10 @@ package ca.wlu.gisql.runner;
 
 import ca.wlu.gisql.ast.AstNode;
 
+/**
+ * A context tied to a specific {@link AstNode}. This represents some kind of
+ * semantic context.
+ */
 public class AstContext extends ExpressionContext {
 
 	private final ExpressionContext context;

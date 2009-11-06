@@ -18,6 +18,7 @@ import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
+/** Utility class to make executing query language programs simple. */
 public class ExpressionRunner {
 	private final UserEnvironment environment;
 
@@ -25,6 +26,15 @@ public class ExpressionRunner {
 
 	private final ExpressionRunListener listener;
 
+	/**
+	 * Creates a new runner.
+	 * 
+	 * @param environment
+	 *            The environment in which the expression will be run.
+	 * @param listener
+	 *            An object that will get the results and errors created by
+	 *            execution.
+	 */
 	public ExpressionRunner(UserEnvironment environment,
 			ExpressionRunListener listener) {
 		super();
@@ -32,12 +42,14 @@ public class ExpressionRunner {
 		this.listener = listener;
 	}
 
+	/** Used by {@link AstNode}s during resolution phase to note any errors. */
 	public void appendResolutionError(String message, AstNode node,
 			ExpressionContext context) {
 		errors.add(new ExpressionError(context.getAstContext(node), message,
 				null));
 	}
 
+	/** Used by {@link AstNode}s during type checking phase to note any errors. */
 	public void appendTypeError(Type type, Type desired, AstNode node,
 			ExpressionContext context) {
 		ShowableStringBuilder<List<TypeVariable>> print = new ShowableStringBuilder<List<TypeVariable>>(
@@ -51,6 +63,16 @@ public class ExpressionRunner {
 				.toString(), null));
 	}
 
+	/**
+	 * Execute all commands in a file, formatted one entry per line.
+	 * 
+	 * @param file
+	 *            File containing commands.
+	 * @param type
+	 *            The expected type of all commands in the file. It may be null
+	 *            if any type is acceptable.
+	 * @return True if execution was successful.
+	 * */
 	public boolean run(File file, Type type) {
 		FileContext context = new FileContext(file);
 		try {
@@ -74,6 +96,16 @@ public class ExpressionRunner {
 		return true;
 	}
 
+	/**
+	 * Execute a supplied commands.
+	 * 
+	 * @param command
+	 *            The query language command to execute.
+	 * @param type
+	 *            The expected type of the command. It may be null if any type
+	 *            is acceptable.
+	 * @return True if execution was successful.
+	 * */
 	public boolean run(String command, Type type) {
 		return run(command, type, new SingleLineContext(command));
 	}

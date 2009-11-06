@@ -1,5 +1,6 @@
 package ca.wlu.gisql.runner;
 
+/** The context of a specific character offset in a line. */
 public class PositionContext extends ExpressionContext {
 	private final LineContext parent;
 	private final int position;

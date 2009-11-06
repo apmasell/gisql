@@ -1,5 +1,6 @@
 package ca.wlu.gisql.runner;
 
+/** Represents an error in a specific context (a part of the expression). */
 public class ExpressionError {
 	private final ExpressionContext context;
 

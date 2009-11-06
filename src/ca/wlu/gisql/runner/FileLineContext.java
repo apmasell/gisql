@@ -1,5 +1,6 @@
 package ca.wlu.gisql.runner;
 
+/** The context of a single line inside of a file. */
 public class FileLineContext extends LineContext {
 
 	private final FileContext context;

@@ -9,6 +9,10 @@ import org.apache.log4j.Logger;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.UserEnvironment;
 
+/**
+ * A version of the {@link ExpressionRunner} that does the work in a separate
+ * thread. The listener may be invoked in any thread.
+ */
 public class ThreadedExpressionRunner extends ExpressionRunner {
 
 	private abstract class Action {
@@ -83,6 +87,7 @@ public class ThreadedExpressionRunner extends ExpressionRunner {
 		worker.start();
 	}
 
+	/** Check if an expression is currently being processed. */
 	public boolean isBusy() {
 		return busy;
 	}
