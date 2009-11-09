@@ -18,6 +18,7 @@ import ca.wlu.gisql.environment.functions.SilentFunction;
 import ca.wlu.gisql.function.Comparison;
 import ca.wlu.gisql.function.NumericComparison;
 import ca.wlu.gisql.function.PullGi;
+import ca.wlu.gisql.function.PhylipOutput;
 import ca.wlu.gisql.function.Range;
 import ca.wlu.gisql.function.SearchGenes;
 import ca.wlu.gisql.function.Venn;
@@ -117,6 +118,7 @@ public class ParserEnvironment extends Environment {
 		add(Proximity.class);
 		add(PullGi.self);
 		add(Range.self);
+		add(PhylipOutput.self);
 		add(RunFunction.self);
 		add(SearchGenes.self);
 		add(SilentFunction.self);
