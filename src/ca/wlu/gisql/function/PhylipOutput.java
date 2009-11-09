@@ -40,8 +40,7 @@ public class PhylipOutput extends Function {
 
 	}
 
-	// todo print names of organisms and the values (ie: A is Ecoli HS)
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public Object run(Machine machine, Object... parameters) {
 		String filename = (String) parameters[0];
