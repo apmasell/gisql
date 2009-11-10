@@ -7,6 +7,7 @@ import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
@@ -56,7 +57,7 @@ public class Patch implements Interactome {
 		return Construction.Computed;
 	}
 
-	public int getPrecedence() {
+	public Precedence getPrecedence() {
 		return function.getPrecedence();
 	}
 

@@ -2,14 +2,14 @@ package ca.wlu.gisql.interactome.logic;
 
 import ca.wlu.gisql.ast.AstLogic;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
+import ca.wlu.gisql.util.Precedence;
 
 public class Difference extends ComputedInteractomeDescriptor {
 	public static final ComputedInteractomeDescriptor descriptor = new Difference();
 
 	Difference() {
-		super(Parser.PREC_DIFF, '∖', new char[] { '-', '\\' },
+		super(Precedence.Difference, '∖', new char[] { '-', '\\' },
 				"Difference (Ax t v(Bx))", "diff");
 	}
 

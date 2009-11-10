@@ -48,12 +48,14 @@ public class ShowablePrintWriter<E> extends PrintWriter {
 		return context;
 	}
 
-	public final void print(Prioritizable<E> prioritizable, int precedence) {
-		if (prioritizable.getPrecedence() < precedence) {
+	public final <C extends Comparable<C>> void print(
+			Prioritizable<E, C> prioritizable, C precedence) {
+		boolean brackets = prioritizable.getPrecedence().compareTo(precedence) < 0;
+		if (brackets) {
 			print("(");
 		}
 		prioritizable.show(this);
-		if (prioritizable.getPrecedence() < precedence) {
+		if (brackets) {
 			print(")");
 		}
 	}
@@ -62,7 +64,8 @@ public class ShowablePrintWriter<E> extends PrintWriter {
 		showable.show(this);
 	}
 
-	public final void println(Prioritizable<E> prioritizable, int precdence) {
+	public final <C extends Comparable<C>> void println(
+			Prioritizable<E, C> prioritizable, C precdence) {
 		print(prioritizable, precdence);
 		println();
 	}

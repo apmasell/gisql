@@ -11,6 +11,7 @@ import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunListener;
 import ca.wlu.gisql.runner.LineContext;
+import ca.wlu.gisql.util.Precedence;
 
 /**
  * Parser use input and constructs an abstract syntax tree. The parser is,
@@ -21,22 +22,6 @@ import ca.wlu.gisql.runner.LineContext;
  * each Parseable belongs to a specific precedence level.
  */
 public class Parser {
-
-	public static final int PREC_ASSIGN = 1;
-
-	public static final int PREC_CONJUNCT = 4;
-
-	public static final int PREC_DIFF = 2;
-
-	public static final int PREC_DISJUNCT = 3;
-
-	public static final int PREC_FUNCTION = 0;
-
-	public static final int PREC_LITERAL = 7;
-
-	public static final int PREC_UNARY = 6;
-
-	public static final int PREC_UNARY_MANGLE = 5;
 
 	private final LineContext context;
 
@@ -88,8 +73,8 @@ public class Parser {
 	 * Parse an expression from the current position for a specific precedence
 	 * level.
 	 */
-	AstNode parseAutoExpression(int level) {
-		if (level > environment.getParserKb().maxdepth) {
+	AstNode parseAutoExpression(Precedence level) {
+		if (level == null) {
 			return null;
 		}
 
@@ -142,8 +127,8 @@ public class Parser {
 			 * If we have failed to match any operators at the current level,
 			 * recurse...
 			 */
-			if (!matched && level < environment.getParserKb().maxdepth) {
-				AstNode child = parseAutoExpression(level + 1);
+			if (!matched) {
+				AstNode child = parseAutoExpression(level.next());
 				if (child != null) {
 					if (result == null) {
 						result = child;
@@ -168,7 +153,7 @@ public class Parser {
 	 *            null, the expression must be terminated with the end of input.
 	 */
 	AstNode parseExpression(Character endofexpression) {
-		AstNode e = parseAutoExpression(0);
+		AstNode e = parseAutoExpression(Precedence.start());
 
 		if (e == null) {
 			return null;
@@ -198,7 +183,8 @@ public class Parser {
 	 * {@link Parseable#construct(UserEnvironment, List, Stack, ca.wlu.gisql.runner.ExpressionContext)}
 	 * .
 	 */
-	private AstNode processOperator(Parseable operator, AstNode left, int level) {
+	private AstNode processOperator(Parseable operator, AstNode left,
+			Precedence level) {
 		Token[] todo = operator.tasks();
 		List<AstNode> params = new ArrayList<AstNode>();
 

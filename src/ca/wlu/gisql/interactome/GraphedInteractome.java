@@ -7,6 +7,7 @@ import org.jgrapht.graph.SimpleWeightedGraph;
 import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Generate jgrapht objects from an interactome. */
@@ -49,7 +50,7 @@ public class GraphedInteractome implements Interactome {
 		return graph;
 	}
 
-	public int getPrecedence() {
+	public Precedence getPrecedence() {
 		return source.getPrecedence();
 	}
 

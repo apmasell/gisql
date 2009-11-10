@@ -3,6 +3,7 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.util.Precedence;
 
 /**
  * Parser an expression at the same level as the current precedence. This us
@@ -17,7 +18,7 @@ public class TokenExpressionRight extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, int level, List<AstNode> results) {
+	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		AstNode result = parser.parseAutoExpression(level);
 		if (result == null) {
 			return false;

@@ -8,11 +8,12 @@ import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.descriptors.LiteralTokenDescriptor;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 
 /**
- * Interface for a pluggable parser syntax recognizer. The parser will call
+ * Interface for a pluggable parser syntax recogniser. The parser will call
  * {@link #isPrefixed()}, and, if not null, it will call
  * {@link #isMatchingOperator(char)} for every appropriate character in the
  * input stream. If this function returns true, it will call {@link #tasks()}
@@ -21,7 +22,8 @@ import ca.wlu.gisql.util.Show;
  * {@link #construct(UserEnvironment, List, Stack, ExpressionContext)} with
  * parsed data.
  */
-public interface Parseable extends Prioritizable<ParserKnowledgebase>,
+public interface Parseable extends
+		Prioritizable<ParserKnowledgebase, Precedence>,
 		Show<ParserKnowledgebase> {
 
 	/**

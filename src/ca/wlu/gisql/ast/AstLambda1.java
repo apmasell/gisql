@@ -2,9 +2,9 @@ package ca.wlu.gisql.ast;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
@@ -37,8 +37,8 @@ public class AstLambda1 extends AstNode {
 				"AstLambda1 must be cleaned before rendering.");
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_FUNCTION;
+	public Precedence getPrecedence() {
+		return Precedence.Closure;
 	}
 
 	@Override

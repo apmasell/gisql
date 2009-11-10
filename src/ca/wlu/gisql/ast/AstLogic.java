@@ -13,6 +13,7 @@ import ca.wlu.gisql.interactome.logic.Intersection;
 import ca.wlu.gisql.interactome.logic.Union;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ToStringComparator;
 import ca.wlu.gisql.vm.InstructionConstruct;
@@ -187,7 +188,7 @@ public class AstLogic extends AstNode {
 		return 0;
 	}
 
-	public int getPrecedence() {
+	public Precedence getPrecedence() {
 		switch (operation) {
 		case Negation:
 			return Complement.descriptor.getPrecedence();
@@ -196,7 +197,7 @@ public class AstLogic extends AstNode {
 		case Disjunct:
 			return Union.descriptor.getPrecedence();
 		}
-		return 0;
+		return null;
 	}
 
 	@Override

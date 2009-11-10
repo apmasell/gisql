@@ -10,12 +10,12 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** This operator extracts the help information from a function and returns it. */
@@ -48,8 +48,8 @@ public class HelpDescriptor implements Parseable {
 		return new AstLiteral(Type.StringType, result);
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_FUNCTION;
+	public Precedence getPrecedence() {
+		return Precedence.Closure;
 	}
 
 	public boolean isMatchingOperator(char c) {

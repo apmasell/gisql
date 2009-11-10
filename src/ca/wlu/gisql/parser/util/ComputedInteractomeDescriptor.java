@@ -14,6 +14,7 @@ import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class ComputedInteractomeDescriptor implements Parseable {
@@ -25,11 +26,11 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 	private final String function;
 	private final String name;
 
-	private final int nestinglevel;
+	private final Precedence nestinglevel;
 
 	private final char symbol;
 
-	public ComputedInteractomeDescriptor(int nestinglevel, char symbol,
+	public ComputedInteractomeDescriptor(Precedence nestinglevel, char symbol,
 			char[] alternateoperators, String name, String function) {
 		super();
 		this.nestinglevel = nestinglevel;
@@ -70,7 +71,7 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 		return name;
 	}
 
-	public final int getPrecedence() {
+	public final Precedence getPrecedence() {
 		return nestinglevel;
 	}
 

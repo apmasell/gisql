@@ -2,9 +2,9 @@ package ca.wlu.gisql.ast;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** The {@link AstNode} of an unresolved symbol. */
@@ -27,8 +27,8 @@ public class AstName extends AstNode {
 				"Names should be cleaned from the parse tree.");
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_LITERAL;
+	public Precedence getPrecedence() {
+		return Precedence.Value;
 	}
 
 	@Override

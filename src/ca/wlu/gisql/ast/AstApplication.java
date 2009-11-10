@@ -4,9 +4,9 @@ import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
@@ -59,8 +59,8 @@ public class AstApplication extends AstNode {
 		return operator.getNeededParameterCount() - 1;
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_LITERAL;
+	public Precedence getPrecedence() {
+		return Precedence.Value;
 	}
 
 	@Override

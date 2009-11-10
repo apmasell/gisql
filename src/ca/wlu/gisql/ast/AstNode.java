@@ -6,6 +6,7 @@ import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowableStringBuilder;
@@ -20,7 +21,8 @@ import ca.wlu.gisql.vm.InstructionPush;
  * {@link #render(ProgramRoutine, int, int)} to create a final proram. Any node
  * in the parse tree abort the process.
  */
-public abstract class AstNode implements Prioritizable<AstNode>, Show<AstNode> {
+public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
+		Show<AstNode> {
 
 	protected abstract int getNeededParameterCount();
 

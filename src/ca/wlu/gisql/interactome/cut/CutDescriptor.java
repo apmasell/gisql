@@ -8,13 +8,13 @@ import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.parser.TokenReal;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 final class CutDescriptor implements Parseable {
@@ -27,8 +27,8 @@ final class CutDescriptor implements Parseable {
 				.get(1));
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_UNARY_MANGLE;
+	public Precedence getPrecedence() {
+		return Precedence.UnaryPostfix;
 	}
 
 	public boolean isMatchingOperator(char c) {

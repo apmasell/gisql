@@ -8,7 +8,7 @@ import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.parser.Parser;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 import ca.wlu.gisql.vm.Machine;
@@ -53,8 +53,8 @@ public class DeltaCoreicity implements Interactome {
 		return Construction.Computed;
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_LITERAL;
+	public Precedence getPrecedence() {
+		return Precedence.Value;
 	}
 
 	public double membershipOfUnknown() {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.util.Precedence;
 
 /** Matches a valid Java identifier. */
 public class TokenName extends Token {
@@ -14,7 +15,7 @@ public class TokenName extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, int level, List<AstNode> results) {
+	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		StringBuilder sb = new StringBuilder();
 
 		while (parser.position < parser.input.length()) {

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.util.Precedence;
 
 /** Find exactly some character. The character is not included in the results. */
 public class TokenMatchCharacter extends Token {
@@ -27,7 +28,7 @@ public class TokenMatchCharacter extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, int level, List<AstNode> results) {
+	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		parser.consumeWhitespace();
 		if (parser.position < parser.input.length()
 				&& c == parser.input.charAt(parser.position)) {

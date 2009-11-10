@@ -2,14 +2,14 @@ package ca.wlu.gisql.interactome.logic;
 
 import ca.wlu.gisql.ast.AstLogic;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
+import ca.wlu.gisql.util.Precedence;
 
 public class Residuum extends ComputedInteractomeDescriptor {
 	public static final ComputedInteractomeDescriptor descriptor = new Residuum();
 
 	public Residuum() {
-		super(Parser.PREC_DISJUNCT, '⇒', new char[] { '>' },
+		super(Precedence.Disjunction, '⇒', new char[] { '>' },
 				"Residuum (v(Ax) s (Ax t Bx))", "implies");
 	}
 

@@ -5,6 +5,7 @@ import java.util.Set;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 
@@ -14,8 +15,8 @@ import ca.wlu.gisql.util.Show;
  * {@link Gene} objects come from the {@link Ubergraph} and an interactome
  * simply calculates the membership.
  */
-public interface Interactome extends Prioritizable<Set<Interactome>>,
-		Show<Set<Interactome>> {
+public interface Interactome extends
+		Prioritizable<Set<Interactome>, Precedence>, Show<Set<Interactome>> {
 	public enum Construction {
 		Computed, Species
 	}

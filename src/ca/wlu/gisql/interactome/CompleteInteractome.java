@@ -1,11 +1,10 @@
 package ca.wlu.gisql.interactome;
 
-import static ca.wlu.gisql.parser.Parser.PREC_LITERAL;
-
 import java.util.Set;
 
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** An interactome that contains all genes and interactions known to the system. */
@@ -32,8 +31,8 @@ public class CompleteInteractome implements Interactome {
 		return Construction.Species;
 	}
 
-	public int getPrecedence() {
-		return PREC_LITERAL;
+	public Precedence getPrecedence() {
+		return Precedence.Value;
 	}
 
 	public double membershipOfUnknown() {

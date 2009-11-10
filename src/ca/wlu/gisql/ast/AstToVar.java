@@ -6,6 +6,7 @@ import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.descriptors.ToVarDescriptor;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.InstructionStore;
 
@@ -27,7 +28,7 @@ public class AstToVar extends AstNode {
 		return node.getNeededParameterCount();
 	}
 
-	public int getPrecedence() {
+	public Precedence getPrecedence() {
 		return ToVarDescriptor.self.getPrecedence();
 	}
 

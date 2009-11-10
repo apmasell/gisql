@@ -7,6 +7,7 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.typeclasses.TypeClass;
+import ca.wlu.gisql.util.Precedence;
 
 /** Parser a decimal number. It cannot include an exponent. */
 public class TokenReal extends Token {
@@ -17,7 +18,7 @@ public class TokenReal extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, int level, List<AstNode> results) {
+	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		int oldposition = parser.position;
 		parser.consumeWhitespace();
 		while (parser.position < parser.input.length()

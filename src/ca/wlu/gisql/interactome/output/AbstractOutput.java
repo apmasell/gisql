@@ -9,6 +9,7 @@ import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.parser.Parseable;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
@@ -63,7 +64,7 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 		return source.getConstruction();
 	}
 
-	public int getPrecedence() {
+	public Precedence getPrecedence() {
 		return descriptor.getPrecedence();
 	}
 

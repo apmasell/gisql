@@ -4,6 +4,7 @@ import java.util.List;
 
 import ca.wlu.gisql.ast.AstList;
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.util.Precedence;
 
 /**
  * Finds a list of tokens delimited by a specific character. Whitespace may
@@ -22,7 +23,7 @@ public class TokenListOf extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, int level, List<AstNode> results) {
+	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		AstList items = new AstList();
 
 		if (!child.parse(parser, level, items)) {

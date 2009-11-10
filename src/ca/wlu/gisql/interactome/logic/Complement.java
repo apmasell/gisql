@@ -7,12 +7,12 @@ import ca.wlu.gisql.ast.AstLogic;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** This is a special syntax parseable to handle complemented/negated sets. */
@@ -28,8 +28,8 @@ public class Complement implements Parseable {
 		return AstLogic.makeNegation(interactome);
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_UNARY;
+	public Precedence getPrecedence() {
+		return Precedence.UnaryPrefix;
 	}
 
 	public boolean isMatchingOperator(char c) {

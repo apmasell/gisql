@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
@@ -103,7 +104,7 @@ public class CachedInteractome extends ProcessableInteractome {
 		return interactions.asList();
 	}
 
-	public int getPrecedence() {
+	public Precedence getPrecedence() {
 		return source.getPrecedence();
 	}
 

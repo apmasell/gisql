@@ -3,6 +3,7 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.util.Precedence;
 
 /**
  * Optionally match a token. If the token is not matched, the result will be
@@ -17,7 +18,7 @@ public class TokenMaybe extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, int level, List<AstNode> results) {
+	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		int oldposition = parser.position;
 		int errorposition = parser.error.size();
 		if (child.parse(parser, level, results)) {

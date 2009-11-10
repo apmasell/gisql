@@ -5,6 +5,7 @@ import java.util.List;
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.util.Precedence;
 
 /**
  * Matches a quoted string. Escape sequences are permitted.
@@ -17,7 +18,7 @@ public class TokenQuotedString extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, int level, List<AstNode> results) {
+	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		parser.consumeWhitespace();
 		StringBuilder sb = null;
 		boolean success = false;

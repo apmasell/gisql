@@ -5,6 +5,7 @@ import java.util.List;
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.util.Precedence;
 
 /** Matches a whole number. */
 public class TokenNumber extends Token {
@@ -15,7 +16,7 @@ public class TokenNumber extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, int level, List<AstNode> results) {
+	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		int oldposition = parser.position;
 		parser.consumeWhitespace();
 		while (parser.position < parser.input.length()

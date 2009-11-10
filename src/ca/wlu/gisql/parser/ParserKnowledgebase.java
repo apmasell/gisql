@@ -29,6 +29,7 @@ import ca.wlu.gisql.parser.descriptors.ToVarDescriptor;
 import ca.wlu.gisql.parser.descriptors.TypeOfDescriptor;
 import ca.wlu.gisql.parser.descriptors.UnitDescriptor;
 import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /**
@@ -42,9 +43,7 @@ public class ParserKnowledgebase {
 
 	private String help;
 
-	int maxdepth = 0;
-
-	private final OrderedMap<Integer, List<Parseable>> operators = new ListOrderedMap<Integer, List<Parseable>>();
+	private final OrderedMap<Precedence, List<Parseable>> operators = new ListOrderedMap<Precedence, List<Parseable>>();
 
 	public ParserKnowledgebase() {
 		installOperator(AbstractOutput.descriptor);
@@ -91,7 +90,7 @@ public class ParserKnowledgebase {
 				.println("Each operator and it's membership function is described from lowest precedence to highest.");
 		print.println();
 		/* This also initialises every entry in the maps. */
-		for (int level = 0; level <= maxdepth; level++) {
+		for (Precedence level : Precedence.values()) {
 			for (Parseable operator : getList(operators, level)) {
 				print.println(operator);
 			}
@@ -116,7 +115,7 @@ public class ParserKnowledgebase {
 	}
 
 	private synchronized List<Parseable> getList(
-			Map<Integer, List<Parseable>> map, int level) {
+			Map<Precedence, List<Parseable>> map, Precedence level) {
 		List<Parseable> list = map.get(level);
 		if (list == null) {
 			list = new ArrayList<Parseable>();
@@ -125,16 +124,12 @@ public class ParserKnowledgebase {
 		return list;
 	}
 
-	protected List<Parseable> getOperators(int level) {
+	protected List<Parseable> getOperators(Precedence level) {
 		return operators.get(level);
 	}
 
 	private void installOperator(Parseable operator) {
-		int level = operator.getPrecedence();
-		if (level > maxdepth) {
-			maxdepth = level;
-		}
-		List<Parseable> list = getList(operators, level);
+		List<Parseable> list = getList(operators, operator.getPrecedence());
 		if (list.contains(operator)) {
 			return;
 		}

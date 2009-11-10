@@ -7,7 +7,7 @@ import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.parser.Parser;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 @GisqlConstructorFunction(name = "snap", description = "Filter out interactions where the genes are not present.")
@@ -56,8 +56,8 @@ public class Snap implements Interactome {
 	}
 
 	@Override
-	public int getPrecedence() {
-		return Parser.PREC_LITERAL;
+	public Precedence getPrecedence() {
+		return Precedence.Value;
 	}
 
 	@Override

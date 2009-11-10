@@ -3,6 +3,7 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.util.Precedence;
 
 /**
  * Super class for all tokens. Each token represents one atomic unit of input,
@@ -21,5 +22,6 @@ public abstract class Token {
 	 *            If there is a result, it should be appended to this list.
 	 * @return True is parsing was successful.
 	 */
-	abstract boolean parse(Parser parser, int level, List<AstNode> results);
+	abstract boolean parse(Parser parser, Precedence level,
+			List<AstNode> results);
 }

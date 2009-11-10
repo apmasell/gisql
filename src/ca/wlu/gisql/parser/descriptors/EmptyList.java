@@ -10,13 +10,13 @@ import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenListOf;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
@@ -39,8 +39,8 @@ public class EmptyList implements Parseable {
 				Collections.EMPTY_LIST);
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_LITERAL;
+	public Precedence getPrecedence() {
+		return Precedence.Value;
 	}
 
 	public boolean isMatchingOperator(char c) {

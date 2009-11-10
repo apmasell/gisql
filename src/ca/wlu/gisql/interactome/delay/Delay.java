@@ -9,6 +9,7 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.interactome.Interactome;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
@@ -43,7 +44,7 @@ public class Delay implements Interactome {
 		return source.getConstruction();
 	}
 
-	public int getPrecedence() {
+	public Precedence getPrecedence() {
 		return source.getPrecedence();
 	}
 

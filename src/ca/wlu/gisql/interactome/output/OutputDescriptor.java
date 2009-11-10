@@ -9,13 +9,13 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenMaybe;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 final class OutputDescriptor implements Parseable {
@@ -37,8 +37,8 @@ final class OutputDescriptor implements Parseable {
 				filename);
 	}
 
-	public int getPrecedence() {
-		return Parser.PREC_ASSIGN;
+	public Precedence getPrecedence() {
+		return Precedence.Assignment;
 	}
 
 	public boolean isMatchingOperator(char c) {
