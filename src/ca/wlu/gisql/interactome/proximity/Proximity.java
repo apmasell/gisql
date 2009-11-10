@@ -60,7 +60,7 @@ public class Proximity implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return Parser.PREC_UNARY_MANGLE;
+		return Parser.PREC_LITERAL;
 	}
 
 	public double membershipOfUnknown() {
@@ -76,7 +76,7 @@ public class Proximity implements Interactome {
 		if (result) {
 			Queue<Gene> queue = new LinkedList<Gene>();
 			queue.addAll(genes);
-			/* Null acts as a sentinal when we complete a level in the tree. */
+			/* Null acts as a sentinel when we complete a level in the tree. */
 			queue.add(null);
 
 			int depth = 0;
@@ -105,13 +105,13 @@ public class Proximity implements Interactome {
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
 		print.print(":near ");
-		print.print(genes);
-		print.print(" ");
 		if (radius < Long.MAX_VALUE) {
 			print.print(radius);
 		} else {
 			print.print("iinf");
 		}
+		print.print(" ");
+		print.print(genes);
 	}
 
 	@Override

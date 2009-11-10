@@ -49,7 +49,7 @@ public class Orphans implements Interactome {
 	}
 
 	public int getPrecedence() {
-		return Parser.PREC_UNARY_MANGLE;
+		return Parser.PREC_LITERAL;
 	}
 
 	public double membershipOfUnknown() {

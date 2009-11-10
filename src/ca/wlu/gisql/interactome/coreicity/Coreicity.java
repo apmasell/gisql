@@ -77,8 +77,9 @@ public class Coreicity implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(" :core ");
+		print.print(" :core (");
 		print.print(comparison);
+		print.print(")");
 	}
 
 	@Override

@@ -71,8 +71,9 @@ public class DeltaCoreicity implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(" :deltacore ");
+		print.print(" :deltacore (");
 		print.print(comparison);
+		print.print(")");
 	}
 
 	@Override

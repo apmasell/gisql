@@ -74,9 +74,10 @@ public class Patch implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(" :blanks");
-		if (membership != null) {
-			print.print(" ");
+		if (membership == null) {
+			print.print(" :avgblanks");
+		} else {
+			print.print(" :blanks ");
 			print.print(membership);
 		}
 	}
