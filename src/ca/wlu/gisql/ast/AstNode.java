@@ -18,7 +18,7 @@ import ca.wlu.gisql.vm.InstructionPush;
  * will construct subclasses of this node. The root node will then be subjected
  * {@link #resolve(ExpressionRunner, ExpressionContext, Environment)},
  * {@link #type(ExpressionRunner, ExpressionContext)},
- * {@link #render(ProgramRoutine, int, int)} to create a final proram. Any node
+ * {@link #render(ProgramRoutine, int, int)} to create a final program. Any node
  * in the parse tree abort the process.
  */
 public abstract class AstNode implements Prioritizable<AstNode, Precedence>,

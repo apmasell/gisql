@@ -30,7 +30,7 @@ public class AstLambda2 extends AstNode {
 	/**
 	 * This node will consume a parameter, so we incremented the needed
 	 * parameter count. If our child node is also a lambda node, we should
-	 * recuse. Otherwise, the type checker has ensured that it does not require
+	 * recurse. Otherwise, the type checker has ensured that it does not require
 	 * any parameters, so recursion must stop.
 	 */
 	@Override

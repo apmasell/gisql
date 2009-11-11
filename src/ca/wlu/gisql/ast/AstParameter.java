@@ -10,7 +10,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.vm.InstructionVariable;
 
 /**
- * The variable represented by a lambda expression. (i.e., the <b>x</b> in (λx.
+ * The variable represented by a lambda expression. (i.e., the <b>x</b> in (λ x.
  * f <b>x</b> y).
  */
 public class AstParameter extends AstNode {

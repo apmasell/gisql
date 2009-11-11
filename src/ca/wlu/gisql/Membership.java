@@ -8,7 +8,7 @@ import ca.wlu.gisql.interactome.Interactome.Construction;
 
 /**
  * Helper functions to manipulate membership values. Normally, memberships are ∈
- * [0,1], however, special negative values inidcate that members are missing.
+ * [0,1], however, special negative values indicate that members are missing.
  * Missing memberships are simply unknown in the target, while undefined ones
  * have not yet been computed. In most cases, Missing is sufficient. Undefined
  * is used when traversing a structure multiple times to ensure the same node is

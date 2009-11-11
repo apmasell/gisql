@@ -58,7 +58,7 @@ public final class AstConstructor extends AstNative {
 				Type contents = convertType(ptype.getActualTypeArguments()[0]);
 				return new ListType(contents);
 			}
-			throw new IllegalArgumentException("Unknown parameterized type "
+			throw new IllegalArgumentException("Unknown parameterised type "
 					+ ptype);
 		} else {
 			throw new IllegalArgumentException("Unknown argument type");

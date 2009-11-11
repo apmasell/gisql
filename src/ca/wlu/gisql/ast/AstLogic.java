@@ -31,7 +31,7 @@ public class AstLogic extends AstNode {
 		Conjunct, Disjunct, Negation
 	}
 
-	/** Convience function for normalization. */
+	/** Convenience function for normalisation. */
 	private static AstNode distributeDisjunctOf(AstNode node) {
 		if (node instanceof AstLogic) {
 			return ((AstLogic) node).distributeDisjunct();
@@ -40,7 +40,7 @@ public class AstLogic extends AstNode {
 		}
 	}
 
-	/** Conveince function to make a new intersection node. */
+	/** Convenience function to make a new intersection node. */
 	public static AstNode makeConjunct(AstNode a, AstNode b) {
 		if (a.equals(b)) {
 			return a;
@@ -49,7 +49,7 @@ public class AstLogic extends AstNode {
 		}
 	}
 
-	/** Conveince function to make a new union node. */
+	/** Convenience function to make a new union node. */
 	public static AstNode makeDisjunct(AstNode a, AstNode b) {
 		if (a.equals(b)) {
 			return a;
@@ -58,7 +58,7 @@ public class AstLogic extends AstNode {
 		}
 	};
 
-	/** Conveince function to make a new complement node. */
+	/** Convenience function to make a new complement node. */
 	public static AstNode makeNegation(AstNode a) {
 		if (a instanceof AstLogic) {
 			AstLogic n = (AstLogic) a;
