@@ -53,8 +53,8 @@ public class ColonOrderDescriptor implements Parseable {
 
 	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Function in postfix: expression :function\n");
-		print.print("\tEquivalent to: function expresssion");
+		print.println("Function in postfix: expression :function");
+		print.println("\tEquivalent to: function expresssion");
 	}
 
 	@Override

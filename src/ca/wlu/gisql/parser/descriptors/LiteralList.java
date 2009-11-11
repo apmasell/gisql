@@ -45,7 +45,7 @@ public class LiteralList implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("List: [A, B, C, ...]");
+		print.println("List: [A, B, C, ...]");
 	}
 
 	public Token[] tasks() {

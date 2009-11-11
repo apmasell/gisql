@@ -53,7 +53,7 @@ public class LambdaDescriptor implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Anonymous function: 'variable expression");
+		print.println("Anonymous function: 'variable expression");
 	}
 
 	public Token[] tasks() {

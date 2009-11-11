@@ -111,6 +111,7 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 				print.print(" B");
 			}
 		}
+		print.println();
 	}
 
 	public final Token[] tasks() {

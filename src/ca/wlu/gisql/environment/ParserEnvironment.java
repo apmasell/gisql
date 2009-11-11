@@ -135,7 +135,7 @@ public class ParserEnvironment extends Environment {
 	}
 
 	/**
-	 * Convience method to define any {@link AstNative} type using the built-in
+	 * Convenience method to define any {@link AstNative} type using the built-in
 	 * name.
 	 */
 	public void add(AstNative function) {
@@ -143,7 +143,7 @@ public class ParserEnvironment extends Environment {
 	}
 
 	/**
-	 * Convience method to define any class which is decorated with
+	 * Convenience method to define any class which is decorated with
 	 * {@link GisqlConstructorFunction}.
 	 */
 	public void add(Class<?> clazz) {

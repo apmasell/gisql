@@ -40,7 +40,7 @@ final class CutDescriptor implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Cut-off (Ax|x>c): A {c}");
+		print.println("Cut-off (Ax|x>c): A {c}");
 	}
 
 	public Token[] tasks() {

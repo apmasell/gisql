@@ -45,7 +45,7 @@ public final class LastInteractome implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Last command: .");
+		print.println("Last interactome: .");
 	}
 
 	public Token[] tasks() {

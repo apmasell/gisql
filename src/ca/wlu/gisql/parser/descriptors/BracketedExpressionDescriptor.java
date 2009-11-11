@@ -48,7 +48,7 @@ public class BracketedExpressionDescriptor implements Parseable {
 
 	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Control Order of Operations: (expression)");
+		print.println("Control Order of Operations: (expression)");
 	}
 
 	@Override

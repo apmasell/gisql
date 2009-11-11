@@ -49,7 +49,7 @@ public class UnitDescriptor implements Parseable {
 
 	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Unit: ()");
+		print.println("Unit: ()");
 	}
 
 	@Override

@@ -92,15 +92,14 @@ public class ParserKnowledgebase {
 		/* This also initialises every entry in the maps. */
 		for (Precedence level : Precedence.values()) {
 			for (Parseable operator : getList(operators, level)) {
-				print.println(operator);
+				print.print(operator);
 			}
 			print.println();
 
 		}
 		print
 				.println("Any other word will be interpreted as a identifier for a species or variable.");
-		print
-				.println("Parentheses may be used to control order of operations.");
+		print.println("For a list of functions, type \"ls()\".");
 		help = print.toString();
 
 	}

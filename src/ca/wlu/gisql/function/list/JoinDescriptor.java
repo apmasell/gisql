@@ -52,7 +52,7 @@ public class JoinDescriptor implements Parseable {
 
 	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Join two lists: list1; list2");
+		print.println("Join two lists: list1; list2");
 	}
 
 	@Override

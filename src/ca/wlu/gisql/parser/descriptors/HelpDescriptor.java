@@ -61,7 +61,7 @@ public class HelpDescriptor implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Help: ? name");
+		print.println("Help: ? name");
 	}
 
 	public Token[] tasks() {

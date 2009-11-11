@@ -51,7 +51,7 @@ final class OutputDescriptor implements Parseable {
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		print
-				.print("Write to file: A @ [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
+				.println("Write to file: A @ [{summary | interactome | genome | dot | gml | graphml | adjacency | laplace}] \"filename\"");
 	}
 
 	public Token[] tasks() {

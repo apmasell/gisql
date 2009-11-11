@@ -41,7 +41,7 @@ public class Complement implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Complement (1-Ax): ¬A, !A");
+		print.println("Complement (1-Ax): ¬A, !A");
 	}
 
 	public Token[] tasks() {

@@ -51,7 +51,7 @@ public class TypeOfDescriptor implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Type of: # expression");
+		print.println("Type of: # expression");
 	}
 
 	public Token[] tasks() {

@@ -50,7 +50,7 @@ public final class ToVarDescriptor implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Assign to variable: A @ varname");
+		print.println("Assign to variable: A @ varname");
 	}
 
 	public Token[] tasks() {

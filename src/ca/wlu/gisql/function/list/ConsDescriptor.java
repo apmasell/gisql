@@ -52,7 +52,7 @@ public class ConsDescriptor implements Parseable {
 
 	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print("Construct a list: item, tail");
+		print.println("Construct a list: item, tail");
 	}
 
 	@Override
