@@ -22,6 +22,13 @@ import ca.wlu.gisql.function.PullGi;
 import ca.wlu.gisql.function.Range;
 import ca.wlu.gisql.function.SearchGenes;
 import ca.wlu.gisql.function.Venn;
+import ca.wlu.gisql.function.arithmetic.Number2Real;
+import ca.wlu.gisql.function.arithmetic.NumberAdd;
+import ca.wlu.gisql.function.arithmetic.NumberDivide;
+import ca.wlu.gisql.function.arithmetic.NumberModulo;
+import ca.wlu.gisql.function.arithmetic.NumberMultiply;
+import ca.wlu.gisql.function.arithmetic.NumberSubtract;
+import ca.wlu.gisql.function.arithmetic.Real2Number;
 import ca.wlu.gisql.function.list.BigIntersection;
 import ca.wlu.gisql.function.list.BigUnion;
 import ca.wlu.gisql.function.list.Cons;
@@ -112,11 +119,18 @@ public class ParserEnvironment extends Environment {
 		add(ListFromFile.function);
 		add(ListLength.function);
 		add(Map.function);
+		add(Number2Real.self);
+		add(NumberAdd.self);
+		add(NumberDivide.self);
+		add(NumberModulo.self);
+		add(NumberMultiply.self);
+		add(NumberSubtract.self);
 		add(Orphans.class);
 		add(OutputFileFunction.self);
 		add(Patch.function);
 		add(Proximity.class);
 		add(PullGi.self);
+		add(Real2Number.self);
 		add(Range.self);
 		add(PhylipOutput.self);
 		add(RunFunction.self);
@@ -135,8 +149,8 @@ public class ParserEnvironment extends Environment {
 	}
 
 	/**
-	 * Convenience method to define any {@link AstNative} type using the built-in
-	 * name.
+	 * Convenience method to define any {@link AstNative} type using the
+	 * built-in name.
 	 */
 	public void add(AstNative function) {
 		add(function.toString(), function);
