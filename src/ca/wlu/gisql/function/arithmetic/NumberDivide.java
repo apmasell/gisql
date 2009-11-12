@@ -14,7 +14,12 @@ public class NumberDivide extends Function {
 
 	@Override
 	public Object run(Machine machine, Object... parameters) {
-		return (Long) parameters[0] / (Long) parameters[1];
+		long denominator = (Long) parameters[1];
+		if (denominator == 0) {
+			return Long.MAX_VALUE;
+		} else {
+			return (Long) parameters[0] / denominator;
+		}
 	}
 
 }
