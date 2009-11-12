@@ -31,7 +31,19 @@ import ca.wlu.gisql.runner.ExpressionRunner;
  */
 public class GisQL {
 
+	private static final String HistoryFilename = ".gisql_history";
+
 	private static final Logger log = Logger.getLogger(GisQL.class);
+
+	private static final String StartFilename = ".gisqlrc";
+
+	public static File getUserHome() {
+		String userHome = System.getProperty("user.home");
+		if (userHome == null) {
+			throw new IllegalStateException("user.home is null");
+		}
+		return new File(userHome);
+	}
 
 	public static void main(String[] args) throws Exception {
 		ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
@@ -120,6 +132,11 @@ public class GisQL {
 		ConsoleRunListener listener = new ConsoleRunListener(environment);
 		ExpressionRunner runner = new ExpressionRunner(environment, listener);
 
+		File rcfile = new File(getUserHome(), StartFilename);
+		if (rcfile.exists()) {
+			runner.run(rcfile, null);
+		}
+
 		if (commandline.getArgs().length > 0) {
 			for (String argument : commandline.getArgs()) {
 				if (!runner.run(argument, null)) {
@@ -136,6 +153,8 @@ public class GisQL {
 			reader.setDefaultPrompt("gisql> ");
 			reader.addCompletor(new ArgumentCompletor(new EnvironmentCompletor(
 					environment), new NonIdentifierArgumentDelimiter()));
+			reader.getHistory().setHistoryFile(
+					new File(getUserHome(), HistoryFilename));
 
 			String line;
 			while ((line = reader.readLine()) != null) {
