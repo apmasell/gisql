@@ -50,4 +50,9 @@ public class CompleteInteractome implements Interactome {
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print("universe");
 	}
+
+	@Override
+	public String toString() {
+		return "universe";
+	}
 }

@@ -4,14 +4,12 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.util.ShowableStringBuilder;
 
 public abstract class AbstractOutput extends ProcessableInteractome {
 	public static final Parseable descriptor = new OutputDescriptor();
@@ -80,11 +78,5 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 		print.print("\"");
 		print.print(filename == null ? "-" : filename);
 		print.print("\"");
-	}
-
-	@Override
-	public String toString() {
-		return ShowableStringBuilder
-				.toString(this, Membership.collectAll(this));
 	}
 }

@@ -11,7 +11,6 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /**
  * An interactome which will build a list of all genes and interactions which
@@ -125,11 +124,5 @@ public class CachedInteractome extends ProcessableInteractome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source);
-	}
-
-	@Override
-	public String toString() {
-		return name == null ? ShowableStringBuilder.toString(this, Membership
-				.collectAll(this)) : name;
 	}
 }

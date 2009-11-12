@@ -2,14 +2,12 @@ package ca.wlu.gisql.interactome.metrics;
 
 import java.util.Set;
 
-import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /**
  * An interactome for which we compute user-specified statistics (
@@ -78,11 +76,5 @@ public class MetricsInteractome extends ProcessableInteractome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source);
-	}
-
-	@Override
-	public String toString() {
-		return ShowableStringBuilder
-				.toString(this, Membership.collectAll(this));
 	}
 }

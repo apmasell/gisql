@@ -50,4 +50,9 @@ public class EmptyInteractome implements Interactome {
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print("null");
 	}
+
+	@Override
+	public String toString() {
+		return "null";
+	}
 }

@@ -9,6 +9,7 @@ import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /** Generate jgrapht objects from an interactome. */
 public class GraphedInteractome implements Interactome {
@@ -70,4 +71,9 @@ public class GraphedInteractome implements Interactome {
 		print.print(source);
 	}
 
+	@Override
+	public String toString() {
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
+	}
 }

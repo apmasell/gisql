@@ -2,9 +2,11 @@ package ca.wlu.gisql.interactome;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /** An interactome that can have all the genes and edges visited once. */
 public abstract class ProcessableInteractome implements Interactome {
@@ -41,6 +43,11 @@ public abstract class ProcessableInteractome implements Interactome {
 			}
 		}
 		return true;
+	}
 
+	@Override
+	public final String toString() {
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
 	}
 }

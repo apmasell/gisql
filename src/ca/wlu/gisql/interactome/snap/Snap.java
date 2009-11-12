@@ -9,6 +9,7 @@ import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 @GisqlConstructorFunction(name = "snap", description = "Filter out interactions where the genes are not present.")
 public class Snap implements Interactome {
@@ -81,4 +82,9 @@ public class Snap implements Interactome {
 		print.print(": snap");
 	}
 
+	@Override
+	public String toString() {
+		return ShowableStringBuilder
+				.toString(this, Membership.collectAll(this));
+	}
 }
