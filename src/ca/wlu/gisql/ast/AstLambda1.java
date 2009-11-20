@@ -1,6 +1,10 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
@@ -12,13 +16,27 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * resolution and replaced with phase 2 lambda expressions.
  */
 public class AstLambda1 extends AstNode {
-	private class MaskedEnvironment extends Environment {
-		private final AstParameter variable;
+	private class MaskedEnvironment implements ResolutionEnvironment {
+		private final ResolutionEnvironment parent;
+		private final AstLambdaParameter variable;
 
-		private MaskedEnvironment(Environment parent) {
-			super(parent, false, true);
-			variable = new AstParameter(name);
-			add(name, variable);
+		private MaskedEnvironment(ResolutionEnvironment parent) {
+			this.parent = parent;
+			variable = new AstLambdaParameter(name);
+		}
+
+		@Override
+		public Environment getEnvironment() {
+			return parent.getEnvironment();
+		}
+
+		@Override
+		public AstNode lookup(String name) {
+			if (name.equals(variable.name)) {
+				return variable;
+			} else {
+				return parent.lookup(name);
+			}
 		}
 	}
 
@@ -32,9 +50,9 @@ public class AstLambda1 extends AstNode {
 	}
 
 	@Override
-	protected int getNeededParameterCount() {
-		throw new IllegalStateException(
-				"AstLambda1 must be cleaned before rendering.");
+	protected void freeVariables(Set<String> variables) {
+		throw new IllegalStateException("AstLambda1 must be cleaned.");
+
 	}
 
 	public Precedence getPrecedence() {
@@ -47,7 +65,7 @@ public class AstLambda1 extends AstNode {
 	}
 
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
+	public boolean renderSelf(Rendering program, int depth) {
 		throw new IllegalStateException(
 				"AstLambda1 must be cleaned before rendering.");
 	}
@@ -60,11 +78,12 @@ public class AstLambda1 extends AstNode {
 
 	/**
 	 * Set up a fake environment where the variable name is mapped to a
-	 * {@link AstParameter}. Then encapsulate the result in a phase 2 lambda.
+	 * {@link AstLambdaParameter}. Then encapsulate the result in a phase 2
+	 * lambda.
 	 */
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		MaskedEnvironment maskedenvironment = new MaskedEnvironment(environment);
 		AstNode resultexpression = expression.resolve(runner, context,
 				maskedenvironment);

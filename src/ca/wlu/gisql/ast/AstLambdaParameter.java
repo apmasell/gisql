@@ -1,33 +1,33 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.vm.InstructionVariable;
 
 /**
- * The variable represented by a lambda expression. (i.e., the <b>x</b> in (λ x.
- * f <b>x</b> y).
+ * The variable represented by a lambda expression. (i.e., the <b>x</b> in
+ * <tt>(λ x. f <b>x</b> y)</tt>.)
  */
-public class AstParameter extends AstNode {
-
-	int debrujin = -1;
+public class AstLambdaParameter extends AstNode {
 
 	final String name;
 
 	final TypeVariable type = new TypeVariable();
 
-	public AstParameter(String name) {
+	public AstLambdaParameter(String name) {
 		this.name = name;
 	}
 
 	@Override
-	protected int getNeededParameterCount() {
-		return 0;
+	protected void freeVariables(Set<String> variables) {
+		variables.add(name);
 	}
 
 	public Precedence getPrecedence() {
@@ -41,15 +41,11 @@ public class AstParameter extends AstNode {
 
 	/**
 	 * Adds an instruction to copy a variable from the variable on the operand
-	 * stack. The debujin index field is the number of item on the variable
-	 * stack when our containing lambda captured a variable, while the debrujin
-	 * parameter is the number of items currently on the variable stack. The
-	 * difference will give the appropriate offset into the stack for our value.
+	 * stack.
 	 */
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
-		return program.instructions.add(new InstructionVariable(debrujin
-				- this.debrujin));
+	public boolean renderSelf(Rendering program, int depth) {
+		return program.lRhO(name);
 	}
 
 	@Override
@@ -59,7 +55,7 @@ public class AstParameter extends AstNode {
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		return this;
 	}
 

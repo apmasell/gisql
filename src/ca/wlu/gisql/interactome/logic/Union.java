@@ -14,7 +14,7 @@ public class Union extends ComputedInteractomeDescriptor {
 	}
 
 	@Override
-	protected AstNode construct(AstNode left, AstNode right) {
+	public AstNode construct(AstNode left, AstNode right) {
 		return AstLogic.makeDisjunct(left, right);
 	}
 }

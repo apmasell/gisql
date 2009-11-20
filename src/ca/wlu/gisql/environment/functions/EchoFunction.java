@@ -6,26 +6,24 @@ import java.io.PrintStream;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.type.Unit;
-import ca.wlu.gisql.vm.Machine;
+import ca.wlu.gisql.ast.util.Function;
+import ca.wlu.gisql.runner.ExpressionRunner;
 
 public final class EchoFunction extends Function {
 
 	private static final Logger log = Logger.getLogger(EchoFunction.class);
 
-	public static final Function self = new EchoFunction();
-
-	private EchoFunction() {
-		super("echo", "Prints something to the screen", new TypeVariable(),
-				Type.UnitType);
+	public EchoFunction(ExpressionRunner runner) {
+		super(runner, "echo", "Prints something to the screen",
+				new TypeVariable(), Type.UnitType);
 	}
 
 	@Override
-	public Object run(Machine machine, Object... parameters) {
-		String filename = machine.getEnvironment().getOutput();
+	public Object run(Object... parameters) {
+		String filename = runner.getEnvironment().getOutput();
 		PrintStream print;
 		try {
 			print = filename == null ? System.out : new PrintStream(

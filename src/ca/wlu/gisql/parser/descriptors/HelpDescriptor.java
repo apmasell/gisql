@@ -8,13 +8,15 @@ import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNative;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.ast.util.BuiltInResolver;
+import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
@@ -28,22 +30,28 @@ public class HelpDescriptor implements Parseable {
 	private HelpDescriptor() {
 	}
 
-	public AstNode construct(UserEnvironment environment, List<AstNode> params,
+	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
-		AstNode variable = environment.getVariable(((AstName) params.get(0))
-				.getName());
+
+		String name = ((AstName) params.get(0)).getName();
+		Object variable = runner.getEnvironment().getVariable(name);
+		Type type = runner.getEnvironment().getTypeOf(name);
+		AstNative node = BuiltInResolver.get(name);
+
 		String result;
-		if (variable == null) {
-			result = "undefined name";
-		} else if (variable instanceof AstNative) {
-			AstNative function = (AstNative) variable;
-			result = function.getName() + " :: " + function.getType() + "\n\t"
+		if (node != null) {
+			result = name + " :: " + node.getType() + "\n\t"
+					+ node.getDescription();
+		} else if (variable == null && type != null) {
+			result = "undefined :: " + type;
+		} else if (variable instanceof GenericFunction) {
+			GenericFunction function = (GenericFunction) variable;
+			result = function + " :: " + type + "\n\t"
 					+ function.getDescription();
-		} else if (variable instanceof AstLiteral) {
-			AstLiteral literal = (AstLiteral) variable;
-			result = literal.toString() + " :: " + literal.getType();
+		} else if (type == null && node == null) {
+			result = "unknown name";
 		} else {
-			result = variable.toString();
+			result = variable + " :: " + type;
 		}
 		return new AstLiteral(Type.StringType, result);
 	}

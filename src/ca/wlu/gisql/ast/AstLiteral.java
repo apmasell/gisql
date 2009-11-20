@@ -1,14 +1,15 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.vm.Instruction;
-import ca.wlu.gisql.vm.InstructionPush;
 
 /**
  * An {@link AstNode} that represents a literal value of some particular type.
@@ -39,8 +40,7 @@ public class AstLiteral extends AstNode {
 	}
 
 	@Override
-	protected int getNeededParameterCount() {
-		return 0;
+	protected void freeVariables(Set<String> variables) {
 	}
 
 	public Precedence getPrecedence() {
@@ -52,17 +52,14 @@ public class AstLiteral extends AstNode {
 		return type;
 	}
 
+	/**
+	 * This kind of constant must be representable as a Java constant.
+	 * Effectively, any primitive type or String. Object types cannot be in the
+	 * constant pool.
+	 */
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
-		if (!program.instructions.add(new InstructionPush(value))) {
-			return false;
-		}
-		for (int counter = Math.min(type.getArrowDepth(), depth); counter > 0; counter--) {
-			if (!program.instructions.add(Instruction.Apply)) {
-				return false;
-			}
-		}
-		return true;
+	public boolean renderSelf(Rendering program, int depth) {
+		return program.hO_AsObject(value);
 	}
 
 	@Override
@@ -74,7 +71,7 @@ public class AstLiteral extends AstNode {
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		return this;
 	}
 

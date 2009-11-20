@@ -3,8 +3,9 @@ package ca.wlu.gisql.ast.type;
 import java.util.List;
 import java.util.Map;
 
+import ca.wlu.gisql.ast.util.GenericFunction;
+import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.vm.Program;
 
 /** The query language type of a function. */
 public class ArrowType extends Type {
@@ -12,8 +13,8 @@ public class ArrowType extends Type {
 	private final Type result;
 
 	/**
-	 * Convience constructor to create a function with type "α → β → γ → ..." in
-	 * one step, rather than "α → (β → (γ → ...))".
+	 * Convenience constructor to create a function with type "α → β → γ → ..."
+	 * in one step, rather than "α → (β → (γ → ...))".
 	 */
 	public ArrowType(Type... arguments) {
 		if (arguments.length < 2) {
@@ -42,11 +43,13 @@ public class ArrowType extends Type {
 	}
 
 	@Override
-	public boolean canUnify(Type othertype) {
-		return othertype instanceof ArrowType ? operand
-				.canUnify(((ArrowType) othertype).operand)
-				&& result.canUnify(((ArrowType) othertype).result) : super
-				.canUnify(othertype);
+	public boolean equals(Object obj) {
+		if (obj instanceof ArrowType) {
+			ArrowType that = (ArrowType) obj;
+			return operand.equals(that.operand) && result.equals(that.result);
+
+		}
+		return false;
 	}
 
 	@Override
@@ -66,8 +69,27 @@ public class ArrowType extends Type {
 	}
 
 	@Override
+	public int hashCode() {
+		return operand.hashCode() * 37 + result.hashCode();
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return operand.occurs(needle) || result.occurs(needle);
+	}
+
+	@Override
+	public boolean render(Rendering rendering, int depth) {
+		return rendering.hP(operand)
+				&& rendering.hP(result)
+				&& rendering.pRg$hO_CreateObject(ArrowType.class
+						.getConstructors()[1]);
+	}
+
+	@Override
+	public void reset() {
+		operand.reset();
+		result.reset();
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
@@ -97,12 +119,12 @@ public class ArrowType extends Type {
 
 	/**
 	 * This is supposed to check whether an object is a valid instance of this
-	 * type. Since {@link Program} has no type information, this <b>does not
-	 * check</b> the actual type really, only that it is a program.
+	 * type.
 	 */
 	@Override
 	public boolean validate(Object value) {
-		return value instanceof Program;
+		return value instanceof GenericFunction
+				&& ((GenericFunction) value).getType().validate(value);
 	}
 
 }

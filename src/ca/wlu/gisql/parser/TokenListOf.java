@@ -2,7 +2,7 @@ package ca.wlu.gisql.parser;
 
 import java.util.List;
 
-import ca.wlu.gisql.ast.AstList;
+import ca.wlu.gisql.ast.AstLiteralList;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
 
@@ -24,7 +24,7 @@ public class TokenListOf extends Token {
 
 	@Override
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
-		AstList items = new AstList();
+		AstLiteralList items = new AstLiteralList();
 
 		if (!child.parse(parser, level, items)) {
 			return false;

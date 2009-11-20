@@ -2,20 +2,19 @@ package ca.wlu.gisql.function.list;
 
 import java.util.List;
 
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
-import ca.wlu.gisql.vm.Machine;
+import ca.wlu.gisql.ast.util.Function;
+import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class Slice extends Function {
 
 	private static final Type list = new ListType(new TypeVariable());
 
-	public static final Function self = new Slice();
-
-	private Slice() {
+	public Slice(ExpressionRunner runner) {
 		super(
+				runner,
 				"slice",
 				"Takes part of a list. If the end index is negative, the counting is done from the end of the list.",
 				Type.NumberType, Type.NumberType, list, list);
@@ -23,11 +22,11 @@ public class Slice extends Function {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object run(Machine machine, Object... parameters) {
+	public Object run(Object... parameters) {
 
 		/*
 		 * Our lists are 1-based and inclusive, and Java's are 0-based,
-		 * inclusive on the start and exclusive on the end. Negative indicies on
+		 * inclusive on the start and exclusive on the end. Negative indices on
 		 * the end.
 		 */
 		int start = ((Long) parameters[0]).intValue();
@@ -43,17 +42,17 @@ public class Slice extends Function {
 		}
 
 		if (start < 0) {
-			machine.getEnvironment().assertWarning("Start index too small.");
+			runner.getEnvironment().assertWarning("Start index too small.");
 			start = 0;
 		} else if (start >= list.size()) {
-			machine.getEnvironment().assertWarning("Start index too large.");
+			runner.getEnvironment().assertWarning("Start index too large.");
 			start = list.size() - 1;
 		}
 		if (end <= start) {
-			machine.getEnvironment().assertWarning("End index too small.");
+			runner.getEnvironment().assertWarning("End index too small.");
 			end = start + 1;
 		} else if (end > list.size()) {
-			machine.getEnvironment().assertWarning("End index too large.");
+			runner.getEnvironment().assertWarning("End index too large.");
 			end = list.size();
 		}
 

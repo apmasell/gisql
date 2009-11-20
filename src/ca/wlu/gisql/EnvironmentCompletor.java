@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import jline.Completor;
-import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.EnvironmentListener;
 import ca.wlu.gisql.environment.UserEnvironment;
@@ -17,12 +17,12 @@ public class EnvironmentCompletor implements Completor, EnvironmentListener {
 
 	public EnvironmentCompletor(UserEnvironment environment) {
 		environment.addListener(this);
-		for (Entry<String, AstNode> entry : environment) {
+		for (Entry<String, Object> entry : environment) {
 			candidates.add(entry.getKey());
 		}
 	}
 
-	public void addedEnvironmentVariable(String name, AstNode node) {
+	public void addedEnvironmentVariable(String name, Object value, Type type) {
 		candidates.add(name);
 	}
 
@@ -52,7 +52,7 @@ public class EnvironmentCompletor implements Completor, EnvironmentListener {
 		return candidatelist.size() == 0 ? -1 : 0;
 	}
 
-	public void droppedEnvironmentVariable(String name, AstNode node) {
+	public void droppedEnvironmentVariable(String name, Object value, Type type) {
 		candidates.remove(name);
 	}
 

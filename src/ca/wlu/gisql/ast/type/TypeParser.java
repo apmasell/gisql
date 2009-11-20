@@ -4,13 +4,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 import ca.wlu.gisql.annotation.GisqlType;
-import ca.wlu.gisql.ast.AstConstructor;
+import ca.wlu.gisql.ast.AstNativeConstructor;
 
 /**
  * Converts a string into a query language type object. Used by
- * {@link AstConstructor} to process {@link GisqlType} annotations. This class
- * is not capable of parsing all possible types valid in the system. Any type
- * present as a static member of {@link Type} will be processed automatically.
+ * {@link AstNativeConstructor} to process {@link GisqlType} annotations. This
+ * class is not capable of parsing all possible types valid in the system. Any
+ * type present as a static member of {@link Type} will be processed
+ * automatically.
  */
 public class TypeParser {
 	private final String expression;

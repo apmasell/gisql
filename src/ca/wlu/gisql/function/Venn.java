@@ -4,21 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.Function;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.logic.ComputedInteractome;
 import ca.wlu.gisql.interactome.metrics.MetricsInteractome;
 import ca.wlu.gisql.interactome.metrics.Totals;
-import ca.wlu.gisql.vm.Machine;
+import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class Venn extends Function {
 
-	public static final Function self = new Venn();
-
-	private Venn() {
-		super("venn",
+	public Venn(ExpressionRunner runner) {
+		super(runner, "venn",
 				"Create a Venn diagram (true = genes or false= interactions)",
 				new ListType(Type.InteractomeType), Type.BooleanType,
 				Type.StringType);
@@ -26,7 +24,7 @@ public class Venn extends Function {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object run(Machine machine, Object... parameters) {
+	public Object run(Object... parameters) {
 		List<Interactome> interactomes = (List<Interactome>) parameters[0];
 		boolean genes = (Boolean) parameters[1];
 

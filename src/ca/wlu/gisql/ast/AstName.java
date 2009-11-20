@@ -1,7 +1,10 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -17,14 +20,14 @@ public class AstName extends AstNode {
 		this.name = name;
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	@Override
-	protected int getNeededParameterCount() {
+	protected void freeVariables(Set<String> variables) {
 		throw new IllegalStateException(
 				"Names should be cleaned from the parse tree.");
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public Precedence getPrecedence() {
@@ -37,7 +40,7 @@ public class AstName extends AstNode {
 	}
 
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
+	public boolean renderSelf(Rendering program, int depth) {
 		throw new IllegalStateException(
 				"Names should be cleaned from the parse tree.");
 	}
@@ -51,8 +54,8 @@ public class AstName extends AstNode {
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
-		AstNode self = environment.getVariable(name);
+			ResolutionEnvironment environment) {
+		AstNode self = environment.lookup(name);
 		if (self == null) {
 			runner.appendResolutionError("Undefined name", this, context);
 			return null;

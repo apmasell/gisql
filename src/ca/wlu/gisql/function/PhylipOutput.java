@@ -9,21 +9,20 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.Membership;
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.vm.Machine;
+import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class PhylipOutput extends Function {
 	private static final Logger log = Logger.getLogger(PhylipOutput.class);
-	public static final Function self = new PhylipOutput();
 
-	private PhylipOutput() {
-		super("phylip", "produces phylip based phylogenetic tree",
+	public PhylipOutput(ExpressionRunner runner) {
+		super(runner, "phylip", "produces phylip based phylogenetic tree",
 				Type.StringType, new ListType(Type.InteractomeType),
 				Type.StringType);
 	}
@@ -42,7 +41,7 @@ public class PhylipOutput extends Function {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object run(Machine machine, Object... parameters) {
+	public Object run(Object... parameters) {
 		String filename = (String) parameters[0];
 		List<Interactome> interactomeList = (List<Interactome>) parameters[1];
 		Map<Interactome, StringBuilder> builders = new HashMap<Interactome, StringBuilder>();

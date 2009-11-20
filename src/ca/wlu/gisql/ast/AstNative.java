@@ -1,9 +1,10 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.ast.type.TypeVariable;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -15,14 +16,14 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  */
 public abstract class AstNative extends AstNode {
 
-	private final String description;
-
+	protected final String description;
 	protected final String name;
-	protected final Type[] types;
+	protected final Type type;
 
 	protected AstNative(String name, String description, Type... types) {
 		super();
-		if (types.length < 2) {
+		this.description = description;
+		if (types.length < 2 && types[0].getArrowDepth() == 0) {
 			throw new IllegalArgumentException("Need at least two types.");
 		}
 		for (Type type : types) {
@@ -31,29 +32,19 @@ public abstract class AstNative extends AstNode {
 			}
 		}
 		this.name = name;
-		this.types = types;
-		this.description = description;
+		if (types.length > 2) {
+			type = new ArrowType(types);
+		} else {
+			type = types[0];
+		}
 	}
 
-	public final int getArgumentCount() {
-		return types.length - 1;
-	}
-
-	public final String getDescription() {
-		return description;
-	}
-
-	public final String getName() {
-		return name;
-	}
-
-	/**
-	 * The number of parameters needed by this node is the number of arguments
-	 * that it expects.
-	 */
 	@Override
-	protected final int getNeededParameterCount() {
-		return types.length - 1;
+	protected final void freeVariables(Set<String> variables) {
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public final Precedence getPrecedence() {
@@ -61,23 +52,18 @@ public abstract class AstNative extends AstNode {
 	}
 
 	@Override
-	public Type getType() {
-		Type type = types[types.length - 1];
-		for (int i = types.length - 2; i >= 0; i--) {
-			type = new ArrowType(types[i], type);
-			if (types[i] instanceof TypeVariable) {
-			}
-		}
+	public final Type getType() {
 		return type;
 	}
 
 	@Override
 	public final void resetType() {
+		/* Do not touch original type. */
 	}
 
 	@Override
 	public final AstNode resolve(ExpressionRunner runner,
-			ExpressionContext context, Environment environment) {
+			ExpressionContext context, ResolutionEnvironment environment) {
 		return new AstNativeIndirect(this);
 	}
 
@@ -89,5 +75,4 @@ public abstract class AstNative extends AstNode {
 	public final boolean type(ExpressionRunner runner, ExpressionContext context) {
 		return true;
 	}
-
 }

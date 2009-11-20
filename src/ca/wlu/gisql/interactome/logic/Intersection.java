@@ -15,7 +15,7 @@ public class Intersection extends ComputedInteractomeDescriptor {
 	}
 
 	@Override
-	protected AstNode construct(AstNode left, AstNode right) {
+	public AstNode construct(AstNode left, AstNode right) {
 		return AstLogic.makeConjunct(left, right);
 	}
 }

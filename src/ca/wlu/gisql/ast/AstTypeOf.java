@@ -1,12 +1,14 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.vm.InstructionPush;
 
 /**
  * Special node that returns the type of its argument rather than the value of
@@ -30,8 +32,8 @@ public class AstTypeOf extends AstNode {
 	}
 
 	@Override
-	protected int getNeededParameterCount() {
-		return 0;
+	protected void freeVariables(Set<String> variables) {
+		parameter.freeVariables(variables);
 	}
 
 	public Precedence getPrecedence() {
@@ -44,9 +46,8 @@ public class AstTypeOf extends AstNode {
 	}
 
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
-		return program.instructions.add(new InstructionPush(parameter.getType()
-				.toString()));
+	public boolean renderSelf(Rendering program, int depth) {
+		return program.hO(parameter.getType().toString());
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public class AstTypeOf extends AstNode {
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		AstNode parameter = this.parameter
 				.resolve(runner, context, environment);
 		if (parameter == null) {

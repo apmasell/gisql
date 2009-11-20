@@ -3,7 +3,6 @@ package ca.wlu.gisql.interactome.patch;
 import java.util.Set;
 
 import ca.wlu.gisql.Membership;
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -16,9 +15,6 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
  * species.
  */
 public class Patch implements Interactome {
-	public static final Function function = new PatchFunction();
-	public static final Function functionAverage = new AveragePatchFunction();
-
 	private final Double membership;
 	private final Interactome source;
 
@@ -58,7 +54,7 @@ public class Patch implements Interactome {
 	}
 
 	public Precedence getPrecedence() {
-		return function.getPrecedence();
+		return Precedence.Value;
 	}
 
 	public double membershipOfUnknown() {

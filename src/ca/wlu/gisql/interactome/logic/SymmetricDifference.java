@@ -15,7 +15,7 @@ public class SymmetricDifference extends ComputedInteractomeDescriptor {
 	}
 
 	@Override
-	protected AstNode construct(AstNode left, AstNode right) {
+	public AstNode construct(AstNode left, AstNode right) {
 		return AstLogic.makeDisjunct(AstLogic.makeConjunct(left, AstLogic
 				.makeNegation(right)), AstLogic.makeConjunct(right, AstLogic
 				.makeNegation(left)));

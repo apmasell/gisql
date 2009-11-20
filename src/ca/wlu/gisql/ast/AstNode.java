@@ -1,7 +1,13 @@
 package ca.wlu.gisql.ast;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.GenericFunction;
+import ca.wlu.gisql.ast.util.Renderable;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -10,21 +16,37 @@ import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowableStringBuilder;
-import ca.wlu.gisql.vm.Instruction;
-import ca.wlu.gisql.vm.InstructionPush;
 
 /**
  * Holds an element after parsing. The {@link Parser} and {@link Parseable}s
  * will construct subclasses of this node. The root node will then be subjected
- * {@link #resolve(ExpressionRunner, ExpressionContext, Environment)},
- * {@link #type(ExpressionRunner, ExpressionContext)},
- * {@link #render(ProgramRoutine, int, int)} to create a final program. Any node
- * in the parse tree abort the process.
+ * {@link #resolve(ExpressionRunner, ExpressionContext, ResolutionEnvironment)},
+ * {@link #type(ExpressionRunner, ExpressionContext)}, {@link #render()} to
+ * create a final program. Any node in the parse tree abort the process.
  */
 public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
-		Show<AstNode> {
+		Renderable, Show<AstNode> {
 
-	protected abstract int getNeededParameterCount();
+	/**
+	 * Find the variables which are not bound in this expression node. For
+	 * instance, in <tt>(λ x. <b>f</b> x <b>y</b>)</tt>.
+	 */
+	public Set<String> freeVariables() {
+		Set<String> variables = new HashSet<String>();
+		freeVariables(variables);
+		return variables;
+	}
+
+	protected abstract void freeVariables(Set<String> variables);
+
+	/**
+	 * Determine the depth of the left-deep application nesting. In
+	 * <tt>(f x y z)</tt>, this would be 3, while <tt>(f x (y z))</tt> would be
+	 * 2.
+	 */
+	protected int getLeftDepth() {
+		return getType().getArrowDepth();
+	}
 
 	/**
 	 * This is the {@link Type} of this node and it must return the same object
@@ -37,16 +59,53 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	public abstract Type getType();
 
 	/**
+	 * Convert the abstract syntax tree into a real Java class that may be
+	 * instantiated.
+	 */
+	public Class<? extends GenericFunction> render() {
+		Rendering program = new Rendering(toString(), getType(), 0);
+		if (render(program, 0)) {
+			return program.generate();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * A helper function to create closures when necessary during rendering.
+	 * This method should be called by any subclasses during rendering.
+	 */
+	public final boolean render(Rendering program, int depth) {
+		int parameters = getLeftDepth() - depth;
+
+		if (parameters > 0 || this instanceof AstFixedPoint2) {
+			String command = toString();
+			Rendering subroutine = new Rendering(command, getType(), parameters);
+
+			if (subroutine.gF$_lVhF$_CopyVariablesFromParent(program, this
+					.freeVariables())
+					&& renderSelf(subroutine, depth + parameters)) {
+				return program.hO_CreateSubroutine(subroutine);
+			} else {
+				return false;
+			}
+		} else {
+			return renderSelf(program, depth);
+		}
+
+	}
+
+	/**
 	 * Generate VM code based on this node.
 	 * 
+	 * @param program
+	 *            is the current rendered output.
 	 * @param depth
-	 *            is the number of left-associated application nodes seen so
-	 *            far.
-	 * @param debrujin
-	 *            is the number of variables on the variable stack.
+	 *            number of parameters on the reference stack in the
+	 *            {@link Rendering} that are available to this node.
+	 * @return success
 	 */
-	public abstract boolean render(ProgramRoutine program, int depth,
-			int debrujin);
+	protected abstract boolean renderSelf(Rendering program, int depth);
 
 	/** Resets the state of the type system so that type checking may be redone. */
 	public abstract void resetType();
@@ -61,7 +120,7 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	 *             if this node should been cleaned from the parse tree.
 	 */
 	public abstract AstNode resolve(ExpressionRunner runner,
-			ExpressionContext context, Environment environment);
+			ExpressionContext context, ResolutionEnvironment environment);
 
 	@Override
 	public final String toString() {
@@ -78,32 +137,5 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	 */
 	public abstract boolean type(ExpressionRunner runner,
 			ExpressionContext context);
-
-	/** A helper function to create closures when necessary. */
-	protected final boolean wrap(ProgramRoutine program, int depth, int debrujin) {
-		int parameters = getNeededParameterCount();
-		String command = toString();
-		ProgramRoutine subroutine = new ProgramRoutine(command);
-
-		if (render(subroutine, parameters, debrujin)
-				&& subroutine.instructions.add(Instruction.Return)) {
-			for (; parameters > 1; parameters--) {
-				ProgramRoutine outerroutine = new ProgramRoutine(command);
-				if (!(subroutine.instructions.add(Instruction.Return)
-						&& outerroutine.instructions.add(new InstructionPush(
-								subroutine)) && outerroutine.instructions
-						.add(Instruction.Close))) {
-					return false;
-				}
-				subroutine = outerroutine;
-			}
-			return subroutine.instructions.add(Instruction.Return)
-					&& program.instructions
-							.add(new InstructionPush(subroutine));
-		} else {
-			return false;
-		}
-
-	}
 
 }

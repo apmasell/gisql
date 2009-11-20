@@ -4,8 +4,12 @@
 package ca.wlu.gisql.util;
 
 public enum Precedence {
-	Assignment, Closure, Difference, Disjunction, Junction, UnaryPostfix, UnaryPrefix, Value;
-	public final static Precedence start() {
+	Assignment, Channel, Closure, Difference, Disjunction, Junction, UnaryPostfix, UnaryPrefix, Value;
+	public static Precedence expression() {
+		return Precedence.values()[1];
+	}
+
+	public final static Precedence statement() {
 		return Precedence.values()[0];
 	}
 

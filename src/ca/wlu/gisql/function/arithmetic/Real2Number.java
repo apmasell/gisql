@@ -1,19 +1,18 @@
 package ca.wlu.gisql.function.arithmetic;
 
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.vm.Machine;
+import ca.wlu.gisql.ast.util.Function;
+import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class Real2Number extends Function {
-	public static final Function self = new Real2Number();
 
-	private Real2Number() {
-		super("r2n", "Converts a real number to an integral number.",
+	public Real2Number(ExpressionRunner runner) {
+		super(runner, "r2n", "Converts a real number to an integral number.",
 				Type.RealType, Type.NumberType);
 	}
 
 	@Override
-	public Object run(Machine machine, Object... parameters) {
+	public Object run(Object... parameters) {
 		return ((Double) parameters[0]).longValue();
 	}
 

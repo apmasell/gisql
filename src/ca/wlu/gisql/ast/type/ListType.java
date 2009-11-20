@@ -3,9 +3,10 @@ package ca.wlu.gisql.ast.type;
 import java.util.List;
 import java.util.Map;
 
+import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-/** The query language type of a list, synonymous with Java's {@link List} */
+/** The query language type of a list, synonymous with Java's List. */
 public class ListType extends Type {
 	private final Type contents;
 
@@ -19,10 +20,12 @@ public class ListType extends Type {
 	}
 
 	@Override
-	public boolean canUnify(Type othertype) {
-		return othertype instanceof ListType ? contents
-				.canUnify(((ListType) othertype).contents) : super
-				.canUnify(othertype);
+	public boolean equals(Object obj) {
+		if (obj instanceof ListType) {
+			ListType that = (ListType) obj;
+			return contents.equals(that.contents);
+		}
+		return false;
 	}
 
 	@Override
@@ -36,8 +39,25 @@ public class ListType extends Type {
 	}
 
 	@Override
+	public int hashCode() {
+		return contents.hashCode() * 19;
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return contents.occurs(needle);
+	}
+
+	@Override
+	public boolean render(Rendering rendering, int depth) {
+		return rendering.hP(contents)
+				&& rendering.pRg$hO_CreateObject(ListType.class
+						.getConstructors()[0]);
+	}
+
+	@Override
+	public void reset() {
+		contents.reset();
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {

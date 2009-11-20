@@ -21,8 +21,11 @@ public class TokenName extends Token {
 		while (parser.position < parser.input.length()) {
 			char codepoint = parser.input.charAt(parser.position);
 
-			if (sb.length() == 0 ? Character.isJavaIdentifierStart(codepoint)
-					: Character.isJavaIdentifierPart(codepoint)) {
+			if (codepoint == '$') {
+				break;
+			} else if (sb.length() == 0 ? Character
+					.isJavaIdentifierStart(codepoint) : Character
+					.isJavaIdentifierPart(codepoint)) {
 				parser.position++;
 				sb.append(codepoint);
 			} else {

@@ -1,10 +1,15 @@
 package ca.wlu.gisql.ast.type;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ca.wlu.gisql.ast.util.Renderable;
+import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.output.FileFormat;
@@ -15,7 +20,7 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
  * Representation of a type in the query language. All types in the query
  * language have (non-unique) Java representation.
  */
-public abstract class Type implements Show<List<TypeVariable>> {
+public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	public static final NativeType BooleanType = new NativeType("boolean",
 			Boolean.class);
 
@@ -40,30 +45,65 @@ public abstract class Type implements Show<List<TypeVariable>> {
 
 	public static final NativeType UnitType = new NativeType("unit", Unit.class);
 
+	/** Use reflected Java type to determine the equivalent query language type. */
+	public static Type convertType(java.lang.reflect.Type javatype) {
+		if (javatype instanceof Class<?>) {
+			Class<?> clazz = (Class<?>) javatype;
+
+			for (Field field : Type.class.getFields()) {
+				if (Modifier.isStatic(field.getModifiers())
+						&& NativeType.class.isAssignableFrom(field.getType())) {
+					NativeType matchtype;
+					try {
+						matchtype = (NativeType) field.get(null);
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+						return null;
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+						return null;
+					}
+					if (matchtype.handlesNativeType(clazz)) {
+						return matchtype;
+					}
+				}
+			}
+
+			throw new IllegalArgumentException("Class " + clazz.getName()
+					+ " as not compatible representation");
+
+		} else if (javatype instanceof ParameterizedType) {
+			ParameterizedType ptype = (ParameterizedType) javatype;
+			Class<?> clazz = (Class<?>) ptype.getRawType();
+
+			if (List.class.isAssignableFrom(clazz)) {
+				Type contents = convertType(ptype.getActualTypeArguments()[0]);
+				return new ListType(contents);
+			}
+			throw new IllegalArgumentException("Unknown parameterised type "
+					+ ptype);
+		} else {
+			throw new IllegalArgumentException("Unknown argument type");
+		}
+	}
+
 	/**
 	 * Determines if a type can unify with another, but does not perform any
 	 * substitution.
 	 * 
 	 * @see #unify
 	 */
-	public boolean canUnify(Type othertype) {
-		if (this == othertype) {
-			return true;
-		} else if (othertype instanceof TypeVariable) {
-			return ((TypeVariable) othertype).canUnify(this);
-		} else {
-			return false;
-		}
+	public final boolean canUnify(Type othertype) {
+		return fresh().unify(othertype.fresh());
 	}
 
 	/** Create a copy of this type with fresh type variables. */
-	@Override
-	public Type clone() {
+	public final Type fresh() {
 		List<TypeVariable> variables = new ArrayList<TypeVariable>();
 		ShowableStringBuilder.toString(this, variables);
 		Map<Type, Type> replacement = new HashMap<Type, Type>();
 		for (TypeVariable variable : variables) {
-			replacement.put(variable, variable.clone());
+			replacement.put(variable, variable.duplicate());
 		}
 		return freshen(replacement);
 	}
@@ -89,8 +129,35 @@ public abstract class Type implements Show<List<TypeVariable>> {
 		return false;
 	}
 
+	/**
+	 * Create code to instantiate this type object in a dynamically generated
+	 * class.
+	 */
+	public boolean render(Rendering rendering, int depth) {
+		for (Field field : Type.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers())
+					&& Type.class.isAssignableFrom(field.getType())) {
+				try {
+					if ((Type) field.get(null) == this) {
+						rendering.lFhO(field);
+						return true;
+					}
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		throw new IllegalArgumentException("Cannot find declaration of type "
+				+ toString());
+	}
+
+	public void reset() {
+	}
+
 	@Override
-	public String toString() {
+	public final String toString() {
 		return ShowableStringBuilder.toString(this,
 				new ArrayList<TypeVariable>());
 	}
@@ -100,7 +167,7 @@ public abstract class Type implements Show<List<TypeVariable>> {
 	 * and, if they can be made by substituting a value for a type variable. The
 	 * substitution is made. This is the <a
 	 * href="http://en.wikipedia.org/wiki/Type_inference">Hindly-Milner
-	 * algorithm</a>. Extending methods must always call super.unify() to deal
+	 * algorithm</a>. Derived classes must always call super.unify() to deal
 	 * with type variables.
 	 */
 	public boolean unify(Type that) {

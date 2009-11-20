@@ -5,25 +5,22 @@ import java.util.Set;
 import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.annotation.GisqlType;
+import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
-import ca.wlu.gisql.vm.Machine;
-import ca.wlu.gisql.vm.Program;
 
 @GisqlConstructorFunction(name = "deltacore", description = "Filter interactions based on the coreicity difference of their genes")
 public class DeltaCoreicity implements Interactome {
 
-	private final Program comparison;
-	private final Machine machine;
+	private final GenericFunction comparison;
 	private final Interactome source;
 
-	public DeltaCoreicity(Machine machine, Interactome source,
-			@GisqlType(type = "number → boolean") Program comparison) {
-		this.machine = machine;
+	public DeltaCoreicity(Interactome source,
+			@GisqlType(type = "number → boolean") GenericFunction comparison) {
 		this.source = source;
 		this.comparison = comparison;
 	}
@@ -37,7 +34,7 @@ public class DeltaCoreicity implements Interactome {
 		if (!Membership.isMissing(membership)) {
 			long value = Math.abs(interaction.getGene1().getCoreicity()
 					- interaction.getGene2().getCoreicity());
-			if ((Boolean) comparison.run(machine, value)) {
+			if ((Boolean) comparison.run(value)) {
 				return membership;
 			}
 		}

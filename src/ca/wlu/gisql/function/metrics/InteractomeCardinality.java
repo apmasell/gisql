@@ -1,14 +1,13 @@
 package ca.wlu.gisql.function.metrics;
 
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.interactome.metrics.Cardinality;
+import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class InteractomeCardinality extends MetricFunction<Cardinality> {
-	public static final Function self = new InteractomeCardinality();
 
-	private InteractomeCardinality() {
-		super("genecard",
+	public InteractomeCardinality(ExpressionRunner runner) {
+		super(runner, "genecard",
 				"Calculate the fuzzy cardinality of the gene memberships",
 				Type.RealType, Cardinality.class);
 	}

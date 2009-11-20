@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.descriptors.LiteralTokenDescriptor;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
@@ -19,7 +19,7 @@ import ca.wlu.gisql.util.Show;
  * input stream. If this function returns true, it will call {@link #tasks()}
  * and attempt to parse the required token. If the tokens are correctly parsed,
  * it will call
- * {@link #construct(UserEnvironment, List, Stack, ExpressionContext)} with
+ * {@link #construct(ExpressionRunner, List, Stack, ExpressionContext)} with
  * parsed data.
  */
 public interface Parseable extends
@@ -30,7 +30,7 @@ public interface Parseable extends
 	 * After parsing is successful, this method must return the abstract syntax
 	 * represented.
 	 * 
-	 * @param environment
+	 * @param runner
 	 *            The current environment.
 	 * @param params
 	 *            The parsed elements found based on the {@link #tasks()}.
@@ -41,7 +41,7 @@ public interface Parseable extends
 	 *            The current expression context in which to produce an error.
 	 * @return The abstract syntax found or null if there is an error.
 	 * */
-	public abstract AstNode construct(UserEnvironment environment,
+	public abstract AstNode construct(ExpressionRunner runner,
 			List<AstNode> params, Stack<ExpressionError> error,
 			ExpressionContext context);
 
@@ -61,7 +61,7 @@ public interface Parseable extends
 	/**
 	 * Returns the tokens desired in the ordered desired. Each token's parse
 	 * results, if any, will be placed in the params list in
-	 * {@link #construct(UserEnvironment, List, Stack, ExpressionContext)}. Not
+	 * {@link #construct(ExpressionRunner, List, Stack, ExpressionContext)}. Not
 	 * all tokens return results though.
 	 */
 	public abstract Token[] tasks();

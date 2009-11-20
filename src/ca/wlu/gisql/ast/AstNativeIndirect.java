@@ -1,7 +1,10 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -18,12 +21,17 @@ public class AstNativeIndirect extends AstNode {
 
 	AstNativeIndirect(AstNative self) {
 		this.self = self;
-		type = self.getType().clone();
+		type = self.getType().fresh();
 	}
 
 	@Override
-	protected int getNeededParameterCount() {
-		return self.getNeededParameterCount();
+	protected void freeVariables(Set<String> variables) {
+		self.freeVariables(variables);
+	}
+
+	@Override
+	protected int getLeftDepth() {
+		return self.getLeftDepth();
 	}
 
 	public final Precedence getPrecedence() {
@@ -36,18 +44,18 @@ public class AstNativeIndirect extends AstNode {
 	}
 
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
-		return self.render(program, depth, debrujin);
+	public boolean renderSelf(Rendering program, int depth) {
+		return self.render(program, depth);
 	}
 
 	@Override
 	public void resetType() {
-		type = self.getType().clone();
+		type = self.getType().fresh();
 	}
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		return self.resolve(runner, context, environment);
 	}
 

@@ -9,17 +9,18 @@ import org.apache.commons.collections15.iterators.IteratorChain;
 import org.apache.commons.collections15.map.HashedMap;
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.BuiltInResolver;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 
 /**
  * Environment hold defined variables for interactions with the user.
- * Environments can also be overlayed so that multiple environment can share
- * common definitions. All environments should have a {@link ParserEnvironment}
- * as the root environment.
+ * Environments can also be overlaid so that multiple environment can share
+ * common definitions. All environments should have a {@link BuiltInResolver} as
+ * the root environment.
  */
 public abstract class Environment implements EnvironmentListener,
-		Iterable<Entry<String, AstNode>> {
+		Iterable<Entry<String, Object>> {
 	private static final Logger log = Logger.getLogger(Environment.class);
 
 	private final boolean alwaysPropagate;
@@ -32,7 +33,9 @@ public abstract class Environment implements EnvironmentListener,
 
 	private final ParserKnowledgebase parserkb;
 
-	private final Map<String, AstNode> variables = new HashedMap<String, AstNode>();
+	private final Map<String, Type> types = new HashedMap<String, Type>();
+
+	private final Map<String, Object> variables = new HashedMap<String, Object>();
 
 	protected Environment(final Environment parent, boolean mutable,
 			boolean alwaysPropagate) {
@@ -47,29 +50,37 @@ public abstract class Environment implements EnvironmentListener,
 		}
 	}
 
-	protected final void add(String name, AstNode node) {
-		AstNode oldnode = variables.get(name);
-		if (oldnode != null) {
-			for (EnvironmentListener listener : listeners.keySet()) {
-				listener.droppedEnvironmentVariable(name, oldnode);
+	protected final boolean add(String name, Object value, Type type) {
+		Object oldvalue = variables.get(name);
+		if (oldvalue != null) {
+			if (!getTypeOf(name).canUnify(type) || !type.validate(value)) {
+				return false;
 			}
+
+			for (EnvironmentListener listener : listeners.keySet()) {
+				listener.droppedEnvironmentVariable(name, oldvalue, type);
+			}
+		} else {
+			types.put(name, type);
 		}
 
-		variables.put(name, node);
-		if (node != null) {
+		variables.put(name, value);
+		if (value != null) {
 			for (EnvironmentListener listener : listeners.keySet()) {
-				listener.addedEnvironmentVariable(name, node);
+				listener.addedEnvironmentVariable(name, value, type);
 			}
 		}
+		return true;
 
 	}
 
-	public final void addedEnvironmentVariable(String name, AstNode node) {
+	public final void addedEnvironmentVariable(String name, Object value,
+			Type type) {
 		if (variables.containsKey(name)) {
 			return;
 		}
 		for (EnvironmentListener listener : listeners.keySet()) {
-			listener.addedEnvironmentVariable(name, node);
+			listener.addedEnvironmentVariable(name, value, type);
 		}
 	}
 
@@ -90,12 +101,13 @@ public abstract class Environment implements EnvironmentListener,
 		}
 	}
 
-	public final void droppedEnvironmentVariable(String name, AstNode node) {
+	public final void droppedEnvironmentVariable(String name, Object value,
+			Type type) {
 		if (variables.containsKey(name)) {
 			return;
 		}
 		for (EnvironmentListener listener : listeners.keySet()) {
-			listener.addedEnvironmentVariable(name, node);
+			listener.addedEnvironmentVariable(name, value, type);
 		}
 	}
 
@@ -103,23 +115,32 @@ public abstract class Environment implements EnvironmentListener,
 		return parserkb;
 	}
 
-	public final AstNode getVariable(String name) {
-		AstNode node = variables.get(name);
-		if (node == null && parent != null) {
+	public final Type getTypeOf(String name) {
+		Type type = types.get(name);
+		if (type == null && parent != null) {
+			return parent.getTypeOf(name);
+		} else {
+			return type;
+		}
+	}
+
+	public final Object getVariable(String name) {
+		Object value = variables.get(name);
+		if (value == null && parent != null) {
 			return parent.getVariable(name);
 		} else {
-			return node;
+			return value;
 		}
 
 	}
 
-	public final Iterator<Entry<String, AstNode>> iterator() {
-		Iterator<Entry<String, AstNode>> thisit = variables.entrySet()
+	public final Iterator<Entry<String, Object>> iterator() {
+		Iterator<Entry<String, Object>> thisit = variables.entrySet()
 				.iterator();
 		if (parent == null) {
 			return thisit;
 		}
-		return new IteratorChain<Entry<String, AstNode>>(thisit, parent
+		return new IteratorChain<Entry<String, Object>>(thisit, parent
 				.iterator());
 	}
 
@@ -130,13 +151,15 @@ public abstract class Environment implements EnvironmentListener,
 		listeners.remove(listener);
 	}
 
-	public final boolean setVariable(String name, AstNode node) {
+	public final boolean setVariable(String name, Object value, Type type) {
 		if (mutable) {
-			add(name, node);
-			return true;
+			return add(name, value, type);
 		} else if (alwaysPropagate && parent != null) {
-			return parent.setVariable(name, node);
+			return parent.setVariable(name, value, type);
 		} else {
+			log
+					.debug("Rejecting set of " + name + "::" + type + " to "
+							+ value);
 			return false;
 		}
 	}

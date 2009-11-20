@@ -4,16 +4,15 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstLambda2;
+import ca.wlu.gisql.ast.AstLambdaParameter;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.ast.AstParameter;
-import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
@@ -28,6 +27,8 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 
 	private final Precedence nestinglevel;
 
+	private final AstNode node;
+
 	private final char symbol;
 
 	public ComputedInteractomeDescriptor(Precedence nestinglevel, char symbol,
@@ -38,11 +39,12 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 		this.alternateoperators = alternateoperators;
 		this.name = name;
 		this.function = function;
+		node = makeLogicFunction();
 	}
 
-	abstract protected AstNode construct(AstNode left, AstNode right);
+	abstract public AstNode construct(AstNode left, AstNode right);
 
-	public final AstNode construct(UserEnvironment environment,
+	public final AstNode construct(ExpressionRunner runner,
 			List<AstNode> params, Stack<ExpressionError> error,
 			ExpressionContext context) {
 		AstNode left = params.get(0);
@@ -55,12 +57,7 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 	}
 
 	public AstNode getFunction() {
-		AstParameter left = new AstParameter("__left");
-		AstParameter right = new AstParameter("__right");
-		left.getType().unify(Type.InteractomeType);
-		right.getType().unify(Type.InteractomeType);
-		return new AstLambda2(left, new AstLambda2(right,
-				construct(left, right)));
+		return node;
 	}
 
 	public String getFunctionName() {
@@ -97,6 +94,13 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 
 	public final Boolean isPrefixed() {
 		return false;
+	}
+
+	private AstNode makeLogicFunction() {
+		AstLambdaParameter left = new AstLambdaParameter("__left");
+		AstLambdaParameter right = new AstLambdaParameter("__right");
+		return new AstLambda2(left, new AstLambda2(right,
+				construct(left, right)));
 	}
 
 	public final void show(ShowablePrintWriter<ParserKnowledgebase> print) {

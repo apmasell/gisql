@@ -5,22 +5,24 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.vm.InstructionPack;
 
 /**
  * An {@link AstNode} that is a list of other {@link AstNode}. This corresponds
- * to a literal list in the syntax.
+ * to a literal list in the syntax. This can also be used in Java context since
+ * it implement the List interface.
  */
-public class AstList extends AstNode implements List<AstNode> {
+public class AstLiteralList extends AstNode implements List<AstNode> {
 
 	private final TypeVariable contents = new TypeVariable();
 
@@ -61,13 +63,15 @@ public class AstList extends AstNode implements List<AstNode> {
 		return list.equals(o);
 	}
 
-	public AstNode get(int index) {
-		return list.get(index);
+	@Override
+	protected void freeVariables(Set<String> variables) {
+		for (AstNode node : list) {
+			node.freeVariables(variables);
+		}
 	}
 
-	@Override
-	protected int getNeededParameterCount() {
-		return 0;
+	public AstNode get(int index) {
+		return list.get(index);
 	}
 
 	public Precedence getPrecedence() {
@@ -121,13 +125,8 @@ public class AstList extends AstNode implements List<AstNode> {
 	}
 
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
-		for (AstNode node : list) {
-			if (!node.render(program, 0, debrujin)) {
-				return false;
-			}
-		}
-		return program.instructions.add(new InstructionPack(list.size()));
+	public boolean renderSelf(Rendering program, int depth) {
+		return program.g$hO_CreateList(list);
 	}
 
 	@Override
@@ -140,7 +139,7 @@ public class AstList extends AstNode implements List<AstNode> {
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		for (int index = 0; index < list.size(); index++) {
 			list.set(index, list.get(index).resolve(runner, context,
 					environment));
@@ -174,8 +173,8 @@ public class AstList extends AstNode implements List<AstNode> {
 		return list.size();
 	}
 
-	public AstList subList(int start, int end) {
-		AstList sublist = new AstList();
+	public AstLiteralList subList(int start, int end) {
+		AstLiteralList sublist = new AstLiteralList();
 		sublist.list.addAll(list.subList(start, end));
 		return sublist;
 	}

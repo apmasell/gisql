@@ -6,11 +6,12 @@ import java.util.Map;
 import java.util.Set;
 
 import ca.wlu.gisql.ast.typeclasses.TypeClass;
+import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * The query language type of an unknown/generic type. A type variable may
- * belong to one or more {@link TypeClass}.
+ * belong to one or more {@link TypeClass}es.
  */
 public class TypeVariable extends Type {
 	private final TypeClass<?> originaltypeclass;
@@ -30,15 +31,7 @@ public class TypeVariable extends Type {
 		originaltypeclass = typeclass;
 	}
 
-	@Override
-	public boolean canUnify(Type othertype) {
-		return self == null && othertype instanceof Type
-				|| self.canUnify(othertype)
-				&& TypeClass.hasInstance(othertype, typeclasses);
-	}
-
-	@Override
-	public TypeVariable clone() {
+	TypeVariable duplicate() {
 		TypeVariable variable = new TypeVariable();
 		variable.typeclasses.addAll(typeclasses);
 		return variable;
@@ -51,7 +44,8 @@ public class TypeVariable extends Type {
 		} else if (replacement.containsKey(this)) {
 			return replacement.get(this);
 		} else {
-			return this;
+			throw new IllegalStateException(
+					"Failed to replace a type variable during refreshing.");
 		}
 	}
 
@@ -62,13 +56,33 @@ public class TypeVariable extends Type {
 
 	@Override
 	protected boolean occurs(Type needle) {
-		return this == needle;
+		return this == needle || self != null && self.occurs(needle);
+	}
+
+	@Override
+	public boolean render(Rendering rendering, int depth) {
+		if (self == null) {
+			String uglyname = "$" + hashCode();
+			if (rendering.hasReference(uglyname)) {
+				return rendering.lRhO(uglyname);
+			} else {
+				// TODO Correctly get type classes.
+				return rendering.pRg$hO_CreateObject(TypeVariable.class
+						.getConstructors()[0])
+						&& rendering.hR_CreateLocal(uglyname)
+						&& rendering.lRhO(uglyname);
+
+			}
+		} else {
+			return self.render(rendering, depth);
+		}
 	}
 
 	/**
 	 * Undoes the type unification of this variable. This is potentially very
 	 * dangerous. Use wisely.
 	 */
+	@Override
 	public void reset() {
 		self = null;
 		typeclasses.clear();

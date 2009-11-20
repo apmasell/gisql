@@ -5,12 +5,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import ca.wlu.gisql.environment.ParserEnvironment;
+import ca.wlu.gisql.ast.util.BuiltInResolver;
 
 /**
  * This annotation marks a class whose constructor should be made available as a
  * function in the query language. The function must be added to the
- * {@link ParserEnvironment}.
+ * {@link BuiltInResolver}.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

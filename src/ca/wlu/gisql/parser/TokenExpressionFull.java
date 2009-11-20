@@ -16,7 +16,7 @@ public class TokenExpressionFull extends Token {
 
 	@Override
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
-		AstNode result = parser.parseExpression(end);
+		AstNode result = parser.parseExpression(end, Precedence.expression());
 		if (result == null) {
 			return false;
 		}

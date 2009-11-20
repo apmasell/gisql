@@ -6,7 +6,6 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.AstLambda1;
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
@@ -14,6 +13,7 @@ import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
+import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
@@ -33,7 +33,7 @@ public class LambdaDescriptor implements Parseable {
 	private LambdaDescriptor() {
 	}
 
-	public AstNode construct(UserEnvironment environment, List<AstNode> params,
+	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
 		AstName name = (AstName) params.get(0);
 		AstNode expression = params.get(1);

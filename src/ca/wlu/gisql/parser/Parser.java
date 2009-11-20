@@ -7,9 +7,10 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.environment.UserEnvironment;
+import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunListener;
+import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.runner.LineContext;
 import ca.wlu.gisql.util.Precedence;
 
@@ -25,8 +26,6 @@ public class Parser {
 
 	private final LineContext context;
 
-	private final UserEnvironment environment;
-
 	final Stack<ExpressionError> error = new Stack<ExpressionError>();
 
 	final String input;
@@ -35,9 +34,11 @@ public class Parser {
 
 	int position = 0;
 
-	public Parser(UserEnvironment environment, LineContext context,
-			String input, ExpressionRunListener listener) {
-		this.environment = environment;
+	private final ExpressionRunner runner;
+
+	public Parser(ExpressionRunner runner, LineContext context, String input,
+			ExpressionRunListener listener) {
+		this.runner = runner;
 		this.context = context;
 		this.input = input;
 		this.listener = listener;
@@ -53,12 +54,12 @@ public class Parser {
 	public AstNode parse() {
 		error.clear();
 		position = 0;
-		AstNode result = parseExpression(null);
+		AstNode result = parseExpression(null, Precedence.statement());
 		if (result == null) {
 			if (error.size() == 0) {
 				listener.reportErrors(Collections
 						.singletonList(new ExpressionError(context,
-								"Unrecognized statement.", null)));
+								"Unrecognised statement.", null)));
 			} else {
 				listener.reportErrors(error);
 			}
@@ -85,8 +86,8 @@ public class Parser {
 		while (matched && position < input.length()) {
 			matched = false;
 			/* Consider all the parseables in this precedence level... */
-			for (Parseable operator : environment.getParserKb().getOperators(
-					level)) {
+			for (Parseable operator : runner.getEnvironment().getParserKb()
+					.getOperators(level)) {
 				/* Attempt to determine if it has a matching operator... */
 				int oldposition = position;
 				int errorposition = error.size();
@@ -151,9 +152,13 @@ public class Parser {
 	 *            The character that indicates a complete expression has been
 	 *            found (e.g., ')' when matching a bracketed subexpression). If
 	 *            null, the expression must be terminated with the end of input.
+	 * @param start
+	 *            The lowest precedence level allowed in the expression.
+	 *            Probably {@link Precedence#statement()} or
+	 *            {@link Precedence#expression()}.
 	 */
-	AstNode parseExpression(Character endofexpression) {
-		AstNode e = parseAutoExpression(Precedence.start());
+	AstNode parseExpression(Character endofexpression, Precedence start) {
+		AstNode e = parseAutoExpression(start);
 
 		if (e == null) {
 			return null;
@@ -180,7 +185,7 @@ public class Parser {
 
 	/**
 	 * Attempt to parse one operator by parsing its tokens, then calling
-	 * {@link Parseable#construct(UserEnvironment, List, Stack, ca.wlu.gisql.runner.ExpressionContext)}
+	 * {@link Parseable#construct(ExpressionRunner, List, Stack, ExpressionContext)}
 	 * .
 	 */
 	private AstNode processOperator(Parseable operator, AstNode left,
@@ -199,7 +204,7 @@ public class Parser {
 				}
 			}
 		}
-		return operator.construct(environment, params, error, context);
+		return operator.construct(runner, params, error, context);
 	}
 
 	void pushError(String message) {

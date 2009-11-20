@@ -1,17 +1,19 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
-import ca.wlu.gisql.vm.Instruction;
 
 /**
  * Phase 2 representation of a lambda expression where the parameter is
- * encapsulated as an {@link AstParameter}.
+ * encapsulated as an {@link AstLambdaParameter}.
  */
 public class AstLambda2 extends AstNode {
 
@@ -19,24 +21,21 @@ public class AstLambda2 extends AstNode {
 
 	private final Type type;
 
-	private final AstParameter variable;
+	private final AstLambdaParameter variable;
 
-	public AstLambda2(AstParameter variable, AstNode expression) {
+	public AstLambda2(AstLambdaParameter variable, AstNode expression) {
 		this.variable = variable;
 		this.expression = expression;
 		type = new ArrowType(variable.type, expression.getType());
 	}
 
-	/**
-	 * This node will consume a parameter, so we incremented the needed
-	 * parameter count. If our child node is also a lambda node, we should
-	 * recurse. Otherwise, the type checker has ensured that it does not require
-	 * any parameters, so recursion must stop.
-	 */
 	@Override
-	protected int getNeededParameterCount() {
-		return (expression instanceof AstLambda2 ? expression
-				.getNeededParameterCount() : 0) + 1;
+	protected void freeVariables(Set<String> variables) {
+		boolean cover = variables.contains(variable.name);
+		expression.freeVariables(variables);
+		if (!cover) {
+			variables.remove(variable.name);
+		}
 	}
 
 	public Precedence getPrecedence() {
@@ -53,27 +52,21 @@ public class AstLambda2 extends AstNode {
 	 * variable stack, run the inner code, then restores the variable stack.
 	 */
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
-		if (depth > 0) {
-			debrujin++;
-			variable.debrujin = debrujin;
-
-			return program.instructions.add(Instruction.PushVariable)
-					&& expression.render(program, depth - 1, debrujin)
-					&& program.instructions.add(Instruction.PopVariable);
-		} else {
-			return wrap(program, depth, debrujin);
-		}
+	public boolean renderSelf(Rendering program, int depth) {
+		return program.pPg() && program.hR_CreateLocal(variable.name)
+				&& expression.render(program, depth - 1)
+				&& program.pR(variable.name);
 	}
 
 	@Override
 	public void resetType() {
+		variable.resetType();
 		expression.resetType();
 	}
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		AstNode resultexpression = expression.resolve(runner, context,
 				environment);
 		if (resultexpression == null) {

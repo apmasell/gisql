@@ -6,22 +6,18 @@ import java.util.Map;
 
 import org.apache.commons.collections15.map.HashedMap;
 
-import ca.wlu.gisql.ast.AstLiteral;
-import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.environment.ParserEnvironment;
 import ca.wlu.gisql.interactome.Interactome;
 
 public class DatabaseEnvironment extends Environment {
 
 	public DatabaseEnvironment(DatabaseManager databaseManager) {
-		super(ParserEnvironment.self, false, false);
+		super(null, false, false);
 		Map<Integer, Interactome> speciesById = new HashedMap<Integer, Interactome>();
 		for (DbSpecies interactome : databaseManager.getSpecies()) {
-			AstNode node = new AstLiteral(Type.InteractomeType, interactome);
-			add(interactome.toString(), node);
+			add(interactome.toString(), interactome, Type.InteractomeType);
 			speciesById.put(interactome.getId(), interactome);
 		}
 		putArray("all", new ArrayList<Interactome>(speciesById.values()));
@@ -29,7 +25,7 @@ public class DatabaseEnvironment extends Environment {
 	}
 
 	void putArray(String name, List<Interactome> list) {
-		add(name, new AstLiteral(new ListType(Type.InteractomeType), list));
+		add(name, list, new ListType(Type.InteractomeType));
 	}
 
 }

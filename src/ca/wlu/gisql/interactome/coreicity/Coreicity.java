@@ -5,34 +5,30 @@ import java.util.Set;
 import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.annotation.GisqlType;
+import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
-import ca.wlu.gisql.vm.Machine;
-import ca.wlu.gisql.vm.Program;
 
 @GisqlConstructorFunction(name = "core", description = "Filter genes based on their coreicity")
 public class Coreicity implements Interactome {
 
-	private final Program comparison;
-	private final Machine machine;
+	private final GenericFunction comparison;
 	private final Interactome source;
 
-	public Coreicity(Machine machine, Interactome source,
-			@GisqlType(type = "number → boolean") Program comparison) {
+	public Coreicity(Interactome source,
+			@GisqlType(type = "number → boolean") GenericFunction comparison) {
 		this.source = source;
-		this.machine = machine;
 		this.comparison = comparison;
 	}
 
 	public double calculateMembership(Gene gene) {
 		double membership = source.calculateMembership(gene);
 		if (!Membership.isMissing(membership)
-				&& !(Boolean) comparison.run(machine, (long) gene
-						.getCoreicity())) {
+				&& !(Boolean) comparison.run((long) gene.getCoreicity())) {
 			membership = 0;
 		}
 		gene.setMembership(this, membership);

@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import ca.wlu.gisql.ast.Function;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.parser.Parseable;
@@ -13,7 +12,6 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class AbstractOutput extends ProcessableInteractome {
 	public static final Parseable descriptor = new OutputDescriptor();
-	public static final Function function = new OutputFunction();
 
 	protected static final Logger log = Logger.getLogger(OutputGraph.class);
 

@@ -3,9 +3,11 @@ package ca.wlu.gisql.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.logic.Complement;
 import ca.wlu.gisql.interactome.logic.ComputedInteractome;
@@ -16,9 +18,6 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ToStringComparator;
-import ca.wlu.gisql.vm.InstructionConstruct;
-import ca.wlu.gisql.vm.InstructionPack;
-import ca.wlu.gisql.vm.InstructionPush;
 
 /**
  * Represents any set operation on {@link Interactome}s. All set operations are
@@ -74,8 +73,8 @@ public class AstLogic extends AstNode {
 	 * an expression.
 	 */
 	private static void makeTermMatrixOf(AstNode node,
-			List<List<Integer>> productOfSums,
-			List<List<Integer>> productOfSumsNegated, List<AstNode> termini,
+			List<List<Long>> productOfSums,
+			List<List<Long>> productOfSumsNegated, List<AstNode> termini,
 			Operation parent) {
 		if (node instanceof AstLogic) {
 			((AstLogic) node).makeTermMatrix(productOfSums,
@@ -84,8 +83,8 @@ public class AstLogic extends AstNode {
 		} else {
 			prepareMatrix(productOfSums, productOfSumsNegated, parent, null);
 
-			List<Integer> term = productOfSums.get(productOfSums.size() - 1);
-			int index = termini.indexOf(node);
+			List<Long> term = productOfSums.get(productOfSums.size() - 1);
+			long index = termini.indexOf(node);
 			if (!term.contains(index)) {
 				term.add(index);
 			}
@@ -104,12 +103,12 @@ public class AstLogic extends AstNode {
 	 * Helper function to create new terms in the matrix when switching form one
 	 * type of term to another.
 	 */
-	private static void prepareMatrix(List<List<Integer>> productOfSums,
-			List<List<Integer>> productOfSumsNegated, Operation parent,
+	private static void prepareMatrix(List<List<Long>> productOfSums,
+			List<List<Long>> productOfSumsNegated, Operation parent,
 			Operation operation) {
 		if (parent == Operation.Conjunct && operation != Operation.Conjunct) {
-			productOfSums.add(new ArrayList<Integer>());
-			productOfSumsNegated.add(new ArrayList<Integer>());
+			productOfSums.add(new ArrayList<Long>());
+			productOfSumsNegated.add(new ArrayList<Long>());
 		}
 	}
 
@@ -130,6 +129,18 @@ public class AstLogic extends AstNode {
 		this.left = left;
 		this.right = right;
 		this.operation = operation;
+	}
+
+	private AstNode convertList(List<List<Long>> list) {
+		AstLiteralList outer = new AstLiteralList();
+		for (List<Long> sublist : list) {
+			AstLiteralList inner = new AstLiteralList();
+			for (Long value : sublist) {
+				inner.add(new AstLiteral(Type.NumberType, value));
+			}
+			outer.add(inner);
+		}
+		return outer;
 	}
 
 	/**
@@ -184,8 +195,12 @@ public class AstLogic extends AstNode {
 	}
 
 	@Override
-	protected int getNeededParameterCount() {
-		return 0;
+	protected void freeVariables(Set<String> variables) {
+		left.freeVariables(variables);
+		if (right != null) {
+			right.freeVariables(variables);
+		}
+
 	}
 
 	public Precedence getPrecedence() {
@@ -209,8 +224,8 @@ public class AstLogic extends AstNode {
 	 * Populate a matrix of terms as needed by {@link ComputedInteractome} from
 	 * an expression.
 	 */
-	private void makeTermMatrix(List<List<Integer>> productOfSums,
-			List<List<Integer>> productOfSumsNegated, List<AstNode> termini,
+	private void makeTermMatrix(List<List<Long>> productOfSums,
+			List<List<Long>> productOfSumsNegated, List<AstNode> termini,
 			Operation parent) {
 		prepareMatrix(productOfSums, productOfSumsNegated, parent, operation);
 		switch (operation) {
@@ -253,29 +268,30 @@ public class AstLogic extends AstNode {
 	}
 
 	/** Sorts two parallel lists. */
-	private void quicksort(List<List<Integer>> list1,
-			List<List<Integer>> list2, int left, int right) {
+	private void quicksort(List<List<Long>> productOfSums,
+			List<List<Long>> productOfSumsNegated, int left, int right) {
 		if (right > left) {
 			int pivotIndex = left;
-			String pivotValue1 = list1.get(pivotIndex).toString();
-			String pivotValue2 = list1.get(pivotIndex).toString();
-			swap(list1, list2, pivotIndex, right);
+			String pivotValue1 = productOfSums.get(pivotIndex).toString();
+			String pivotValue2 = productOfSums.get(pivotIndex).toString();
+			swap(productOfSums, productOfSumsNegated, pivotIndex, right);
 			int storeIndex = left;
 			for (int i = left; i < right; i++) {
-				String value1 = list1.get(i).toString();
-				String value2 = list2.get(i).toString();
+				String value1 = productOfSums.get(i).toString();
+				String value2 = productOfSumsNegated.get(i).toString();
 				int comparison = value1.compareTo(pivotValue1);
 				if (comparison == 0) {
 					comparison = value2.compareTo(pivotValue2);
 				}
 				if (comparison < 0) {
-					swap(list1, list2, i, storeIndex);
+					swap(productOfSums, productOfSumsNegated, i, storeIndex);
 					storeIndex++;
 				}
 			}
-			swap(list1, list2, storeIndex, right);
-			quicksort(list1, list2, left, storeIndex - 1);
-			quicksort(list1, list2, storeIndex + 1, right);
+			swap(productOfSums, productOfSumsNegated, storeIndex, right);
+			quicksort(productOfSums, productOfSumsNegated, left, storeIndex - 1);
+			quicksort(productOfSums, productOfSumsNegated, storeIndex + 1,
+					right);
 		}
 	}
 
@@ -302,14 +318,14 @@ public class AstLogic extends AstNode {
 	 * {@link ComputedInteractome} constructor.
 	 */
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
+	public boolean renderSelf(Rendering program, int depth) {
 		AstNode baseNormalForm = distributeDisjunctOf(removeNegation());
 		if (baseNormalForm instanceof AstLogic) {
 			AstLogic normalForm = (AstLogic) baseNormalForm;
 
-			List<List<Integer>> productOfSums = new ArrayList<List<Integer>>();
-			List<List<Integer>> productOfSumsNegated = new ArrayList<List<Integer>>();
-			List<AstNode> termini = new ArrayList<AstNode>();
+			List<List<Long>> productOfSums = new ArrayList<List<Long>>();
+			List<List<Long>> productOfSumsNegated = new ArrayList<List<Long>>();
+			AstLiteralList termini = new AstLiteralList();
 			normalForm.prepareInteractomes(termini);
 			Collections.sort(termini, ToStringComparator.instance);
 			normalForm.makeTermMatrix(productOfSums, productOfSumsNegated,
@@ -332,22 +348,13 @@ public class AstLogic extends AstNode {
 					.size() - 1);
 
 			try {
-				if (!(program.instructions.add(new InstructionPush(
-						productOfSumsNegated)) && program.instructions
-						.add(new InstructionPush(productOfSums)))) {
-					return false;
-				}
-				for (AstNode node : termini) {
-					if (!node.render(program, 0, debrujin)) {
-						return false;
-					}
-				}
-
-				return program.instructions.add(new InstructionPack(termini
-						.size()))
-						&& program.instructions.add(new InstructionConstruct(
-								ComputedInteractome.class.getConstructor(
-										List.class, List.class, List.class)));
+				return program.hP(termini)
+						&& program.hP(convertList(productOfSums))
+						&& program.hP(convertList(productOfSumsNegated))
+						&& program
+								.pRg$hO_CreateObject(ComputedInteractome.class
+										.getConstructor(List.class, List.class,
+												List.class));
 			} catch (SecurityException e) {
 				return false;
 			} catch (NoSuchMethodException e) {
@@ -355,7 +362,7 @@ public class AstLogic extends AstNode {
 			}
 
 		} else {
-			return baseNormalForm.render(program, 0, debrujin);
+			return baseNormalForm.render(program, depth);
 		}
 	}
 
@@ -369,7 +376,7 @@ public class AstLogic extends AstNode {
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		AstNode left = this.left.resolve(runner, context, environment);
 		AstNode right = this.right == null ? null : this.right.resolve(runner,
 				context, environment);
@@ -409,15 +416,15 @@ public class AstLogic extends AstNode {
 	 * Parallel list swap operation for {@link #quicksort(List, List, int, int)}
 	 * .
 	 */
-	private void swap(List<List<Integer>> list1, List<List<Integer>> list2,
-			int left, int right) {
-		List<Integer> value1 = list1.get(left);
-		list1.set(left, list1.get(right));
-		list1.set(right, value1);
+	private void swap(List<List<Long>> productOfSums,
+			List<List<Long>> productOfSumsNegated, int left, int right) {
+		List<Long> value1 = productOfSums.get(left);
+		productOfSums.set(left, productOfSums.get(right));
+		productOfSums.set(right, value1);
 
-		List<Integer> value2 = list2.get(left);
-		list2.set(left, list2.get(right));
-		list2.set(right, value2);
+		List<Long> value2 = productOfSumsNegated.get(left);
+		productOfSumsNegated.set(left, productOfSumsNegated.get(right));
+		productOfSumsNegated.set(right, value2);
 	}
 
 	/** Checks that the arguments are well-typed and of type Interactome. */

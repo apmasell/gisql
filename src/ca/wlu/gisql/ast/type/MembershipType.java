@@ -19,5 +19,4 @@ public class MembershipType extends Type {
 		}
 		return false;
 	}
-
 }

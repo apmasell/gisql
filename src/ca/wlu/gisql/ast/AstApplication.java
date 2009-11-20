@@ -1,17 +1,21 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Set;
+
 import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
-import ca.wlu.gisql.environment.Environment;
+import ca.wlu.gisql.ast.util.Function;
+import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
- * The application of a function to an operand. (i.e., the node representing (f
- * x))
+ * The application of a function to an operand. (i.e., the node representing
+ * <tt>(f x)</tt>)
  */
 public class AstApplication extends AstNode {
 
@@ -50,13 +54,30 @@ public class AstApplication extends AstNode {
 		this.operand = operand;
 	}
 
-	/**
-	 * This node is providing a parameter, so we decrement the number needed by
-	 * our the operator.
-	 */
+	public AstApplication(Function function, AstNode... arguments) {
+		if (arguments.length < 1) {
+			throw new IllegalArgumentException("Need 2 or more arguments.");
+		}
+
+		AstNode operator = new AstEnvironmentLoad(function);
+		AstNode operand = arguments[0];
+		for (int i = 1; i < arguments.length; i++) {
+			operator = new AstApplication(operator, operand);
+			operand = arguments[i];
+		}
+		this.operator = operator;
+		this.operand = operand;
+	}
+
 	@Override
-	protected int getNeededParameterCount() {
-		return operator.getNeededParameterCount() - 1;
+	protected void freeVariables(Set<String> variables) {
+		operand.freeVariables(variables);
+		operator.freeVariables(variables);
+	}
+
+	@Override
+	protected int getLeftDepth() {
+		return operator.getLeftDepth() - 1;
 	}
 
 	public Precedence getPrecedence() {
@@ -68,20 +89,9 @@ public class AstApplication extends AstNode {
 		return returntype;
 	}
 
-	/**
-	 * If there are an insufficient number of parameters, call
-	 * {@link #wrap(ProgramRoutine, int, int)} to create closures. If not,
-	 * render the operand, so that its value will be on the stack, then render
-	 * the operator.
-	 */
 	@Override
-	public boolean render(ProgramRoutine program, int depth, int debrujin) {
-		if (operator.getNeededParameterCount() - depth > 1) {
-			return wrap(program, depth, debrujin);
-		} else {
-			return operand.render(program, 0, debrujin)
-					&& operator.render(program, depth + 1, debrujin);
-		}
+	public boolean renderSelf(Rendering program, int depth) {
+		return program.hP(operand) && operator.render(program, depth + 1);
 	}
 
 	@Override
@@ -94,7 +104,7 @@ public class AstApplication extends AstNode {
 
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
-			Environment environment) {
+			ResolutionEnvironment environment) {
 		AstNode operator = this.operator.resolve(runner, context, environment);
 		if (operator == null) {
 			return null;

@@ -4,15 +4,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.ast.ProgramRoutine;
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
+import ca.wlu.gisql.ast.util.BuiltInResolver;
+import ca.wlu.gisql.ast.util.EnvironmentResolver;
+import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.parser.Parser;
@@ -20,6 +26,8 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /** Utility class to make executing query language programs simple. */
 public class ExpressionRunner {
+	private static final Logger log = Logger.getLogger(ExpressionRunner.class);
+
 	private final UserEnvironment environment;
 
 	private final List<ExpressionError> errors = new ArrayList<ExpressionError>();
@@ -61,6 +69,14 @@ public class ExpressionRunner {
 		print.print('"');
 		errors.add(new ExpressionError(context.getAstContext(node), print
 				.toString(), null));
+	}
+
+	public UserEnvironment getEnvironment() {
+		return environment;
+	}
+
+	public ExpressionRunListener getListener() {
+		return listener;
 	}
 
 	/**
@@ -112,13 +128,14 @@ public class ExpressionRunner {
 
 	@SuppressWarnings("unchecked")
 	private boolean run(String command, Type type, LineContext context) {
-		Parser parser = new Parser(environment, context, command, listener);
+		Parser parser = new Parser(this, context, command, listener);
 		AstNode result = parser.parse();
 		if (result == null) {
 			return false;
 		}
 
-		result = result.resolve(this, context, environment);
+		result = result.resolve(this, context, new BuiltInResolver(
+				new EnvironmentResolver(environment)));
 		if (result == null || !result.type(this, context)) {
 			listener.reportErrors(new ArrayList<ExpressionError>(errors));
 			errors.clear();
@@ -132,14 +149,30 @@ public class ExpressionRunner {
 			return false;
 		}
 
-		ProgramRoutine program = new ProgramRoutine(result.toString());
-		if (!result.render(program, 0, -1)) {
+		Class<? extends GenericFunction> program = result.render();
+		if (program == null) {
 			listener.reportErrors(new ArrayList<ExpressionError>(errors));
 			errors.clear();
 			return false;
 		}
 
-		Object value = program.run(listener, environment);
+		Object value = null;
+		try {
+			Constructor<? extends GenericFunction> ctor = (Constructor<? extends GenericFunction>) program
+					.getConstructors()[0];
+			GenericFunction function = ctor.newInstance(this);
+			value = function.run();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			log.error("Failed to access field.", e);
+		} catch (InstantiationException e) {
+			log.error("Failed to access field.", e);
+		} catch (IllegalAccessException e) {
+			log.error("Failed to access field.", e);
+		} catch (InvocationTargetException e) {
+			log.error("Failed to access field.", e);
+		}
 
 		if (value == null) {
 			listener.reportErrors(Collections
@@ -149,10 +182,9 @@ public class ExpressionRunner {
 
 		}
 
-		if (result.getType().canUnify(Type.InteractomeType)) {
+		if (result.getType().equals(Type.InteractomeType)) {
 			listener.processInteractome((Interactome) value);
-		} else if (result.getType()
-				.canUnify(new ListType(Type.InteractomeType))) {
+		} else if (result.getType().equals(new ListType(Type.InteractomeType))) {
 			if (((List) value).size() > 0) {
 				for (Object interactome : (List) value) {
 					listener.processInteractome((Interactome) interactome);
