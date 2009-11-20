@@ -53,9 +53,10 @@ public class DatabaseManager {
 			ClassNotFoundException {
 		Class.forName("org.postgresql.Driver");
 
-		log.info("Connecting to database.");
+		log.info("Connecting to " + properties.getProperty("url") + "...");
 		connection = DriverManager.getConnection(properties.getProperty("url"),
 				properties);
+		log.info("Connected.");
 	}
 
 	public Set<DbSpecies> getSpecies() {
