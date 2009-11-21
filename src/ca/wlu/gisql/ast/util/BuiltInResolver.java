@@ -3,6 +3,8 @@ package ca.wlu.gisql.ast.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -217,6 +219,10 @@ public class BuiltInResolver implements ResolutionEnvironment {
 
 	private static void addDefault(Class<?> clazz) {
 		add(defaultvalues, clazz);
+	}
+
+	public static Set<Entry<String, AstNode>> entries() {
+		return defaultvalues.entrySet();
 	}
 
 	public static AstNative get(String name) {

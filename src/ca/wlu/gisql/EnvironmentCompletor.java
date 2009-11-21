@@ -6,7 +6,9 @@ import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import jline.Completor;
+import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.BuiltInResolver;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.EnvironmentListener;
 import ca.wlu.gisql.environment.UserEnvironment;
@@ -18,6 +20,10 @@ public class EnvironmentCompletor implements Completor, EnvironmentListener {
 	public EnvironmentCompletor(UserEnvironment environment) {
 		environment.addListener(this);
 		for (Entry<String, Object> entry : environment) {
+			candidates.add(entry.getKey());
+		}
+
+		for (Entry<String, AstNode> entry : BuiltInResolver.entries()) {
 			candidates.add(entry.getKey());
 		}
 	}
