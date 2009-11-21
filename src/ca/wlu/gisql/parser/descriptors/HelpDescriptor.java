@@ -27,6 +27,23 @@ public class HelpDescriptor implements Parseable {
 
 	private static final Token[] tokens = new Token[] { TokenName.self };
 
+	public static void helpFor(StringBuilder sb, String name, Type type,
+			Object value) {
+		sb.append(name).append(" :: ").append(type);
+		if (value == null) {
+			return;
+		}
+		String representation;
+		if (value instanceof GenericFunction) {
+			representation = ((GenericFunction) value).getDescription();
+		} else if (value instanceof AstNative) {
+			representation = ((AstNative) value).getDescription();
+		} else {
+			representation = value.toString();
+		}
+		sb.append("\n\t").append(representation);
+	}
+
 	private HelpDescriptor() {
 	}
 
@@ -34,26 +51,23 @@ public class HelpDescriptor implements Parseable {
 			Stack<ExpressionError> error, ExpressionContext context) {
 
 		String name = ((AstName) params.get(0)).getName();
-		Object variable = runner.getEnvironment().getVariable(name);
-		Type type = runner.getEnvironment().getTypeOf(name);
-		AstNative node = BuiltInResolver.get(name);
+		StringBuilder result = new StringBuilder();
 
-		String result;
-		if (node != null) {
-			result = name + " :: " + node.getType() + "\n\t"
-					+ node.getDescription();
-		} else if (variable == null && type != null) {
-			result = "undefined :: " + type;
-		} else if (variable instanceof GenericFunction) {
-			GenericFunction function = (GenericFunction) variable;
-			result = function + " :: " + type + "\n\t"
-					+ function.getDescription();
-		} else if (type == null && node == null) {
-			result = "unknown name";
+		if (BuiltInResolver.get(name) != null) {
+			AstNative node = BuiltInResolver.get(name);
+			helpFor(result, name, node.getType(), node);
+
 		} else {
-			result = variable + " :: " + type;
+			Type type = runner.getEnvironment().getTypeOf(name);
+
+			if (type == null) {
+				result.append("unknown name");
+			} else {
+				helpFor(result, name, type, runner.getEnvironment()
+						.getVariable(name));
+			}
 		}
-		return new AstLiteral(Type.StringType, result);
+		return new AstLiteral(Type.StringType, result.toString());
 	}
 
 	public Precedence getPrecedence() {

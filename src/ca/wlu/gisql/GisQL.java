@@ -18,6 +18,7 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
+import ca.wlu.gisql.ast.util.BuiltInResolver;
 import ca.wlu.gisql.db.DatabaseEnvironment;
 import ca.wlu.gisql.db.DatabaseManager;
 import ca.wlu.gisql.environment.UserEnvironment;
@@ -163,6 +164,7 @@ public class GisQL {
 					break;
 				} else if (line.equalsIgnoreCase("help")) {
 					System.out.println(environment.getParserKb().getHelp());
+					System.out.println(BuiltInResolver.getHelp());
 				} else if (line.trim().length() > 0) {
 					runner.run(line, null);
 				}

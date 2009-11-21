@@ -50,7 +50,7 @@ public class FixedPointDescriptor implements Parseable {
 	}
 
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.println("Anonymous function: 'variable expression");
+		print.println("Recursive function: $self expression");
 	}
 
 	public Token[] tasks() {

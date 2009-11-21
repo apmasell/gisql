@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -68,6 +69,7 @@ import ca.wlu.gisql.interactome.output.OutputFunction;
 import ca.wlu.gisql.interactome.patch.PatchFunction;
 import ca.wlu.gisql.interactome.proximity.Proximity;
 import ca.wlu.gisql.interactome.snap.Snap;
+import ca.wlu.gisql.parser.descriptors.HelpDescriptor;
 import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
 
 /**
@@ -77,7 +79,9 @@ import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
  */
 public class BuiltInResolver implements ResolutionEnvironment {
 
-	private static final java.util.Map<String, AstNode> defaultvalues = new HashMap<String, AstNode>();
+	private static final java.util.Map<String, AstNode> defaultvalues = new TreeMap<String, AstNode>();
+
+	private static final String help;
 
 	private static final Logger log = Logger.getLogger(Rendering.class);
 
@@ -103,6 +107,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		add(defaultvalues, Type.FormatType, FileFormat.class);
 
 		AstLambdaParameter notparam = new AstLambdaParameter("__not");
+		notparam.getType().unify(Type.InteractomeType);
 		defaultvalues.put("not", new AstLambda2(notparam, AstLogic
 				.makeNegation(notparam)));
 
@@ -152,6 +157,15 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(Snap.class);
 		addDefault(Venn.class);
 		addDefault(Zip.class);
+
+		StringBuilder sb = new StringBuilder();
+		for (Entry<String, AstNode> entry : defaultvalues.entrySet()) {
+			HelpDescriptor.helpFor(sb, entry.getKey(), entry.getValue()
+					.getType(), entry.getValue());
+			sb.append("\n");
+
+		}
+		help = sb.toString();
 	}
 
 	/**
@@ -232,6 +246,10 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		} else {
 			return null;
 		}
+	}
+
+	public static String getHelp() {
+		return help;
 	}
 
 	private final ResolutionEnvironment parent;
