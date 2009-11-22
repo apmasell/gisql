@@ -124,7 +124,7 @@ public class ArrowType extends Type {
 	@Override
 	public boolean validate(Object value) {
 		return value instanceof GenericFunction
-				&& ((GenericFunction) value).getType().validate(value);
+				&& ((GenericFunction) value).getType().canUnify(this);
 	}
 
 }

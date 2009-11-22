@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.GenericFunction;
@@ -28,7 +29,7 @@ public class AstFixedPointParameter extends AstNode {
 
 	final String name;
 
-	final TypeVariable type = new TypeVariable();
+	final Type type = new ArrowType(new TypeVariable(), new TypeVariable());
 
 	public AstFixedPointParameter(String name) {
 		this.name = name;
