@@ -250,7 +250,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		defaultvalues.put(function.toString(), function);
 	}
 
-	private static void addDefault(Class<?> clazz) {
+	public static void addDefault(Class<?> clazz) {
 		add(defaultvalues, clazz);
 	}
 
