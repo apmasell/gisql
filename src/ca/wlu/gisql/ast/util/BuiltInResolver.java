@@ -71,6 +71,7 @@ import ca.wlu.gisql.interactome.coreicity.Coreicity;
 import ca.wlu.gisql.interactome.coreicity.DeltaCoreicity;
 import ca.wlu.gisql.interactome.coreicity.JaccardCoreicity;
 import ca.wlu.gisql.interactome.cut.Cut;
+import ca.wlu.gisql.interactome.defuzzify.Defuzzify;
 import ca.wlu.gisql.interactome.orphans.Orphans;
 import ca.wlu.gisql.interactome.output.FileFormat;
 import ca.wlu.gisql.interactome.output.OutputFunction;
@@ -130,8 +131,8 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(Coreicity.class);
 		addDefault(Cut.class);
 		addDefault(DefinedFunction.class);
+		addDefault(Defuzzify.class);
 		addDefault(DeltaCoreicity.class);
-		addDefault(Cut.class);
 		addDefault(EchoFunction.class);
 		addDefault(Equal.class);
 		addDefault(Flatten.class);
