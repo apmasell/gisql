@@ -81,14 +81,12 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 		if (parameters > 0 || this instanceof AstFixedPoint2) {
 			String command = toString();
 			Rendering subroutine = new Rendering(command, getType(), parameters);
-
-			if (subroutine.gF$_lVhF$_CopyVariablesFromParent(program, this
-					.freeVariables())
-					&& renderSelf(subroutine, depth + parameters)) {
-				return program.hO_CreateSubroutine(subroutine);
-			} else {
-				return false;
-			}
+			Set<String> freevars = this.freeVariables();
+			return subroutine.gF$_CreateFields(freevars)
+					&& renderSelf(subroutine, depth + parameters)
+					&& program.hO_CreateSubroutine(subroutine)
+					&& subroutine.gF$_lVhF$_CopyVariablesFromParent(program,
+							freevars);
 		} else {
 			return renderSelf(program, depth);
 		}

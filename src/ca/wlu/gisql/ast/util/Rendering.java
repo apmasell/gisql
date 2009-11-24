@@ -109,7 +109,7 @@ public class Rendering implements Opcodes {
 
 		public ExternalVariable(String name) {
 			this.name = name;
-			field = writer.visitField(ACC_PUBLIC + ACC_FINAL, name, Type
+			field = writer.visitField(ACC_PUBLIC, name, Type
 					.getDescriptor(Object.class), null, null);
 			field.visitEnd();
 		}
@@ -126,6 +126,7 @@ public class Rendering implements Opcodes {
 
 		@Override
 		public boolean load() {
+			method.visitVarInsn(ALOAD, 0);
 			method.visitFieldInsn(GETFIELD, Rendering.this.name, name, Type
 					.getDescriptor(Object.class));
 			return true;
@@ -133,6 +134,9 @@ public class Rendering implements Opcodes {
 
 		@Override
 		public boolean store(Rendering source) {
+			source.method.visitInsn(SWAP);
+			source.method.visitInsn(DUP_X1);
+			source.method.visitInsn(SWAP);
 			source.method.visitFieldInsn(PUTFIELD, Rendering.this.name, name,
 					Type.getDescriptor(Object.class));
 			return true;
@@ -419,9 +423,6 @@ public class Rendering implements Opcodes {
 
 	/** Finish code generation and load the resulting class. */
 	public Class<? extends GenericFunction> generate() {
-		while (!references.isEmpty()) {
-			references.pop().finish();
-		}
 
 		method.visitInsn(ARETURN);
 		method.visitMaxs(0, 0);
@@ -441,6 +442,23 @@ public class Rendering implements Opcodes {
 
 	}
 
+	private Variable getReferenceByName(String name) {
+		for (int index = references.size() - 1; index >= 0; index--) {
+			if (references.get(index).getName().equals(name)) {
+				return references.get(index);
+			}
+		}
+		return null;
+	}
+
+	public boolean gF$_CreateFields(Set<String> variablenames) {
+		for (String variablename : variablenames) {
+			Variable variable = new ExternalVariable(variablename);
+			references.push(variable);
+		}
+		return true;
+	}
+
 	/**
 	 * For the the free variables provided, copy them from the current
 	 * continuation into a newly created continuation.
@@ -455,9 +473,8 @@ public class Rendering implements Opcodes {
 	public boolean gF$_lVhF$_CopyVariablesFromParent(Rendering source,
 			Set<String> variablenames) {
 		for (String variablename : variablenames) {
-			Variable variable = new ExternalVariable(variablename);
-			references.push(variable);
-			if (!source.lRhO(variablename) && variable.store(source)) {
+			if (!(source.lRhO(variablename) && getReferenceByName(variablename)
+					.store(source))) {
 				return false;
 			}
 		}
@@ -594,12 +611,8 @@ public class Rendering implements Opcodes {
 
 	/** Load the value of a variable on to the operand stack. */
 	public boolean lRhO(String name) {
-		for (int index = references.size() - 1; index >= 0; index--) {
-			if (references.get(index).getName().equals(name)) {
-				return references.get(index).load();
-			}
-		}
-		return false;
+		Variable reference = getReferenceByName(name);
+		return reference != null && reference.load();
 	}
 
 	/** Label the current point in the code for jumping purposes. */

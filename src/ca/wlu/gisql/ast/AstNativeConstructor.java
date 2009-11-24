@@ -56,8 +56,7 @@ public final class AstNativeConstructor extends AstNative {
 
 	@Override
 	public final boolean renderSelf(Rendering program, int depth) {
-		return program.pPg(type.getArrowDepth())
-				&& program.pRg$hO_CreateObject(constructor);
+		return program.pRg$hO_CreateObject(constructor);
 	}
 
 }
