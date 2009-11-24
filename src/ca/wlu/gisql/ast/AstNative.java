@@ -22,20 +22,24 @@ public abstract class AstNative extends AstNode {
 
 	protected AstNative(String name, String description, Type... types) {
 		super();
-		this.description = description;
-		if (types.length < 2 && types[0].getArrowDepth() == 0) {
-			throw new IllegalArgumentException("Need at least two types.");
-		}
-		for (Type type : types) {
-			if (type == null) {
-				throw new IllegalArgumentException("Type cannot be null.");
-			}
-		}
 		this.name = name;
-		if (types.length > 2) {
-			type = new ArrowType(types);
-		} else {
+		this.description = description;
+		if (types.length == 1) {
+			if (types[0].getArrowDepth() == 0) {
+				throw new IllegalArgumentException(
+						"Needs to be a function type.");
+			}
 			type = types[0];
+		} else {
+			if (types.length < 2) {
+				throw new IllegalArgumentException("Need at least two types.");
+			}
+			for (Type type : types) {
+				if (type == null) {
+					throw new IllegalArgumentException("Type cannot be null.");
+				}
+			}
+			type = new ArrowType(types);
 		}
 	}
 
