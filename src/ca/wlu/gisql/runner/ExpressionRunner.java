@@ -182,9 +182,10 @@ public class ExpressionRunner {
 
 		}
 
-		if (result.getType().equals(Type.InteractomeType)) {
+		if (value instanceof Interactome) {
 			listener.processInteractome((Interactome) value);
-		} else if (result.getType().equals(new ListType(Type.InteractomeType))) {
+		} else if (value instanceof List && ((List) value).size() > 0
+				&& ((List) value).get(0) instanceof Interactome) {
 			if (((List) value).size() > 0) {
 				for (Object interactome : (List) value) {
 					listener.processInteractome((Interactome) interactome);
