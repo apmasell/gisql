@@ -266,7 +266,7 @@ public class Rendering implements Opcodes {
 
 	private static final ClassCreator creator = new ClassCreator();
 
-	private static final String FieldRunner = "runner";
+	private static final String FieldRunner = "$runner";
 
 	private static final Logger log = Logger.getLogger(Rendering.class);
 

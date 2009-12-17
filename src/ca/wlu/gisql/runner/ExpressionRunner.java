@@ -13,7 +13,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.BuiltInResolver;
