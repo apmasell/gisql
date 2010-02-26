@@ -7,16 +7,18 @@ import ca.wlu.gisql.util.Precedence;
 
 /** Parser an expression level starting at the root precedence level. */
 public class TokenExpressionFull extends Token {
-	private final char end;
+	private final Character end;
 
-	public TokenExpressionFull(char end) {
+	public TokenExpressionFull(Character end) {
 		super();
 		this.end = end;
 	}
 
 	@Override
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
-		AstNode result = parser.parseExpression(end, Precedence.expression());
+		AstNode result = end == null ? parser.parseAutoExpression(Precedence
+				.expression()) : parser.parseExpression(end, Precedence
+				.expression());
 		if (result == null) {
 			return false;
 		}
