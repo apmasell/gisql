@@ -50,7 +50,7 @@ public interface Parseable extends
 
 	/**
 	 * Determines the position of this operator relative to other elements. If
-	 * false, an operator begins an expression (e.g., !x). If true, an operator
+	 * true, an operator begins an expression (e.g., !x). If false, an operator
 	 * is added on to an existing expression (e.g., a + b). If null, the
 	 * operator begins an expression, but there is no set of characters that
 	 * defines it. This last option is only used by
