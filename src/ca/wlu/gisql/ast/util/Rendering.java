@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.objectweb.asm.ClassWriter;
@@ -421,6 +422,55 @@ public class Rendering implements Opcodes {
 		return true;
 	}
 
+	/**
+	 * Given a map of names and renderable items, generate code to create a
+	 * record and push it onto the operand stack. The map can be initially
+	 * filled with the contents of another map.
+	 * 
+	 * @param clazz
+	 *            The class to be instantiated.
+	 * @param source
+	 *            A run-time map containing the initial contents for the new map
+	 *            or null.
+	 * @param map
+	 *            A map containing other key value pairs to be added at run
+	 *            time.
+	 */
+	public boolean g$hO_CreateMap(Class<? extends Map<String, ?>> clazz,
+			Renderable source, Map<String, ? extends Renderable> map) {
+		try {
+			pRg$hO_CreateObject(clazz.getConstructor());
+		} catch (SecurityException e) {
+			return false;
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
+
+		if (source != null) {
+			method.visitInsn(DUP);
+			if (!source.render(this, 0)) {
+				return false;
+			}
+			method.visitTypeInsn(CHECKCAST, Type.getInternalName(Map.class));
+			method
+					.visitMethodInsn(INVOKEINTERFACE, Type
+							.getInternalName(Map.class), "putAll",
+							"(Ljava/util/Map;)V");
+		}
+
+		for (Entry<String, ? extends Renderable> entry : map.entrySet()) {
+			method.visitInsn(DUP);
+			method.visitLdcInsn(entry.getKey());
+			if (!entry.getValue().render(this, 0)) {
+				return false;
+			}
+			method.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put",
+					"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+			method.visitInsn(POP);
+		}
+		return true;
+	}
+
 	/** Finish code generation and load the resulting class. */
 	public Class<? extends GenericFunction> generate() {
 
@@ -428,13 +478,13 @@ public class Rendering implements Opcodes {
 		method.visitMaxs(0, 0);
 		method.visitEnd();
 
+		// TODO Remove this block
 		try {
 			FileOutputStream fos;
 			fos = new FileOutputStream("/tmp/" + name + ".class");
 			fos.write(writer.toByteArray());
 			fos.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -606,6 +656,12 @@ public class Rendering implements Opcodes {
 	public boolean lNhO() {
 		method.visitVarInsn(ALOAD, 0);
 		method.visitFieldInsn(GETFIELD, name, FieldRunner, TypeRunner);
+		return true;
+	}
+
+	/** Duplicate the top of the operand stack. */
+	public boolean lOhO() {
+		method.visitInsn(DUP);
 		return true;
 	}
 
