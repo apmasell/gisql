@@ -42,7 +42,7 @@ public class JoinDescriptor implements Parseable {
 
 	@Override
 	public boolean isMatchingOperator(char c) {
-		return c == ';';
+		return c == '+';
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class JoinDescriptor implements Parseable {
 
 	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.println("Join two lists: list1; list2");
+		print.println("Join two lists: list1 + list2");
 	}
 
 	@Override
