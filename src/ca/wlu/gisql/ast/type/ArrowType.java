@@ -80,8 +80,8 @@ public class ArrowType extends Type {
 
 	@Override
 	public boolean render(Rendering rendering, int depth) {
-		return rendering.hP(operand)
-				&& rendering.hP(result)
+		return rendering.hP(result)
+				&& rendering.hP(operand)
 				&& rendering.pRg$hO_CreateObject(ArrowType.class
 						.getConstructors()[1]);
 	}
