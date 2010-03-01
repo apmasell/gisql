@@ -1,16 +1,20 @@
 package ca.wlu.gisql.ast.typeclasses;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.Renderable;
+import ca.wlu.gisql.ast.util.Rendering;
 
 /**
  * A <a href="http://en.wikipedia.org/wiki/Type_class">type class</a> is a group
  * of types that can all be used in certain situations. They are called traits
  * in Scala and concepts in C++0x. Each must be backed by a Java interface.
  */
-public class TypeClass<T> {
+public class TypeClass<T> implements Renderable {
 
 	@SuppressWarnings("unchecked")
 	public static final TypeClass<Comparable> Comparable = new TypeClass<Comparable>(
@@ -73,6 +77,26 @@ public class TypeClass<T> {
 		for (Type t : allowed) {
 			if (t.canUnify(type)) {
 				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean render(Rendering rendering, int depth) {
+		for (Field field : TypeClass.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers())
+					&& TypeClass.class.isAssignableFrom(field.getType())) {
+				try {
+
+					if (field.get(null) == this) {
+						return rendering.lFhO(field);
+					}
+				} catch (IllegalArgumentException e) {
+					return false;
+				} catch (IllegalAccessException e) {
+					return false;
+				}
 			}
 		}
 		return false;

@@ -14,7 +14,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * belong to one or more {@link TypeClass}es.
  */
 public class TypeVariable extends Type {
-	private final TypeClass<?> originaltypeclass;
+	private final Set<TypeClass<?>> originaltypeclass = new HashSet<TypeClass<?>>();
 
 	private Type self = null;
 
@@ -22,13 +22,18 @@ public class TypeVariable extends Type {
 
 	public TypeVariable() {
 		super();
-		originaltypeclass = null;
 	}
 
 	public TypeVariable(TypeClass<?> typeclass) {
 		super();
 		typeclasses.add(typeclass);
-		originaltypeclass = typeclass;
+		originaltypeclass.add(typeclass);
+	}
+
+	@Deprecated
+	public void addTypeClass(TypeClass<?> typeclass) {
+		originaltypeclass.add(typeclass);
+		typeclasses.add(typeclass);
 	}
 
 	TypeVariable duplicate() {
@@ -62,15 +67,32 @@ public class TypeVariable extends Type {
 	@Override
 	public boolean render(Rendering rendering, int depth) {
 		if (self == null) {
-			String uglyname = "$" + hashCode();
+			String uglyname = "$" + Integer.toHexString(hashCode());
 			if (rendering.hasReference(uglyname)) {
 				return rendering.lRhO(uglyname);
 			} else {
-				// TODO Correctly get type classes.
-				return rendering.pRg$hO_CreateObject(TypeVariable.class
-						.getConstructors()[0])
-						&& rendering.hR_CreateLocal(uglyname)
-						&& rendering.lRhO(uglyname);
+				if (!(rendering.pRg$hO_CreateObject(TypeVariable.class
+						.getConstructors()[0]) && rendering
+						.hR_CreateLocal(uglyname))) {
+					return false;
+				}
+				try {
+
+					for (TypeClass<?> typeclass : typeclasses) {
+						if (!(rendering.lRhO(uglyname)
+								&& typeclass.render(rendering, depth) && rendering
+								.g_InvokeMethod(TypeVariable.class.getMethod(
+										"addTypeClass", TypeClass.class)))) {
+							return false;
+						}
+					}
+				} catch (SecurityException e) {
+					return false;
+				} catch (NoSuchMethodException e) {
+					return false;
+				}
+
+				return rendering.lRhO(uglyname);
 
 			}
 		} else {
@@ -86,10 +108,7 @@ public class TypeVariable extends Type {
 	public void reset() {
 		self = null;
 		typeclasses.clear();
-		if (originaltypeclass != null) {
-			typeclasses.add(originaltypeclass);
-		}
-
+		typeclasses.addAll(originaltypeclass);
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
@@ -100,21 +119,12 @@ public class TypeVariable extends Type {
 				print.getContext().add(this);
 			}
 			if (!typeclasses.isEmpty()) {
-				boolean first = true;
 				for (TypeClass<?> typeclass : typeclasses) {
-					if (first) {
-						first = false;
-					} else {
-						print.print('+');
-					}
 					print.print(typeclass);
+					print.print(' ');
 				}
-				print.print('<');
 			}
 			print.print((char) ('α' + index));
-			if (!typeclasses.isEmpty()) {
-				print.print('>');
-			}
 		} else {
 			print.print(self);
 		}
