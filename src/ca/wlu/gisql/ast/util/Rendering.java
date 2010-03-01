@@ -365,6 +365,7 @@ public class Rendering implements Opcodes {
 				+ TypeType, null, null);
 		gettype.visitCode();
 		method = gettype;
+		// FIXME handle rendering failure
 		type.render(this, 0);
 		gettype.visitInsn(ARETURN);
 		gettype.visitEnd();
@@ -820,10 +821,12 @@ public class Rendering implements Opcodes {
 			int parametercount, String descriptor) {
 		method.visitTypeInsn(NEW, classname);
 		method.visitInsn(DUP);
-		if (needsrunner) {
-			lNhO();
+		if (needsrunner && !lNhO()) {
+			return false;
 		}
-		pPg(parametercount);
+		if (!pPg(parametercount)) {
+			return false;
+		}
 		method.visitMethodInsn(INVOKESPECIAL, classname, "<init>", descriptor);
 		return true;
 	}
