@@ -1,5 +1,6 @@
 package ca.wlu.gisql.ast.util;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -95,8 +96,27 @@ public class Rendering implements Opcodes {
 		@SuppressWarnings("unchecked")
 		Class<? extends GenericFunction> load(String name, ClassWriter writer) {
 			byte[] bytecode = writer.toByteArray();
-			return (Class<? extends GenericFunction>) defineClass(name,
-					bytecode, 0, bytecode.length);
+			try {
+				return (Class<? extends GenericFunction>) defineClass(name,
+						bytecode, 0, bytecode.length);
+			} catch (ClassFormatError e) {
+				String file = System.getProperty("java.io.tmpdir")
+						+ File.separator + name + ".class";
+				log.error(
+						"Failed to generate valid byte code. Saving bad byte code to "
+								+ file + " for analysis.", e);
+
+				try {
+					FileOutputStream fos;
+					fos = new FileOutputStream(file);
+					fos.write(writer.toByteArray());
+					fos.close();
+				} catch (IOException x) {
+					log.error("Failed to save class.", x);
+				}
+
+				return null;
+			}
 		}
 	}
 
@@ -365,8 +385,10 @@ public class Rendering implements Opcodes {
 				+ TypeType, null, null);
 		gettype.visitCode();
 		method = gettype;
-		// FIXME handle rendering failure
-		type.render(this, 0);
+		if (!type.render(this, 0)) {
+			throw new IllegalStateException("Unable to render type " + type
+					+ ".");
+		}
 		gettype.visitInsn(ARETURN);
 		gettype.visitEnd();
 		gettype.visitMaxs(0, 0);
@@ -478,16 +500,6 @@ public class Rendering implements Opcodes {
 		method.visitInsn(ARETURN);
 		method.visitMaxs(0, 0);
 		method.visitEnd();
-
-		// TODO Remove this block
-		try {
-			FileOutputStream fos;
-			fos = new FileOutputStream("/tmp/" + name + ".class");
-			fos.write(writer.toByteArray());
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 		return creator.load(name, writer);
 
