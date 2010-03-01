@@ -23,6 +23,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class RecordType extends Type implements Map<String, Type> {
 
 	private Map<String, Type> fields = new TreeMap<String, Type>();
+
 	private Set<RecordType> siblings = new HashSet<RecordType>();
 
 	private boolean want;
@@ -98,6 +99,18 @@ public class RecordType extends Type implements Map<String, Type> {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		} else if (obj instanceof RecordType) {
+			RecordType that = (RecordType) obj;
+			return that.want == want && that.fields.equals(fields);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
 	protected Type freshen(Map<Type, Type> replacement) {
 		Map<String, Type> newfields = new TreeMap<String, Type>();
 		for (Map.Entry<String, Type> entry : fields.entrySet()) {
@@ -109,6 +122,11 @@ public class RecordType extends Type implements Map<String, Type> {
 
 	public Type get(Object key) {
 		return fields.get(key);
+	}
+
+	@Override
+	public int hashCode() {
+		return fields.hashCode() * (want ? 55 : 77);
 	}
 
 	public boolean isEmpty() {
