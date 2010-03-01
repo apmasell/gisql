@@ -105,7 +105,6 @@ public class ThreadedExpressionRunner extends ExpressionRunner {
 				return true;
 			} catch (InterruptedException e) {
 				log.error("Could not send run(file) command.", e);
-				e.printStackTrace();
 				return false;
 			}
 		}
@@ -124,7 +123,6 @@ public class ThreadedExpressionRunner extends ExpressionRunner {
 				return true;
 			} catch (InterruptedException e) {
 				log.error("Could not send run(string) command.", e);
-				e.printStackTrace();
 				return false;
 			}
 		}

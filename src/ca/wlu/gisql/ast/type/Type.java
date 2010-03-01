@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import ca.wlu.gisql.ast.util.Renderable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.graph.Gene;
@@ -31,6 +33,8 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 
 	public static final NativeType InteractomeType = new NativeType(
 			"interactome", Interactome.class);
+
+	private static final Logger log = Logger.getLogger(Type.class);
 
 	public static final Type MembershipType = new MembershipType();
 
@@ -57,10 +61,10 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 					try {
 						matchtype = (NativeType) field.get(null);
 					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
+						log.error("Failed to get native type field.", e);
 						return null;
 					} catch (IllegalAccessException e) {
-						e.printStackTrace();
+						log.error("Failed to get native type field.", e);
 						return null;
 					}
 					if (matchtype.handlesNativeType(clazz)) {
@@ -143,9 +147,11 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 						return true;
 					}
 				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
+					log.error("Failed to get type field.", e);
+
 				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+					log.error("Failed to get type field.", e);
+
 				}
 			}
 		}

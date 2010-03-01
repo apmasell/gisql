@@ -162,7 +162,7 @@ public class ExpressionRunner {
 			GenericFunction function = ctor.newInstance(this);
 			value = function.run();
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			log.error("Failed to access field.", e);
 		} catch (SecurityException e) {
 			log.error("Failed to access field.", e);
 		} catch (InstantiationException e) {

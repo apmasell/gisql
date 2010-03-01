@@ -3,6 +3,8 @@ package ca.wlu.gisql.ast.type;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import org.apache.log4j.Logger;
+
 import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.ast.AstNativeConstructor;
 
@@ -14,6 +16,8 @@ import ca.wlu.gisql.ast.AstNativeConstructor;
  * automatically.
  */
 public class TypeParser {
+	private static final Logger log = Logger.getLogger(TypeParser.class);
+
 	private final String expression;
 
 	private int position = 0;
@@ -56,10 +60,10 @@ public class TypeParser {
 						try {
 							matchtype = (Type) field.get(null);
 						} catch (IllegalArgumentException e) {
-							e.printStackTrace();
+							log.error("Failed to access field.", e);
 							return null;
 						} catch (IllegalAccessException e) {
-							e.printStackTrace();
+							log.error("Failed to access field.", e);
 							return null;
 						}
 						if (matchtype.toString().equals(typename)) {

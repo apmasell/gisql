@@ -369,7 +369,7 @@ public class Rendering implements Opcodes {
 		type.render(this, 0);
 		gettype.visitInsn(ARETURN);
 		gettype.visitEnd();
-		gettype.visitMaxs(2, 2);
+		gettype.visitMaxs(0, 0);
 
 		index = 1;
 		references.clear();
