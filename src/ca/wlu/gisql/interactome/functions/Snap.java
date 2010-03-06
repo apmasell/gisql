@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome.snap;
+package ca.wlu.gisql.interactome.functions;
 
 import java.util.Set;
 

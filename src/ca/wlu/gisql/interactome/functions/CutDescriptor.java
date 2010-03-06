@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome.cut;
+package ca.wlu.gisql.interactome.functions;
 
 import java.util.List;
 import java.util.Stack;

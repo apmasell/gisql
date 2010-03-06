@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome.defuzzify;
+package ca.wlu.gisql.interactome.functions;
 
 import java.util.Set;
 
@@ -11,31 +11,31 @@ import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
-@GisqlConstructorFunction(name = "defuzz", description = "Defuzzify memberships of genes and interactions into crisp 0 and 1.")
-public class Defuzzify implements Interactome {
+@GisqlConstructorFunction(name = "orphans", description = "Filter genes that are disconnected")
+public class Orphans implements Interactome {
 
 	private final Interactome source;
 
-	public Defuzzify(Interactome interactome) {
-		source = interactome;
+	public Orphans(Interactome source) {
+		this.source = new Delay(source);
 	}
 
 	public double calculateMembership(Gene gene) {
 		double membership = source.calculateMembership(gene);
 		if (Membership.isPresent(membership)) {
-			return 1;
-		} else {
-			return Membership.Missing;
+			for (Interaction interaction : gene.getInteractions()) {
+				if (Membership.isPresent(source
+						.calculateMembership(interaction))) {
+					return Membership.Missing;
+				}
+			}
+			return membership;
 		}
+		return Membership.Missing;
 	}
 
 	public double calculateMembership(Interaction interaction) {
-		double membership = source.calculateMembership(interaction);
-		if (Membership.isPresent(membership)) {
-			return 1;
-		} else {
-			return Membership.Missing;
-		}
+		return source.calculateMembership(interaction);
 	}
 
 	public Set<Interactome> collectAll(Set<Interactome> set) {
@@ -65,7 +65,7 @@ public class Defuzzify implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(" :defuzz");
+		print.print(" : orphans");
 	}
 
 	@Override

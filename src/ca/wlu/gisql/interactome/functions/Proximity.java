@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome.proximity;
+package ca.wlu.gisql.interactome.functions;
 
 import java.util.HashSet;
 import java.util.LinkedList;

@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome.patch;
+package ca.wlu.gisql.interactome.functions;
 
 import java.util.Set;
 

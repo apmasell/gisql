@@ -1,4 +1,4 @@
-package ca.wlu.gisql.interactome.orphans;
+package ca.wlu.gisql.interactome.functions;
 
 import java.util.Set;
 
@@ -7,36 +7,35 @@ import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
-import ca.wlu.gisql.interactome.delay.Delay;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
-@GisqlConstructorFunction(name = "orphans", description = "Filter genes that are disconnected")
-public class Orphans implements Interactome {
+@GisqlConstructorFunction(name = "defuzz", description = "Defuzzify memberships of genes and interactions into crisp 0 and 1.")
+public class Defuzzify implements Interactome {
 
 	private final Interactome source;
 
-	public Orphans(Interactome source) {
-		this.source = new Delay(source);
+	public Defuzzify(Interactome interactome) {
+		source = interactome;
 	}
 
 	public double calculateMembership(Gene gene) {
 		double membership = source.calculateMembership(gene);
 		if (Membership.isPresent(membership)) {
-			for (Interaction interaction : gene.getInteractions()) {
-				if (Membership.isPresent(source
-						.calculateMembership(interaction))) {
-					return Membership.Missing;
-				}
-			}
-			return membership;
+			return 1;
+		} else {
+			return Membership.Missing;
 		}
-		return Membership.Missing;
 	}
 
 	public double calculateMembership(Interaction interaction) {
-		return source.calculateMembership(interaction);
+		double membership = source.calculateMembership(interaction);
+		if (Membership.isPresent(membership)) {
+			return 1;
+		} else {
+			return Membership.Missing;
+		}
 	}
 
 	public Set<Interactome> collectAll(Set<Interactome> set) {
@@ -66,7 +65,7 @@ public class Orphans implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(" : orphans");
+		print.print(" :defuzz");
 	}
 
 	@Override
