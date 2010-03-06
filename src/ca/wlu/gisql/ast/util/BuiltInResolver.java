@@ -53,6 +53,7 @@ import ca.wlu.gisql.function.list.Cons;
 import ca.wlu.gisql.function.list.Flatten;
 import ca.wlu.gisql.function.list.FoldLeft;
 import ca.wlu.gisql.function.list.FoldRight;
+import ca.wlu.gisql.function.list.GenesOf;
 import ca.wlu.gisql.function.list.Join;
 import ca.wlu.gisql.function.list.ListFromFile;
 import ca.wlu.gisql.function.list.ListLength;
@@ -73,6 +74,7 @@ import ca.wlu.gisql.interactome.coreicity.JaccardCoreicity;
 import ca.wlu.gisql.interactome.functions.AveragePatchFunction;
 import ca.wlu.gisql.interactome.functions.Cut;
 import ca.wlu.gisql.interactome.functions.Defuzzify;
+import ca.wlu.gisql.interactome.functions.Exclude;
 import ca.wlu.gisql.interactome.functions.Orphans;
 import ca.wlu.gisql.interactome.functions.PatchFunction;
 import ca.wlu.gisql.interactome.functions.Proximity;
@@ -101,6 +103,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		defaultvalues.put("false", new AstLiteral(Type.BooleanType, false));
 		defaultvalues.put("iinf", new AstLiteral(Type.NumberType,
 				Long.MAX_VALUE));
+
 		try {
 			defaultvalues.put("null", new AstLiteralReference(
 					EmptyInteractome.class.getField("self"),
@@ -135,10 +138,12 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(DeltaCoreicity.class);
 		addDefault(EchoFunction.class);
 		addDefault(Equal.class);
+		addDefault(Exclude.class);
 		addDefault(Flatten.class);
 		addDefault(FoldLeft.class);
 		addDefault(FoldRight.class);
 		addDefault(FormatFunction.class);
+		addDefault(GenesOf.class);
 		addDefault(GenomeCardinality.class);
 		addDefault(GenomeFuzziness.class);
 		addDefault(GenomeSize.class);
