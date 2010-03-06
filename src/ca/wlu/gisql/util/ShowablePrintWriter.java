@@ -48,6 +48,17 @@ public class ShowablePrintWriter<E> extends PrintWriter {
 		return context;
 	}
 
+	@Override
+	public final void print(Object value) {
+		if (value instanceof String) {
+			print('"');
+			super.print(value);
+			print('"');
+		} else {
+			super.print(value);
+		}
+	}
+
 	public final <C extends Comparable<C>> void print(
 			Prioritizable<E, C> prioritizable, C precedence) {
 		boolean brackets = prioritizable.getPrecedence().compareTo(precedence) < 0;
