@@ -109,7 +109,7 @@ public class GisQL {
 				int result = reader.readCharacter(new char[] { 'y', 'Y', 'n',
 						'N' });
 				reader.printNewline();
-				if (result < 2) {
+				if (result > 1) {
 					return;
 				}
 			}
