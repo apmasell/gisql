@@ -2,6 +2,7 @@ package ca.wlu.gisql.util;
 
 import java.util.Iterator;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 @SuppressWarnings("serial")
 public class SimpleRecord extends TreeMap<String, Object> implements Record {
@@ -19,7 +20,7 @@ public class SimpleRecord extends TreeMap<String, Object> implements Record {
 			if (first) {
 				first = false;
 			} else {
-				print.print(" / ");
+				print.print("; ");
 			}
 			print.print(entry.getKey());
 			print.print(" = ");

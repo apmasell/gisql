@@ -12,8 +12,8 @@ import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.Record;
 import ca.wlu.gisql.util.ShowablePrintWriter;
+import ca.wlu.gisql.util.SimpleRecord;
 
 /**
  * Representation of a record construction. Records are constructed by creating
@@ -54,7 +54,7 @@ public class AstRecordNew extends AstNode {
 
 	@Override
 	protected boolean renderSelf(Rendering program, int depth) {
-		return program.g$hO_CreateMap(Record.class, origin, parameters);
+		return program.g$hO_CreateMap(SimpleRecord.class, origin, parameters);
 	}
 
 	@Override
