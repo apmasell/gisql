@@ -300,14 +300,23 @@ public class Rendering implements Opcodes {
 			.getDescriptor(ca.wlu.gisql.ast.type.Type.class);
 
 	static {
-		primitives.put(byte.class, Byte.class);
-		primitives.put(short.class, Short.class);
+		primitives.put(Byte.class, byte.class);
+		primitives.put(Short.class, short.class);
 		primitives.put(Integer.class, int.class);
 		primitives.put(Long.class, long.class);
 		primitives.put(Float.class, float.class);
 		primitives.put(Double.class, double.class);
 		primitives.put(Boolean.class, boolean.class);
 		primitives.put(Character.class, char.class);
+	}
+
+	public static Class<?> convertPrimitive(Class<?> type) {
+		for (Entry<Class<?>, Class<?>> entry : primitives.entrySet()) {
+			if (entry.getValue() == type) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
 
 	private int index = 0;
