@@ -34,6 +34,8 @@ import ca.wlu.gisql.function.PullGi;
 import ca.wlu.gisql.function.Range;
 import ca.wlu.gisql.function.SearchGenes;
 import ca.wlu.gisql.function.Venn;
+import ca.wlu.gisql.function.arithmetic.Exponent;
+import ca.wlu.gisql.function.arithmetic.NaturalLogarithm;
 import ca.wlu.gisql.function.arithmetic.Number2Real;
 import ca.wlu.gisql.function.arithmetic.NumberAdd;
 import ca.wlu.gisql.function.arithmetic.NumberDivide;
@@ -41,6 +43,7 @@ import ca.wlu.gisql.function.arithmetic.NumberModulo;
 import ca.wlu.gisql.function.arithmetic.NumberMultiply;
 import ca.wlu.gisql.function.arithmetic.NumberSubtract;
 import ca.wlu.gisql.function.arithmetic.Real2Number;
+import ca.wlu.gisql.function.arithmetic.SquareRoot;
 import ca.wlu.gisql.function.comparisons.Equal;
 import ca.wlu.gisql.function.comparisons.GreaterThan;
 import ca.wlu.gisql.function.comparisons.GreaterThanOrEqualTo;
@@ -139,6 +142,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(EchoFunction.class);
 		addDefault(Equal.class);
 		addDefault(Exclude.class);
+		addDefault(Exponent.class);
 		addDefault(Flatten.class);
 		addDefault(FoldLeft.class);
 		addDefault(FoldRight.class);
@@ -159,6 +163,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(ListFromFile.class);
 		addDefault(ListLength.class);
 		addDefault(Map.class);
+		addDefault(NaturalLogarithm.class);
 		addDefault(NotEqual.class);
 		addDefault(Number2Real.class);
 		addDefault(NumberAdd.class);
@@ -180,6 +185,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(SilentFunction.class);
 		addDefault(Slice.class);
 		addDefault(Snap.class);
+		addDefault(SquareRoot.class);
 		addDefault(Venn.class);
 		addDefault(Zip.class);
 
