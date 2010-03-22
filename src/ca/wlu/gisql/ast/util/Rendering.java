@@ -419,8 +419,9 @@ public class Rendering implements Opcodes {
 	 * operand stack.
 	 */
 	public boolean g_InvokeMethod(Method reflectedmethod) {
-		int opcode = reflectedmethod.getDeclaringClass().isInterface() ? INVOKEINTERFACE
-				: INVOKEVIRTUAL;
+		int opcode = Modifier.isStatic(reflectedmethod.getModifiers()) ? INVOKESTATIC
+				: reflectedmethod.getDeclaringClass().isInterface() ? INVOKEINTERFACE
+						: INVOKEVIRTUAL;
 		String declaringclass = Type.getInternalName(reflectedmethod
 				.getDeclaringClass());
 		String descriptor = Type.getMethodDescriptor(reflectedmethod);
