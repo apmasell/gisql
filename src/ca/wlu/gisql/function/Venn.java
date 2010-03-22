@@ -17,7 +17,7 @@ public class Venn extends Function {
 
 	public Venn(ExpressionRunner runner) {
 		super(runner, "venn",
-				"Create a Venn diagram (true = genes or false= interactions)",
+				"Create a Venn diagram (true = genes or false = interactions)",
 				new ListType(Type.InteractomeType), Type.BooleanType,
 				Type.StringType);
 	}

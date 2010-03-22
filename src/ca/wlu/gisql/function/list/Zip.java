@@ -16,7 +16,7 @@ public class Zip extends Function {
 	private static final TypeVariable c = new TypeVariable();
 
 	public Zip(ExpressionRunner runner) {
-		super(runner, "zip", "Dyadic version of map (a.k.a zipWith)",
+		super(runner, "zip", "Dyadic version of map (a.k.a. zipWith)",
 				new ArrowType(a, b, c), new ListType(a), new ListType(b),
 				new ListType(c));
 	}
