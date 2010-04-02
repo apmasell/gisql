@@ -1,5 +1,6 @@
 package ca.wlu.gisql.ast.type;
 
+import java.util.Vector;
 
 import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.ast.AstNativeConstructor;
@@ -15,6 +16,8 @@ public class TypeParser {
 	private final String expression;
 
 	private int position = 0;
+
+	private final Vector<Type> variables = new Vector<Type>();
 
 	public TypeParser(String expression) {
 		super();
@@ -35,6 +38,18 @@ public class TypeParser {
 				return type;
 			} else if (Character.isWhitespace(codepoint)) {
 				position++;
+			} else if (codepoint >= 'α' && codepoint <= 'ω') {
+				position++;
+				int index = codepoint - 'α';
+				if (index < variables.size()) {
+					type = variables.get(index);
+				} else {
+					variables.setSize(index + 1);
+				}
+				if (type == null) {
+					type = new TypeVariable();
+					variables.set(index, type);
+				}
 			} else if (Character.isJavaIdentifierStart(codepoint)) {
 				StringBuilder sb = new StringBuilder();
 				sb.append(codepoint);
