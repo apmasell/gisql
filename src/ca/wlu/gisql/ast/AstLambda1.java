@@ -3,9 +3,9 @@ package ca.wlu.gisql.ast;
 import java.util.Set;
 
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.MaskedEnvironment;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
-import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -16,33 +16,9 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * resolution and replaced with phase 2 lambda expressions.
  */
 public class AstLambda1 extends AstNode {
-	private class MaskedEnvironment implements ResolutionEnvironment {
-		private final ResolutionEnvironment parent;
-		private final AstLambdaParameter variable;
-
-		private MaskedEnvironment(ResolutionEnvironment parent) {
-			this.parent = parent;
-			variable = new AstLambdaParameter(name);
-		}
-
-		@Override
-		public Environment getEnvironment() {
-			return parent.getEnvironment();
-		}
-
-		@Override
-		public AstNode lookup(String name) {
-			if (name.equals(variable.name)) {
-				return variable;
-			} else {
-				return parent.lookup(name);
-			}
-		}
-	}
-
 	private final AstNode expression;
 
-	private final String name;
+	final String name;
 
 	public AstLambda1(String variable, AstNode expression) {
 		name = variable;
@@ -84,13 +60,15 @@ public class AstLambda1 extends AstNode {
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			ResolutionEnvironment environment) {
-		MaskedEnvironment maskedenvironment = new MaskedEnvironment(environment);
+		MaskedEnvironment<AstLambdaParameter> maskedenvironment = new MaskedEnvironment<AstLambdaParameter>(
+				new AstLambdaParameter(name), environment);
 		AstNode resultexpression = expression.resolve(runner, context,
 				maskedenvironment);
 		if (resultexpression == null) {
 			return null;
 		} else {
-			return new AstLambda2(maskedenvironment.variable, resultexpression);
+			return new AstLambda2(maskedenvironment.getVariable(),
+					resultexpression);
 		}
 	}
 

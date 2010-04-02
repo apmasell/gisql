@@ -4,6 +4,7 @@ import java.util.Set;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
+import ca.wlu.gisql.ast.util.NamedVariable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -15,7 +16,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * The variable represented by a lambda expression. (i.e., the <b>x</b> in
  * <tt>(λ x. f <b>x</b> y)</tt>.)
  */
-public class AstLambdaParameter extends AstNode {
+public class AstLambdaParameter extends AstNode implements NamedVariable {
 
 	final String name;
 
@@ -37,6 +38,11 @@ public class AstLambdaParameter extends AstNode {
 	@Override
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public String getVariableName() {
+		return name;
 	}
 
 	/**
