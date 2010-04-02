@@ -1,9 +1,5 @@
 package ca.wlu.gisql.ast.type;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
-import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.ast.AstNativeConstructor;
@@ -16,8 +12,6 @@ import ca.wlu.gisql.ast.AstNativeConstructor;
  * automatically.
  */
 public class TypeParser {
-	private static final Logger log = Logger.getLogger(TypeParser.class);
-
 	private final String expression;
 
 	private int position = 0;
@@ -52,26 +46,7 @@ public class TypeParser {
 					sb.append(expression.charAt(position));
 					position++;
 				}
-				String typename = sb.toString();
-				for (Field field : Type.class.getFields()) {
-					if (Modifier.isStatic(field.getModifiers())
-							&& Type.class.isAssignableFrom(field.getType())) {
-						Type matchtype;
-						try {
-							matchtype = (Type) field.get(null);
-						} catch (IllegalArgumentException e) {
-							log.error("Failed to access field.", e);
-							return null;
-						} catch (IllegalAccessException e) {
-							log.error("Failed to access field.", e);
-							return null;
-						}
-						if (matchtype.toString().equals(typename)) {
-							type = matchtype;
-							break;
-						}
-					}
-				}
+				type = Type.getTypeForName(sb.toString());
 				if (type == null) {
 					return null;
 				}

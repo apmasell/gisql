@@ -5,8 +5,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -44,6 +46,8 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	public static final NativeType RealType = new NativeType("real",
 			Double.class);
 
+	private static final Set<NativeType> registeredtypes = new HashSet<NativeType>();
+
 	public static final NativeType StringType = new NativeType("string",
 			String.class);
 
@@ -53,6 +57,12 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	public static Type convertType(java.lang.reflect.Type javatype) {
 		if (javatype instanceof Class<?>) {
 			Class<?> clazz = (Class<?>) javatype;
+
+			for (NativeType matchtype : registeredtypes) {
+				if (matchtype.handlesNativeType(clazz)) {
+					return matchtype;
+				}
+			}
 
 			for (Field field : Type.class.getFields()) {
 				if (Modifier.isStatic(field.getModifiers())
@@ -88,6 +98,54 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 					+ ptype);
 		} else {
 			throw new IllegalArgumentException("Unknown argument type");
+		}
+	}
+
+	/** Gets the query type with a particular name. */
+	public static Type getTypeForName(String name) {
+		for (NativeType type : registeredtypes) {
+			if (type.toString().equals(name)) {
+				return type;
+			}
+		}
+		for (Field field : Type.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers())
+					&& Type.class.isAssignableFrom(field.getType())) {
+				Type matchtype;
+				try {
+					matchtype = (Type) field.get(null);
+				} catch (IllegalArgumentException e) {
+					log.error("Failed to access field.", e);
+					return null;
+				} catch (IllegalAccessException e) {
+					log.error("Failed to access field.", e);
+					return null;
+				}
+				if (matchtype.toString().equals(name)) {
+					return matchtype;
+				}
+			}
+		}
+		return null;
+	}
+
+	/** Add new type to the system. */
+	public static void installType(String name, Class<?> java) {
+		if (getTypeForName(name) != null) {
+			throw new IllegalArgumentException("Type " + name
+					+ " is already in use.");
+		} else if (name.length() > 0
+				&& Character.isJavaIdentifierStart(name.charAt(0))) {
+			for (int index = 1; index < name.length(); index++) {
+				if (!Character.isJavaIdentifierPart(name.charAt(index))) {
+					throw new IllegalArgumentException(
+							"Name contains invalid Java identifier.");
+				}
+			}
+			registeredtypes.add(new NativeType(name, java));
+		} else {
+			throw new IllegalArgumentException(
+					"Name starts with invalid Java identifier.");
 		}
 	}
 
@@ -138,6 +196,18 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	 * class.
 	 */
 	public boolean render(Rendering rendering, int depth) {
+		if (registeredtypes.contains(this)) {
+			try {
+				return rendering.hO(toString())
+						&& rendering.g_InvokeMethod(Type.class.getMethod(
+								"getTypeForName", String.class));
+			} catch (SecurityException e) {
+				log.error("Cannot access getTypeForName", e);
+			} catch (NoSuchMethodException e) {
+				log.error("Cannot access getTypeForName", e);
+			}
+			return false;
+		}
 		for (Field field : Type.class.getFields()) {
 			if (Modifier.isStatic(field.getModifiers())
 					&& Type.class.isAssignableFrom(field.getType())) {
