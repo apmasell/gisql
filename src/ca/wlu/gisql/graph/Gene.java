@@ -147,7 +147,7 @@ public class Gene implements Iterable<Accession>, Show<Set<Interactome>> {
 	 * @return The interaction in which both genes participate or null if the
 	 *         genes do not interact.
 	 */
-	protected Interaction getInteractionWith(Gene gene) {
+	public Interaction getInteractionWith(Gene gene) {
 		return edges.get(gene);
 	}
 
