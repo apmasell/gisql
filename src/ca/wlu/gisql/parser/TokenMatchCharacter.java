@@ -7,6 +7,7 @@ import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Find exactly some character. The character is not included in the results. */
 public class TokenMatchCharacter extends Token {
@@ -44,7 +45,9 @@ public class TokenMatchCharacter extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "\\" + c;
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print('[');
+		print.print(c);
+		print.print(']');
 	}
 }

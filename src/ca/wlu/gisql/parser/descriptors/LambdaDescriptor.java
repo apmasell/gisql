@@ -7,7 +7,6 @@ import ca.wlu.gisql.ast.AstLambda1;
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenName;
@@ -15,7 +14,6 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * This operator parses anonymous functions (aka lambdas). The syntax ('var
@@ -23,7 +21,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * -> expression), was not possible and LISP/Scheme (lambda var expression) is
  * bulky.
  */
-public class LambdaDescriptor implements Parseable {
+public class LambdaDescriptor extends Parseable {
 
 	public static final Parseable descriptor = new LambdaDescriptor();
 
@@ -33,6 +31,7 @@ public class LambdaDescriptor implements Parseable {
 	private LambdaDescriptor() {
 	}
 
+	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
 		AstName name = (AstName) params.get(0);
@@ -40,22 +39,26 @@ public class LambdaDescriptor implements Parseable {
 		return new AstLambda1(name.getName(), expression);
 	}
 
+	@Override
+	protected String getInfo() {
+		return "Anonymous function";
+	}
+
+	@Override
+	public char[] getOperators() {
+		return new char[] { '\'' };
+	}
+
+	@Override
+	public Order getParsingOrder() {
+		return Order.CharacterTokens;
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}
 
-	public boolean isMatchingOperator(char c) {
-		return c == '\'';
-	}
-
-	public Boolean isPrefixed() {
-		return true;
-	}
-
-	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.println("Anonymous function: 'variable expression");
-	}
-
+	@Override
 	public Token[] tasks() {
 		return tokens;
 	}

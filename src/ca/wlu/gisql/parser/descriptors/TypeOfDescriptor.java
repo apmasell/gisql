@@ -6,20 +6,18 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstTypeOf;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * This allows the user to introspect the inferred type of an operation. It is
  * probably not useful to most users, but it is to developers.
  */
-public class TypeOfDescriptor implements Parseable {
+public class TypeOfDescriptor extends Parseable {
 
 	public static final Parseable descriptor = new TypeOfDescriptor();
 
@@ -28,6 +26,7 @@ public class TypeOfDescriptor implements Parseable {
 	private TypeOfDescriptor() {
 	}
 
+	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
 		AstNode expression = params.get(0);
@@ -38,22 +37,26 @@ public class TypeOfDescriptor implements Parseable {
 		}
 	}
 
+	@Override
+	protected String getInfo() {
+		return "Type of";
+	}
+
+	@Override
+	public char[] getOperators() {
+		return new char[] { '#' };
+	}
+
+	@Override
+	public Order getParsingOrder() {
+		return Order.CharacterTokens;
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}
 
-	public boolean isMatchingOperator(char c) {
-		return c == '#';
-	}
-
-	public Boolean isPrefixed() {
-		return true;
-	}
-
-	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.println("Type of: # expression");
-	}
-
+	@Override
 	public Token[] tasks() {
 		return tokens;
 	}

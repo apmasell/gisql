@@ -5,6 +5,7 @@ import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Find exactly some word in the input. The word is not included in the results.
@@ -35,8 +36,10 @@ public class TokenReservedWord extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "'" + word + "'";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print('⟦');
+		print.print(word);
+		print.print('⟧');
 	}
 
 }

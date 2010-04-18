@@ -11,17 +11,15 @@ import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.BuiltInResolver;
 import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** This operator extracts the help information from a function and returns it. */
-public class HelpDescriptor implements Parseable {
+public class HelpDescriptor extends Parseable {
 
 	public static final Parseable descriptor = new HelpDescriptor();
 
@@ -47,6 +45,7 @@ public class HelpDescriptor implements Parseable {
 	private HelpDescriptor() {
 	}
 
+	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
 
@@ -70,22 +69,26 @@ public class HelpDescriptor implements Parseable {
 		return new AstLiteral(Type.StringType, result.toString());
 	}
 
+	@Override
+	protected String getInfo() {
+		return "Help";
+	}
+
+	@Override
+	public char[] getOperators() {
+		return new char[] { '?' };
+	}
+
+	@Override
+	public Order getParsingOrder() {
+		return Order.CharacterTokens;
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}
 
-	public boolean isMatchingOperator(char c) {
-		return c == '?';
-	}
-
-	public Boolean isPrefixed() {
-		return true;
-	}
-
-	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.println("Help: ? name");
-	}
-
+	@Override
 	public Token[] tasks() {
 		return tokens;
 	}

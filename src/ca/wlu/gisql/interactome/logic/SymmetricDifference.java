@@ -10,7 +10,7 @@ public class SymmetricDifference extends ComputedInteractomeDescriptor {
 	public static final ComputedInteractomeDescriptor descriptor = new SymmetricDifference();
 
 	public SymmetricDifference() {
-		super(Precedence.Junction, '∆', new char[] { '^' },
+		super(Precedence.Junction, new char[] { '∆', '^' },
 				"Symmetric Difference ((Ax t v(Bx)) s (Bx t v(Ax)))", "symdiff");
 	}
 

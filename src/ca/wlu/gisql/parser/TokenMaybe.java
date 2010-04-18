@@ -5,6 +5,7 @@ import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Optionally match a token. If the token is not matched, the result will be
@@ -38,7 +39,8 @@ public class TokenMaybe extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "(" + child.toString() + ")?";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print(child);
+		print.print('?');
 	}
 }

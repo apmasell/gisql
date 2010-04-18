@@ -9,7 +9,7 @@ public class Difference extends ComputedInteractomeDescriptor {
 	public static final ComputedInteractomeDescriptor descriptor = new Difference();
 
 	Difference() {
-		super(Precedence.Difference, '∖', new char[] { '-', '\\' },
+		super(Precedence.Difference, new char[] { '∖', '-', '\\' },
 				"Difference (Ax t v(Bx))", "diff");
 	}
 

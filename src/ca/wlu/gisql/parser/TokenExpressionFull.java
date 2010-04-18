@@ -5,6 +5,7 @@ import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Parser an expression level starting at the root precedence level. */
 public class TokenExpressionFull extends Token {
@@ -32,7 +33,7 @@ public class TokenExpressionFull extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "<expression>";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print("<exp₀>");
 	}
 }

@@ -8,7 +8,6 @@ import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstRecordNew;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionFull;
 import ca.wlu.gisql.parser.TokenListOf;
@@ -20,9 +19,8 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class RecordNewDescriptor implements Parseable {
+public class RecordNewDescriptor extends Parseable {
 	public static final Parseable descriptor = new RecordNewDescriptor();
 	private static final Token[] tokens = new Token[] {
 			new TokenMaybe(new TokenExpressionFull(';')),
@@ -50,24 +48,23 @@ public class RecordNewDescriptor implements Parseable {
 	}
 
 	@Override
+	protected String getInfo() {
+		return "Create record";
+	}
+
+	@Override
+	public char[] getOperators() {
+		return new char[] { '<' };
+	}
+
+	@Override
+	public Order getParsingOrder() {
+		return Order.CharacterTokens;
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
-	}
-
-	@Override
-	public boolean isMatchingOperator(char c) {
-		return c == '<';
-	}
-
-	@Override
-	public Boolean isPrefixed() {
-		return true;
-	}
-
-	@Override
-	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print
-				.println("Create record: <[parent record;] field1 = value1 ; field2 = value2 ; field3 = value3 > OR < existing; field1 = value1 ; field2 = value2 >");
 	}
 
 	@Override

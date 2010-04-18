@@ -6,6 +6,7 @@ import java.util.Set;
 import ca.wlu.gisql.ast.AstLiteralList;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Finds a list of tokens delimited by a specific character. Whitespace may
@@ -55,7 +56,10 @@ public class TokenListOf extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return child.toString() + delimiter + "...";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print(child);
+		print.print('[');
+		print.print(delimiter);
+		print.print("] ...");
 	}
 }

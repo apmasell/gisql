@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.parser.Parseable.Order;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunListener;
@@ -117,14 +118,13 @@ public class Parser {
 					.getOperators(level)) {
 				/* Attempt to determine if it has a matching operator... */
 				int oldposition = position;
-				if (operator.isPrefixed() == null
-						|| operator.isMatchingOperator(input.charAt(position))
-						&& (operator.isPrefixed() || result != null)) {
-					if (operator.isPrefixed() != null) {
+				if (operator.getParsingOrder() == Order.Tokens
+						|| operator.isMatchingOperator(peek())
+						&& (operator.getParsingOrder() != Order.ExpressionCharacterTokens || result != null)) {
+					if (operator.getParsingOrder() != Order.Tokens) {
 						position++;
 					}
-					boolean pop = operator.isPrefixed() != null
-							&& !operator.isPrefixed();
+					boolean pop = operator.getParsingOrder() == Order.ExpressionCharacterTokens;
 					/* Then get the result. */
 					AstNode child = processOperator(operator, (pop ? result
 							: null), level);

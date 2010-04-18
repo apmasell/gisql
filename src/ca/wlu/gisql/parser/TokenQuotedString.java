@@ -7,6 +7,7 @@ import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Matches a quoted string. Escape sequences are permitted.
@@ -28,7 +29,7 @@ public class TokenQuotedString extends Token {
 		StringBuilder sb = new StringBuilder();
 		boolean success = false;
 
-		if (parser.read() != '"') {
+		if (!parser.hasMore() || parser.read() != '"') {
 			return false;
 		}
 
@@ -145,7 +146,7 @@ public class TokenQuotedString extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "<string>";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print("<string>");
 	}
 }

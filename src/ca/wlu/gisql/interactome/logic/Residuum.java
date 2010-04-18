@@ -9,7 +9,7 @@ public class Residuum extends ComputedInteractomeDescriptor {
 	public static final ComputedInteractomeDescriptor descriptor = new Residuum();
 
 	public Residuum() {
-		super(Precedence.Disjunction, '⇒', new char[] { '>' },
+		super(Precedence.Disjunction, new char[] { '⇒', '>' },
 				"Residuum (v(Ax) s (Ax t Bx))", "implies");
 	}
 

@@ -9,6 +9,7 @@ import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.typeclasses.TypeClass;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Parser a decimal number. It cannot include an exponent. */
 public class TokenReal extends Token {
@@ -53,7 +54,7 @@ public class TokenReal extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "<double>";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print("<real>");
 	}
 }

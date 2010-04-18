@@ -7,6 +7,7 @@ import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Matches a whole number. */
 public class TokenNumber extends Token {
@@ -42,7 +43,7 @@ public class TokenNumber extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "<number>";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print("<number>");
 	}
 }

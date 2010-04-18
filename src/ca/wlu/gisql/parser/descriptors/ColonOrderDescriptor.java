@@ -6,20 +6,18 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Parsers the convenience syntax for functions. A function (f x y), may be
  * written has (x:f y). This is convenient for interactome expressions.
  */
-public class ColonOrderDescriptor implements Parseable {
+public class ColonOrderDescriptor extends Parseable {
 	public static final Parseable descriptor = new ColonOrderDescriptor();
 
 	private static final Token[] tokens = new Token[] { TokenName.self };
@@ -37,24 +35,23 @@ public class ColonOrderDescriptor implements Parseable {
 	}
 
 	@Override
+	protected String getInfo() {
+		return "Function in postfix";
+	}
+
+	@Override
+	public char[] getOperators() {
+		return new char[] { ':' };
+	}
+
+	@Override
+	public Order getParsingOrder() {
+		return Order.ExpressionCharacterTokens;
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Value;
-	}
-
-	@Override
-	public boolean isMatchingOperator(char c) {
-		return c == ':';
-	}
-
-	@Override
-	public Boolean isPrefixed() {
-		return false;
-	}
-
-	@Override
-	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.println("Function in postfix: expression :function");
-		print.println("\tEquivalent to: function expresssion");
 	}
 
 	@Override

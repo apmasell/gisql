@@ -7,36 +7,31 @@ import ca.wlu.gisql.ast.AstLambda2;
 import ca.wlu.gisql.ast.AstLambdaParameter;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public abstract class ComputedInteractomeDescriptor implements Parseable {
+public abstract class ComputedInteractomeDescriptor extends Parseable {
 
 	private static final Token[] tokens = new Token[] { TokenExpressionChild.self };
 
-	private final char[] alternateoperators;
-
 	private final String function;
-	private final String name;
 
+	private final String name;
 	private final Precedence nestinglevel;
 
 	private final AstNode node;
 
-	private final char symbol;
+	private final char[] symbols;
 
-	public ComputedInteractomeDescriptor(Precedence nestinglevel, char symbol,
-			char[] alternateoperators, String name, String function) {
+	public ComputedInteractomeDescriptor(Precedence nestinglevel,
+			char[] symbols, String name, String function) {
 		super();
 		this.nestinglevel = nestinglevel;
-		this.symbol = symbol;
-		this.alternateoperators = alternateoperators;
+		this.symbols = symbols;
 		this.name = name;
 		this.function = function;
 		node = makeLogicFunction();
@@ -44,6 +39,7 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 
 	abstract public AstNode construct(AstNode left, AstNode right);
 
+	@Override
 	public final AstNode construct(ExpressionRunner runner,
 			List<AstNode> params, Stack<ExpressionError> error,
 			ExpressionContext context) {
@@ -53,7 +49,7 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 	}
 
 	public final char[] getAlternateOperators() {
-		return alternateoperators;
+		return symbols;
 	}
 
 	public AstNode getFunction() {
@@ -64,36 +60,27 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 		return function;
 	}
 
+	@Override
+	protected final String getInfo() {
+		return name;
+	}
+
 	public final String getName() {
 		return name;
 	}
 
+	@Override
+	public final char[] getOperators() {
+		return symbols;
+	}
+
+	@Override
+	public final Order getParsingOrder() {
+		return Order.ExpressionCharacterTokens;
+	}
+
 	public final Precedence getPrecedence() {
 		return nestinglevel;
-	}
-
-	public final char getSymbol() {
-		return symbol;
-	}
-
-	public final boolean isMatchingOperator(char c) {
-		if (symbol == c) {
-			return true;
-		}
-		if (alternateoperators == null) {
-			return false;
-		}
-		for (char operator : alternateoperators) {
-			if (operator == c) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	public final Boolean isPrefixed() {
-		return false;
 	}
 
 	private AstNode makeLogicFunction() {
@@ -103,21 +90,7 @@ public abstract class ComputedInteractomeDescriptor implements Parseable {
 				construct(left, right)));
 	}
 
-	public final void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.print(name);
-		print.print(": A ");
-		print.print(symbol);
-		print.print(" B");
-		if (alternateoperators != null) {
-			for (char c : alternateoperators) {
-				print.print(", A ");
-				print.print(c);
-				print.print(" B");
-			}
-		}
-		print.println();
-	}
-
+	@Override
 	public final Token[] tasks() {
 		return tokens;
 	}

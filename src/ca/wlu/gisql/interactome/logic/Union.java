@@ -9,7 +9,7 @@ public class Union extends ComputedInteractomeDescriptor {
 	public static final ComputedInteractomeDescriptor descriptor = new Union();
 
 	private Union() {
-		super(Precedence.Disjunction, '∪', new char[] { '|' },
+		super(Precedence.Disjunction, new char[] { '∪', '|' },
 				"Union (Ax s Bx)", "or");
 	}
 

@@ -5,13 +5,15 @@ import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Show;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /**
  * Super class for all tokens. Each token represents one atomic unit of input,
  * which may be separated by arbitrary white space. Tokens have access to
  * manipulate the {@link Parser}'s current state.
  */
-public abstract class Token {
+public abstract class Token implements Show<Object> {
 
 	/** Find any words that should be barred as variable names. */
 	public abstract void addReservedWords(Set<String> reservedwords);
@@ -29,4 +31,9 @@ public abstract class Token {
 	 */
 	abstract boolean parse(Parser parser, Precedence level,
 			List<AstNode> results);
+
+	@Override
+	public final String toString() {
+		return ShowableStringBuilder.toString(this, null);
+	}
 }

@@ -9,7 +9,7 @@ public class Intersection extends ComputedInteractomeDescriptor {
 	public static final ComputedInteractomeDescriptor descriptor = new Intersection();
 
 	public Intersection() {
-		super(Precedence.Junction, '∩', new char[] { '&' },
+		super(Precedence.Junction, new char[] { '∩', '&' },
 				"Intersection (Ax t Bx)", "and");
 
 	}

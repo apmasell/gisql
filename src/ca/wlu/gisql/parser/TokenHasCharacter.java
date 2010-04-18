@@ -7,6 +7,7 @@ import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class TokenHasCharacter extends Token {
 	private final char[] delimiters;
@@ -36,8 +37,12 @@ public class TokenHasCharacter extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "[" + new String(delimiters) + "]?";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print('[');
+		for (char delimiter : delimiters) {
+			print.print(delimiter);
+		}
+		print.print("]?");
 	}
 
 }

@@ -5,15 +5,13 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class LiteralTokenDescriptor implements Parseable {
+public class LiteralTokenDescriptor extends Parseable {
 
 	private final Token[] tokens;
 
@@ -22,26 +20,32 @@ public class LiteralTokenDescriptor implements Parseable {
 		tokens = new Token[] { token };
 	}
 
+	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
 		return params.get(0);
+	}
+
+	@Override
+	protected String getInfo() {
+		return "Value";
+	}
+
+	@Override
+	public char[] getOperators() {
+		return null;
+	}
+
+	@Override
+	public Order getParsingOrder() {
+		return Order.Tokens;
 	}
 
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}
 
-	public boolean isMatchingOperator(char c) {
-		return false;
-	}
-
-	public Boolean isPrefixed() {
-		return null;
-	}
-
-	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-	}
-
+	@Override
 	public Token[] tasks() {
 		return tokens;
 	}

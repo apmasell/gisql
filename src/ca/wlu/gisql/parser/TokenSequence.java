@@ -6,6 +6,7 @@ import java.util.Set;
 import ca.wlu.gisql.ast.AstLiteralList;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class TokenSequence extends Token {
 
@@ -36,12 +37,17 @@ public class TokenSequence extends Token {
 	}
 
 	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
+	public void show(ShowablePrintWriter<Object> print) {
+		boolean first = true;
+		print.print('(');
 		for (Token token : tokens) {
-			sb.append(token);
-			sb.append(' ');
+			if (first) {
+				first = false;
+			} else {
+				print.print(' ');
+			}
+			print.print(token);
 		}
-		return sb.toString();
+		print.print(')');
 	}
 }

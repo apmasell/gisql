@@ -6,16 +6,14 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class ConsDescriptor implements Parseable {
+public class ConsDescriptor extends Parseable {
 
 	private static final Token[] tokens = new Token[] { TokenExpressionChild.self };
 
@@ -36,23 +34,23 @@ public class ConsDescriptor implements Parseable {
 	}
 
 	@Override
+	protected String getInfo() {
+		return "Construct a list";
+	}
+
+	@Override
+	public char[] getOperators() {
+		return new char[] { ',' };
+	}
+
+	@Override
+	public Order getParsingOrder() {
+		return Order.ExpressionCharacterTokens;
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Junction;
-	}
-
-	@Override
-	public boolean isMatchingOperator(char c) {
-		return c == ',';
-	}
-
-	@Override
-	public Boolean isPrefixed() {
-		return false;
-	}
-
-	@Override
-	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.println("Construct a list: item, tail");
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.Set;
 import ca.wlu.gisql.ast.AstLiteralList;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class TokenTree extends Token {
 
@@ -70,7 +71,14 @@ public class TokenTree extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "<tree " + child + open + "..." + close + delimiter + "...>";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print(child);
+		print.print('[');
+		print.print(open);
+		print.print("]...[");
+		print.print(close);
+		print.print("] [");
+		print.print(delimiter);
+		print.print("] ...");
 	}
 }

@@ -10,17 +10,15 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.Unit;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
-import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Parses the empty list written as “()”. */
-public class UnitDescriptor implements Parseable {
+public class UnitDescriptor extends Parseable {
 	public static final Parseable descriptor = new UnitDescriptor();
 
 	private static final Logger log = Logger.getLogger(UnitDescriptor.class);
@@ -47,23 +45,23 @@ public class UnitDescriptor implements Parseable {
 	}
 
 	@Override
+	protected String getInfo() {
+		return "Unit";
+	}
+
+	@Override
+	public char[] getOperators() {
+		return new char[] { '(' };
+	}
+
+	@Override
+	public Order getParsingOrder() {
+		return Order.CharacterTokens;
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Value;
-	}
-
-	@Override
-	public boolean isMatchingOperator(char c) {
-		return c == '(';
-	}
-
-	@Override
-	public Boolean isPrefixed() {
-		return true;
-	}
-
-	@Override
-	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
-		print.println("Unit: ()");
 	}
 
 	@Override

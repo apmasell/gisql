@@ -4,27 +4,30 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.parser.descriptors.LiteralTokenDescriptor;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
- * Interface for a pluggable parser syntax recogniser. The parser will call
- * {@link #isPrefixed()}, and, if not null, it will call
- * {@link #isMatchingOperator(char)} for every appropriate character in the
- * input stream. If this function returns true, it will call {@link #tasks()}
- * and attempt to parse the required token. If the tokens are correctly parsed,
- * it will call
+ * Class for a pluggable parser syntax recogniser. The parser will call
+ * {@link #getParsingOrder()}, and, if appropriate, it will call
+ * {@link #getOperators()} for every appropriate character in the input stream.
+ * If this function returns true, it will call {@link #tasks()} and attempt to
+ * parse the required token. If the tokens are correctly parsed, it will call
  * {@link #construct(ExpressionRunner, List, Stack, ExpressionContext)} with
  * parsed data.
  */
-public interface Parseable extends
+public abstract class Parseable implements
 		Prioritizable<ParserKnowledgebase, Precedence>,
 		Show<ParserKnowledgebase> {
+
+	public enum Order {
+		CharacterTokens, ExpressionCharacterTokens, Tokens
+	};
 
 	/**
 	 * After parsing is successful, this method must return the abstract syntax
@@ -45,18 +48,48 @@ public interface Parseable extends
 			List<AstNode> params, Stack<ExpressionError> error,
 			ExpressionContext context);
 
+	protected abstract String getInfo();
+
 	/** Determine is the supplied character is valid for this syntax. */
-	public abstract boolean isMatchingOperator(char c);
+	public abstract char[] getOperators();
 
 	/**
-	 * Determines the position of this operator relative to other elements. If
-	 * true, an operator begins an expression (e.g., !x). If false, an operator
-	 * is added on to an existing expression (e.g., a + b). If null, the
-	 * operator begins an expression, but there is no set of characters that
-	 * defines it. This last option is only used by
-	 * {@link LiteralTokenDescriptor}.
+	 * Determines the position of this operator relative to other elements.
 	 */
-	public abstract Boolean isPrefixed();
+	public abstract Order getParsingOrder();
+
+	public final boolean isMatchingOperator(char needle) {
+		for (char haystack : getOperators()) {
+			if (needle == haystack) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public final void show(ShowablePrintWriter<ParserKnowledgebase> print) {
+		print.print(getInfo());
+		print.print(':');
+
+		switch (getParsingOrder()) {
+		case ExpressionCharacterTokens:
+			print.print(" <exp>");
+		case CharacterTokens:
+			print.print(" [");
+			for (char c : getOperators()) {
+				print.print(c);
+			}
+			print.print(']');
+		case Tokens:
+		}
+
+		for (Token token : tasks()) {
+			print.print(' ');
+			print.print(token);
+		}
+		print.println();
+	}
 
 	/**
 	 * Returns the tokens desired in the ordered desired. Each token's parse

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Parsers an expression at a precedence level greater than the current level. */
 public class TokenExpressionChild extends Token {
@@ -29,8 +30,8 @@ public class TokenExpressionChild extends Token {
 	}
 
 	@Override
-	public String toString() {
-		return "<child>";
+	public void show(ShowablePrintWriter<Object> print) {
+		print.print("<expₓ₊₁>");
 	}
 
 }
