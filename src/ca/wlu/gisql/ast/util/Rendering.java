@@ -389,7 +389,7 @@ public class Rendering implements Opcodes {
 	 */
 	public Rendering(String representation, ca.wlu.gisql.ast.type.Type type,
 			int argumentcount) {
-		name = "DynamicFunction" + hashCode();
+		name = "GisqlFunction" + hashCode();
 
 		/* Create a new class extending GenericFunction to fill. */
 		writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
