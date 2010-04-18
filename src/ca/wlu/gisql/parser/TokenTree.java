@@ -7,20 +7,18 @@ import ca.wlu.gisql.ast.AstLiteralList;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
 
-/**
- * Finds a list of tokens delimited by a specific character. Whitespace may
- * appear around the delimiter. This must match at least on token. That is, it
- * behaves like the regular expression + operator.
- */
-public class TokenListOf extends Token {
+public class TokenTree extends Token {
+
 	private final Token child;
-
+	private final char close;
 	private final char delimiter;
+	private final char open;
 
-	public TokenListOf(Token child, char delimiter) {
-		super();
-		this.child = child;
+	public TokenTree(char delimiter, char open, char close, Token child) {
 		this.delimiter = delimiter;
+		this.open = open;
+		this.close = close;
+		this.child = child;
 	}
 
 	@Override
@@ -32,30 +30,47 @@ public class TokenListOf extends Token {
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		AstLiteralList items = new AstLiteralList();
 
+		if (!parser.hasMore() || parser.read() != open) {
+			return false;
+		}
+		parser.consumeWhitespace();
 		if (!child.parse(parser, level, items)) {
 			return false;
 		}
 
 		parser.consumeWhitespace();
 		while (parser.hasMore()) {
+			if (parser.peek() == open) {
+				parser.consumeWhitespace();
+				if (!parse(parser, level, items)) {
+					return false;
+				}
+				parser.consumeWhitespace();
+			} else {
+				items.add(null);
+			}
 			if (parser.peek() == delimiter) {
 				parser.next();
 				parser.consumeWhitespace();
 				if (!child.parse(parser, level, items)) {
 					return false;
 				}
-			} else {
+			} else if (parser.peek() == close) {
+				parser.next();
 				results.add(items);
 				return true;
+			} else {
+				parser.pushError("Unknown character " + parser.peek());
+				return false;
 			}
 			parser.consumeWhitespace();
 		}
-		results.add(items);
-		return true;
+		parser.pushError("Expected " + close);
+		return false;
 	}
 
 	@Override
 	public String toString() {
-		return child.toString() + delimiter + "...";
+		return "<tree " + child + open + "..." + close + delimiter + "...>";
 	}
 }

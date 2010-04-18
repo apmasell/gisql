@@ -1,6 +1,7 @@
 package ca.wlu.gisql.parser;
 
 import java.util.List;
+import java.util.Set;
 
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
@@ -15,6 +16,10 @@ public class TokenReal extends Token {
 
 	private TokenReal() {
 		super();
+	}
+
+	@Override
+	public void addReservedWords(Set<String> reservedwords) {
 	}
 
 	@Override

@@ -16,6 +16,10 @@ public class TokenName extends Token {
 	}
 
 	@Override
+	public void addReservedWords(Set<String> reservedwords) {
+	}
+
+	@Override
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		StringBuilder sb = new StringBuilder();
 
@@ -38,8 +42,13 @@ public class TokenName extends Token {
 			parser.pushError("Expected name missing.");
 			return false;
 		}
-		results.add(new AstName(sb.toString()));
-		return true;
+		String name = sb.toString();
+		if (parser.isReservedWord(name)) {
+			return false;
+		} else {
+			results.add(new AstName(name));
+			return true;
+		}
 	}
 
 	@Override

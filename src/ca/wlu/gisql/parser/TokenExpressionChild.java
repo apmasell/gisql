@@ -1,6 +1,7 @@
 package ca.wlu.gisql.parser;
 
 import java.util.List;
+import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
@@ -11,6 +12,10 @@ public class TokenExpressionChild extends Token {
 
 	private TokenExpressionChild() {
 		super();
+	}
+
+	@Override
+	public void addReservedWords(Set<String> reservedwords) {
 	}
 
 	@Override

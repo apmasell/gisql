@@ -1,8 +1,10 @@
 package ca.wlu.gisql.parser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
@@ -46,6 +48,7 @@ public class ParserKnowledgebase {
 	private String help;
 
 	private final OrderedMap<Precedence, List<Parseable>> operators = new ListOrderedMap<Precedence, List<Parseable>>();
+	private final Set<String> reservedwords = new HashSet<String>();
 
 	public ParserKnowledgebase() {
 		installOperator(AbstractOutput.descriptor);
@@ -141,6 +144,14 @@ public class ParserKnowledgebase {
 			computedInteractomeParsers
 					.add((ComputedInteractomeDescriptor) operator);
 		}
+
+		for (Token token : operator.tasks()) {
+			token.addReservedWords(reservedwords);
+		}
+	}
+
+	public boolean isReservedWord(String name) {
+		return reservedwords.contains(name);
 	}
 
 }

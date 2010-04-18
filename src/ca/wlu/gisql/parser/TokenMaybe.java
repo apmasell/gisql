@@ -1,6 +1,7 @@
 package ca.wlu.gisql.parser;
 
 import java.util.List;
+import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
@@ -18,15 +19,26 @@ public class TokenMaybe extends Token {
 	}
 
 	@Override
+	public void addReservedWords(Set<String> reservedwords) {
+		child.addReservedWords(reservedwords);
+	}
+
+	@Override
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
-		int oldposition = parser.position;
+		parser.mark();
 		int errorposition = parser.error.size();
 		if (child.parse(parser, level, results)) {
+			parser.clearMark();
 			return true;
 		}
 		results.add(null);
-		parser.position = oldposition;
+		parser.rewindToMark();
 		parser.error.setSize(errorposition);
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "(" + child.toString() + ")?";
 	}
 }

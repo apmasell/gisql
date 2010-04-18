@@ -1,6 +1,7 @@
 package ca.wlu.gisql.parser;
 
 import java.util.List;
+import java.util.Set;
 
 import ca.wlu.gisql.ast.AstLiteralList;
 import ca.wlu.gisql.ast.AstNode;
@@ -12,6 +13,13 @@ public class TokenSequence extends Token {
 
 	public TokenSequence(Token... tokens) {
 		this.tokens = tokens;
+	}
+
+	@Override
+	public void addReservedWords(Set<String> reservedwords) {
+		for (Token token : tokens) {
+			token.addReservedWords(reservedwords);
+		}
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package ca.wlu.gisql.parser;
 
 import java.util.List;
+import java.util.Set;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
@@ -11,6 +12,10 @@ import ca.wlu.gisql.util.Precedence;
  * manipulate the {@link Parser}'s current state.
  */
 public abstract class Token {
+
+	/** Find any words that should be barred as variable names. */
+	public abstract void addReservedWords(Set<String> reservedwords);
+
 	/**
 	 * Attempt to parse a token.
 	 * 
