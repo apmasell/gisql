@@ -92,6 +92,31 @@ public class Rendering implements Opcodes {
 
 	}
 
+	/** Casts the result of rendering to a specific class. */
+	public static class Cast implements Renderable {
+
+		private final Class<?> clazz;
+		private final Renderable value;
+
+		public Cast(Renderable value, Class<?> clazz) {
+			super();
+			this.value = value;
+			this.clazz = clazz;
+		}
+
+		@Override
+		public boolean render(Rendering rendering, int depth) {
+			if (value.render(rendering, depth)) {
+				rendering.method.visitTypeInsn(CHECKCAST, Type
+						.getInternalName(clazz));
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+	}
+
 	/** The dynamic class loader. */
 	public static class ClassCreator extends ClassLoader {
 		@SuppressWarnings("unchecked")
