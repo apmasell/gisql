@@ -52,6 +52,10 @@ public class AstLiteral extends AstNode {
 		return type;
 	}
 
+	public Object getValue() {
+		return value;
+	}
+
 	/**
 	 * This kind of constant must be representable as a Java constant.
 	 * Effectively, any primitive type or String. Object types cannot be in the
