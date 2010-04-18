@@ -53,7 +53,9 @@ public class AstLambda2 extends AstNode {
 	 */
 	@Override
 	public boolean renderSelf(Rendering program, int depth) {
-		return program.pPg() && program.hR_CreateLocal(variable.name)
+		return program.pPg()
+				&& program.hR_CreateLocal(variable.name, variable.getType()
+						.getRootJavaType())
 				&& expression.render(program, depth - 1)
 				&& program.pR(variable.name);
 	}

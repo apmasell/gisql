@@ -39,6 +39,11 @@ public class ListType extends Type {
 	}
 
 	@Override
+	public Class<?> getRootJavaType() {
+		return List.class;
+	}
+
+	@Override
 	public int hashCode() {
 		return contents.hashCode() * 19;
 	}

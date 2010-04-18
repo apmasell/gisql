@@ -16,6 +16,11 @@ public class NativeType extends Type {
 		this.java = java;
 	}
 
+	@Override
+	public Class<?> getRootJavaType() {
+		return java;
+	}
+
 	public boolean handlesNativeType(Class<?> clazz) {
 		return java.isAssignableFrom(clazz);
 	}

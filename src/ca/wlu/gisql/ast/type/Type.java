@@ -183,6 +183,9 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 		return 0;
 	}
 
+	/** Anything of this type should be catable to the returned Java class. */
+	public abstract Class<?> getRootJavaType();
+
 	/**
 	 * Determine if a type is inside this type. This is needed to prevent "α →
 	 * β" from unifying with "α", causing an infinite type.

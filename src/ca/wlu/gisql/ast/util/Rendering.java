@@ -43,6 +43,7 @@ import ca.wlu.gisql.runner.ExpressionRunner;
  * suffix <b>$</b> indicates that an action may be repeated.
  */
 public class Rendering implements Opcodes {
+
 	/** Represents a variable passed as an argument (in a box). */
 	class ArgumentVariable implements Variable, Renderable {
 		private final int offset;
@@ -216,10 +217,12 @@ public class Rendering implements Opcodes {
 
 		private final String name;
 		private Label start = null;
+		private final String type;
 
-		public StackVariable(String name) {
+		public StackVariable(String name, Class<?> type) {
 			super();
 			this.name = name;
+			this.type = Type.getInternalName(type);
 			index = ++Rendering.this.index;
 		}
 
@@ -251,6 +254,7 @@ public class Rendering implements Opcodes {
 			}
 			start = new Label();
 			method.visitLabel(start);
+			method.visitTypeInsn(CHECKCAST, type);
 			method.visitVarInsn(ASTORE, index);
 			return true;
 		}
@@ -412,6 +416,11 @@ public class Rendering implements Opcodes {
 			references.push(variable);
 			parameters.push(variable);
 		}
+	}
+
+	public boolean g_Cast(Class<?> type) {
+		method.visitTypeInsn(CHECKCAST, Type.getInternalName(type));
+		return true;
 	}
 
 	/**
@@ -599,8 +608,8 @@ public class Rendering implements Opcodes {
 	}
 
 	/** Create a new local variable with a specific name. */
-	public boolean hR_CreateLocal(String name) {
-		Variable variable = new StackVariable(name);
+	public boolean hR_CreateLocal(String name, Class<?> type) {
+		Variable variable = new StackVariable(name, type);
 		references.push(variable);
 		return variable.store(this);
 	}

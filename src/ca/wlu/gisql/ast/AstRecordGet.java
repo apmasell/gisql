@@ -54,7 +54,8 @@ public class AstRecordGet extends AstNode {
 			return parameter.render(program, depth)
 					&& program.hO(field)
 					&& program.g_InvokeMethod(Map.class.getDeclaredMethod(
-							"get", Object.class));
+							"get", Object.class))
+					&& program.g_Cast(type.getRootJavaType());
 		} catch (SecurityException e) {
 			log.error("Failed to get Record.get method.", e);
 

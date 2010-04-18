@@ -60,6 +60,15 @@ public class TypeVariable extends Type {
 	}
 
 	@Override
+	public Class<?> getRootJavaType() {
+		if (self == null) {
+			return Object.class;
+		} else {
+			return self.getRootJavaType();
+		}
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return this == needle || self != null && self.occurs(needle);
 	}
@@ -72,8 +81,8 @@ public class TypeVariable extends Type {
 				return rendering.lRhO(uglyname);
 			} else {
 				if (!(rendering.pRg$hO_CreateObject(TypeVariable.class
-						.getConstructors()[0]) && rendering
-						.hR_CreateLocal(uglyname))) {
+						.getConstructors()[0]) && rendering.hR_CreateLocal(
+						uglyname, List.class))) {
 					return false;
 				}
 				try {

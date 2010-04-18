@@ -125,6 +125,11 @@ public class RecordType extends Type implements Map<String, Type> {
 	}
 
 	@Override
+	public Class<?> getRootJavaType() {
+		return Record.class;
+	}
+
+	@Override
 	public int hashCode() {
 		return fields.hashCode() * (want ? 55 : 77);
 	}

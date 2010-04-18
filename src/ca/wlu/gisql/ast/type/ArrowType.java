@@ -69,6 +69,11 @@ public class ArrowType extends Type {
 	}
 
 	@Override
+	public Class<?> getRootJavaType() {
+		return GenericFunction.class;
+	}
+
+	@Override
 	public int hashCode() {
 		return operand.hashCode() * 37 + result.hashCode();
 	}

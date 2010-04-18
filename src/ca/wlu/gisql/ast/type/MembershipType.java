@@ -7,6 +7,11 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 /** The query language type of a double value ∈ [0,1]. */
 public class MembershipType extends Type {
 
+	@Override
+	public Class<?> getRootJavaType() {
+		return Double.class;
+	}
+
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
 		print.print("membership");
 	}
