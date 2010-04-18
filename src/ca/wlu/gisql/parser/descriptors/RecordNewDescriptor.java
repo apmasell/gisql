@@ -25,8 +25,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class RecordNewDescriptor implements Parseable {
 	public static final Parseable descriptor = new RecordNewDescriptor();
 	private static final Token[] tokens = new Token[] {
-			new TokenMaybe(new TokenSequence(new TokenExpressionFull(null),
-					TokenMatchCharacter.get(';'))),
+			new TokenMaybe(new TokenExpressionFull(';')),
 			new TokenListOf(
 					new TokenSequence(TokenName.self, TokenMatchCharacter
 							.get('='), new TokenExpressionFull(null)), ';'),
@@ -39,12 +38,12 @@ public class RecordNewDescriptor implements Parseable {
 	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
-		AstRecordNew node = new AstRecordNew(params.get(0) == null ? null
-				: ((AstLiteralList) params.get(0)).get(0));
-
-		for (AstNode parameter : (AstLiteralList) params.get(1)) {
-			AstLiteralList list = (AstLiteralList) parameter;
-			node.add(((AstName) list.get(0)).getName(), list.get(1));
+		AstRecordNew node = new AstRecordNew(params.get(0));
+		AstLiteralList list = (AstLiteralList) params.get(1);
+		for (int index = 0; index < list.size(); index += 2) {
+			node
+					.add(((AstName) list.get(index)).getName(), list
+							.get(index + 1));
 		}
 
 		return node;
@@ -68,7 +67,7 @@ public class RecordNewDescriptor implements Parseable {
 	@Override
 	public void show(ShowablePrintWriter<ParserKnowledgebase> print) {
 		print
-				.println("Create record: < field1 = value1 ; field2 = value2 ; field3 = value3 > OR < existing; field1 = value1 ; field2 = value2 >");
+				.println("Create record: <[parent record;] field1 = value1 ; field2 = value2 ; field3 = value3 > OR < existing; field1 = value1 ; field2 = value2 >");
 	}
 
 	@Override

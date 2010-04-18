@@ -23,7 +23,17 @@ public class TokenSequence extends Token {
 				return false;
 			}
 		}
-		results.add(subresults);
+		results.addAll(subresults);
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for (Token token : tokens) {
+			sb.append(token);
+			sb.append(' ');
+		}
+		return sb.toString();
 	}
 }

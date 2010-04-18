@@ -22,4 +22,10 @@ public class TokenExpressionChild extends Token {
 		results.add(result);
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "<child>";
+	}
+
 }

@@ -28,11 +28,13 @@ public class Parser {
 
 	final Stack<ExpressionError> error = new Stack<ExpressionError>();
 
-	final String input;
+	private final String input;
 
 	private final ExpressionRunListener listener;
 
-	int position = 0;
+	private final Stack<Integer> marks = new Stack<Integer>();
+
+	private int position = 0;
 
 	private final ExpressionRunner runner;
 
@@ -44,11 +46,35 @@ public class Parser {
 		this.listener = listener;
 	}
 
+	/** Remove the last mark. */
+	void clearMark() {
+		marks.pop();
+	}
+
 	void consumeWhitespace() {
 		while (position < input.length()
 				&& Character.isWhitespace(input.charAt(position))) {
 			position++;
 		}
+	}
+
+	/** Are there more characters available? */
+	boolean hasMore() {
+		return position < input.length();
+	}
+
+	public boolean isReservedWord(String name) {
+		return runner.getEnvironment().getParserKb().isReservedWord(name);
+	}
+
+	/** Place a mark at the current */
+	void mark() {
+		marks.push(position);
+	}
+
+	/** Consume a character of input. */
+	void next() {
+		position++;
 	}
 
 	public AstNode parse() {
@@ -80,6 +106,7 @@ public class Parser {
 		}
 
 		AstNode result = null;
+		int errorposition = error.size();
 
 		consumeWhitespace(); /* Do this before testing input length. */
 		boolean matched = true;
@@ -90,7 +117,6 @@ public class Parser {
 					.getOperators(level)) {
 				/* Attempt to determine if it has a matching operator... */
 				int oldposition = position;
-				int errorposition = error.size();
 				if (operator.isPrefixed() == null
 						|| operator.isMatchingOperator(input.charAt(position))
 						&& (operator.isPrefixed() || result != null)) {
@@ -119,7 +145,6 @@ public class Parser {
 					 * If unsuccessful, reset the parser state and try the next
 					 * operator.
 					 */
-					error.setSize(errorposition);
 					position = oldposition;
 				}
 			}
@@ -141,7 +166,9 @@ public class Parser {
 			}
 			consumeWhitespace(); /* Do this before testing input length. */
 		}
-
+		if (result != null) {
+			error.setSize(errorposition);
+		}
 		return result;
 	}
 
@@ -183,6 +210,11 @@ public class Parser {
 		}
 	}
 
+	/** Look at the current input character. */
+	char peek() {
+		return input.charAt(position);
+	}
+
 	/**
 	 * Attempt to parse one operator by parsing its tokens, then calling
 	 * {@link Parseable#construct(ExpressionRunner, List, Stack, ExpressionContext)}
@@ -210,6 +242,24 @@ public class Parser {
 	void pushError(String message) {
 		error.push(new ExpressionError(context.getContextForPosition(position),
 				message, null));
+	}
+
+	/** Consume a character of input and return it. */
+	char read() {
+		return input.charAt(position++);
+	}
+
+	/** Reset the current position to the last mark. */
+	void rewindToMark() {
+		position = marks.pop();
+	}
+
+	/**
+	 * Remove the last mark and return the string from that mark to the current
+	 * position.
+	 */
+	String stringFromMark() {
+		return input.substring(marks.pop(), position);
 	}
 
 	@Override

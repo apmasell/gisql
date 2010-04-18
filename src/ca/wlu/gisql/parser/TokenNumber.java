@@ -17,21 +17,27 @@ public class TokenNumber extends Token {
 
 	@Override
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
-		int oldposition = parser.position;
+		parser.mark();
 		parser.consumeWhitespace();
-		while (parser.position < parser.input.length()
-				&& Character.isDigit(parser.input.charAt(parser.position))) {
-			parser.position++;
+		while (parser.hasMore() && Character.isDigit(parser.peek())) {
+			parser.next();
 		}
-
+		String string = parser.stringFromMark();
 		try {
-			results.add(new AstLiteral(Type.NumberType, Long
-					.parseLong(parser.input.substring(oldposition,
-							parser.position))));
+			if (string.length() == 0) {
+				return false;
+			}
+			results
+					.add(new AstLiteral(Type.NumberType, Long.parseLong(string)));
 			return true;
 		} catch (NumberFormatException e) {
 			parser.pushError("Failed to parse number.");
 			return false;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "<number>";
 	}
 }

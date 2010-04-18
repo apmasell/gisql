@@ -19,26 +19,24 @@ public class TokenReal extends Token {
 
 	@Override
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
-		int oldposition = parser.position;
+		parser.mark();
 		parser.consumeWhitespace();
-		while (parser.position < parser.input.length()
-				&& Character.isDigit(parser.input.charAt(parser.position))) {
-			parser.position++;
+		while (parser.hasMore() && Character.isDigit(parser.peek())) {
+			parser.next();
 		}
-		if (parser.position < parser.input.length()
-				&& parser.input.charAt(parser.position) == '.') {
-			parser.position++;
-			while (parser.position < parser.input.length()
-					&& Character.isDigit(parser.input.charAt(parser.position))) {
-				parser.position++;
+		if (parser.hasMore() && parser.peek() == '.') {
+			parser.next();
+			while (parser.hasMore() && Character.isDigit(parser.peek())) {
+				parser.next();
 			}
 		} else {
+			parser.clearMark();
 			return false;
 		}
 
+		String string = parser.stringFromMark();
 		try {
-			double value = Double.parseDouble(parser.input.substring(
-					oldposition, parser.position));
+			double value = Double.parseDouble(string);
 			Type type = Type.MembershipType.validate(value) ? new TypeVariable(
 					TypeClass.Fractional) : Type.RealType;
 			results.add(new AstLiteral(type, value));
@@ -47,5 +45,10 @@ public class TokenReal extends Token {
 			parser.pushError("Failed to parse double.");
 			return false;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "<double>";
 	}
 }

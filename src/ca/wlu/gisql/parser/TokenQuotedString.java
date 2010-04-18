@@ -20,27 +20,25 @@ public class TokenQuotedString extends Token {
 	@Override
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		parser.consumeWhitespace();
-		StringBuilder sb = null;
+		StringBuilder sb = new StringBuilder();
 		boolean success = false;
 
-		while (parser.position < parser.input.length()) {
-			char codepoint = parser.input.charAt(parser.position);
+		if (parser.read() != '"') {
+			return false;
+		}
+
+		while (parser.hasMore()) {
+			char codepoint = parser.peek();
 
 			if (codepoint == '"') {
-				parser.position++;
-				if (sb == null) {
-					/* first quote. */
-					sb = new StringBuilder();
-				} else {
-					/* found final quote. */
-					success = sb.length() != 0;
-					break;
-				}
+				/* found final quote. */
+				parser.next();
+				success = sb.length() != 0;
+				break;
 			} else if (codepoint == '\\') {
-				parser.position++;
-				if (parser.position < parser.input.length()) {
-					char c = parser.input.charAt(parser.position);
-					parser.position++;
+				parser.next();
+				if (parser.hasMore()) {
+					char c = parser.read();
 
 					switch (c) {
 					case 'a':
@@ -108,7 +106,7 @@ public class TokenQuotedString extends Token {
 					success = false;
 					break;
 				} else {
-					parser.position++;
+					parser.next();
 
 					sb.append(codepoint);
 				}
@@ -125,14 +123,13 @@ public class TokenQuotedString extends Token {
 
 	private Integer pullHex(Parser parser, int digits) {
 		int result = 0;
-		while (digits > 0 && parser.position < parser.input.length()) {
-			int value = Character.digit(parser.input.charAt(parser.position),
-					16);
+		while (digits > 0 && parser.hasMore()) {
+			int value = Character.digit(parser.peek(), 16);
 			if (value == -1) {
 				return null;
 			}
 			result = result * 0x10 + value;
-			parser.position++;
+			parser.next();
 			digits--;
 		}
 		if (digits == 0 && result != 0) {
@@ -140,5 +137,10 @@ public class TokenQuotedString extends Token {
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "<string>";
 	}
 }

@@ -25,4 +25,9 @@ public class TokenExpressionFull extends Token {
 		results.add(result);
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "<expression>";
+	}
 }

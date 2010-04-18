@@ -1,6 +1,7 @@
 package ca.wlu.gisql.parser;
 
 import java.util.List;
+import java.util.Set;
 
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
@@ -18,15 +19,15 @@ public class TokenName extends Token {
 	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
 		StringBuilder sb = new StringBuilder();
 
-		while (parser.position < parser.input.length()) {
-			char codepoint = parser.input.charAt(parser.position);
+		while (parser.hasMore()) {
+			char codepoint = parser.peek();
 
 			if (codepoint == '$') {
 				break;
 			} else if (sb.length() == 0 ? Character
 					.isJavaIdentifierStart(codepoint) : Character
 					.isJavaIdentifierPart(codepoint)) {
-				parser.position++;
+				parser.next();
 				sb.append(codepoint);
 			} else {
 				break;
@@ -39,6 +40,11 @@ public class TokenName extends Token {
 		}
 		results.add(new AstName(sb.toString()));
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "<name>";
 	}
 
 }

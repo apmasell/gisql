@@ -31,9 +31,9 @@ public class TokenListOf extends Token {
 		}
 
 		parser.consumeWhitespace();
-		while (parser.position < parser.input.length()) {
-			if (parser.input.charAt(parser.position) == delimiter) {
-				parser.position++;
+		while (parser.hasMore()) {
+			if (parser.peek() == delimiter) {
+				parser.next();
 				parser.consumeWhitespace();
 				if (!child.parse(parser, level, items)) {
 					return false;
@@ -48,4 +48,8 @@ public class TokenListOf extends Token {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return child.toString() + delimiter + "...";
+	}
 }
