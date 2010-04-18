@@ -59,7 +59,8 @@ public class AstApplication extends AstNode {
 			throw new IllegalArgumentException("Need 2 or more arguments.");
 		}
 
-		AstNode operator = new AstEnvironmentLoad(function);
+		AstNode operator = new AstNativeIndirect(new AstNativeGenericFunction(
+				function));
 		AstNode operand = arguments[0];
 		for (int i = 1; i < arguments.length; i++) {
 			operator = new AstApplication(operator, operand);
