@@ -22,8 +22,7 @@ public class AstName extends AstNode {
 
 	@Override
 	protected void freeVariables(Set<String> variables) {
-		throw new IllegalStateException(
-				"Names should be cleaned from the parse tree.");
+		raiseIllegalState();
 	}
 
 	public String getName() {
@@ -41,14 +40,12 @@ public class AstName extends AstNode {
 
 	@Override
 	public boolean renderSelf(Rendering program, int depth) {
-		throw new IllegalStateException(
-				"Names should be cleaned from the parse tree.");
+		return raiseIllegalState();
 	}
 
 	@Override
 	public void resetType() {
-		throw new IllegalStateException(
-				"Names should be cleaned from the parse tree.");
+		raiseIllegalState();
 
 	}
 
@@ -69,7 +66,6 @@ public class AstName extends AstNode {
 
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		throw new IllegalStateException(
-				"Names should be cleaned from the parse tree.");
+		return raiseIllegalState();
 	}
 }

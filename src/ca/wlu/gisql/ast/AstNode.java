@@ -58,6 +58,11 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	 */
 	public abstract Type getType();
 
+	protected <T> T raiseIllegalState() {
+		throw new IllegalStateException(this.getClass().getName()
+				+ " should be cleaned from parse tree.");
+	}
+
 	/**
 	 * Convert the abstract syntax tree into a real Java class that may be
 	 * instantiated.

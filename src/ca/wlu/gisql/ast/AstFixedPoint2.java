@@ -64,9 +64,13 @@ public class AstFixedPoint2 extends AstNode {
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			ResolutionEnvironment environment) {
-		throw new IllegalStateException(
-				"AstFixedPoint2 cannot be resolved again.");
-
+		AstNode resultexpression = expression.resolve(runner, context,
+				environment);
+		if (resultexpression == null) {
+			return null;
+		} else {
+			return new AstFixedPoint2(self, resultexpression);
+		}
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {

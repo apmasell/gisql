@@ -164,7 +164,11 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 			} else {
 				print.print(", ");
 			}
-			print.print(node);
+			if (node == null) {
+				print.print("∅");
+			} else {
+				print.print(node);
+			}
 		}
 		print.print("]");
 	}

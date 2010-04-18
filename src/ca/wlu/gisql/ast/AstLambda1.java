@@ -27,8 +27,7 @@ public class AstLambda1 extends AstNode {
 
 	@Override
 	protected void freeVariables(Set<String> variables) {
-		throw new IllegalStateException("AstLambda1 must be cleaned.");
-
+		raiseIllegalState();
 	}
 
 	public Precedence getPrecedence() {
@@ -42,14 +41,12 @@ public class AstLambda1 extends AstNode {
 
 	@Override
 	public boolean renderSelf(Rendering program, int depth) {
-		throw new IllegalStateException(
-				"AstLambda1 must be cleaned before rendering.");
+		return raiseIllegalState();
 	}
 
 	@Override
 	public void resetType() {
-		throw new IllegalStateException(
-				"AstLambda1 must be cleaned before typing.");
+		raiseIllegalState();
 	}
 
 	/**
@@ -82,7 +79,6 @@ public class AstLambda1 extends AstNode {
 
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		throw new IllegalStateException(
-				"AstLambda1 must be cleaned before typing.");
+		return raiseIllegalState();
 	}
 }
