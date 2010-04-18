@@ -33,10 +33,10 @@ public class Venn extends Function {
 
 		for (int vennstate = 1; vennstate < total; vennstate++) {
 			Totals totals = new Totals();
-			List<List<Integer>> productOfSums = new ArrayList<List<Integer>>();
-			List<List<Integer>> productOfSumsNegated = new ArrayList<List<Integer>>();
+			List<List<Long>> productOfSums = new ArrayList<List<Long>>();
+			List<List<Long>> productOfSumsNegated = new ArrayList<List<Long>>();
 
-			for (int bit = 0; bit < interactomes.size(); bit++) {
+			for (long bit = 0; bit < interactomes.size(); bit++) {
 				boolean negated = (vennstate & 1 << bit) == 0;
 				(negated ? productOfSumsNegated : productOfSums)
 						.add(Collections.singletonList(bit));

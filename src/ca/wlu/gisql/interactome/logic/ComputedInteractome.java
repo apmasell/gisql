@@ -16,8 +16,8 @@ public class ComputedInteractome implements Interactome {
 
 	private final String expression;
 	private final List<Interactome> interactomes;
-	private final List<List<Integer>> productOfSums;
-	private final List<List<Integer>> productOfSumsNegated;
+	private final List<List<Long>> productOfSums;
+	private final List<List<Long>> productOfSumsNegated;
 	private final double unknown;
 
 	/**
@@ -42,8 +42,8 @@ public class ComputedInteractome implements Interactome {
 	 *            {@code new ComputedInteractome([A,B], [[0][1]], [[1][0]])}
 	 */
 	public ComputedInteractome(final List<Interactome> interactomes,
-			final List<List<Integer>> productOfSums,
-			final List<List<Integer>> productOfSumsNegated) {
+			final List<List<Long>> productOfSums,
+			final List<List<Long>> productOfSumsNegated) {
 		super();
 		this.interactomes = interactomes;
 		this.productOfSums = productOfSums;
@@ -66,25 +66,25 @@ public class ComputedInteractome implements Interactome {
 				print.print("(");
 			}
 			boolean firstProduct = true;
-			for (int index : productOfSums.get(term)) {
+			for (long index : productOfSums.get(term)) {
 				if (firstProduct) {
 					firstProduct = false;
 				} else {
 					print.print(" ∪ ");
 				}
-				print.print(interactomes.get(index), Union.descriptor
+				print.print(interactomes.get((int) index), Union.descriptor
 						.getPrecedence());
 			}
 
-			for (int index : productOfSumsNegated.get(term)) {
+			for (long index : productOfSumsNegated.get(term)) {
 				if (firstProduct) {
 					firstProduct = false;
 				} else {
 					print.print(" ∪ ");
 				}
 				print.print("¬");
-				print.print(interactomes.get(index), Complement.descriptor
-						.getPrecedence());
+				print.print(interactomes.get((int) index),
+						Complement.descriptor.getPrecedence());
 			}
 			if (hasBrackets) {
 				print.print(")");
@@ -99,12 +99,12 @@ public class ComputedInteractome implements Interactome {
 		double product = 1;
 		for (int term = 0; term < productOfSums.size(); term++) {
 			double sum = 0;
-			for (int index : productOfSums.get(term)) {
-				sum = Math.max(sum, memberships[index]);
+			for (long index : productOfSums.get(term)) {
+				sum = Math.max(sum, memberships[(int) index]);
 			}
 
-			for (int index : productOfSumsNegated.get(term)) {
-				sum = Math.max(sum, 1 - memberships[index]);
+			for (long index : productOfSumsNegated.get(term)) {
+				sum = Math.max(sum, 1 - memberships[(int) index]);
 			}
 			product = Math.min(product, sum);
 		}

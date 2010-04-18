@@ -22,7 +22,7 @@ public class Cut implements Interactome {
 	private final Interactome interactome;
 
 	public Cut(Interactome interactome,
-			@GisqlType(type = "membership") double cutoff) {
+			@GisqlType(type = "membership") Double cutoff) {
 		super();
 		this.interactome = interactome;
 		this.cutoff = cutoff;

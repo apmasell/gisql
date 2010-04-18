@@ -12,7 +12,7 @@ import ca.wlu.gisql.interactome.logic.ComputedInteractome;
 import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class BigIntersection extends Function {
-	private static final List<Integer> empty = Collections.emptyList();
+	private static final List<Long> empty = Collections.emptyList();
 
 	public BigIntersection(ExpressionRunner runner) {
 		super(runner, "intersectall",
@@ -24,10 +24,10 @@ public class BigIntersection extends Function {
 	@Override
 	public Object run(Object... parameters) {
 		List<Interactome> interactomes = (List<Interactome>) parameters[0];
-		List<List<Integer>> productOfSums = new ArrayList<List<Integer>>();
-		List<List<Integer>> productOfSumsNegated = new ArrayList<List<Integer>>();
+		List<List<Long>> productOfSums = new ArrayList<List<Long>>();
+		List<List<Long>> productOfSumsNegated = new ArrayList<List<Long>>();
 		for (int index = 0; index < interactomes.size(); index++) {
-			productOfSums.add(Collections.singletonList(index));
+			productOfSums.add(Collections.singletonList((long) index));
 			productOfSumsNegated.add(empty);
 		}
 		return new ComputedInteractome(interactomes, productOfSums,

@@ -348,9 +348,9 @@ public class AstLogic extends AstNode {
 					.size() - 1);
 
 			try {
-				return program.hP(termini)
+				return program.hP(convertList(productOfSumsNegated))
 						&& program.hP(convertList(productOfSums))
-						&& program.hP(convertList(productOfSumsNegated))
+						&& program.hP(termini)
 						&& program
 								.pRg$hO_CreateObject(ComputedInteractome.class
 										.getConstructor(List.class, List.class,

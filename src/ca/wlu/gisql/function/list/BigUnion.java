@@ -12,7 +12,7 @@ import ca.wlu.gisql.interactome.logic.ComputedInteractome;
 import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class BigUnion extends Function {
-	private static final List<Integer> empty = Collections.emptyList();
+	private static final List<Long> empty = Collections.emptyList();
 
 	public BigUnion(ExpressionRunner runner) {
 		super(runner, "unionall",
@@ -24,9 +24,9 @@ public class BigUnion extends Function {
 	@Override
 	public Object run(Object... parameters) {
 		List<Interactome> interactomes = (List<Interactome>) parameters[0];
-		List<Integer> sums = new ArrayList<Integer>();
+		List<Long> sums = new ArrayList<Long>();
 
-		for (int index = 0; index < interactomes.size(); index++) {
+		for (long index = 0; index < interactomes.size(); index++) {
 			sums.add(index);
 		}
 		return new ComputedInteractome(interactomes, Collections
