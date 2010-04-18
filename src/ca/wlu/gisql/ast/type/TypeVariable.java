@@ -82,7 +82,7 @@ public class TypeVariable extends Type {
 			} else {
 				if (!(rendering.pRg$hO_CreateObject(TypeVariable.class
 						.getConstructors()[0]) && rendering.hR_CreateLocal(
-						uglyname, List.class))) {
+						uglyname, TypeVariable.class))) {
 					return false;
 				}
 				try {
