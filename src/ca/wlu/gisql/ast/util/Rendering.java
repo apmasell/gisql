@@ -599,12 +599,32 @@ public class Rendering implements Opcodes {
 		return pRg$hO_CreateObject(clazz.getConstructors()[0]);
 	}
 
+	public boolean hP(final Object value) {
+		return hP(new Renderable() {
+
+			@Override
+			public boolean render(Rendering rendering, int depth) {
+				return rendering.hO(value);
+			}
+		});
+	}
+
 	/**
 	 * Add a parameter to the current compile-time parameter stack. This should
 	 * be paried with {@link #pPg()}.
 	 */
 	public boolean hP(Renderable parameter) {
 		return parameters.push(parameter) != null;
+	}
+
+	public boolean hP_AsObject(final Object value) {
+		return hP(new Renderable() {
+
+			@Override
+			public boolean render(Rendering rendering, int depth) {
+				return rendering.hO_AsObject(value);
+			}
+		});
 	}
 
 	/** Create a new local variable with a specific name. */
@@ -706,6 +726,12 @@ public class Rendering implements Opcodes {
 	/** Label the current point in the code for jumping purposes. */
 	public boolean mark(Label label) {
 		method.visitLabel(label);
+		return true;
+	}
+
+	/** Pop an item off the operand stack. */
+	public boolean pO() {
+		method.visitInsn(POP);
 		return true;
 	}
 
