@@ -118,30 +118,45 @@ public class Rendering implements Opcodes {
 	}
 
 	/** The dynamic class loader. */
-	public static class ClassCreator extends ClassLoader {
+	private static class ClassCreator extends ClassLoader {
 		@SuppressWarnings("unchecked")
 		Class<? extends GenericFunction> load(String name, ClassWriter writer) {
 			byte[] bytecode = writer.toByteArray();
 			try {
-				return (Class<? extends GenericFunction>) defineClass(name,
-						bytecode, 0, bytecode.length);
-			} catch (ClassFormatError e) {
-				String file = System.getProperty("java.io.tmpdir")
-						+ File.separator + name + ".class";
+				Class<? extends GenericFunction> clazz = (Class<? extends GenericFunction>) defineClass(
+						name, bytecode, 0, bytecode.length);
+				if (clazz.getConstructors().length == 1) {
+					if (System.getProperty("gisql.debug", "false").equals(
+							"true")) {
+						saveClassToFile(name, bytecode, null);
+					}
+					return clazz;
+				} else {
+					saveClassToFile(name, bytecode, null);
+				}
+			} catch (VerifyError e) {
+				saveClassToFile(name, bytecode, e);
+			}
+			return null;
+		}
+
+		private void saveClassToFile(String name, byte[] bytecode, Throwable t) {
+			String file = System.getProperty("java.io.tmpdir") + File.separator
+					+ name + ".class";
+			if (t == null) {
+				log.warn("Saving byte code to " + file + ".");
+			} else {
 				log.error(
 						"Failed to generate valid byte code. Saving bad byte code to "
-								+ file + " for analysis.", e);
-
-				try {
-					FileOutputStream fos;
-					fos = new FileOutputStream(file);
-					fos.write(writer.toByteArray());
-					fos.close();
-				} catch (IOException x) {
-					log.error("Failed to save class.", x);
-				}
-
-				return null;
+								+ file + " for analysis.", t);
+			}
+			try {
+				FileOutputStream fos;
+				fos = new FileOutputStream(file);
+				fos.write(bytecode);
+				fos.close();
+			} catch (IOException x) {
+				log.error("Failed to save class.", x);
 			}
 		}
 	}
