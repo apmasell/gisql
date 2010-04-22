@@ -24,6 +24,7 @@ import ca.wlu.gisql.parser.descriptors.BracketedExpressionDescriptor;
 import ca.wlu.gisql.parser.descriptors.ColonOrderDescriptor;
 import ca.wlu.gisql.parser.descriptors.EmptyList;
 import ca.wlu.gisql.parser.descriptors.FixedPointDescriptor;
+import ca.wlu.gisql.parser.descriptors.GraphDescriptor;
 import ca.wlu.gisql.parser.descriptors.HelpDescriptor;
 import ca.wlu.gisql.parser.descriptors.LambdaDescriptor;
 import ca.wlu.gisql.parser.descriptors.LiteralList;
@@ -60,6 +61,7 @@ public class ParserKnowledgebase {
 		installOperator(Difference.descriptor);
 		installOperator(EmptyList.descriptor);
 		installOperator(FixedPointDescriptor.descriptor);
+		installOperator(GraphDescriptor.descriptor);
 		installOperator(Intersection.descriptor);
 		installOperator(HelpDescriptor.descriptor);
 		installOperator(Join.descriptor);
