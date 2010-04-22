@@ -72,17 +72,27 @@ public class PhylipOutput extends Function {
 		int characters = 0;
 
 		for (Interaction interaction : Ubergraph.getInstance()) {
-			characters++;
-			for (Interactome interactome : interactomeList) {
-				double membership = interactome
-						.calculateMembership(interaction);
-				if (Membership.isPresent(membership)) {
-					builders.get(interactome).append('1');
-				} else {
-					builders.get(interactome).append('0');
+			Boolean state = null;
+			for (int index = 0; index < interactomeList.size(); index++) {
+				Interactome interactome = interactomeList.get(index);
+				boolean membership = Membership.isPresent(interactome
+						.calculateMembership(interaction));
+				if (index == 0) {
+					state = membership;
+				} else if (state == null) {
+					builders.get(interactome).append(bitValue(membership));
+				} else if (state != membership) {
+					char c = bitValue(state);
+					for (int old = 0; old < index; old++) {
+						builders.get(interactomeList.get(old)).append(c);
+					}
+					builders.get(interactome).append(bitValue(membership));
+					state = null;
+					characters++;
 				}
 			}
 		}
+
 		try {
 			FileWriter out = new FileWriter(filename);
 			out.write(Integer.toString(interactomeList.size()));
@@ -102,5 +112,9 @@ public class PhylipOutput extends Function {
 			interactome.postpare();
 		}
 		return output.toString();
+	}
+
+	private char bitValue(Boolean state) {
+		return state ? '1' : '0';
 	}
 }
