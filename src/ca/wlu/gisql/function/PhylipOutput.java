@@ -39,6 +39,10 @@ public class PhylipOutput extends Function {
 
 	}
 
+	private char bitValue(Boolean state) {
+		return state ? '1' : '0';
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object run(Object... parameters) {
@@ -112,9 +116,5 @@ public class PhylipOutput extends Function {
 			interactome.postpare();
 		}
 		return output.toString();
-	}
-
-	private char bitValue(Boolean state) {
-		return state ? '1' : '0';
 	}
 }
