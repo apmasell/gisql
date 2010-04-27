@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.Stack;
+
+import name.masella.iterator.NestedIterator;
 
 import org.apache.commons.collections15.iterators.SingletonIterator;
 import org.jgrapht.alg.ConnectivityInspector;
@@ -73,7 +74,7 @@ public class GraphDescriptor extends Parseable {
 		}
 
 		public Iterator<String> iterator() {
-			return new GraphNodeIterator(neighbours.iterator());
+			return new NestedIterator<String, GraphNode>(neighbours.iterator());
 		}
 	}
 
@@ -128,7 +129,7 @@ public class GraphDescriptor extends Parseable {
 
 		@Override
 		public Iterator<String> iterator() {
-			return new GraphNodeIterator(nodes.iterator());
+			return new NestedIterator<String, GraphNode>(nodes.iterator());
 		}
 
 	}
@@ -156,46 +157,6 @@ public class GraphDescriptor extends Parseable {
 
 		abstract boolean finish(ExpressionContext context,
 				Stack<ExpressionError> error);
-	}
-
-	private class GraphNodeIterator implements Iterator<String> {
-		private Iterator<String> current = null;
-		private final Iterator<GraphNode> parent;
-
-		public GraphNodeIterator(Iterator<GraphNode> iterator) {
-			super();
-			parent = iterator;
-		}
-
-		@Override
-		public boolean hasNext() {
-			if (current == null || !current.hasNext() && parent.hasNext()) {
-				current = parent.next().iterator();
-			}
-			return current == null ? false : current.hasNext();
-		}
-
-		@Override
-		public String next() {
-			if (current == null || !current.hasNext() && parent.hasNext()) {
-				current = parent.next().iterator();
-			}
-			if (current == null) {
-				throw new NoSuchElementException();
-			} else {
-				return current.next();
-			}
-
-		}
-
-		@Override
-		public void remove() {
-			if (current != null) {
-				current.remove();
-			}
-
-		}
-
 	}
 
 	private class ParentNode extends GraphNode {
