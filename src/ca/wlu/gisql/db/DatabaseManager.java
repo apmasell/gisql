@@ -66,7 +66,7 @@ public class DatabaseManager {
 					.prepareStatement("SELECT id, name FROM species");
 			ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
-				int species_id = rs.getInt(1);
+				long species_id = rs.getInt(1);
 				String species = rs.getString(2);
 				DbSpecies interactome = new DbSpecies(this, species, species_id);
 				all.add(interactome);
@@ -79,7 +79,7 @@ public class DatabaseManager {
 	}
 
 	protected void populateArrays(DatabaseEnvironment environment,
-			Map<Integer, Interactome> speciesById) {
+			Map<Long, Interactome> speciesById) {
 		try {
 			PreparedStatement arrayStatement = connection
 					.prepareStatement("SELECT id, name FROM userarray");
@@ -145,7 +145,7 @@ public class DatabaseManager {
 	void pullGenes(DbSpecies species) throws SQLException {
 		PreparedStatement statement = connection
 				.prepareStatement("SELECT id, name, ogrp FROM gene WHERE species = ?");
-		statement.setInt(1, species.getId());
+		statement.setLong(1, species.getId());
 		ResultSet rs = statement.executeQuery();
 		while (rs.next()) {
 			Accession accession = new Accession(rs.getLong(1), species, rs
@@ -173,7 +173,7 @@ public class DatabaseManager {
 	void pullInteractions(DbSpecies interactome) throws SQLException {
 		PreparedStatement interactionStatement = connection
 				.prepareStatement("SELECT gene1, gene2, score FROM interaction JOIN gene g1 ON gene1 = g1.id JOIN gene g2 ON gene2 = g2.id WHERE gene1 != gene2 AND g1.species = g2.species AND g1.species = ?");
-		interactionStatement.setInt(1, interactome.getId());
+		interactionStatement.setLong(1, interactome.getId());
 		ResultSet rs = interactionStatement.executeQuery();
 		while (rs.next()) {
 			long identifier1 = Math.min(rs.getLong(1), rs.getLong(2));

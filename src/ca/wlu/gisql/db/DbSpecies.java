@@ -14,10 +14,10 @@ public class DbSpecies extends NamedInteractome {
 
 	private final Logger log = Logger.getLogger(DbSpecies.class);
 
-	private final int species_id;
+	private final long species_id;
 
 	protected DbSpecies(DatabaseManager databaseManager, String species,
-			int species_id) {
+			long species_id) {
 		super(species, 0.0, Construction.Species, true);
 		this.species_id = species_id;
 		this.databaseManager = databaseManager;
@@ -31,7 +31,7 @@ public class DbSpecies extends NamedInteractome {
 		}
 	}
 
-	public int getId() {
+	public long getId() {
 		return species_id;
 	}
 
