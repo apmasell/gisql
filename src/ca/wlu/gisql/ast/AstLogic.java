@@ -5,7 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
+
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.type.TypeVariable;
+import ca.wlu.gisql.ast.typeclasses.TypeClass;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.interactome.Interactome;
@@ -28,6 +33,64 @@ public class AstLogic extends AstNode {
 
 	private enum Operation {
 		Conjunct, Disjunct, Negation
+	}
+
+	private enum RawType {
+		Bool {
+			@Override
+			public Class<?> getJavaClass() {
+				return Boolean.class;
+			}
+
+			@Override
+			public boolean render(Rendering program, Operation operation) {
+				switch (operation) {
+				case Conjunct:
+					program.g_Insn(Opcodes.IAND);
+					break;
+				case Disjunct:
+					program.g_Insn(Opcodes.IOR);
+					break;
+				case Negation:
+					program.g_Insn(Opcodes.ICONST_1);
+					program.g_Insn(Opcodes.IXOR);
+				}
+				return true;
+			}
+		},
+		Member {
+			@Override
+			public Class<?> getJavaClass() {
+				return Double.class;
+			}
+
+			@Override
+			public boolean render(Rendering program, Operation operation) {
+				try {
+					switch (operation) {
+					case Conjunct:
+						return program.g_InvokeMethod(Math.class.getMethod(
+								"min", double.class, double.class));
+					case Disjunct:
+						return program.g_InvokeMethod(Math.class.getMethod(
+								"max", double.class, double.class));
+					case Negation:
+						program.g_Insn(Opcodes.DCONST_1);
+						program.g_Insn(Opcodes.DSUB);
+						program.g_Insn(Opcodes.DNEG);
+						return true;
+					}
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					e.printStackTrace();
+				}
+				return false;
+			}
+		};
+		abstract Class<?> getJavaClass();
+
+		abstract boolean render(Rendering program, Operation operation);
 	}
 
 	/** Convenience function for normalisation. */
@@ -55,7 +118,7 @@ public class AstLogic extends AstNode {
 		} else {
 			return new AstLogic(a, b, Operation.Disjunct);
 		}
-	};
+	}
 
 	/** Convenience function to make a new complement node. */
 	public static AstNode makeNegation(AstNode a) {
@@ -124,6 +187,8 @@ public class AstLogic extends AstNode {
 	private final AstNode left, right;
 
 	private final Operation operation;
+
+	private final TypeVariable type = new TypeVariable(TypeClass.Logic);
 
 	private AstLogic(AstNode left, AstNode right, Operation operation) {
 		this.left = left;
@@ -217,7 +282,7 @@ public class AstLogic extends AstNode {
 
 	@Override
 	public Type getType() {
-		return Type.InteractomeType;
+		return type;
 	}
 
 	/**
@@ -317,50 +382,132 @@ public class AstLogic extends AstNode {
 	 * conjunctive normal form matrix of operations, and then calling the
 	 * {@link ComputedInteractome} constructor.
 	 */
+	private boolean renderInteractome(Rendering program, AstLogic normalForm) {
+		List<List<Long>> productOfSums = new ArrayList<List<Long>>();
+		List<List<Long>> productOfSumsNegated = new ArrayList<List<Long>>();
+		AstLiteralList termini = new AstLiteralList();
+		normalForm.prepareInteractomes(termini);
+		Collections.sort(termini, ToStringComparator.instance);
+		normalForm.makeTermMatrix(productOfSums, productOfSumsNegated, termini,
+				Operation.Conjunct);
+
+		for (int index = 0; index < productOfSums.size(); index++) {
+			for (int subindex = index + 1; subindex < productOfSums.size(); subindex++) {
+				if (productOfSums.get(index)
+						.equals(productOfSums.get(subindex))
+						&& productOfSumsNegated.get(index).equals(
+								productOfSumsNegated.get(subindex))) {
+					productOfSums.remove(subindex);
+					productOfSumsNegated.remove(subindex);
+				}
+			}
+			Collections.sort(productOfSums.get(index));
+			Collections.sort(productOfSumsNegated.get(index));
+		}
+		quicksort(productOfSums, productOfSumsNegated, 0,
+				productOfSums.size() - 1);
+
+		try {
+			return program.hP(convertList(productOfSumsNegated))
+					&& program.hP(convertList(productOfSums))
+					&& program.hP(termini)
+					&& program
+							.pRg$hO_CreateObject(ComputedInteractome.class
+									.getConstructor(List.class, List.class,
+											List.class));
+		} catch (SecurityException e) {
+			return false;
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Render an logic function of something not made of interactomes and cast
+	 * the result to an object.
+	 */
+	private boolean renderRaw(Rendering program, int depth,
+			AstLogic normalForm, RawType rawtype) {
+		return normalForm.renderRaw(program, depth, rawtype)
+				&& program.pOhO_PrimitiveToObject(rawtype.getJavaClass());
+	}
+
+	/**
+	 * Render the logic of something that is not interactomes (i.e., booleans or
+	 * memberships).
+	 */
+	private boolean renderRaw(Rendering program, int depth, RawType rawtype) {
+		if (left instanceof AstLogic) {
+			if (!((AstLogic) left).renderRaw(program, depth, rawtype)) {
+				return false;
+			}
+		} else {
+			if (!(left.render(program, depth) && program
+					.pOhO_ObjectToPrimitive(rawtype.getJavaClass()))) {
+				return false;
+			}
+
+		}
+		if (right == null) {
+		} else if (right instanceof AstLogic) {
+			if (!((AstLogic) right).renderRaw(program, depth, rawtype)) {
+				return false;
+			}
+		} else {
+			if (!(right.render(program, depth) && program
+					.pOhO_ObjectToPrimitive(rawtype.getJavaClass()))) {
+				return false;
+			}
+		}
+		return rawtype.render(program, operation);
+	};
+
+	/**
+	 * Render this logical expression. Since logical expressions can be of
+	 * multiple types, if the type is known, the correct implementation will be
+	 * used. If not, all possible expressions will be generated and a run-time
+	 * type check select the right one.
+	 */
 	@Override
 	public boolean renderSelf(Rendering program, int depth) {
 		AstNode baseNormalForm = distributeDisjunctOf(removeNegation());
 		if (baseNormalForm instanceof AstLogic) {
 			AstLogic normalForm = (AstLogic) baseNormalForm;
 
-			List<List<Long>> productOfSums = new ArrayList<List<Long>>();
-			List<List<Long>> productOfSumsNegated = new ArrayList<List<Long>>();
-			AstLiteralList termini = new AstLiteralList();
-			normalForm.prepareInteractomes(termini);
-			Collections.sort(termini, ToStringComparator.instance);
-			normalForm.makeTermMatrix(productOfSums, productOfSumsNegated,
-					termini, Operation.Conjunct);
+			if (!type.isAssigned()) {
+				Label bool = new Label();
+				Label member = new Label();
+				Label end = new Label();
 
-			for (int index = 0; index < productOfSums.size(); index++) {
-				for (int subindex = index + 1; subindex < productOfSums.size(); subindex++) {
-					if (productOfSums.get(index).equals(
-							productOfSums.get(subindex))
-							&& productOfSumsNegated.get(index).equals(
-									productOfSumsNegated.get(subindex))) {
-						productOfSums.remove(subindex);
-						productOfSumsNegated.remove(subindex);
-					}
+				AstNode terminus = normalForm.left;
+				while (terminus instanceof AstLogic) {
+					terminus = ((AstLogic) terminus).left;
 				}
-				Collections.sort(productOfSums.get(index));
-				Collections.sort(productOfSumsNegated.get(index));
+				return terminus.render(program, depth)
+						&& program.g_InstanceOf(RawType.Bool.getJavaClass())
+						&& program.jump(Opcodes.IFNE, bool)
+						&& program.g_InstanceOf(RawType.Member.getJavaClass())
+						&& program.jump(Opcodes.IFNE, member)
+						&& program.pO()
+						&& renderInteractome(program, normalForm)
+						&& program.jump(Opcodes.GOTO, end)
+						&& program.mark(bool)
+						&& program.pO()
+						&& renderRaw(program, depth, normalForm, RawType.Bool)
+						&& program.jump(Opcodes.GOTO, end)
+						&& program.mark(member)
+						&& program.pO()
+						&& renderRaw(program, depth, normalForm, RawType.Member)
+						&& program.mark(end);
+			} else if (type.canUnify(Type.InteractomeType)) {
+				return renderInteractome(program, normalForm);
+			} else if (type.canUnify(Type.BooleanType)) {
+				return renderRaw(program, depth, normalForm, RawType.Bool);
+			} else if (type.canUnify(Type.MembershipType)) {
+				return renderRaw(program, depth, normalForm, RawType.Member);
+			} else {
+				throw new IllegalStateException();
 			}
-			quicksort(productOfSums, productOfSumsNegated, 0, productOfSums
-					.size() - 1);
-
-			try {
-				return program.hP(convertList(productOfSumsNegated))
-						&& program.hP(convertList(productOfSums))
-						&& program.hP(termini)
-						&& program
-								.pRg$hO_CreateObject(ComputedInteractome.class
-										.getConstructor(List.class, List.class,
-												List.class));
-			} catch (SecurityException e) {
-				return false;
-			} catch (NoSuchMethodException e) {
-				return false;
-			}
-
 		} else {
 			return baseNormalForm.render(program, depth);
 		}
@@ -368,6 +515,7 @@ public class AstLogic extends AstNode {
 
 	@Override
 	public void resetType() {
+		type.reset();
 		left.resetType();
 		if (right != null) {
 			right.resetType();
@@ -435,14 +583,12 @@ public class AstLogic extends AstNode {
 			return false;
 		}
 
-		if (!left.getType().unify(Type.InteractomeType)) {
-			runner.appendTypeError(left.getType(), Type.InteractomeType, this,
-					context);
+		if (!left.getType().unify(type)) {
+			runner.appendTypeError(left.getType(), type, this, context);
 			return false;
 		}
-		if (!(right == null || right.getType().unify(Type.InteractomeType))) {
-			runner.appendTypeError(right.getType(), Type.InteractomeType, this,
-					context);
+		if (!(right == null || right.getType().unify(type))) {
+			runner.appendTypeError(right.getType(), type, this, context);
 			return false;
 		}
 		return true;

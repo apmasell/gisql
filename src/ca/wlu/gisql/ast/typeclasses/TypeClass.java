@@ -23,6 +23,10 @@ public class TypeClass<T> implements Renderable {
 	public static final TypeClass<Double> Fractional = new TypeClass<Double>(
 			"Fractional", Double.class, Type.MembershipType, Type.RealType);
 
+	public static final TypeClass<Object> Logic = new TypeClass<Object>(
+			"Logic", Object.class, Type.BooleanType, Type.InteractomeType,
+			Type.MembershipType);
+
 	public static boolean hasInstance(Type type, Set<TypeClass<?>> typeclasses) {
 		if (typeclasses.size() > 0) {
 			for (Type t : matchingTypes(typeclasses)) {
