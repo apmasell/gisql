@@ -30,6 +30,7 @@ public class TypeVariable extends Type {
 		originaltypeclass.add(typeclass);
 	}
 
+	/** Used by automatic code generation only. */
 	@Deprecated
 	public void addTypeClass(TypeClass<?> typeclass) {
 		originaltypeclass.add(typeclass);
@@ -65,6 +66,16 @@ public class TypeVariable extends Type {
 			return Object.class;
 		} else {
 			return self.getRootJavaType();
+		}
+	}
+
+	public boolean isAssigned() {
+		if (self == null) {
+			return false;
+		} else if (self instanceof TypeVariable) {
+			return ((TypeVariable) self).isAssigned();
+		} else {
+			return true;
 		}
 	}
 

@@ -183,7 +183,7 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 		return 0;
 	}
 
-	/** Anything of this type should be catable to the returned Java class. */
+	/** Anything of this type should be castable to the returned Java class. */
 	public abstract Class<?> getRootJavaType();
 
 	/**

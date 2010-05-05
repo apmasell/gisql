@@ -464,6 +464,21 @@ public class Rendering implements Opcodes {
 	}
 
 	/**
+	 * Calls a raw instruction. This assumes you know how you are manipulating
+	 * the object stack.
+	 */
+	public boolean g_Insn(int insn) {
+		method.visitInsn(insn);
+		return true;
+	}
+
+	public boolean g_InstanceOf(Class<?> type) {
+		method.visitInsn(DUP);
+		method.visitTypeInsn(INSTANCEOF, Type.getInternalName(type));
+		return true;
+	}
+
+	/**
 	 * Generate code to invoke a method given the arguments are already on the
 	 * operand stack.
 	 */
