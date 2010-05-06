@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.ast.AstLambda2;
-import ca.wlu.gisql.ast.AstLambdaParameter;
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstLiteralReference;
 import ca.wlu.gisql.ast.AstLogic;
@@ -19,6 +18,7 @@ import ca.wlu.gisql.ast.AstNative;
 import ca.wlu.gisql.ast.AstNativeConstructor;
 import ca.wlu.gisql.ast.AstNativeGenericFunction;
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.AstParameter;
 import ca.wlu.gisql.ast.functions.Comparison;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
@@ -124,7 +124,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 
 		add(defaultvalues, Type.FormatType, FileFormat.class);
 
-		AstLambdaParameter notparam = new AstLambdaParameter("__not");
+		AstParameter notparam = new AstParameter("__not");
 		notparam.getType().unify(Type.InteractomeType);
 		defaultvalues.put("not", new AstLambda2(notparam, AstLogic
 				.makeNegation(notparam)));

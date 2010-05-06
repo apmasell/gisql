@@ -1,6 +1,6 @@
 package ca.wlu.gisql.ast;
 
-import java.util.Set;
+import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
@@ -13,17 +13,22 @@ import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
- * The variable represented by a lambda expression. (i.e., the <b>x</b> in
- * <tt>(λ x. f <b>x</b> y)</tt>.)
+ * The variable represented by a lambda expression (i.e., the <b>x</b> in
+ * <tt>(λ x. f <b>x</b> y)</tt>.), or the witness in a graph.
  */
-public class AstLambdaParameter extends AstNode implements NamedVariable {
+public class AstParameter extends AstNode implements NamedVariable {
 
 	final String name;
 
-	final TypeVariable type = new TypeVariable();
+	final Type type;
 
-	public AstLambdaParameter(String name) {
+	public AstParameter(String name) {
+		this(name, new TypeVariable());
+	}
+
+	public AstParameter(String name, Type type) {
 		this.name = name;
+		this.type = type;
 	}
 
 	@Override
@@ -50,7 +55,7 @@ public class AstLambdaParameter extends AstNode implements NamedVariable {
 	 * stack.
 	 */
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.lRhO(name);
 	}
 

@@ -51,14 +51,13 @@ public class AstLambda1 extends AstNode {
 
 	/**
 	 * Set up a fake environment where the variable name is mapped to a
-	 * {@link AstLambdaParameter}. Then encapsulate the result in a phase 2
-	 * lambda.
+	 * {@link AstParameter}. Then encapsulate the result in a phase 2 lambda.
 	 */
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			ResolutionEnvironment environment) {
-		MaskedEnvironment<AstLambdaParameter> maskedenvironment = new MaskedEnvironment<AstLambdaParameter>(
-				new AstLambdaParameter(name), environment);
+		MaskedEnvironment<AstParameter> maskedenvironment = new MaskedEnvironment<AstParameter>(
+				new AstParameter(name), environment);
 		AstNode resultexpression = expression.resolve(runner, context,
 				maskedenvironment);
 		if (resultexpression == null) {

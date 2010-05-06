@@ -13,7 +13,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Phase 2 representation of a lambda expression where the parameter is
- * encapsulated as an {@link AstLambdaParameter}.
+ * encapsulated as an {@link AstParameter}.
  */
 public class AstLambda2 extends AstNode {
 
@@ -21,9 +21,9 @@ public class AstLambda2 extends AstNode {
 
 	private final Type type;
 
-	private final AstLambdaParameter variable;
+	private final AstParameter variable;
 
-	public AstLambda2(AstLambdaParameter variable, AstNode expression) {
+	public AstLambda2(AstParameter variable, AstNode expression) {
 		this.variable = variable;
 		this.expression = expression;
 		type = new ArrowType(variable.type, expression.getType());

@@ -37,21 +37,21 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class AstGraph2 extends AstNode {
 
 	private final class ConnectionComparator implements
-			Comparator<AstGraphWitness> {
+			Comparator<AstParameter> {
 		private final int start;
-		private final AstGraphWitness[] variables;
+		private final AstParameter[] variables;
 
-		private ConnectionComparator(AstGraphWitness[] variables, int start) {
+		private ConnectionComparator(AstParameter[] variables, int start) {
 			this.variables = variables;
 			this.start = start;
 		}
 
 		@Override
-		public int compare(AstGraphWitness left, AstGraphWitness right) {
+		public int compare(AstParameter left, AstParameter right) {
 			return score(right) - score(left);
 		}
 
-		private int score(AstGraphWitness node) {
+		private int score(AstParameter node) {
 			if (start == 0) {
 				return connections.degreeOf(node);
 			}
@@ -68,9 +68,9 @@ public class AstGraph2 extends AstNode {
 
 	private static final Logger log = Logger.getLogger(AstGraph2.class);
 
-	private final SimpleGraph<AstGraphWitness, DefaultEdge> connections;
+	private final SimpleGraph<AstParameter, DefaultEdge> connections;
 
-	private final SimpleGraph<AstGraphWitness, DefaultEdge> disconnections;
+	private final SimpleGraph<AstParameter, DefaultEdge> disconnections;
 
 	private final AstNode fromexpression;
 
@@ -80,8 +80,8 @@ public class AstGraph2 extends AstNode {
 
 	private final AstNode whereexpression;
 
-	public AstGraph2(SimpleGraph<AstGraphWitness, DefaultEdge> connections,
-			SimpleGraph<AstGraphWitness, DefaultEdge> disconnections,
+	public AstGraph2(SimpleGraph<AstParameter, DefaultEdge> connections,
+			SimpleGraph<AstParameter, DefaultEdge> disconnections,
 			AstNode fromexpression, AstNode whereexpression,
 			AstNode returnexpression) {
 		this.connections = connections;
@@ -137,15 +137,15 @@ public class AstGraph2 extends AstNode {
 			}
 
 			/* Sort the witnesses so that the highest degree witness is first. */
-			final AstGraphWitness[] variables = connections.vertexSet()
-					.toArray(new AstGraphWitness[0]);
+			final AstParameter[] variables = connections.vertexSet().toArray(
+					new AstParameter[0]);
 			for (int start = 0; start < variables.length - 1; start++) {
 				Arrays.sort(variables, start, variables.length,
 						new ConnectionComparator(variables, start));
 			}
 
 			/* Relocate the anonymous arguments into named local variables. */
-			Map<AstGraphWitness, Integer> indicies = new HashMap<AstGraphWitness, Integer>();
+			Map<AstParameter, Integer> indicies = new HashMap<AstParameter, Integer>();
 			for (int index = variables.length - 1; index >= 0; index--) {
 				if (!(subroutine.pPg() && subroutine.hR_CreateLocal(
 						variables[index].getVariableName(), Gene.class))) {
@@ -232,9 +232,8 @@ public class AstGraph2 extends AstNode {
 	}
 
 	private <T> boolean setupMatcher(Rendering<T> program,
-			SimpleGraph<AstGraphWitness, DefaultEdge> graph,
-			Map<AstGraphWitness, Integer> indicies, Method method,
-			StringBuffer sb) {
+			SimpleGraph<AstParameter, DefaultEdge> graph,
+			Map<AstParameter, Integer> indicies, Method method, StringBuffer sb) {
 		for (DefaultEdge edge : graph.edgeSet()) {
 			int source = indicies.get(graph.getEdgeSource(edge));
 			int target = indicies.get(graph.getEdgeTarget(edge));
@@ -266,7 +265,7 @@ public class AstGraph2 extends AstNode {
 		print.print(returnexpression);
 	}
 
-	private boolean showGraph(SimpleGraph<AstGraphWitness, DefaultEdge> graph,
+	private boolean showGraph(SimpleGraph<AstParameter, DefaultEdge> graph,
 			ShowablePrintWriter<AstNode> print, boolean first, boolean present) {
 		for (DefaultEdge edge : graph.edgeSet()) {
 			if (first) {

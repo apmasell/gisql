@@ -73,16 +73,16 @@ public class AstGraph1 extends AstNode {
 		 * Create graphs of present and absent edges. Also, create an new
 		 * environment with the graph parameters defined.
 		 */
-		SimpleGraph<AstGraphWitness, DefaultEdge> connections = new SimpleGraph<AstGraphWitness, DefaultEdge>(
+		SimpleGraph<AstParameter, DefaultEdge> connections = new SimpleGraph<AstParameter, DefaultEdge>(
 				DefaultEdge.class);
-		SimpleGraph<AstGraphWitness, DefaultEdge> disconnections = new SimpleGraph<AstGraphWitness, DefaultEdge>(
+		SimpleGraph<AstParameter, DefaultEdge> disconnections = new SimpleGraph<AstParameter, DefaultEdge>(
 				DefaultEdge.class);
 		ResolutionEnvironment boundenvironment = environment;
 
-		Map<String, AstGraphWitness> map = new HashMap<String, AstGraphWitness>();
+		Map<String, AstParameter> map = new HashMap<String, AstParameter>();
 		for (String variable : graph.vertexSet()) {
-			AstGraphWitness witness = new AstGraphWitness(variable);
-			boundenvironment = new MaskedEnvironment<AstGraphWitness>(witness,
+			AstParameter witness = new AstParameter(variable, Type.GeneType);
+			boundenvironment = new MaskedEnvironment<AstParameter>(witness,
 					boundenvironment);
 			connections.addVertex(witness);
 			disconnections.addVertex(witness);

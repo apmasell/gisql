@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstLambda2;
-import ca.wlu.gisql.ast.AstLambdaParameter;
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.AstParameter;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Token;
@@ -85,8 +85,8 @@ public abstract class ComputedInteractomeDescriptor extends Parseable {
 	}
 
 	private AstNode makeLogicFunction() {
-		AstLambdaParameter left = new AstLambdaParameter("__left");
-		AstLambdaParameter right = new AstLambdaParameter("__right");
+		AstParameter left = new AstParameter("__left");
+		AstParameter right = new AstParameter("__right");
 		left.getType().unify(Type.InteractomeType);
 		right.getType().unify(Type.InteractomeType);
 		return new AstLambda2(left, new AstLambda2(right,
