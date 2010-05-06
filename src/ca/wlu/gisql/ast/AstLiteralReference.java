@@ -53,7 +53,7 @@ public class AstLiteralReference extends AstNode {
 	 * static field allows the generated class to find the constant at run time.
 	 */
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.lFhO(field);
 	}
 

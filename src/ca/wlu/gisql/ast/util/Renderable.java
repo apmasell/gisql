@@ -6,6 +6,6 @@ package ca.wlu.gisql.ast.util;
  */
 public interface Renderable {
 
-	boolean render(Rendering rendering, int depth);
+	<C> boolean render(Rendering<C> rendering, int depth);
 
 }

@@ -62,7 +62,7 @@ public class AstLiteral extends AstNode {
 	 * constant pool.
 	 */
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.hO_AsObject(value);
 	}
 

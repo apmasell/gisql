@@ -166,7 +166,7 @@ public class RecordType extends Type implements Map<String, Type> {
 	}
 
 	@Override
-	public boolean render(Rendering rendering, int depth) {
+	public <T> boolean render(Rendering<T> rendering, int depth) {
 		try {
 			return rendering.g$hO_CreateMap(RecordType.class, null, fields)
 					&& rendering.lOhO()

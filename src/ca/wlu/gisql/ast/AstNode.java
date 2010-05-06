@@ -3,10 +3,12 @@ package ca.wlu.gisql.ast;
 import java.util.HashSet;
 import java.util.Set;
 
+import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.ast.util.Renderable;
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.RenderingFunction;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
@@ -68,7 +70,8 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	 * instantiated.
 	 */
 	public Class<? extends GenericFunction> render() {
-		Rendering program = new Rendering(toString(), getType(), 0);
+		Rendering<GenericFunction> program = new RenderingFunction(toString(),
+				getType(), new Type[0]);
 		if (render(program, 0)) {
 			return program.generate();
 		} else {
@@ -80,12 +83,13 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	 * A helper function to create closures when necessary during rendering.
 	 * This method should be called by any subclasses during rendering.
 	 */
-	public final boolean render(Rendering program, int depth) {
+	public final <T> boolean render(Rendering<T> program, int depth) {
 		int parameters = getLeftDepth() - depth;
 
 		if (parameters > 0 || this instanceof AstFixedPoint2) {
 			String command = toString();
-			Rendering subroutine = new Rendering(command, getType(), parameters);
+			Rendering<GenericFunction> subroutine = new RenderingFunction(
+					command, getType(), ((ArrowType) getType()).getParameters());
 			Set<String> freevars = this.freeVariables();
 			return subroutine.gF$_CreateFields(freevars)
 					&& renderSelf(subroutine, depth + parameters)
@@ -108,7 +112,7 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	 *            {@link Rendering} that are available to this node.
 	 * @return success
 	 */
-	protected abstract boolean renderSelf(Rendering program, int depth);
+	protected abstract <C> boolean renderSelf(Rendering<C> program, int depth);
 
 	/** Resets the state of the type system so that type checking may be redone. */
 	public abstract void resetType();

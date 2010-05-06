@@ -48,7 +48,7 @@ public class AstEnvironmentLoad extends AstNode {
 	}
 
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.lEhO(name) && program.g_Cast(type.getRootJavaType());
 	}
 

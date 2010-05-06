@@ -49,7 +49,7 @@ public class AstRecordGet extends AstNode {
 	}
 
 	@Override
-	protected boolean renderSelf(Rendering program, int depth) {
+	protected <T> boolean renderSelf(Rendering<T> program, int depth) {
 		try {
 			return parameter.render(program, depth)
 					&& program.hO(field)

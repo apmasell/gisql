@@ -53,7 +53,7 @@ public class AstRecordNew extends AstNode {
 	}
 
 	@Override
-	protected boolean renderSelf(Rendering program, int depth) {
+	protected <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.g$hO_CreateMap(SimpleRecord.class, origin, parameters);
 	}
 

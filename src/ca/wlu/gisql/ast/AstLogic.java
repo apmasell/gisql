@@ -43,7 +43,7 @@ public class AstLogic extends AstNode {
 			}
 
 			@Override
-			public boolean render(Rendering program, Operation operation) {
+			public <T> boolean render(Rendering<T> program, Operation operation) {
 				switch (operation) {
 				case Conjunct:
 					program.g_Insn(Opcodes.IAND);
@@ -65,7 +65,7 @@ public class AstLogic extends AstNode {
 			}
 
 			@Override
-			public boolean render(Rendering program, Operation operation) {
+			public <T> boolean render(Rendering<T> program, Operation operation) {
 				try {
 					switch (operation) {
 					case Conjunct:
@@ -90,7 +90,7 @@ public class AstLogic extends AstNode {
 		};
 		abstract Class<?> getJavaClass();
 
-		abstract boolean render(Rendering program, Operation operation);
+		abstract <T> boolean render(Rendering<T> program, Operation operation);
 	}
 
 	/** Convenience function for normalisation. */
@@ -382,7 +382,8 @@ public class AstLogic extends AstNode {
 	 * conjunctive normal form matrix of operations, and then calling the
 	 * {@link ComputedInteractome} constructor.
 	 */
-	private boolean renderInteractome(Rendering program, AstLogic normalForm) {
+	private <T> boolean renderInteractome(Rendering<T> program,
+			AstLogic normalForm) {
 		List<List<Long>> productOfSums = new ArrayList<List<Long>>();
 		List<List<Long>> productOfSumsNegated = new ArrayList<List<Long>>();
 		AstLiteralList termini = new AstLiteralList();
@@ -426,7 +427,7 @@ public class AstLogic extends AstNode {
 	 * Render an logic function of something not made of interactomes and cast
 	 * the result to an object.
 	 */
-	private boolean renderRaw(Rendering program, int depth,
+	private <T> boolean renderRaw(Rendering<T> program, int depth,
 			AstLogic normalForm, RawType rawtype) {
 		return normalForm.renderRaw(program, depth, rawtype)
 				&& program.pOhO_PrimitiveToObject(rawtype.getJavaClass());
@@ -436,7 +437,8 @@ public class AstLogic extends AstNode {
 	 * Render the logic of something that is not interactomes (i.e., booleans or
 	 * memberships).
 	 */
-	private boolean renderRaw(Rendering program, int depth, RawType rawtype) {
+	private <T> boolean renderRaw(Rendering<T> program, int depth,
+			RawType rawtype) {
 		if (left instanceof AstLogic) {
 			if (!((AstLogic) left).renderRaw(program, depth, rawtype)) {
 				return false;
@@ -469,7 +471,7 @@ public class AstLogic extends AstNode {
 	 * type check select the right one.
 	 */
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		AstNode baseNormalForm = distributeDisjunctOf(removeNegation());
 		if (baseNormalForm instanceof AstLogic) {
 			AstLogic normalForm = (AstLogic) baseNormalForm;

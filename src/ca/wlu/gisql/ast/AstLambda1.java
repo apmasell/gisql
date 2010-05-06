@@ -40,7 +40,7 @@ public class AstLambda1 extends AstNode {
 	}
 
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return raiseIllegalState();
 	}
 

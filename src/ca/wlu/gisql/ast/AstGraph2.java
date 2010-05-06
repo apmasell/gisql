@@ -20,6 +20,7 @@ import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.RenderingFunction;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.SubgraphMatcher;
@@ -114,13 +115,14 @@ public class AstGraph2 extends AstNode {
 	}
 
 	@Override
-	protected boolean renderSelf(Rendering program, int depth) {
+	protected <T> boolean renderSelf(Rendering<T> program, int depth) {
 		try {
 			String resultlist = "$" + Integer.toHexString(hashCode());
 			/* Create a subroutine that takes the witnesses as arguments. */
-			int arguments = connections.vertexSet().size();
-			Rendering subroutine = new Rendering(toString(), Type.UnitType,
-					arguments);
+			Type[] arguments = new Type[connections.vertexSet().size()];
+			Arrays.fill(arguments, Type.GeneType);
+			Rendering<GenericFunction> subroutine = new RenderingFunction(
+					toString(), Type.UnitType, arguments);
 
 			/* This will be our resultant list. */
 			if (!(program.pRg$hO_CreateObject(ArrayList.class.getConstructor()) && program
@@ -175,11 +177,12 @@ public class AstGraph2 extends AstNode {
 
 			Label skip = new Label();
 			return (whereexpression == null ? true : whereexpression.render(
-					subroutine, depth + arguments)
+					subroutine, depth + arguments.length)
 					&& subroutine.pOhO_ObjectToPrimitive(Boolean.class)
 					&& subroutine.jump(Opcodes.IFEQ, skip))
 					&& subroutine.lRhO(resultlist)
-					&& returnexpression.render(subroutine, depth + arguments)
+					&& returnexpression.render(subroutine, depth
+							+ arguments.length)
 					&& subroutine.g_InvokeMethod(List.class.getMethod("add",
 							Object.class))
 					&& subroutine.mark(skip)
@@ -228,7 +231,7 @@ public class AstGraph2 extends AstNode {
 		}
 	}
 
-	private boolean setupMatcher(Rendering program,
+	private <T> boolean setupMatcher(Rendering<T> program,
 			SimpleGraph<AstGraphWitness, DefaultEdge> graph,
 			Map<AstGraphWitness, Integer> indicies, Method method,
 			StringBuffer sb) {

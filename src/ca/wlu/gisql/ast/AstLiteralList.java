@@ -125,7 +125,7 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 	}
 
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.g$hO_CreateList(list);
 	}
 

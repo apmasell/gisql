@@ -26,7 +26,7 @@ public class AstNativeGenericFunction extends AstNative {
 	 */
 
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		try {
 			return program.pRg$hO_CreateObject(function.getClass()
 					.getConstructors()[0])

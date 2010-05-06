@@ -87,7 +87,7 @@ public class TypeClass<T> implements Renderable {
 	}
 
 	@Override
-	public boolean render(Rendering rendering, int depth) {
+	public <X> boolean render(Rendering<X> rendering, int depth) {
 		for (Field field : TypeClass.class.getFields()) {
 			if (Modifier.isStatic(field.getModifiers())
 					&& TypeClass.class.isAssignableFrom(field.getType())) {

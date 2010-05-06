@@ -56,7 +56,7 @@ public class AstFixedPointParameter extends AstNode implements NamedVariable {
 	}
 
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		try {
 			return program.lRhO(name)
 					&& program.pPg$hO_BoxArguments(type.getArrowDepth())

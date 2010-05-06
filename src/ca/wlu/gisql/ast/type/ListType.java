@@ -54,7 +54,7 @@ public class ListType extends Type {
 	}
 
 	@Override
-	public boolean render(Rendering rendering, int depth) {
+	public <T> boolean render(Rendering<T> rendering, int depth) {
 		return rendering.hP(contents)
 				&& rendering.pRg$hO_CreateObject(ListType.class
 						.getConstructors()[0]);

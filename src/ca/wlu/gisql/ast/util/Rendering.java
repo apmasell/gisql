@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,10 +43,10 @@ import ca.wlu.gisql.runner.ExpressionRunner;
  * (the counterpart of the variable stack), and a constant (<b>X</b>). The
  * suffix <b>$</b> indicates that an action may be repeated.
  */
-public class Rendering implements Opcodes {
+public abstract class Rendering<T> implements Opcodes {
 
 	/** Represents a variable passed as an argument (in a box). */
-	class ArgumentVariable implements Variable, Renderable {
+	protected class ArgumentVariable implements Variable, Renderable {
 		private final int offset;
 
 		public ArgumentVariable(int offset) {
@@ -68,11 +69,12 @@ public class Rendering implements Opcodes {
 			method.visitVarInsn(ALOAD, 1);
 			method.visitLdcInsn(offset);
 			method.visitInsn(AALOAD);
+			method.visitTypeInsn(CHECKCAST, type);
 			return true;
 		}
 
 		@Override
-		public boolean render(Rendering rendering, int depth) {
+		public <X> boolean render(Rendering<X> rendering, int depth) {
 			if (rendering != Rendering.this) {
 				throw new IllegalArgumentException(
 						"Out of context use of a variable.");
@@ -81,7 +83,7 @@ public class Rendering implements Opcodes {
 		}
 
 		@Override
-		public boolean store(Rendering source) {
+		public <X> boolean store(Rendering<X> source) {
 			throw new IllegalStateException("Arguments cannot be stored.");
 		}
 
@@ -105,7 +107,7 @@ public class Rendering implements Opcodes {
 		}
 
 		@Override
-		public boolean render(Rendering rendering, int depth) {
+		public <T> boolean render(Rendering<T> rendering, int depth) {
 			if (value.render(rendering, depth)) {
 				rendering.method.visitTypeInsn(CHECKCAST, Type
 						.getInternalName(clazz));
@@ -120,10 +122,10 @@ public class Rendering implements Opcodes {
 	/** The dynamic class loader. */
 	private static class ClassCreator extends ClassLoader {
 		@SuppressWarnings("unchecked")
-		Class<? extends GenericFunction> load(String name, ClassWriter writer) {
+		<T> Class<? extends T> load(String name, ClassWriter writer) {
 			byte[] bytecode = writer.toByteArray();
 			try {
-				Class<? extends GenericFunction> clazz = (Class<? extends GenericFunction>) defineClass(
+				Class<? extends T> clazz = (Class<? extends T>) defineClass(
 						name, bytecode, 0, bytecode.length);
 				if (clazz.getConstructors().length == 1) {
 					if (System.getProperty("gisql.debug", "false").equals(
@@ -165,7 +167,7 @@ public class Rendering implements Opcodes {
 	 * A variable free in the current context, which has been stored, by the
 	 * caller, in a field.
 	 */
-	class ExternalVariable implements Variable {
+	protected class ExternalVariable implements Variable {
 		private final FieldVisitor field;
 		private final String name;
 
@@ -191,11 +193,12 @@ public class Rendering implements Opcodes {
 			method.visitVarInsn(ALOAD, 0);
 			method.visitFieldInsn(GETFIELD, Rendering.this.name, name, Type
 					.getDescriptor(Object.class));
+			method.visitTypeInsn(CHECKCAST, type);
 			return true;
 		}
 
 		@Override
-		public boolean store(Rendering source) {
+		public <X> boolean store(Rendering<X> source) {
 			source.method.visitInsn(SWAP);
 			source.method.visitInsn(DUP_X1);
 			source.method.visitInsn(SWAP);
@@ -215,7 +218,7 @@ public class Rendering implements Opcodes {
 	 * A reference to the current continuation. Effectively, a reference to
 	 * <tt>this</tt>.
 	 */
-	public class SelfReference implements Variable {
+	protected class SelfReference implements Variable {
 
 		private final String name;
 
@@ -240,7 +243,7 @@ public class Rendering implements Opcodes {
 		}
 
 		@Override
-		public boolean store(Rendering source) {
+		public <X> boolean store(Rendering<X> source) {
 			throw new IllegalStateException("Functions cannot be stored.");
 		}
 
@@ -252,7 +255,7 @@ public class Rendering implements Opcodes {
 	}
 
 	/** A variable stored on the variable stack. Effectively, a local variable. */
-	class StackVariable implements Variable {
+	protected class StackVariable implements Variable {
 		private final int index;
 
 		private final String name;
@@ -287,7 +290,7 @@ public class Rendering implements Opcodes {
 		}
 
 		@Override
-		public boolean store(Rendering source) {
+		public <X> boolean store(Rendering<X> source) {
 			if (source != Rendering.this) {
 				throw new IllegalArgumentException(
 						"Local variables can only be set from local context.");
@@ -310,7 +313,7 @@ public class Rendering implements Opcodes {
 	 * The interface for variable-like things. That is, things which have a name
 	 * that can be made to produce a value on the operand stack.
 	 */
-	public interface Variable {
+	protected interface Variable {
 
 		/** Do any cleanup when this variable has fallen out of use. */
 		boolean finish();
@@ -326,18 +329,18 @@ public class Rendering implements Opcodes {
 		 * @param source
 		 *            the place in which the code to do this will be generated.
 		 */
-		boolean store(Rendering source);
+		<T> boolean store(Rendering<T> source);
 	}
 
 	private static final ClassCreator creator = new ClassCreator();
 
-	private static final String FieldRunner = "$runner";
+	protected static final String FieldRunner = "$runner";
 
-	private static final Logger log = Logger.getLogger(Rendering.class);
+	protected static final Logger log = Logger.getLogger(Rendering.class);
 
 	private static final Map<Class<?>, Class<?>> primitives = new HashMap<Class<?>, Class<?>>();
 
-	private final static String TypeRunner = Type
+	protected final static String TypeRunner = Type
 			.getDescriptor(ExpressionRunner.class);
 
 	private final static String TypeType = Type
@@ -365,13 +368,13 @@ public class Rendering implements Opcodes {
 
 	private int index = 0;
 
-	private MethodVisitor method;
+	protected MethodVisitor method;
 
-	private final String name;
+	protected final String name;
 
-	private final Stack<Renderable> parameters = new Stack<Renderable>();
+	protected final Stack<Renderable> parameters = new Stack<Renderable>();
 
-	private final Stack<Variable> references = new Stack<Variable>();
+	protected final Stack<Variable> references = new Stack<Variable>();
 
 	private final ClassWriter writer;
 
@@ -387,75 +390,26 @@ public class Rendering implements Opcodes {
 	 *            arguments to the {@link GenericFunction#run(Object...)}
 	 *            method.
 	 */
-	public Rendering(String representation, ca.wlu.gisql.ast.type.Type type,
-			int argumentcount) {
-		name = "GisqlFunction" + hashCode();
+	protected Rendering(String name, Class<T> clazz) {
+		this.name = name + hashCode();
 
 		/* Create a new class extending GenericFunction to fill. */
 		writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		writer.visit(V1_6, ACC_PUBLIC, name, null, "java/lang/Object",
-				new String[] { Type.getInternalName(GenericFunction.class) });
+		writer.visit(V1_6, ACC_PUBLIC, this.name, null,
+				clazz.isInterface() ? "java/lang/Object" : Type
+						.getInternalName(clazz),
+				clazz.isInterface() ? new String[] { Type
+						.getInternalName(clazz) } : null);
 
-		/* Environment Field */
-		FieldVisitor fv = writer.visitField(ACC_PRIVATE + ACC_FINAL,
-				FieldRunner, TypeRunner, null, null);
-		fv.visitEnd();
+		makeField(FieldRunner, TypeRunner);
+	}
 
-		/* Constructor */
-		MethodVisitor constructor = writer.visitMethod(ACC_PUBLIC, "<init>",
-				"(" + TypeRunner + ")V", null, null);
-		constructor.visitCode();
-		constructor.visitVarInsn(ALOAD, 0);
-		constructor.visitMethodInsn(INVOKESPECIAL, "java/lang/Object",
-				"<init>", "()V");
-		constructor.visitVarInsn(ALOAD, 0);
-		constructor.visitVarInsn(ALOAD, 1);
-		constructor.visitFieldInsn(PUTFIELD, name, FieldRunner, TypeRunner);
-		constructor.visitInsn(Opcodes.RETURN);
-		constructor.visitMaxs(0, 0);
-		constructor.visitEnd();
+	protected abstract void cleanupMethod();
 
-		/* toString() */
-		MethodVisitor tostring = writer.visitMethod(ACC_PUBLIC, "toString",
-				"()Ljava/lang/String;", null, null);
-		tostring.visitCode();
-		tostring.visitLdcInsn(representation);
-		tostring.visitInsn(ARETURN);
-		tostring.visitEnd();
-		tostring.visitMaxs(0, 0);
-
-		/* getDescription() */
-		MethodVisitor getdescription = writer.visitMethod(ACC_PUBLIC,
-				"getDescription", "()Ljava/lang/String;", null, null);
-		getdescription.visitCode();
-		getdescription.visitLdcInsn("User defined function: " + representation);
-		getdescription.visitInsn(ARETURN);
-		getdescription.visitEnd();
-		getdescription.visitMaxs(0, 0);
-
-		/* getType() */
-		MethodVisitor gettype = writer.visitMethod(ACC_PUBLIC, "getType", "()"
-				+ TypeType, null, null);
-		gettype.visitCode();
-		method = gettype;
-		if (!type.render(this, 0)) {
-			throw new IllegalStateException("Unable to render type " + type
-					+ ".");
-		}
-		gettype.visitInsn(ARETURN);
-		gettype.visitEnd();
-		gettype.visitMaxs(0, 0);
-
-		index = 1;
-		references.clear();
-		method = writer.visitMethod(ACC_PUBLIC, "run",
-				"([Ljava/lang/Object;)Ljava/lang/Object;", null, null);
-		method.visitCode();
-		for (int offset = 0; offset < argumentcount; offset++) {
-			ArgumentVariable variable = new ArgumentVariable(offset);
-			references.push(variable);
-			parameters.push(variable);
-		}
+	protected final void endMethod() {
+		method.visitEnd();
+		method.visitMaxs(0, 0);
+		method = null;
 	}
 
 	public boolean g_Cast(Class<?> type) {
@@ -569,12 +523,11 @@ public class Rendering implements Opcodes {
 	}
 
 	/** Finish code generation and load the resulting class. */
-	public Class<? extends GenericFunction> generate() {
-
-		method.visitInsn(ARETURN);
-		method.visitMaxs(0, 0);
-		method.visitEnd();
-
+	public Class<? extends T> generate() {
+		if (method != null) {
+			cleanupMethod();
+			endMethod();
+		}
 		return creator.load(name, writer);
 
 	}
@@ -607,7 +560,7 @@ public class Rendering implements Opcodes {
 	 *            continuation. Names will be copied into the destination
 	 *            continuation.
 	 */
-	public boolean gF$_lVhF$_CopyVariablesFromParent(Rendering source,
+	public boolean gF$_lVhF$_CopyVariablesFromParent(Rendering<?> source,
 			Set<String> variablenames) {
 		for (String variablename : variablenames) {
 			if (!(source.lRhO(variablename) && getReferenceByName(variablename)
@@ -649,8 +602,8 @@ public class Rendering implements Opcodes {
 	 * Finish a subroutine by generating it and then creating a reference to it
 	 * in the current continuation.
 	 */
-	public boolean hO_CreateSubroutine(Rendering subroutine) {
-		Class<?> clazz = subroutine.generate();
+	public <X> boolean hO_CreateSubroutine(Rendering<X> subroutine) {
+		Class<? extends X> clazz = subroutine.generate();
 		return pRg$hO_CreateObject(clazz.getConstructors()[0]);
 	}
 
@@ -658,7 +611,7 @@ public class Rendering implements Opcodes {
 		return hP(new Renderable() {
 
 			@Override
-			public boolean render(Rendering rendering, int depth) {
+			public <X> boolean render(Rendering<X> rendering, int depth) {
 				return rendering.hO(value);
 			}
 		});
@@ -676,7 +629,7 @@ public class Rendering implements Opcodes {
 		return hP(new Renderable() {
 
 			@Override
-			public boolean render(Rendering rendering, int depth) {
+			public <X> boolean render(Rendering<X> rendering, int depth) {
 				return rendering.hO_AsObject(value);
 			}
 		});
@@ -776,6 +729,29 @@ public class Rendering implements Opcodes {
 	public boolean lRhO(String name) {
 		Variable reference = getReferenceByName(name);
 		return reference != null && reference.load();
+	}
+
+	protected void makeField(String name, String type) {
+		FieldVisitor fv = writer.visitField(ACC_PRIVATE + ACC_FINAL, name,
+				type, null, null);
+		fv.visitEnd();
+
+	}
+
+	protected String makeSignature(Class<?> returntype,
+			Class<?>... parametertypes) {
+		StringBuilder signature = new StringBuilder();
+		signature.append('(');
+		for (Class<?> clazz : parametertypes) {
+			signature.append(Type.getDescriptor(clazz));
+		}
+		signature.append(')');
+		if (returntype == null) {
+			signature.append('V');
+		} else {
+			signature.append(Type.getDescriptor(returntype));
+		}
+		return signature.toString();
 	}
 
 	/** Label the current point in the code for jumping purposes. */
@@ -941,6 +917,24 @@ public class Rendering implements Opcodes {
 		}
 		method.visitMethodInsn(INVOKESPECIAL, classname, "<init>", descriptor);
 		return true;
+	}
+
+	protected final void startMethod(int modifiers, String name,
+			Class<?> returntype, Class<?>... parametertypes) {
+		if (method != null) {
+			throw new IllegalStateException(
+					"Can only render one method at a time.");
+		}
+
+		method = writer.visitMethod(modifiers, name, makeSignature(returntype,
+				parametertypes), null, null);
+		method.visitCode();
+
+		index = 1;
+		while (references.size() > 0
+				&& !(references.peek() instanceof Rendering<?>.ExternalVariable)) {
+			references.pop();
+		}
 	}
 
 	@Override

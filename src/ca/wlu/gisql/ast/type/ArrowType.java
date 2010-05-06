@@ -68,6 +68,16 @@ public class ArrowType extends Type {
 		return 1 + result.getArrowDepth();
 	}
 
+	public Type[] getParameters() {
+		Type[] parameters = new Type[getArrowDepth()];
+		ArrowType current = this;
+		for (int index = 0; index < parameters.length; index++) {
+			parameters[index] = current.operand;
+			current = (ArrowType) current.result;
+		}
+		return parameters;
+	}
+
 	@Override
 	public Class<?> getRootJavaType() {
 		return GenericFunction.class;
@@ -84,7 +94,7 @@ public class ArrowType extends Type {
 	}
 
 	@Override
-	public boolean render(Rendering rendering, int depth) {
+	public <T> boolean render(Rendering<T> rendering, int depth) {
 		return rendering.hP(result)
 				&& rendering.hP(operand)
 				&& rendering.pRg$hO_CreateObject(ArrowType.class
@@ -131,5 +141,4 @@ public class ArrowType extends Type {
 		return value instanceof GenericFunction
 				&& ((GenericFunction) value).getType().canUnify(this);
 	}
-
 }

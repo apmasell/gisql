@@ -85,7 +85,7 @@ public class TypeVariable extends Type {
 	}
 
 	@Override
-	public boolean render(Rendering rendering, int depth) {
+	public <T> boolean render(Rendering<T> rendering, int depth) {
 		if (self == null) {
 			String uglyname = "$" + Integer.toHexString(hashCode());
 			if (rendering.hasReference(uglyname)) {

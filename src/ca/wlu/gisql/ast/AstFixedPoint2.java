@@ -51,7 +51,7 @@ public class AstFixedPoint2 extends AstNode {
 	 * on the stack.
 	 */
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.hR_CreateSelfReference(self.name)
 				&& expression.render(program, depth) && program.pR(self.name);
 	}

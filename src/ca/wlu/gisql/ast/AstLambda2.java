@@ -52,7 +52,7 @@ public class AstLambda2 extends AstNode {
 	 * variable stack, run the inner code, then restores the variable stack.
 	 */
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.pPg()
 				&& program.hR_CreateLocal(variable.name, variable.getType()
 						.getRootJavaType())

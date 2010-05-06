@@ -16,7 +16,7 @@ public class Comparison extends AstNative {
 	}
 
 	@Override
-	public boolean renderSelf(Rendering program, int depth) {
+	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		Label elsepart = new Label();
 		Label end = new Label();
 		return program.pPg() && program.pOhO_ObjectToPrimitive(Boolean.class)

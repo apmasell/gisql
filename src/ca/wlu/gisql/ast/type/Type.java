@@ -198,7 +198,7 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	 * Create code to instantiate this type object in a dynamically generated
 	 * class.
 	 */
-	public boolean render(Rendering rendering, int depth) {
+	public <T> boolean render(Rendering<T> rendering, int depth) {
 		if (registeredtypes.contains(this)) {
 			try {
 				return rendering.hO(toString())
