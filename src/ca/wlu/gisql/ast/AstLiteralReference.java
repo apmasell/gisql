@@ -2,13 +2,14 @@ package ca.wlu.gisql.ast;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Set;
 
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -36,7 +37,7 @@ public class AstLiteralReference extends AstNode {
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 	}
 
 	public Precedence getPrecedence() {

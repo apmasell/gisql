@@ -1,10 +1,11 @@
 package ca.wlu.gisql.ast;
 
-import java.util.Set;
+import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.parser.descriptors.AssignmentDescriptor;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -27,7 +28,7 @@ public class AstEnvironmentStore extends AstNode {
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 		node.freeVariables(variables);
 	}
 

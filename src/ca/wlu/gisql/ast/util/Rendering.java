@@ -48,10 +48,12 @@ public abstract class Rendering<T> implements Opcodes {
 	/** Represents a variable passed as an argument (in a box). */
 	protected class ArgumentVariable implements Variable, Renderable {
 		private final int offset;
+		private final String type;
 
-		public ArgumentVariable(int offset) {
+		public ArgumentVariable(int offset, String type) {
 			super();
 			this.offset = offset;
+			this.type = type;
 		}
 
 		@Override
@@ -170,9 +172,11 @@ public abstract class Rendering<T> implements Opcodes {
 	protected class ExternalVariable implements Variable {
 		private final FieldVisitor field;
 		private final String name;
+		private final String type;
 
-		public ExternalVariable(String name) {
+		public ExternalVariable(String name, String type) {
 			this.name = name;
+			this.type = type;
 			field = writer.visitField(ACC_PUBLIC, name, Type
 					.getDescriptor(Object.class), null, null);
 			field.visitEnd();
@@ -541,10 +545,16 @@ public abstract class Rendering<T> implements Opcodes {
 		return null;
 	}
 
-	public boolean gF$_CreateFields(Set<String> variablenames) {
-		for (String variablename : variablenames) {
-			Variable variable = new ExternalVariable(variablename);
-			references.push(variable);
+	public boolean gF$_CreateFields(List<VariableInformation> variables) {
+		Set<String> names = new HashSet<String>();
+
+		for (int index = variables.size() - 1; index >= 0; index--) {
+			if (!names.contains(variables.get(index).getName())) {
+				names.add(variables.get(index).getName());
+
+				references.push(new ExternalVariable(variables.get(index)
+						.getName(), variables.get(index).getInternalName()));
+			}
 		}
 		return true;
 	}
@@ -561,11 +571,16 @@ public abstract class Rendering<T> implements Opcodes {
 	 *            continuation.
 	 */
 	public boolean gF$_lVhF$_CopyVariablesFromParent(Rendering<?> source,
-			Set<String> variablenames) {
-		for (String variablename : variablenames) {
-			if (!(source.lRhO(variablename) && getReferenceByName(variablename)
-					.store(source))) {
-				return false;
+			List<VariableInformation> variables) {
+		Set<String> names = new HashSet<String>();
+
+		for (int index = variables.size() - 1; index >= 0; index--) {
+			if (!names.contains(variables.get(index).getName())) {
+				names.add(variables.get(index).getName());
+				if (!(source.lRhO(variables.get(index).getName()) && getReferenceByName(
+						variables.get(index).getName()).store(source))) {
+					return false;
+				}
 			}
 		}
 		return true;
@@ -824,21 +839,6 @@ public abstract class Rendering<T> implements Opcodes {
 	}
 
 	/**
-	 * Pop the specified number of parameters of the parameter stack and
-	 * generate code so that they will be on the operand stack in the
-	 * appropriate order.
-	 */
-	public boolean pPg(int count) {
-		while (count > 0) {
-			if (!pPg()) {
-				return false;
-			}
-			count--;
-		}
-		return true;
-	}
-
-	/**
 	 * Remove the specified number of parameters from the parameter stack,
 	 * generate code for them, and package them as an array, which is left on
 	 * the operand stack..
@@ -880,42 +880,30 @@ public abstract class Rendering<T> implements Opcodes {
 	public boolean pRg$hO_CreateObject(Constructor<?> constructor) {
 		String classname = Type
 				.getInternalName(constructor.getDeclaringClass());
-		boolean needsrunner = GenericFunction.class
-				.isAssignableFrom(constructor.getDeclaringClass());
-		return pRg$hO_CreateObject(classname, needsrunner, constructor
-				.getParameterTypes().length
-				- (needsrunner ? 1 : 0), Type
-				.getConstructorDescriptor(constructor));
-	}
 
-	/**
-	 * Load parameters off the parameter stack and feed them to a Java
-	 * constructor, leaving the result object on the operand stack. If the
-	 * constructor takes {@link ExpressionRunner} as the first parameter, this
-	 * will be provided if specified.
-	 * 
-	 * @param classname
-	 *            the internal name of the class top be created.
-	 * @param needsrunner
-	 *            whether the constructor needs a the {@link ExpressionRunner}
-	 *            as the first parameter
-	 * @param parametercount
-	 *            the number of parameters the constructor requires (not
-	 *            including the runner)
-	 * @param descriptor
-	 *            the internal signature of the constructor
-	 */
-	public boolean pRg$hO_CreateObject(String classname, boolean needsrunner,
-			int parametercount, String descriptor) {
 		method.visitTypeInsn(NEW, classname);
 		method.visitInsn(DUP);
-		if (needsrunner && !lNhO()) {
-			return false;
+
+		for (Class<?> clazz : constructor.getParameterTypes()) {
+			if (ExpressionRunner.class.isAssignableFrom(clazz)) {
+
+				if (!lNhO()) {
+					return false;
+				}
+			} else {
+				if (!pPg()) {
+					return false;
+				}
+				if (clazz != Object.class && !clazz.isPrimitive()) {
+					method
+							.visitTypeInsn(CHECKCAST, Type
+									.getInternalName(clazz));
+				}
+			}
 		}
-		if (!pPg(parametercount)) {
-			return false;
-		}
-		method.visitMethodInsn(INVOKESPECIAL, classname, "<init>", descriptor);
+
+		method.visitMethodInsn(INVOKESPECIAL, classname, "<init>",
+				makeSignature(null, constructor.getParameterTypes()));
 		return true;
 	}
 

@@ -5,13 +5,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
+
+import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -64,7 +66,7 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 		for (AstNode node : list) {
 			node.freeVariables(variables);
 		}

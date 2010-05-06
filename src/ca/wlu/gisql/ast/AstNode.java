@@ -1,7 +1,6 @@
 package ca.wlu.gisql.ast;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
@@ -10,6 +9,7 @@ import ca.wlu.gisql.ast.util.Renderable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.RenderingFunction;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Parser;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -33,13 +33,14 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	 * Find the variables which are not bound in this expression node. For
 	 * instance, in <tt>(λ x. <b>f</b> x <b>y</b>)</tt>.
 	 */
-	public Set<String> freeVariables() {
-		Set<String> variables = new HashSet<String>();
+	public ListOrderedSet<VariableInformation> freeVariables() {
+		ListOrderedSet<VariableInformation> variables = new ListOrderedSet<VariableInformation>();
 		freeVariables(variables);
 		return variables;
 	}
 
-	protected abstract void freeVariables(Set<String> variables);
+	protected abstract void freeVariables(
+			ListOrderedSet<VariableInformation> variables);
 
 	/**
 	 * Determine the depth of the left-deep application nesting. In
@@ -90,12 +91,12 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 			String command = toString();
 			Rendering<GenericFunction> subroutine = new RenderingFunction(
 					command, getType(), ((ArrowType) getType()).getParameters());
-			Set<String> freevars = this.freeVariables();
-			return subroutine.gF$_CreateFields(freevars)
+			ListOrderedSet<VariableInformation> freevars = this.freeVariables();
+			return subroutine.gF$_CreateFields(freevars.asList())
 					&& renderSelf(subroutine, depth + parameters)
 					&& program.hO_CreateSubroutine(subroutine)
 					&& subroutine.gF$_lVhF$_CopyVariablesFromParent(program,
-							freevars);
+							freevars.asList());
 		} else {
 			return renderSelf(program, depth);
 		}

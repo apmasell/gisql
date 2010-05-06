@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
@@ -22,6 +21,7 @@ import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.RenderingFunction;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.SubgraphMatcher;
 import ca.wlu.gisql.interactome.Interactome;
@@ -93,15 +93,15 @@ public class AstGraph2 extends AstNode {
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
-		Set<String> toberemoved = new HashSet<String>();
-		for (AstGraphWitness variable : connections.vertexSet()) {
-			if (!variables.contains(variable.getVariableName())) {
-				toberemoved.add(variable.getVariableName());
-			}
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
+		if (whereexpression != null) {
+			whereexpression.freeVariables(variables);
 		}
 		returnexpression.freeVariables(variables);
-		variables.removeAll(toberemoved);
+		fromexpression.freeVariables(variables);
+		for (AstParameter parameter : connections.vertexSet()) {
+			variables.remove(parameter.variableInformation);
+		}
 	}
 
 	@Override
@@ -130,9 +130,9 @@ public class AstGraph2 extends AstNode {
 				return false;
 			}
 
-			Set<String> freevars = this.freeVariables();
-			freevars.add(resultlist);
-			if (!subroutine.gF$_CreateFields(freevars)) {
+			ListOrderedSet<VariableInformation> freevars = this.freeVariables();
+			freevars.add(new VariableInformation(resultlist, type));
+			if (!subroutine.gF$_CreateFields(freevars.asList())) {
 				return false;
 			}
 
@@ -189,7 +189,7 @@ public class AstGraph2 extends AstNode {
 					&& subroutine.hO_AsObject(0)
 					&& program.hO_CreateSubroutine(subroutine)
 					&& subroutine.gF$_lVhF$_CopyVariablesFromParent(program,
-							freevars)
+							freevars.asList())
 					&& program.g_InvokeMethod(SubgraphMatcher.class.getMethod(
 							"match", GenericFunction.class))
 					&& program.lRhO(resultlist);

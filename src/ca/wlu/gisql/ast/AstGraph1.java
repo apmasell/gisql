@@ -2,8 +2,8 @@ package ca.wlu.gisql.ast;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -11,6 +11,7 @@ import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.MaskedEnvironment;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.graph.MaybeEdge;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
@@ -41,7 +42,7 @@ public class AstGraph1 extends AstNode {
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 		raiseIllegalState();
 	}
 

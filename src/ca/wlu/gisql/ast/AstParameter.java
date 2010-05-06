@@ -7,6 +7,7 @@ import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.NamedVariable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -22,6 +23,8 @@ public class AstParameter extends AstNode implements NamedVariable {
 
 	final Type type;
 
+	final VariableInformation variableInformation;
+
 	public AstParameter(String name) {
 		this(name, new TypeVariable());
 	}
@@ -29,11 +32,12 @@ public class AstParameter extends AstNode implements NamedVariable {
 	public AstParameter(String name, Type type) {
 		this.name = name;
 		this.type = type;
+		variableInformation = new VariableInformation(name, type);
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
-		variables.add(name);
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
+		variables.add(variableInformation);
 	}
 
 	public Precedence getPrecedence() {

@@ -1,7 +1,6 @@
 package ca.wlu.gisql.ast;
 
-import java.util.Set;
-
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.type.ArrowType;
@@ -11,6 +10,7 @@ import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.ast.util.NamedVariable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -31,14 +31,16 @@ public class AstFixedPointParameter extends AstNode implements NamedVariable {
 	final String name;
 
 	final Type type = new ArrowType(new TypeVariable(), new TypeVariable());
+	final VariableInformation variableInformation;
 
 	public AstFixedPointParameter(String name) {
 		this.name = name;
+		variableInformation = new VariableInformation(name, type);
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
-		variables.add(name);
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
+		variables.add(variableInformation);
 	}
 
 	public Precedence getPrecedence() {

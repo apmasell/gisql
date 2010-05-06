@@ -1,11 +1,12 @@
 package ca.wlu.gisql.ast;
 
-import java.util.Set;
+import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
@@ -30,12 +31,9 @@ public class AstLambda2 extends AstNode {
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
-		boolean cover = variables.contains(variable.name);
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 		expression.freeVariables(variables);
-		if (!cover) {
-			variables.remove(variable.name);
-		}
+		variables.remove(variable.variableInformation);
 	}
 
 	public Precedence getPrecedence() {

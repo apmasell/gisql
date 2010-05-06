@@ -3,8 +3,8 @@ package ca.wlu.gisql.ast;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
+import org.apache.commons.collections15.set.ListOrderedSet;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 
@@ -13,6 +13,7 @@ import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.typeclasses.TypeClass;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
+import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.logic.Complement;
 import ca.wlu.gisql.interactome.logic.ComputedInteractome;
@@ -260,7 +261,7 @@ public class AstLogic extends AstNode {
 	}
 
 	@Override
-	protected void freeVariables(Set<String> variables) {
+	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 		left.freeVariables(variables);
 		if (right != null) {
 			right.freeVariables(variables);
