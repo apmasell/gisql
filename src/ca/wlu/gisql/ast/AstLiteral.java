@@ -57,6 +57,11 @@ public class AstLiteral extends AstNode {
 		return value;
 	}
 
+	@Override
+	public int hashCode() {
+		return value.hashCode() * 17;
+	}
+
 	/**
 	 * This kind of constant must be representable as a Java constant.
 	 * Effectively, any primitive type or String. Object types cannot be in the

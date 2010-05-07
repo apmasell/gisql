@@ -10,6 +10,7 @@ public class ShowableStringBuilder<E> extends ShowablePrintWriter<E> {
 	public static <E> String toString(Show<E> showable, E context) {
 		ShowableStringBuilder<E> print = new ShowableStringBuilder<E>(context);
 		print.print(showable);
+		print.close();
 		return print.toString();
 	}
 

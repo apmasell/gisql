@@ -8,7 +8,6 @@ import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstRecordNew;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionFull;
 import ca.wlu.gisql.parser.TokenListOf;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
@@ -22,15 +21,12 @@ import ca.wlu.gisql.util.Precedence;
 
 public class RecordNewDescriptor extends Parseable {
 	public static final Parseable descriptor = new RecordNewDescriptor();
-	private static final Token[] tokens = new Token[] {
-			new TokenMaybe(new TokenExpressionFull(';')),
-			new TokenListOf(
-					new TokenSequence(TokenName.self, TokenMatchCharacter
-							.get('='), new TokenExpressionFull(null)), ';'),
-			TokenMatchCharacter.get('>') };
 
 	private RecordNewDescriptor() {
-		super();
+		super(new TokenMaybe(new TokenExpressionFull(';')), new TokenListOf(
+				new TokenSequence(TokenName.self, TokenMatchCharacter.get('='),
+						new TokenExpressionFull(null)), ';'),
+				TokenMatchCharacter.get('>'));
 	}
 
 	@Override
@@ -53,7 +49,7 @@ public class RecordNewDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '<' };
 	}
 
@@ -66,10 +62,4 @@ public class RecordNewDescriptor extends Parseable {
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
-
 }

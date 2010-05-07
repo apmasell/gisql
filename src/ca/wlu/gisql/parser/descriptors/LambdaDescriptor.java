@@ -7,7 +7,6 @@ import ca.wlu.gisql.ast.AstLambda1;
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -25,10 +24,8 @@ public class LambdaDescriptor extends Parseable {
 
 	public static final Parseable descriptor = new LambdaDescriptor();
 
-	private static final Token[] tokens = new Token[] { TokenName.self,
-			TokenExpressionRight.self };
-
 	private LambdaDescriptor() {
+		super(TokenName.self, TokenExpressionRight.self);
 	}
 
 	@Override
@@ -45,7 +42,7 @@ public class LambdaDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '\'' };
 	}
 
@@ -57,10 +54,4 @@ public class LambdaDescriptor extends Parseable {
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
-
 }

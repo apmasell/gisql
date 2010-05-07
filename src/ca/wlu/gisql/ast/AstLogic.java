@@ -286,6 +286,13 @@ public class AstLogic extends AstNode {
 		return type;
 	}
 
+	@Override
+	public int hashCode() {
+		return left.hashCode() * 17
+				+ (right == null ? 0 : right.hashCode() * 19)
+				+ operation.hashCode();
+	}
+
 	/**
 	 * Populate a matrix of terms as needed by {@link ComputedInteractome} from
 	 * an expression.

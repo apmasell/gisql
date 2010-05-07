@@ -6,7 +6,6 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.AstLogic;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -17,7 +16,9 @@ import ca.wlu.gisql.util.Precedence;
 public class Complement extends Parseable {
 	public static final Parseable descriptor = new Complement();
 
-	private static final Token[] tokens = new Token[] { TokenExpressionChild.self };
+	private Complement() {
+		super(TokenExpressionChild.self);
+	}
 
 	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
@@ -33,7 +34,7 @@ public class Complement extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '!', '¬' };
 	}
 
@@ -46,8 +47,4 @@ public class Complement extends Parseable {
 		return Precedence.UnaryPrefix;
 	}
 
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
 }

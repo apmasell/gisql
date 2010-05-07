@@ -47,6 +47,11 @@ public class AstTypeOf extends AstNode {
 	}
 
 	@Override
+	public int hashCode() {
+		return parameter.hashCode() * 227;
+	}
+
+	@Override
 	public <T> boolean renderSelf(Rendering<T> program, int depth) {
 		return program.hO(parameter.getType().toString());
 	}

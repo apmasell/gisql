@@ -6,7 +6,6 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstTypeOf;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -21,9 +20,8 @@ public class TypeOfDescriptor extends Parseable {
 
 	public static final Parseable descriptor = new TypeOfDescriptor();
 
-	private static final Token[] tokens = new Token[] { TokenExpressionRight.self };
-
 	private TypeOfDescriptor() {
+		super(TokenExpressionRight.self);
 	}
 
 	@Override
@@ -43,7 +41,7 @@ public class TypeOfDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '#' };
 	}
 
@@ -54,11 +52,6 @@ public class TypeOfDescriptor extends Parseable {
 
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
-	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
 	}
 
 }

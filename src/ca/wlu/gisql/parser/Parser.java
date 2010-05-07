@@ -222,18 +222,15 @@ public class Parser {
 	 */
 	private AstNode processOperator(Parseable operator, AstNode left,
 			Precedence level) {
-		Token[] todo = operator.tasks();
 		List<AstNode> params = new ArrayList<AstNode>();
 
 		if (left != null) {
 			params.add(left);
 		}
-		if (todo != null) {
-			for (Token task : todo) {
-				consumeWhitespace();
-				if (!task.parse(this, level, params)) {
-					return null;
-				}
+		for (Token task : operator) {
+			consumeWhitespace();
+			if (!task.parse(this, level, params)) {
+				return null;
 			}
 		}
 		return operator.construct(runner, params, error, context);

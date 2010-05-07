@@ -50,11 +50,12 @@ class OutputGraph extends AbstractOutput {
 						new GeneIdProvider(), new GeneNameProvider(),
 						new InteractionNameProvider());
 				dotexporter.export(writer, graph);
+				break;
 			case gml:
 				GmlExporter<Gene, Interaction> gmlexporter = new GmlExporter<Gene, Interaction>();
 
 				gmlexporter.export(writer, graph);
-
+				break;
 			case graphml:
 				GraphMLExporter<Gene, Interaction> graphmlexporter = new GraphMLExporter<Gene, Interaction>(
 						new GeneIdProvider(), new GeneNameProvider(),
@@ -62,7 +63,7 @@ class OutputGraph extends AbstractOutput {
 						new InteractionNameProvider());
 
 				graphmlexporter.export(writer, graph);
-
+				break;
 			case adjacency:
 			case laplace:
 				MatrixExporter<Gene, Interaction> matrixexporter = new MatrixExporter<Gene, Interaction>();

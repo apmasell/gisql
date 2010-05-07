@@ -24,13 +24,10 @@ public class AstFixedPointParameter extends AstNode implements NamedVariable {
 
 	private static final Logger log = Logger.getLogger(Rendering.class);
 
-	String classname;
-
-	int index = -1;
-
 	final String name;
 
 	final Type type = new ArrowType(new TypeVariable(), new TypeVariable());
+
 	final VariableInformation variableInformation;
 
 	public AstFixedPointParameter(String name) {

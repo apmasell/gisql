@@ -6,7 +6,6 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -20,10 +19,8 @@ import ca.wlu.gisql.util.Precedence;
 public class ColonOrderDescriptor extends Parseable {
 	public static final Parseable descriptor = new ColonOrderDescriptor();
 
-	private static final Token[] tokens = new Token[] { TokenName.self };
-
 	private ColonOrderDescriptor() {
-		super();
+		super(TokenName.self);
 	}
 
 	@Override
@@ -40,7 +37,7 @@ public class ColonOrderDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { ':' };
 	}
 
@@ -52,11 +49,6 @@ public class ColonOrderDescriptor extends Parseable {
 	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Value;
-	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
 	}
 
 }

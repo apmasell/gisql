@@ -1,8 +1,10 @@
 package ca.wlu.gisql.parser;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import name.masella.iterator.ArrayIterator;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -21,13 +23,23 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * {@link #construct(ExpressionRunner, List, Stack, ExpressionContext)} with
  * parsed data.
  */
-public abstract class Parseable implements
+public abstract class Parseable implements Iterable<Token>,
 		Prioritizable<ParserKnowledgebase, Precedence>,
 		Show<ParserKnowledgebase> {
 
 	public enum Order {
 		CharacterTokens, ExpressionCharacterTokens, Tokens
 	};
+
+	private final Token[] tokens;
+
+	protected Parseable(Token... tokens) {
+		super();
+		if (tokens.length == 0) {
+			throw new IllegalArgumentException();
+		}
+		this.tokens = tokens;
+	}
 
 	/**
 	 * After parsing is successful, this method must return the abstract syntax
@@ -51,7 +63,7 @@ public abstract class Parseable implements
 	protected abstract String getInfo();
 
 	/** Determine is the supplied character is valid for this syntax. */
-	public abstract char[] getOperators();
+	protected abstract char[] getOperators();
 
 	/**
 	 * Determines the position of this operator relative to other elements.
@@ -65,6 +77,16 @@ public abstract class Parseable implements
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Returns the tokens desired in the ordered desired. Each token's parse
+	 * results, if any, will be placed in the params list in
+	 * {@link #construct(ExpressionRunner, List, Stack, ExpressionContext)}. Not
+	 * all tokens return results though.
+	 */
+	public final Iterator<Token> iterator() {
+		return new ArrayIterator<Token>(tokens);
 	}
 
 	@Override
@@ -84,18 +106,10 @@ public abstract class Parseable implements
 		case Tokens:
 		}
 
-		for (Token token : tasks()) {
+		for (Token token : this) {
 			print.print(' ');
 			print.print(token);
 		}
 		print.println();
 	}
-
-	/**
-	 * Returns the tokens desired in the ordered desired. Each token's parse
-	 * results, if any, will be placed in the params list in
-	 * {@link #construct(ExpressionRunner, List, Stack, ExpressionContext)}. Not
-	 * all tokens return results though.
-	 */
-	public abstract Token[] tasks();
 }

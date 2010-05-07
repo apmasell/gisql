@@ -42,6 +42,7 @@ public class DatabaseManager {
 			throw new RuntimeException("Failed to connect to database.");
 		}
 		properties.load(is);
+		is.close();
 		return properties;
 	}
 
@@ -71,6 +72,8 @@ public class DatabaseManager {
 				DbSpecies interactome = new DbSpecies(this, species, species_id);
 				all.add(interactome);
 			}
+			rs.close();
+			statement.close();
 			return all;
 		} catch (SQLException e) {
 			log.error("Database error fetching species.", e);
@@ -95,12 +98,13 @@ public class DatabaseManager {
 					ResultSet memberrs = membersStatement.executeQuery();
 					while (memberrs.next()) {
 						Interactome interactome = speciesById.get(memberrs
-								.getInt(1));
+								.getLong(1));
 						if (interactome != null) {
 							list.add(interactome);
 						}
 					}
 					memberrs.close();
+					membersStatement.close();
 					environment.putArray(name, list);
 				} catch (SQLException e) {
 					log.error("Error processing array " + name, e);
@@ -108,6 +112,7 @@ public class DatabaseManager {
 
 			}
 			arrayrs.close();
+			arrayStatement.close();
 		} catch (SQLException e) {
 			log.error("Error processing arrays. ", e);
 		}
@@ -127,6 +132,7 @@ public class DatabaseManager {
 				functions.add(cog);
 			}
 		}
+		interactionStatement.close();
 		rs.close();
 
 		interactionStatement = connection
@@ -138,7 +144,7 @@ public class DatabaseManager {
 			functions.add(GeneOntology.makeGO(term));
 		}
 		rs.close();
-
+		interactionStatement.close();
 		return functions;
 	}
 
@@ -168,6 +174,7 @@ public class DatabaseManager {
 			}
 		}
 		rs.close();
+		statement.close();
 	}
 
 	void pullInteractions(DbSpecies interactome) throws SQLException {
@@ -182,5 +189,6 @@ public class DatabaseManager {
 			interactome.addInteraction(identifier1, identifier2, membership);
 		}
 		rs.close();
+		interactionStatement.close();
 	}
 }

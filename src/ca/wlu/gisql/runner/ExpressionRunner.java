@@ -68,6 +68,7 @@ public class ExpressionRunner {
 		print.print('"');
 		errors.add(new ExpressionError(context.getAstContext(node), print
 				.toString(), null));
+		print.close();
 	}
 
 	public UserEnvironment getEnvironment() {
@@ -98,6 +99,7 @@ public class ExpressionRunner {
 				linenumber++;
 				if (!run(line, type, context
 						.getContextForLine(linenumber, line))) {
+					input.close();
 					return false;
 				}
 			}

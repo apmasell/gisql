@@ -8,7 +8,6 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstParameter;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -16,12 +15,10 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
 public abstract class ComputedInteractomeDescriptor extends Parseable {
-
-	private static final Token[] tokens = new Token[] { TokenExpressionChild.self };
-
 	private final String function;
 
 	private final String name;
+
 	private final Precedence nestinglevel;
 
 	private final AstNode node;
@@ -30,9 +27,9 @@ public abstract class ComputedInteractomeDescriptor extends Parseable {
 
 	public ComputedInteractomeDescriptor(Precedence nestinglevel,
 			char[] symbols, String name, String function) {
-		super();
+		super(TokenExpressionChild.self);
 		this.nestinglevel = nestinglevel;
-		this.symbols = symbols;
+		this.symbols = symbols.clone();
 		this.name = name;
 		this.function = function;
 		node = makeLogicFunction();
@@ -49,7 +46,7 @@ public abstract class ComputedInteractomeDescriptor extends Parseable {
 		return construct(left, right);
 	}
 
-	public final char[] getAlternateOperators() {
+	protected final char[] getAlternateOperators() {
 		return symbols;
 	}
 
@@ -71,7 +68,7 @@ public abstract class ComputedInteractomeDescriptor extends Parseable {
 	}
 
 	@Override
-	public final char[] getOperators() {
+	protected final char[] getOperators() {
 		return symbols;
 	}
 
@@ -91,11 +88,6 @@ public abstract class ComputedInteractomeDescriptor extends Parseable {
 		right.getType().unify(Type.InteractomeType);
 		return new AstLambda2(left, new AstLambda2(right,
 				construct(left, right)));
-	}
-
-	@Override
-	public final Token[] tasks() {
-		return tokens;
 	}
 
 }

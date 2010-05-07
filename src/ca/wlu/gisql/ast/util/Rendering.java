@@ -7,6 +7,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -336,7 +338,12 @@ public abstract class Rendering<T> implements Opcodes {
 		<T> boolean store(Rendering<T> source);
 	}
 
-	private static final ClassCreator creator = new ClassCreator();
+	private static final ClassCreator creator = AccessController
+			.doPrivileged(new PrivilegedAction<ClassCreator>() {
+				public ClassCreator run() {
+					return new ClassCreator();
+				}
+			});
 
 	protected static final String FieldRunner = "$runner";
 
@@ -346,9 +353,6 @@ public abstract class Rendering<T> implements Opcodes {
 
 	protected final static String TypeRunner = Type
 			.getDescriptor(ExpressionRunner.class);
-
-	private final static String TypeType = Type
-			.getDescriptor(ca.wlu.gisql.ast.type.Type.class);
 
 	static {
 		primitives.put(Byte.class, byte.class);

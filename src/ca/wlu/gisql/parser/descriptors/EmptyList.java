@@ -11,7 +11,6 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenListOf;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -28,11 +27,8 @@ public class EmptyList extends Parseable {
 	public static final Parseable descriptor = new EmptyList();
 	private static final Logger log = Logger.getLogger(EmptyList.class);
 
-	private static final Token[] tokens = new Token[] { TokenMatchCharacter
-			.get(']') };
-
 	private EmptyList() {
-		super();
+		super(TokenMatchCharacter.get(']'));
 	}
 
 	@Override
@@ -56,7 +52,7 @@ public class EmptyList extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '[' };
 	}
 
@@ -67,11 +63,6 @@ public class EmptyList extends Parseable {
 
 	public Precedence getPrecedence() {
 		return Precedence.Value;
-	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
 	}
 
 }

@@ -13,11 +13,8 @@ import ca.wlu.gisql.util.Precedence;
 
 public class LiteralTokenDescriptor extends Parseable {
 
-	private final Token[] tokens;
-
 	public LiteralTokenDescriptor(Token token) {
-		super();
-		tokens = new Token[] { token };
+		super(token);
 	}
 
 	@Override
@@ -32,7 +29,7 @@ public class LiteralTokenDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return null;
 	}
 
@@ -44,10 +41,4 @@ public class LiteralTokenDescriptor extends Parseable {
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
-
 }

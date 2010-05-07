@@ -10,7 +10,6 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.Unit;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -23,11 +22,8 @@ public class UnitDescriptor extends Parseable {
 
 	private static final Logger log = Logger.getLogger(UnitDescriptor.class);
 
-	private static final Token[] tokens = new Token[] { TokenMatchCharacter
-			.get(')') };
-
 	private UnitDescriptor() {
-		super();
+		super(TokenMatchCharacter.get(')'));
 	}
 
 	@Override
@@ -50,7 +46,7 @@ public class UnitDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '(' };
 	}
 
@@ -63,10 +59,4 @@ public class UnitDescriptor extends Parseable {
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
-
 }

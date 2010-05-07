@@ -10,7 +10,6 @@ import ca.wlu.gisql.ast.AstLiteralReference;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenMaybe;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -21,9 +20,10 @@ import ca.wlu.gisql.util.Precedence;
 final class OutputDescriptor extends Parseable {
 	private static final Logger log = Logger.getLogger(OutputDescriptor.class);
 
-	private static final Token[] tokens = new Token[] {
-			new TokenMaybe(TokenExpressionRight.self),
-			TokenExpressionRight.self };
+	public OutputDescriptor() {
+		super(new TokenMaybe(TokenExpressionRight.self),
+				TokenExpressionRight.self);
+	}
 
 	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
@@ -55,7 +55,7 @@ final class OutputDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '@' };
 	}
 
@@ -66,10 +66,5 @@ final class OutputDescriptor extends Parseable {
 
 	public Precedence getPrecedence() {
 		return Precedence.Channel;
-	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
 	}
 }

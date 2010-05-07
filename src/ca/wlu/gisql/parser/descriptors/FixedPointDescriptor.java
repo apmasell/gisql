@@ -7,7 +7,6 @@ import ca.wlu.gisql.ast.AstFixedPoint1;
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -22,10 +21,8 @@ public class FixedPointDescriptor extends Parseable {
 
 	public static final Parseable descriptor = new FixedPointDescriptor();
 
-	private static final Token[] tokens = new Token[] { TokenName.self,
-			TokenExpressionRight.self };
-
 	private FixedPointDescriptor() {
+		super(TokenName.self, TokenExpressionRight.self);
 	}
 
 	@Override
@@ -42,7 +39,7 @@ public class FixedPointDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '$' };
 	}
 
@@ -54,10 +51,4 @@ public class FixedPointDescriptor extends Parseable {
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
-
 }

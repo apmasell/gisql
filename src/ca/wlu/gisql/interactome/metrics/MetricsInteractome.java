@@ -1,7 +1,9 @@
 package ca.wlu.gisql.interactome.metrics;
 
+import java.util.Iterator;
 import java.util.Set;
 
+import name.masella.iterator.ArrayIterator;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -13,7 +15,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * An interactome for which we compute user-specified statistics (
  * {@link Metrics}).
  */
-public class MetricsInteractome extends ProcessableInteractome {
+public class MetricsInteractome extends ProcessableInteractome implements
+		Iterable<Metrics> {
 
 	private final Metrics[] metrics;
 	private final Interactome source;
@@ -25,12 +28,12 @@ public class MetricsInteractome extends ProcessableInteractome {
 	public MetricsInteractome(Interactome source, Metrics[] metrics) {
 		super();
 		this.source = source;
-		this.metrics = metrics;
+		this.metrics = metrics.clone();
 	}
 
 	public double calculateMembership(Gene gene) {
 		double membership = source.calculateMembership(gene);
-		for (Metrics metric : getMetrics()) {
+		for (Metrics metric : this) {
 			metric.countGene(membership);
 		}
 		return membership;
@@ -38,7 +41,7 @@ public class MetricsInteractome extends ProcessableInteractome {
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
-		for (Metrics metric : getMetrics()) {
+		for (Metrics metric : this) {
 			metric.countInteraction(membership);
 		}
 		return membership;
@@ -53,12 +56,13 @@ public class MetricsInteractome extends ProcessableInteractome {
 		return source.getConstruction();
 	}
 
-	public Metrics[] getMetrics() {
-		return metrics;
-	}
-
 	public Precedence getPrecedence() {
 		return source.getPrecedence();
+	}
+
+	@Override
+	public Iterator<Metrics> iterator() {
+		return new ArrayIterator<Metrics>(metrics);
 	}
 
 	public double membershipOfUnknown() {

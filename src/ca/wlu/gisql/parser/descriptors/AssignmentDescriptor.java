@@ -7,7 +7,6 @@ import ca.wlu.gisql.ast.AstEnvironmentStore;
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.parser.TokenName;
@@ -24,8 +23,10 @@ import ca.wlu.gisql.util.Precedence;
 public final class AssignmentDescriptor extends Parseable {
 	public static final Parseable self = new AssignmentDescriptor();
 
-	private static final Token[] tokens = new Token[] { TokenName.self,
-			TokenMatchCharacter.get('='), TokenExpressionChild.self };
+	private AssignmentDescriptor() {
+		super(TokenName.self, TokenMatchCharacter.get('='),
+				TokenExpressionChild.self);
+	}
 
 	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
@@ -46,7 +47,7 @@ public final class AssignmentDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return null;
 	}
 
@@ -57,10 +58,5 @@ public final class AssignmentDescriptor extends Parseable {
 
 	public Precedence getPrecedence() {
 		return Precedence.Assignment;
-	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
 	}
 }

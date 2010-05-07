@@ -84,7 +84,6 @@ public class ThreadedExpressionRunner extends ExpressionRunner {
 			ExpressionRunListener listener) {
 		super(environment, listener);
 		worker = new Thread(new Runner());
-		worker.start();
 	}
 
 	/** Check if an expression is currently being processed. */
@@ -126,6 +125,10 @@ public class ThreadedExpressionRunner extends ExpressionRunner {
 				return false;
 			}
 		}
+	}
+
+	public void start() {
+		worker.start();
 	}
 
 }

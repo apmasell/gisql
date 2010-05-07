@@ -27,6 +27,7 @@ public class AltNamesSet extends LazySqlSet<String> {
 			set.add(rs.getString(1));
 		}
 		rs.close();
+		statement.close();
 	}
 
 }

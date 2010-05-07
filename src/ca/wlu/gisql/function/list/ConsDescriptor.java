@@ -6,7 +6,6 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -15,10 +14,8 @@ import ca.wlu.gisql.util.Precedence;
 
 public class ConsDescriptor extends Parseable {
 
-	private static final Token[] tokens = new Token[] { TokenExpressionChild.self };
-
 	ConsDescriptor() {
-		super();
+		super(TokenExpressionChild.self);
 	}
 
 	@Override
@@ -39,7 +36,7 @@ public class ConsDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { ',' };
 	}
 
@@ -52,10 +49,4 @@ public class ConsDescriptor extends Parseable {
 	public Precedence getPrecedence() {
 		return Precedence.Junction;
 	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
-
 }

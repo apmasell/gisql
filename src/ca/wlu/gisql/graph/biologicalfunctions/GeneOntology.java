@@ -62,7 +62,7 @@ public class GeneOntology implements BiologicalFunction {
 			if (distance == -1) {
 				return 0;
 			} else {
-				return 1 / distance;
+				return 1.0 / distance;
 			}
 		} else {
 			return 0;

@@ -7,7 +7,6 @@ import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstRecordGet;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -16,10 +15,9 @@ import ca.wlu.gisql.util.Precedence;
 
 public class RecordGetDescriptor extends Parseable {
 	public static final Parseable descriptor = new RecordGetDescriptor();
-	private static final Token[] tokens = new Token[] { TokenName.self };
 
 	private RecordGetDescriptor() {
-		super();
+		super(TokenName.self);
 	}
 
 	@Override
@@ -35,7 +33,7 @@ public class RecordGetDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '.' };
 	}
 
@@ -48,10 +46,4 @@ public class RecordGetDescriptor extends Parseable {
 	public Precedence getPrecedence() {
 		return Precedence.UnaryPostfix;
 	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
-
 }

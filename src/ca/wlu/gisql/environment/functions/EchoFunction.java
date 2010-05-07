@@ -24,11 +24,16 @@ public final class EchoFunction extends Function {
 	@Override
 	public Object run(Object... parameters) {
 		String filename = runner.getEnvironment().getOutput();
-		PrintStream print;
+
 		try {
-			print = filename == null ? System.out : new PrintStream(
-					new FileOutputStream(filename, true));
-			print.println(parameters[0]);
+			if (filename == null) {
+				System.out.println(parameters[0]);
+			} else {
+				PrintStream print = new PrintStream(new FileOutputStream(
+						filename, true));
+				print.println(parameters[0]);
+				print.close();
+			}
 		} catch (IOException e) {
 			log.error("Failed to echo.", e);
 		}

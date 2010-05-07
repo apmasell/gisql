@@ -11,7 +11,6 @@ import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.BuiltInResolver;
 import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenName;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -22,8 +21,6 @@ import ca.wlu.gisql.util.Precedence;
 public class HelpDescriptor extends Parseable {
 
 	public static final Parseable descriptor = new HelpDescriptor();
-
-	private static final Token[] tokens = new Token[] { TokenName.self };
 
 	public static void helpFor(StringBuilder sb, String name, Type type,
 			Object value) {
@@ -43,6 +40,7 @@ public class HelpDescriptor extends Parseable {
 	}
 
 	private HelpDescriptor() {
+		super(TokenName.self);
 	}
 
 	@Override
@@ -75,7 +73,7 @@ public class HelpDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '?' };
 	}
 
@@ -86,11 +84,6 @@ public class HelpDescriptor extends Parseable {
 
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
-	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
 	}
 
 }

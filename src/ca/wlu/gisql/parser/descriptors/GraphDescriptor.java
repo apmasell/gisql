@@ -21,7 +21,6 @@ import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.graph.MaybeEdge;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.parser.TokenHasCharacter;
 import ca.wlu.gisql.parser.TokenMaybe;
@@ -196,19 +195,16 @@ public class GraphDescriptor extends Parseable {
 
 	}
 
-	public static Parseable descriptor = new GraphDescriptor();
-
-	private static Token[] tokens = new Token[] {
-			new TokenReservedWord("for"),
-			new TokenTree(',', '(', ')', new TokenSequence(
-					new TokenHasCharacter('!', '¬'), TokenName.self)),
-			new TokenReservedWord("in"),
-			TokenExpressionChild.self,
-			new TokenMaybe(new TokenSequence(new TokenReservedWord("where"),
-					TokenExpressionChild.self)),
-			new TokenReservedWord("return"), TokenExpressionChild.self };
+	public final static Parseable descriptor = new GraphDescriptor();
 
 	private GraphDescriptor() {
+		super(new TokenReservedWord("for"), new TokenTree(',', '(', ')',
+				new TokenSequence(new TokenHasCharacter('!', '¬'),
+						TokenName.self)), new TokenReservedWord("in"),
+				TokenExpressionChild.self, new TokenMaybe(new TokenSequence(
+						new TokenReservedWord("where"),
+						TokenExpressionChild.self)), new TokenReservedWord(
+						"return"), TokenExpressionChild.self);
 	}
 
 	@Override
@@ -249,7 +245,7 @@ public class GraphDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return null;
 	}
 
@@ -294,11 +290,6 @@ public class GraphDescriptor extends Parseable {
 			}
 		}
 		return true;
-	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
 	}
 
 }

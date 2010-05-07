@@ -91,6 +91,7 @@ public class ComputedInteractome implements Interactome {
 			}
 		}
 		expression = print.toString();
+		print.close();
 	}
 
 	private double calculateMembership(double[] memberships) {

@@ -7,7 +7,6 @@ import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.parser.TokenReal;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -16,8 +15,9 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
 final class CutDescriptor extends Parseable {
-	private final Token[] tokens = new Token[] { TokenReal.self,
-			TokenMatchCharacter.get('}') };
+	public CutDescriptor() {
+		super(TokenReal.self, TokenMatchCharacter.get('}'));
+	}
 
 	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
@@ -32,7 +32,7 @@ final class CutDescriptor extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '{' };
 	}
 
@@ -45,8 +45,4 @@ final class CutDescriptor extends Parseable {
 		return Precedence.UnaryPostfix;
 	}
 
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
 }

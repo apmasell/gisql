@@ -5,7 +5,6 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenListOf;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
@@ -17,12 +16,10 @@ import ca.wlu.gisql.util.Precedence;
 public class LiteralList extends Parseable {
 
 	public static final Parseable descriptor = new LiteralList();
-	private static final Token[] tokens = new Token[] {
-			new TokenListOf(TokenExpressionRight.self, ','),
-			TokenMatchCharacter.get(']') };
 
 	private LiteralList() {
-		super();
+		super(new TokenListOf(TokenExpressionRight.self, ','),
+				TokenMatchCharacter.get(']'));
 	}
 
 	@Override
@@ -37,7 +34,7 @@ public class LiteralList extends Parseable {
 	}
 
 	@Override
-	public char[] getOperators() {
+	protected char[] getOperators() {
 		return new char[] { '[' };
 	}
 
@@ -49,10 +46,4 @@ public class LiteralList extends Parseable {
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}
-
-	@Override
-	public Token[] tasks() {
-		return tokens;
-	}
-
 }

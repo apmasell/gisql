@@ -147,7 +147,7 @@ public class ParserKnowledgebase {
 					.add((ComputedInteractomeDescriptor) operator);
 		}
 
-		for (Token token : operator.tasks()) {
+		for (Token token : operator) {
 			token.addReservedWords(reservedwords);
 		}
 	}

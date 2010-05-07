@@ -64,7 +64,7 @@ class OutputText extends AbstractOutput {
 	@Override
 	public boolean postpare() {
 		if (super.postpare() && source.postpare()) {
-			for (Metrics metric : ((MetricsInteractome) source).getMetrics()) {
+			for (Metrics metric : (MetricsInteractome) source) {
 				print.print(metric);
 			}
 			print.close();
