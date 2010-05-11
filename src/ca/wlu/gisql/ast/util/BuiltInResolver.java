@@ -20,6 +20,8 @@ import ca.wlu.gisql.ast.AstNativeGenericFunction;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstParameter;
 import ca.wlu.gisql.ast.functions.Comparison;
+import ca.wlu.gisql.ast.functions.MissingValue;
+import ca.wlu.gisql.ast.functions.NullDefault;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
 import ca.wlu.gisql.environment.functions.ClearFunction;
@@ -45,6 +47,8 @@ import ca.wlu.gisql.function.arithmetic.NumberSubtract;
 import ca.wlu.gisql.function.arithmetic.Real2Number;
 import ca.wlu.gisql.function.arithmetic.SquareRoot;
 import ca.wlu.gisql.function.comparisons.Equal;
+import ca.wlu.gisql.function.comparisons.GenomicSimilarityCluster;
+import ca.wlu.gisql.function.comparisons.GenomicSimilarityScore;
 import ca.wlu.gisql.function.comparisons.GreaterThan;
 import ca.wlu.gisql.function.comparisons.GreaterThanOrEqualTo;
 import ca.wlu.gisql.function.comparisons.LessThan;
@@ -130,6 +134,8 @@ public class BuiltInResolver implements ResolutionEnvironment {
 				.makeNegation(notparam)));
 
 		addDefault(new Comparison());
+		addDefault(new MissingValue());
+		addDefault(new NullDefault());
 
 		addDefault(AveragePatchFunction.class);
 		addDefault(BigIntersection.class);
@@ -153,6 +159,8 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(GenomeCardinality.class);
 		addDefault(GenomeFuzziness.class);
 		addDefault(GenomeSize.class);
+		addDefault(GenomicSimilarityCluster.class);
+		addDefault(GenomicSimilarityScore.class);
 		addDefault(GreaterThan.class);
 		addDefault(GreaterThanOrEqualTo.class);
 		addDefault(InteractomeCardinality.class);
