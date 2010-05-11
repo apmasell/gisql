@@ -69,6 +69,15 @@ public class TypeVariable extends Type {
 		}
 	}
 
+	@Override
+	public Type getTerminalMaybe() {
+		if (self == null) {
+			return new MaybeType(this);
+		} else {
+			return self.getTerminalMaybe();
+		}
+	}
+
 	public boolean isAssigned() {
 		if (self == null) {
 			return false;

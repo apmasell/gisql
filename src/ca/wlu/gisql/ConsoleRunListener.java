@@ -64,7 +64,9 @@ public class ConsoleRunListener implements ExpressionRunListener {
 	}
 
 	private void print(Object value) {
-		if (value instanceof String) {
+		if (value == null) {
+			System.out.print("missing");
+		} else if (value instanceof String) {
 			System.out.print('"');
 			System.out.print(value);
 			System.out.print('"');

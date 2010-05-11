@@ -25,21 +25,11 @@ public abstract class AstNative extends AstNode {
 		super();
 		this.name = name;
 		this.description = description;
-		if (types.length == 1) {
-			if (types[0].getArrowDepth() == 0) {
-				throw new IllegalArgumentException(
-						"Needs to be a function type.");
-			}
+		if (types.length == 0) {
+			throw new IllegalArgumentException("Need a type.");
+		} else if (types.length == 1) {
 			type = types[0];
 		} else {
-			if (types.length < 2) {
-				throw new IllegalArgumentException("Need at least two types.");
-			}
-			for (Type type : types) {
-				if (type == null) {
-					throw new IllegalArgumentException("Type cannot be null.");
-				}
-			}
 			type = new ArrowType(types);
 		}
 	}

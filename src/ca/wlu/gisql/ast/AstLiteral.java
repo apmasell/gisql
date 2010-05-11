@@ -90,7 +90,11 @@ public class AstLiteral extends AstNode {
 		if (isString) {
 			print.print('"');
 		}
-		print.print(value);
+		if (value == null) {
+			print.print("missing");
+		} else {
+			print.print(value);
+		}
 		if (isString) {
 			print.print('"');
 		}

@@ -35,5 +35,10 @@ public class TokenExpressionFull extends Token {
 	@Override
 	public void show(ShowablePrintWriter<Object> print) {
 		print.print("<exp₀>");
+		if (end != null) {
+			print.print(" [");
+			print.print(end);
+			print.print("]");
+		}
 	}
 }

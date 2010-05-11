@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.type.MaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.BuiltInResolver;
@@ -163,6 +164,17 @@ public class ExpressionRunner {
 					.getConstructors()[0];
 			GenericFunction function = ctor.newInstance(this);
 			value = function.run();
+
+			if (value == null
+					&& !function.getType().canUnify(
+							new MaybeType(new TypeVariable()))) {
+				listener.reportErrors(Collections
+						.singletonList(new ExpressionError(context,
+								"Machine failure.", null)));
+				return false;
+
+			}
+
 		} catch (IllegalArgumentException e) {
 			log.error("Failed to access field.", e);
 		} catch (SecurityException e) {
@@ -173,14 +185,6 @@ public class ExpressionRunner {
 			log.error("Failed to access field.", e);
 		} catch (InvocationTargetException e) {
 			log.error("Failed to access field.", e);
-		}
-
-		if (value == null) {
-			listener.reportErrors(Collections
-					.singletonList(new ExpressionError(context,
-							"Machine failure.", null)));
-			return false;
-
 		}
 
 		if (value instanceof Interactome) {

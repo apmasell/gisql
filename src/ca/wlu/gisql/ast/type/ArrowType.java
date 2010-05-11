@@ -71,9 +71,10 @@ public class ArrowType extends Type {
 	public Type[] getParameters() {
 		Type[] parameters = new Type[getArrowDepth()];
 		ArrowType current = this;
-		for (int index = 0; index < parameters.length; index++) {
-			parameters[index] = current.operand;
+		parameters[0] = operand;
+		for (int index = 1; index < parameters.length; index++) {
 			current = (ArrowType) current.result;
+			parameters[index] = current.operand;
 		}
 		return parameters;
 	}
@@ -81,6 +82,11 @@ public class ArrowType extends Type {
 	@Override
 	public Class<?> getRootJavaType() {
 		return GenericFunction.class;
+	}
+
+	@Override
+	public Type getTerminalMaybe() {
+		return new ArrowType(operand, result.getTerminalMaybe());
 	}
 
 	@Override

@@ -1,11 +1,15 @@
 package ca.wlu.gisql.ast;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
 
 import ca.wlu.gisql.ast.type.ArrowType;
+import ca.wlu.gisql.ast.type.MaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.Function;
+import ca.wlu.gisql.ast.util.Renderable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
@@ -20,9 +24,23 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  */
 public class AstApplication extends AstNode {
 
+	private final class MaybeOperand implements Renderable {
+		private final Label label;
+
+		private MaybeOperand(Label label) {
+			this.label = label;
+		}
+
+		@Override
+		public <C> boolean render(Rendering<C> program, int depth) {
+			return operand.render(program, depth) && program.lOhO()
+					&& program.jump(Opcodes.IFNULL, label);
+		}
+	}
+
 	private final AstNode operand;
 
-	private final TypeVariable operandtype = new TypeVariable();
+	private boolean operandmaybe = false;
 
 	private final AstNode operator;
 
@@ -93,12 +111,14 @@ public class AstApplication extends AstNode {
 
 	@Override
 	public <T> boolean renderSelf(Rendering<T> program, int depth) {
-		return program.hP(operand) && operator.render(program, depth + 1);
+		final Label label = new Label();
+		return program.hP(operandmaybe ? new MaybeOperand(label) : operand)
+
+		&& operator.render(program, depth + 1) && program.mark(label);
 	}
 
 	@Override
 	public void resetType() {
-		operandtype.reset();
 		returntype.reset();
 		operand.resetType();
 		operator.resetType();
@@ -121,12 +141,12 @@ public class AstApplication extends AstNode {
 
 	public void show(ShowablePrintWriter<AstNode> print) {
 		boolean brackets = operand instanceof AstApplication;
-		print.print(operator);
+		print.print(operator, getPrecedence());
 		print.print(' ');
 		if (brackets) {
 			print.print('(');
 		}
-		print.print(operand);
+		print.print(operand, getPrecedence());
 		if (brackets) {
 			print.print(')');
 		}
@@ -141,19 +161,34 @@ public class AstApplication extends AstNode {
 		if (!(operator.type(runner, context) && operand.type(runner, context))) {
 			return false;
 		}
-		Type operatortype = new ArrowType(operandtype, returntype);
-		if (!operator.getType().unify(operatortype)) {
-			runner.appendTypeError(operator.getType(), operatortype, this,
-					context);
-			return false;
+
+		if (operator.getType().canUnify(
+				new ArrowType(operand.getType(), returntype))) {
+			operandmaybe = false;
+			return operator.getType().unify(
+					new ArrowType(operand.getType(), returntype));
 		}
 
-		if (!operand.getType().unify(operandtype)) {
-			runner.appendTypeError(operand.getType(), operandtype, this,
-					context);
-			return false;
+		if (operator.getType().canUnify(
+				new ArrowType(new MaybeType(operand.getType()), returntype))) {
+			operandmaybe = false;
+			return operator.getType()
+					.unify(
+							new ArrowType(new MaybeType(operand.getType()),
+									returntype));
 		}
 
-		return true;
+		Type t = new TypeVariable();
+		Type r = new TypeVariable();
+		if (operator.getType().unify(new ArrowType(t, r))
+				&& operand.getType().unify(new MaybeType(t))
+				&& returntype.unify(r.getTerminalMaybe())) {
+			operandmaybe = true;
+			return true;
+		}
+
+		runner.appendTypeError(operator.getType(), new ArrowType(operand
+				.getType(), returntype), this, context);
+		return false;
 	}
 }

@@ -16,7 +16,7 @@ import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
-/** Parses the empty list written as “()”. */
+/** Parses the empty singleton value written as “()”. */
 public class UnitDescriptor extends Parseable {
 	public static final Parseable descriptor = new UnitDescriptor();
 

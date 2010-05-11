@@ -481,55 +481,6 @@ public abstract class Rendering<T> implements Opcodes {
 		return true;
 	}
 
-	/**
-	 * Given a map of names and renderable items, generate code to create a
-	 * record and push it onto the operand stack. The map can be initially
-	 * filled with the contents of another map.
-	 * 
-	 * @param clazz
-	 *            The class to be instantiated.
-	 * @param source
-	 *            A run-time map containing the initial contents for the new map
-	 *            or null.
-	 * @param map
-	 *            A map containing other key value pairs to be added at run
-	 *            time.
-	 */
-	public boolean g$hO_CreateMap(Class<? extends Map<String, ?>> clazz,
-			Renderable source, Map<String, ? extends Renderable> map) {
-		try {
-			pRg$hO_CreateObject(clazz.getConstructor());
-		} catch (SecurityException e) {
-			return false;
-		} catch (NoSuchMethodException e) {
-			return false;
-		}
-
-		if (source != null) {
-			method.visitInsn(DUP);
-			if (!source.render(this, 0)) {
-				return false;
-			}
-			method.visitTypeInsn(CHECKCAST, Type.getInternalName(Map.class));
-			method
-					.visitMethodInsn(INVOKEINTERFACE, Type
-							.getInternalName(Map.class), "putAll",
-							"(Ljava/util/Map;)V");
-		}
-
-		for (Entry<String, ? extends Renderable> entry : map.entrySet()) {
-			method.visitInsn(DUP);
-			method.visitLdcInsn(entry.getKey());
-			if (!entry.getValue().render(this, 0)) {
-				return false;
-			}
-			method.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put",
-					"(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-			method.visitInsn(POP);
-		}
-		return true;
-	}
-
 	/** Finish code generation and load the resulting class. */
 	public Class<? extends T> generate() {
 		if (method != null) {
@@ -613,8 +564,13 @@ public abstract class Rendering<T> implements Opcodes {
 	 * Pushes a primitive constant on the stack and then wraps it as an object.
 	 */
 	public boolean hO_AsObject(Object value) {
-		method.visitLdcInsn(value);
-		return pOhO_PrimitiveToObject(value.getClass());
+		if (value == null) {
+			method.visitInsn(ACONST_NULL);
+			return true;
+		} else {
+			method.visitLdcInsn(value);
+			return pOhO_PrimitiveToObject(value.getClass());
+		}
 	}
 
 	/**
@@ -937,5 +893,4 @@ public abstract class Rendering<T> implements Opcodes {
 		sb.append(" references: ").append(references);
 		return sb.toString();
 	}
-
 }

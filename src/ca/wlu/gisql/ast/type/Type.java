@@ -187,6 +187,14 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	public abstract Class<?> getRootJavaType();
 
 	/**
+	 * Returns this type with the terminal-most return value converted to a
+	 * maybe.
+	 */
+	public Type getTerminalMaybe() {
+		return new MaybeType(this);
+	}
+
+	/**
 	 * Determine if a type is inside this type. This is needed to prevent "α →
 	 * β" from unifying with "α", causing an infinite type.
 	 */
