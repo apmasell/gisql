@@ -90,7 +90,7 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 		if (parameters > 0 || this instanceof AstFixedPoint2) {
 			String command = toString();
 			Rendering<GenericFunction> subroutine = new RenderingFunction(
-					command, getType(), ((ArrowType) getType()).getParameters());
+					command, getType(), getType().getParameters());
 			ListOrderedSet<VariableInformation> freevars = this.freeVariables();
 			return subroutine.gF$_CreateFields(freevars.asList())
 					&& renderSelf(subroutine, depth + parameters)

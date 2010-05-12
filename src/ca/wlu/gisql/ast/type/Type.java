@@ -271,4 +271,16 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	public boolean validate(Object value) {
 		return false;
 	}
+
+	public final Type[] getParameters() {
+		Type[] parameters = new Type[getArrowDepth()];
+		if (parameters.length > 0) {
+			fillParameters(parameters, 0);
+		}
+		return parameters;
+	}
+
+	protected void fillParameters(Type[] parameters, int index) {
+		parameters[index] = this;
+	}
 }

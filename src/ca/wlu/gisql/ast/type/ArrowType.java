@@ -68,15 +68,14 @@ public class ArrowType extends Type {
 		return 1 + result.getArrowDepth();
 	}
 
-	public Type[] getParameters() {
-		Type[] parameters = new Type[getArrowDepth()];
-		ArrowType current = this;
-		parameters[0] = operand;
-		for (int index = 1; index < parameters.length; index++) {
-			current = (ArrowType) current.result;
-			parameters[index] = current.operand;
+
+
+	@Override
+	protected void fillParameters(Type[] parameters, int index) {
+		parameters[index] = operand;
+		if (index < parameters.length-1) {
+			result.fillParameters(parameters, index+1);
 		}
-		return parameters;
 	}
 
 	@Override
