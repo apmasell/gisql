@@ -16,9 +16,9 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class TokenListOf extends Token {
 	private final Token child;
 
-	private final char delimiter;
+	private final Character delimiter;
 
-	public TokenListOf(Token child, char delimiter) {
+	public TokenListOf(Token child, Character delimiter) {
 		super();
 		this.child = child;
 		this.delimiter = delimiter;
@@ -39,7 +39,12 @@ public class TokenListOf extends Token {
 
 		parser.consumeWhitespace();
 		while (parser.hasMore()) {
-			if (parser.peek() == delimiter) {
+			if (delimiter == null) {
+				if (!child.parse(parser, level, items)) {
+					results.add(items);
+					return true;
+				}
+			} else if (parser.peek() == delimiter) {
 				parser.next();
 				parser.consumeWhitespace();
 				if (!child.parse(parser, level, items)) {
