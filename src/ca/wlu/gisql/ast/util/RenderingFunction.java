@@ -56,7 +56,7 @@ public class RenderingFunction extends Rendering<GenericFunction> {
 		endMethod();
 
 		startMethod(ACC_PUBLIC, "run", Object.class, Object[].class);
-		for (int offset = 0; offset < arguments.length; offset++) {
+		for (int offset = arguments.length-1; offset >=0; offset--) {
 			ArgumentVariable variable = new ArgumentVariable(offset, Type
 					.getInternalName(arguments[offset].getRootJavaType()));
 			references.push(variable);

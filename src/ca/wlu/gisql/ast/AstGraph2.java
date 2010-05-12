@@ -146,7 +146,7 @@ public class AstGraph2 extends AstNode {
 
 			/* Relocate the anonymous arguments into named local variables. */
 			Map<AstParameter, Integer> indicies = new HashMap<AstParameter, Integer>();
-			for (int index = variables.length - 1; index >= 0; index--) {
+			for (int index = 0; index < variables.length; index++) {
 				if (!(subroutine.pPg() && subroutine.hR_CreateLocal(
 						variables[index].getVariableName(), Gene.class))) {
 					return false;

@@ -1,9 +1,12 @@
 package ca.wlu.gisql.ast;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
+import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.RenderingFunction;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -47,9 +50,31 @@ public class AstFixedPoint2 extends AstNode {
 	 */
 	@Override
 	public <T> boolean renderSelf(Rendering<T> program, int depth) {
-		return program.hR_CreateSelfReference(self.name)
-				&& expression.render(program, depth) && program.pR(self.name);
+		String command = expression.toString();
+		Type[] parameters = getType().getParameters();
+		Rendering<GenericFunction> subroutine = new RenderingFunction(command,
+				getType(), parameters);
+
+		ListOrderedSet<VariableInformation> freevars = this.freeVariables();
+		try {
+			return subroutine.gF$_CreateFields(freevars.asList())
+					&& subroutine.hR_CreateSelfReference(self.name)
+					&& expression.render(subroutine, depth)
+					&& program.hO_CreateSubroutine(subroutine)
+					&& subroutine.gF$_lVhF$_CopyVariablesFromParent(program,
+							freevars.asList())
+					&& program.pPg$hO_BoxArguments(parameters.length)
+					&& program.g_InvokeMethod(GenericFunction.class
+							.getDeclaredMethod("run", Object[].class));
+		} catch (SecurityException e) {
+			log.error("Failed to get GenericFunction.run method.", e);
+		} catch (NoSuchMethodException e) {
+			log.error("Failed to get GenericFunction.run method.", e);
+		}
+		return false;
 	}
+
+	private static final Logger log = Logger.getLogger(AstFixedPoint2.class);
 
 	@Override
 	public void resetType() {
@@ -69,15 +94,22 @@ public class AstFixedPoint2 extends AstNode {
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {
-		print.print("($");
+		print.print('$');
 		print.print(self.name);
 		print.print(' ');
 		print.print(expression);
-		print.print(')');
 	}
 
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		return expression.type(runner, context);
+		if (!expression.type(runner, context)) {
+			return false;
+		}
+		if (!expression.getType().unify(self.getType())) {
+			runner.appendTypeError(self.getType(), expression.getType(), this,
+					context);
+			return false;
+		}
+		return true;
 	}
 }

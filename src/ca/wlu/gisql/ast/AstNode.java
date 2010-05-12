@@ -87,7 +87,7 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	public final <T> boolean render(Rendering<T> program, int depth) {
 		int parameters = getLeftDepth() - depth;
 
-		if (parameters > 0 || this instanceof AstFixedPoint2) {
+		if (parameters > 0) {
 			String command = toString();
 			Rendering<GenericFunction> subroutine = new RenderingFunction(
 					command, getType(), getType().getParameters());
