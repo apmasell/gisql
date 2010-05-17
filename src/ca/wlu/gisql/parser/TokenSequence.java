@@ -28,6 +28,7 @@ public class TokenSequence extends Token {
 
 		AstLiteralList subresults = new AstLiteralList();
 		for (Token token : tokens) {
+			parser.consumeWhitespace();
 			if (!token.parse(parser, level, subresults)) {
 				return false;
 			}

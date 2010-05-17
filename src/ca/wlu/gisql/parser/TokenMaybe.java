@@ -19,6 +19,10 @@ public class TokenMaybe extends Token {
 		this.child = child;
 	}
 
+	public TokenMaybe(Token... children) {
+		this(new TokenSequence(children));
+	}
+
 	@Override
 	public void addReservedWords(Set<String> reservedwords) {
 		child.addReservedWords(reservedwords);

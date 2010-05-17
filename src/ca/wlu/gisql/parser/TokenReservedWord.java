@@ -31,8 +31,13 @@ public class TokenReservedWord extends Token {
 				return false;
 			}
 		}
-		return !parser.hasMore()
-				|| !Character.isJavaIdentifierPart(parser.peek());
+		if (parser.hasMore() && Character.isJavaIdentifierPart(parser.peek())) {
+			parser.pushError("Expected " + word
+					+ " found with trailing garbage.");
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	@Override
