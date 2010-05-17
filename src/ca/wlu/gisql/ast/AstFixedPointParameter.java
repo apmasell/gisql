@@ -22,7 +22,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  */
 public class AstFixedPointParameter extends AstNode implements NamedVariable {
 
-	private static final Logger log = Logger.getLogger(AstFixedPointParameter.class);
+	private static final Logger log = Logger
+			.getLogger(AstFixedPointParameter.class);
 
 	final String name;
 

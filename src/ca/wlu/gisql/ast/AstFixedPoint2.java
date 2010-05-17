@@ -20,6 +20,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  */
 public class AstFixedPoint2 extends AstNode {
 
+	private static final Logger log = Logger.getLogger(AstFixedPoint2.class);
+
 	private final AstNode expression;
 
 	private final AstFixedPointParameter self;
@@ -73,8 +75,6 @@ public class AstFixedPoint2 extends AstNode {
 		}
 		return false;
 	}
-
-	private static final Logger log = Logger.getLogger(AstFixedPoint2.class);
 
 	@Override
 	public void resetType() {

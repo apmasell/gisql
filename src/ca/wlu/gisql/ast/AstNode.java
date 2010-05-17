@@ -2,7 +2,6 @@ package ca.wlu.gisql.ast;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
 
-import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.ast.util.Renderable;

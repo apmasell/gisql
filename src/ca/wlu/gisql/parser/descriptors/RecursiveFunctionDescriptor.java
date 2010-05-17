@@ -36,9 +36,10 @@ public final class RecursiveFunctionDescriptor extends Parseable {
 			Stack<ExpressionError> error, ExpressionContext context) {
 		String name = ((AstName) params.get(0)).getName();
 		AstNode expression = params.get(2);
-		AstLiteralList arguments =((AstLiteralList) params.get(1));
-		for (int index = arguments.size()-1;index>=0;index--) {
-			expression = new AstLambda1(((AstName) arguments.get(index)).getName(), expression);
+		AstLiteralList arguments = (AstLiteralList) params.get(1);
+		for (int index = arguments.size() - 1; index >= 0; index--) {
+			expression = new AstLambda1(((AstName) arguments.get(index))
+					.getName(), expression);
 		}
 		return new AstEnvironmentStore(new AstFixedPoint1(name, expression),
 				name, runner.getEnvironment().getTypeOf(name));

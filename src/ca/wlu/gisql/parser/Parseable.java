@@ -94,16 +94,15 @@ public abstract class Parseable implements Iterable<Token>,
 		print.print(getInfo());
 		print.print(':');
 
-		switch (getParsingOrder()) {
-		case ExpressionCharacterTokens:
+		if (getParsingOrder() == Order.ExpressionCharacterTokens) {
 			print.print(" <exp>");
-		case CharacterTokens:
+		}
+		if (getParsingOrder() != Order.Tokens) {
 			print.print(" [");
 			for (char c : getOperators()) {
 				print.print(c);
 			}
 			print.print(']');
-		case Tokens:
 		}
 
 		for (Token token : this) {

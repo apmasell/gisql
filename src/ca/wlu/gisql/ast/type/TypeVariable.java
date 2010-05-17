@@ -18,15 +18,6 @@ public class TypeVariable extends Type {
 
 	private Type self = null;
 
-	@Override
-	protected void fillParameters(Type[] parameters, int index) {
-		if (self == null) {
-			super.fillParameters(parameters, index);
-		} else {
-			self.fillParameters(parameters, index);
-		}
-	}
-
 	private final Set<TypeClass<?>> typeclasses = new HashSet<TypeClass<?>>();
 
 	public TypeVariable() {
@@ -50,6 +41,15 @@ public class TypeVariable extends Type {
 		TypeVariable variable = new TypeVariable();
 		variable.typeclasses.addAll(typeclasses);
 		return variable;
+	}
+
+	@Override
+	protected void fillParameters(Type[] parameters, int index) {
+		if (self == null) {
+			super.fillParameters(parameters, index);
+		} else {
+			self.fillParameters(parameters, index);
+		}
 	}
 
 	@Override

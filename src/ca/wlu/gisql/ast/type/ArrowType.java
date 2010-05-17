@@ -53,6 +53,14 @@ public class ArrowType extends Type {
 	}
 
 	@Override
+	protected void fillParameters(Type[] parameters, int index) {
+		parameters[index] = operand;
+		if (index < parameters.length - 1) {
+			result.fillParameters(parameters, index + 1);
+		}
+	}
+
+	@Override
 	protected Type freshen(Map<Type, Type> replacement) {
 		Type freshOperand = operand.freshen(replacement);
 		Type freshResult = result.freshen(replacement);
@@ -66,16 +74,6 @@ public class ArrowType extends Type {
 	@Override
 	public int getArrowDepth() {
 		return 1 + result.getArrowDepth();
-	}
-
-
-
-	@Override
-	protected void fillParameters(Type[] parameters, int index) {
-		parameters[index] = operand;
-		if (index < parameters.length-1) {
-			result.fillParameters(parameters, index+1);
-		}
 	}
 
 	@Override

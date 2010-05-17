@@ -159,6 +159,10 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 		return fresh().unify(othertype.fresh());
 	}
 
+	protected void fillParameters(Type[] parameters, int index) {
+		parameters[index] = this;
+	}
+
 	/** Create a copy of this type with fresh type variables. */
 	public final Type fresh() {
 		List<TypeVariable> variables = new ArrayList<TypeVariable>();
@@ -181,6 +185,14 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	 */
 	public int getArrowDepth() {
 		return 0;
+	}
+
+	public final Type[] getParameters() {
+		Type[] parameters = new Type[getArrowDepth()];
+		if (parameters.length > 0) {
+			fillParameters(parameters, 0);
+		}
+		return parameters;
 	}
 
 	/** Anything of this type should be castable to the returned Java class. */
@@ -270,17 +282,5 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	/** Determine if a Java object can be assigned to this type. */
 	public boolean validate(Object value) {
 		return false;
-	}
-
-	public final Type[] getParameters() {
-		Type[] parameters = new Type[getArrowDepth()];
-		if (parameters.length > 0) {
-			fillParameters(parameters, 0);
-		}
-		return parameters;
-	}
-
-	protected void fillParameters(Type[] parameters, int index) {
-		parameters[index] = this;
 	}
 }
