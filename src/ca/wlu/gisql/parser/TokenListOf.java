@@ -63,8 +63,10 @@ public class TokenListOf extends Token {
 	@Override
 	public void show(ShowablePrintWriter<Object> print) {
 		print.print(child);
-		print.print('[');
-		print.print(delimiter);
-		print.print("] ...");
+		if (delimiter != null) {
+			print.print('[');
+			print.print(delimiter);
+			print.print("] ...");
+		}
 	}
 }

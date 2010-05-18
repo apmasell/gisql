@@ -30,7 +30,7 @@ public class AstInteractome2 extends AstNode {
 			AstParameter[] unknownvariables, AstParameter gene,
 			AstParameter gene1, AstParameter gene2, AstNode membership,
 			AstNode geneexpression, AstNode interactionexpression) {
-		this.unknownvariables = unknownvariables;
+		this.unknownvariables = unknownvariables.clone();
 		this.variables = variables.clone();
 		this.gene = gene;
 		this.gene1 = gene1;
