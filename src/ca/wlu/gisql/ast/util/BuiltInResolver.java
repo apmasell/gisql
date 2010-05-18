@@ -65,6 +65,7 @@ import ca.wlu.gisql.function.list.FoldRight;
 import ca.wlu.gisql.function.list.GenesOf;
 import ca.wlu.gisql.function.list.Join;
 import ca.wlu.gisql.function.list.ListFromFile;
+import ca.wlu.gisql.function.list.ListIndex;
 import ca.wlu.gisql.function.list.ListLength;
 import ca.wlu.gisql.function.list.Map;
 import ca.wlu.gisql.function.list.Slice;
@@ -171,6 +172,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(LessThan.class);
 		addDefault(LessThanOrEqualTo.class);
 		addDefault(ListFromFile.class);
+		addDefault(ListIndex.class);
 		addDefault(ListLength.class);
 		addDefault(Map.class);
 		addDefault(NaturalLogarithm.class);
