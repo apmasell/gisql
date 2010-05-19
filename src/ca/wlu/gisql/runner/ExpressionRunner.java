@@ -131,6 +131,9 @@ public class ExpressionRunner {
 	@SuppressWarnings("unchecked")
 	private boolean run(String command, Type type, LineContext context) {
 		Parser parser = new Parser(this, context, command, listener);
+		if (parser.isEmpty()) {
+			return true;
+		}
 		AstNode result = parser.parse();
 		if (result == null) {
 			return false;

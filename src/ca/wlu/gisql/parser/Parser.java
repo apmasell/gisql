@@ -53,15 +53,21 @@ public class Parser {
 	}
 
 	void consumeWhitespace() {
-		while (position < input.length()
-				&& Character.isWhitespace(input.charAt(position))) {
+		while (hasMore() && Character.isWhitespace(peek())) {
 			position++;
 		}
 	}
 
 	/** Are there more characters available? */
 	boolean hasMore() {
-		return position < input.length();
+		return position < input.length() && peek() != '#';
+	}
+
+	public boolean isEmpty() {
+		error.clear();
+		position = 0;
+		consumeWhitespace();
+		return !hasMore();
 	}
 
 	public boolean isReservedWord(String name) {
@@ -111,7 +117,7 @@ public class Parser {
 
 		consumeWhitespace(); /* Do this before testing input length. */
 		boolean matched = true;
-		while (matched && position < input.length()) {
+		while (matched && hasMore()) {
 			matched = false;
 			/* Consider all the parseables in this precedence level... */
 			for (Parseable operator : runner.getEnvironment().getParserKb()
@@ -194,11 +200,10 @@ public class Parser {
 		int oldposition = position;
 		consumeWhitespace();
 		boolean eoi = endofexpression == null;
-		if (position < input.length() ? !eoi
-				&& input.charAt(position) == endofexpression : eoi) {
+		if (hasMore() ? !eoi && peek() == endofexpression : eoi) {
 			position++;
 			return e;
-		} else if (position == input.length()) {
+		} else if (!hasMore()) {
 			pushError("Premature end of input."
 					+ (eoi ? "" : " Expected '" + endofexpression + "'."));
 			return null;
@@ -263,13 +268,13 @@ public class Parser {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Parser: ");
-		if (position < input.length()) {
+		if (hasMore()) {
 			if (position > 0) {
 				sb.append('"');
 				sb.append(input.substring(0, position));
 				sb.append('"');
 			}
-			sb.append(" >").append(input.charAt(position)).append("< ");
+			sb.append(" >").append(peek()).append("< ");
 			if (position < input.length() - 1) {
 				sb.append('"');
 				sb.append(input.substring(position + 1));

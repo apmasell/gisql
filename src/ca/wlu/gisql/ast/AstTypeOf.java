@@ -74,7 +74,7 @@ public class AstTypeOf extends AstNode {
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {
-		print.print("# ");
+		print.print("typeof ");
 		print.print(parameter);
 	}
 
