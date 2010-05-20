@@ -47,6 +47,26 @@ public class Parser {
 		this.listener = listener;
 	}
 
+	private void appendParserState(StringBuilder sb) {
+		if (hasMore()) {
+			if (position > 0) {
+				sb.append('“');
+				sb.append(input.substring(0, position));
+				sb.append('”');
+			}
+			sb.append(" ›").append(peek()).append("‹ ");
+			if (position < input.length() - 1) {
+				sb.append('“');
+				sb.append(input.substring(position + 1));
+				sb.append('”');
+			}
+		} else {
+			sb.append('“');
+			sb.append(input);
+			sb.append('”');
+		}
+	}
+
 	/** Remove the last mark. */
 	void clearMark() {
 		marks.pop();
@@ -242,13 +262,16 @@ public class Parser {
 	}
 
 	void pushError(String message) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(message).append('\n');
+		appendParserState(sb);
 		error.push(new ExpressionError(context.getContextForPosition(position),
-				message, null));
+				sb.toString(), null));
 	}
 
 	/** Consume a character of input and return it. */
 	char read() {
-		return input.charAt(position++);
+		return hasMore() ? input.charAt(position++) : '\0';
 	}
 
 	/** Reset the current position to the last mark. */
@@ -268,23 +291,7 @@ public class Parser {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Parser: ");
-		if (hasMore()) {
-			if (position > 0) {
-				sb.append('"');
-				sb.append(input.substring(0, position));
-				sb.append('"');
-			}
-			sb.append(" >").append(peek()).append("< ");
-			if (position < input.length() - 1) {
-				sb.append('"');
-				sb.append(input.substring(position + 1));
-				sb.append('"');
-			}
-		} else {
-			sb.append('"');
-			sb.append(input);
-			sb.append('"');
-		}
+		appendParserState(sb);
 		sb.append("\nErrors: ").append(error.size());
 		return sb.toString();
 	}
