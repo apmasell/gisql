@@ -3,6 +3,7 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 import java.util.Set;
 
+import ca.wlu.gisql.ast.AstFormatter;
 import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
@@ -28,6 +29,7 @@ public class TokenQuotedString extends Token {
 		parser.consumeWhitespace();
 		StringBuilder sb = new StringBuilder();
 		boolean success = false;
+		boolean formatter = false;
 
 		if (!parser.hasMore() || parser.read() != '"') {
 			return false;
@@ -45,8 +47,43 @@ public class TokenQuotedString extends Token {
 				parser.next();
 				if (parser.hasMore()) {
 					char c = parser.read();
-
 					switch (c) {
+					case '{':
+						if (formatter == false) {
+							int offset = 0;
+							while (offset < sb.length()
+									&& (offset = sb.indexOf("%", offset)) > 0) {
+								sb.insert(offset + 1, '%');
+								offset += 2;
+							}
+						}
+						formatter = true;
+
+						int value = 0;
+						System.err.println(parser.peek());
+						while (Character.isDigit(parser.peek())) {
+							value = value * 10 + parser.peek() - '0';
+							if (parser.hasMore()) {
+								parser.next();
+							} else {
+								parser
+										.pushError("End of string without matching }.");
+								return false;
+							}
+						}
+						if (parser.peek() != '}') {
+							parser.pushError("Invalid character "
+									+ parser.peek() + " in place holder.");
+							return false;
+						}
+						parser.next();
+						if (value == 0) {
+							parser.pushError("\\{0} not allowed in strings.");
+							return false;
+						}
+
+						sb.append('%').append(value).append("$s");
+						break;
 					case 'a':
 						sb.append('\u0007');
 						break;
@@ -123,7 +160,11 @@ public class TokenQuotedString extends Token {
 			parser.pushError("Failed to parse quoted string.");
 			return false;
 		}
-		results.add(new AstLiteral(Type.StringType, sb.toString()));
+		if (formatter) {
+			results.add(new AstFormatter(sb.toString()));
+		} else {
+			results.add(new AstLiteral(Type.StringType, sb.toString()));
+		}
 		return true;
 	}
 

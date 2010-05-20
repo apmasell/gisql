@@ -801,15 +801,24 @@ public abstract class Rendering<T> implements Opcodes {
 	/**
 	 * Remove the specified number of parameters from the parameter stack,
 	 * generate code for them, and package them as an array, which is left on
-	 * the operand stack..
+	 * the operand stack.
 	 */
 	public boolean pPg$hO_BoxArguments(int count) {
+		return pPg$hO_BoxArguments(count, null);
+	}
+
+	/**
+	 * Remove the specified number of parameters from the parameter stack,
+	 * generate code for them, running some routine to fix them up, and package
+	 * them as an array, which is left on the operand stack.
+	 */
+	public boolean pPg$hO_BoxArguments(int count, Renderable fix) {
 		method.visitLdcInsn(count);
 		method.visitTypeInsn(ANEWARRAY, "java/lang/Object");
 		for (int index = 0; index < count; index++) {
 			method.visitInsn(DUP);
 			method.visitLdcInsn(index);
-			if (!pPg()) {
+			if (!(pPg() && (fix == null || fix.render(this, 0)))) {
 				return false;
 			}
 			method.visitInsn(AASTORE);
