@@ -78,7 +78,7 @@ public class AstEnvironmentStore extends AstNode {
 		if (currenttype == null) {
 			return true;
 		}
-		if (node.getType().canUnify(currenttype)) {
+		if (node.getType().equals(currenttype)) {
 			return true;
 		} else {
 			runner.appendTypeError(node.getType(), currenttype, this, context);
