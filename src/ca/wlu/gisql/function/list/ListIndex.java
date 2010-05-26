@@ -22,6 +22,9 @@ public class ListIndex extends Function {
 	public Object run(Object... parameters) {
 		List<?> list = (List<?>) parameters[0];
 		int index = ((Long) parameters[1]).intValue();
+		if (index < 0) {
+			index += list.size() + 1;
+		}
 		return index > 0 && index <= list.size() ? list.get(index - 1) : null;
 	}
 }
