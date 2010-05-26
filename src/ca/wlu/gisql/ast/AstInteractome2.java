@@ -82,8 +82,9 @@ public class AstInteractome2 extends AstNode {
 				toString(), variablenames);
 		ListOrderedSet<VariableInformation> freevariables = freeVariables();
 		return subprogram.gF$_CreateFields(freevariables.asList())
-				&& subprogram.createGeneMethod(geneexpression)
-				&& subprogram.createInteractomeMethod(interactionexpression)
+				&& subprogram.createGeneMethod(gene, geneexpression)
+				&& subprogram.createInteractomeMethod(gene1, gene2,
+						interactionexpression)
 				&& program.hO_CreateSubroutine(subprogram)
 				&& subprogram.gF$_lVhF$_CopyVariablesFromParent(program,
 						freevariables.asList());

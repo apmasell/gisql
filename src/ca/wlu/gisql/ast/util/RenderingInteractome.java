@@ -5,6 +5,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.AstParameter;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -65,15 +66,17 @@ public class RenderingInteractome extends Rendering<UserDefinedInteractome> {
 		throw new IllegalStateException();
 	}
 
-	public boolean createGeneMethod(AstNode expression) {
-		return createMethod(expression, Gene.class);
+	public boolean createGeneMethod(AstParameter gene, AstNode expression) {
+		return createMethod(expression, Gene.class, gene);
 	}
 
-	public boolean createInteractomeMethod(AstNode expression) {
-		return createMethod(expression, Interaction.class);
+	public boolean createInteractomeMethod(AstParameter gene1,
+			AstParameter gene2, AstNode expression) {
+		return createMethod(expression, Interaction.class, gene1, gene2);
 	}
 
-	private boolean createMethod(AstNode expression, Class<?> clazz) {
+	private boolean createMethod(AstNode expression, Class<?> clazz,
+			AstParameter... parameters) {
 		startMethod(ACC_PUBLIC, "calculateMembership", double.class, clazz);
 		String signature = makeSignature(double.class, clazz);
 		String interactomeinterface = Type.getInternalName(Interactome.class);
@@ -102,6 +105,12 @@ public class RenderingInteractome extends Rendering<UserDefinedInteractome> {
 			hR_CreateLocal(variables[index], Double.class);
 		}
 		method.visitInsn(POP);
+		int index = 1;
+		for (AstParameter parameter : parameters) {
+			references.push(new StackVariable(index++, parameter
+					.getVariableName(), parameter.getType().getRootJavaType()));
+
+		}
 		if (!expression.render(this, 0)) {
 			return false;
 		}
