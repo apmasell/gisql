@@ -156,7 +156,10 @@ public class ExpressionRunner {
 
 		Class<? extends GenericFunction> program = result.render();
 		if (program == null) {
-			listener.reportErrors(new ArrayList<ExpressionError>(errors));
+			listener.reportErrors(errors.isEmpty() ? Collections
+					.singletonList(new ExpressionError(context,
+							"Failed to generate bytecode.", null))
+					: new ArrayList<ExpressionError>(errors));
 			errors.clear();
 			return false;
 		}
