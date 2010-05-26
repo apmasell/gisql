@@ -18,7 +18,12 @@ public class TypeClass<T> implements Renderable {
 
 	@SuppressWarnings("unchecked")
 	public static final TypeClass<Comparable> Comparable = new TypeClass<Comparable>(
-			"Comparable", Comparable.class, Type.NumberType, Type.RealType);
+			"Orderable", Comparable.class, Type.BooleanType, Type.NumberType,
+			Type.RealType, Type.StringType);
+
+	public static final TypeClass<Object> Equalable = new TypeClass<Object>(
+			"Comparable", Object.class, Comparable, Type.FormatType,
+			Type.GeneType);
 
 	public static final TypeClass<Double> Fractional = new TypeClass<Double>(
 			"Fractional", Double.class, Type.MembershipType, Type.RealType);
@@ -69,6 +74,14 @@ public class TypeClass<T> implements Renderable {
 		this.name = name;
 		this.java = java;
 		for (Type type : allowed) {
+			this.allowed.add(type);
+		}
+	}
+
+	public <X extends T> TypeClass(String name, Class<T> java,
+			TypeClass<X> parent, Type... allowed) {
+		this(name, java, allowed);
+		for (Type type : parent.allowed) {
 			this.allowed.add(type);
 		}
 	}
