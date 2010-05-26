@@ -26,6 +26,7 @@ public class EnvironmentCompletor implements Completor, EnvironmentListener {
 		for (Entry<String, AstNode> entry : BuiltInResolver.entries()) {
 			candidates.add(entry.getKey());
 		}
+		candidates.addAll(environment.getParserKb().getReservedWords());
 	}
 
 	public void addedEnvironmentVariable(String name, Object value, Type type) {

@@ -1,6 +1,7 @@
 package ca.wlu.gisql.parser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -134,6 +135,10 @@ public class ParserKnowledgebase {
 
 	protected List<Parseable> getOperators(Precedence level) {
 		return operators.get(level);
+	}
+
+	public Set<String> getReservedWords() {
+		return Collections.unmodifiableSet(reservedwords);
 	}
 
 	private void installOperator(Parseable operator) {
