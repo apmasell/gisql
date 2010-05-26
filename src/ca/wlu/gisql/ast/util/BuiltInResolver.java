@@ -131,8 +131,9 @@ public class BuiltInResolver implements ResolutionEnvironment {
 
 		AstParameter notparam = new AstParameter("__not");
 		notparam.getType().unify(Type.InteractomeType);
-		defaultvalues.put("not", new AstLambda2(notparam, AstLogic
-				.makeNegation(notparam)));
+		AstNode not = new AstLambda2(notparam, AstLogic.makeNegation(notparam));
+		not.type(null, null);
+		defaultvalues.put("not", not);
 
 		addDefault(new Comparison());
 		addDefault(new MissingValue());
