@@ -275,6 +275,13 @@ public abstract class Rendering<T> implements Opcodes {
 			index = ++Rendering.this.index;
 		}
 
+		public StackVariable(int index, String name, Class<?> type) {
+			super();
+			this.index = index;
+			this.name = name;
+			this.type = Type.getInternalName(type);
+		}
+
 		@Override
 		public boolean finish() {
 			Label end = new Label();
@@ -310,9 +317,8 @@ public abstract class Rendering<T> implements Opcodes {
 
 		@Override
 		public String toString() {
-			return name + "[S]";
+			return name + "[S:" + index + "]";
 		}
-
 	}
 
 	/**
@@ -887,7 +893,7 @@ public abstract class Rendering<T> implements Opcodes {
 				parametertypes), null, null);
 		method.visitCode();
 
-		index = 1;
+		index = parametertypes.length;
 		while (references.size() > 0
 				&& !(references.peek() instanceof Rendering<?>.ExternalVariable)) {
 			references.pop();
