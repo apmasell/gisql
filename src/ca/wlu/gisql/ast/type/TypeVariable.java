@@ -177,7 +177,8 @@ public class TypeVariable extends Type {
 		} else if (self == null) {
 			if (that instanceof TypeVariable) {
 				TypeVariable other = (TypeVariable) that;
-				if (typeclasses.size() > 0 || other.typeclasses.size() > 0) {
+				if ((typeclasses.size() > 0 || other.typeclasses.size() > 0)
+						&& other.self == null) {
 					other.typeclasses.addAll(typeclasses);
 					typeclasses.addAll(other.typeclasses);
 					Set<Type> types = TypeClass
