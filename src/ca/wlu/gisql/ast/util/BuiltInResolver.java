@@ -45,6 +45,7 @@ import ca.wlu.gisql.function.arithmetic.NumberDivide;
 import ca.wlu.gisql.function.arithmetic.NumberModulo;
 import ca.wlu.gisql.function.arithmetic.NumberMultiply;
 import ca.wlu.gisql.function.arithmetic.NumberSubtract;
+import ca.wlu.gisql.function.arithmetic.Real2Membership;
 import ca.wlu.gisql.function.arithmetic.Real2Number;
 import ca.wlu.gisql.function.arithmetic.SquareRoot;
 import ca.wlu.gisql.function.comparisons.Equal;
@@ -194,6 +195,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(Proximity.class);
 		addDefault(PullGi.class);
 		addDefault(Range.class);
+		addDefault(Real2Membership.class);
 		addDefault(Real2Number.class);
 		addDefault(RunFunction.class);
 		addDefault(SearchGenes.class);
