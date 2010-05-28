@@ -9,7 +9,6 @@ import ca.wlu.gisql.ast.type.MaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.Function;
-import ca.wlu.gisql.ast.util.Renderable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
@@ -23,22 +22,6 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * <tt>(f x)</tt>)
  */
 public class AstApplication extends AstNode {
-
-	private final class MaybeOperand implements Renderable {
-		private final Label label;
-
-		private MaybeOperand(Label label) {
-			this.label = label;
-		}
-
-		@Override
-		public <C> boolean render(Rendering<C> program, int depth) {
-			return operand.render(program, depth)
-					&& program.lOhO()
-					&& (operandmaybe ? program.jump(Opcodes.IFNULL, label)
-							: true);
-		}
-	}
 
 	private final AstNode operand;
 
