@@ -13,30 +13,36 @@ import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
-@GisqlConstructorFunction(name = "deltacore", description = "Filter interactions based on the coreicity difference of their genes")
-public class DeltaCoreicity implements Interactome {
+@GisqlConstructorFunction(name = "genecoreicity", description = "Filter genes based on their coreicity")
+public class GeneCoreicity implements Interactome {
 
 	private final GenericFunction comparison;
 	private final Interactome source;
 
-	public DeltaCoreicity(Interactome source,
-			@GisqlType(type = "number → boolean") GenericFunction comparison) {
+	public GeneCoreicity(
+			Interactome source,
+			@GisqlType(type = "gene → number → boolean") GenericFunction comparison) {
 		this.source = source;
 		this.comparison = comparison;
 	}
 
 	public double calculateMembership(Gene gene) {
-		return source.calculateMembership(gene);
+		double membership = source.calculateMembership(gene);
+		if (!Membership.isMissing(membership)
+				&& !(Boolean) comparison.run(gene, (long) gene.getCoreicity())) {
+			membership = 0;
+		}
+		gene.setMembership(this, membership);
+		return membership;
 	}
 
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
-		if (!Membership.isMissing(membership)) {
-			long value = Math.abs(interaction.getGene1().getCoreicity()
-					- interaction.getGene2().getCoreicity());
-			if ((Boolean) comparison.run(value)) {
-				return membership;
-			}
+		if (!Membership.isMissing(membership)
+				&& (Membership.isPresent(interaction.getGene1().getMembership(
+						this)) || Membership.isPresent(interaction.getGene2()
+						.getMembership(this)))) {
+			return membership;
 		}
 		return Membership.Missing;
 	}
@@ -68,7 +74,7 @@ public class DeltaCoreicity implements Interactome {
 
 	public void show(ShowablePrintWriter<Set<Interactome>> print) {
 		print.print(source, getPrecedence());
-		print.print(" :deltacore (");
+		print.print(" :genecoreicity (");
 		print.print(comparison);
 		print.print(")");
 	}
