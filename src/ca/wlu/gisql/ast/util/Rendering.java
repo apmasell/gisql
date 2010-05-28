@@ -268,18 +268,18 @@ public abstract class Rendering<T> implements Opcodes {
 		private Label start = null;
 		private final String type;
 
-		public StackVariable(String name, Class<?> type) {
-			super();
-			this.name = name;
-			this.type = Type.getInternalName(type);
-			index = ++Rendering.this.index;
-		}
-
 		public StackVariable(int index, String name, Class<?> type) {
 			super();
 			this.index = index;
 			this.name = name;
 			this.type = Type.getInternalName(type);
+		}
+
+		public StackVariable(String name, Class<?> type) {
+			super();
+			this.name = name;
+			this.type = Type.getInternalName(type);
+			index = ++Rendering.this.index;
 		}
 
 		@Override
@@ -712,6 +712,18 @@ public abstract class Rendering<T> implements Opcodes {
 		return reference != null && reference.load();
 	}
 
+	/** Load the value of a variable on to the parameter stack. */
+	public boolean lRhP(String name) {
+		final Variable reference = getReferenceByName(name);
+		return reference != null && parameters.push(new Renderable() {
+
+			@Override
+			public <C> boolean render(Rendering<C> rendering, int depth) {
+				return reference.load();
+			}
+		}) != null;
+	}
+
 	protected void makeField(String name, String type) {
 		FieldVisitor fv = writer.visitField(ACC_PRIVATE + ACC_FINAL, name,
 				type, null, null);
@@ -744,6 +756,13 @@ public abstract class Rendering<T> implements Opcodes {
 	/** Pop an item off the operand stack. */
 	public boolean pO() {
 		method.visitInsn(POP);
+		return true;
+	}
+
+	public boolean pO(int depth) {
+		for (int counter = 0; counter < depth; counter++) {
+			method.visitInsn(POP);
+		}
 		return true;
 	}
 

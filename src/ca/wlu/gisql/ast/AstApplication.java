@@ -33,8 +33,10 @@ public class AstApplication extends AstNode {
 
 		@Override
 		public <C> boolean render(Rendering<C> program, int depth) {
-			return operand.render(program, depth) && program.lOhO()
-					&& program.jump(Opcodes.IFNULL, label);
+			return operand.render(program, depth)
+					&& program.lOhO()
+					&& (operandmaybe ? program.jump(Opcodes.IFNULL, label)
+							: true);
 		}
 	}
 
@@ -111,10 +113,22 @@ public class AstApplication extends AstNode {
 
 	@Override
 	public <T> boolean renderSelf(Rendering<T> program, int depth) {
-		final Label label = new Label();
-		return program.hP(operandmaybe ? new MaybeOperand(label) : operand)
-
-		&& operator.render(program, depth + 1) && program.mark(label);
+		if (operandmaybe) {
+			Label nullrecovery = new Label();
+			Label end = new Label();
+			String name = "$" + Integer.toHexString(hashCode());
+			return operand.render(program, 0)
+					&& program.lOhO()
+					&& program.jump(Opcodes.IFNULL, nullrecovery)
+					&& program.hR_CreateLocal(name, operand.getType()
+							.getRootJavaType()) && program.lRhP(name)
+					&& operator.render(program, depth + 1)
+					&& program.jump(Opcodes.GOTO, end)
+					&& program.mark(nullrecovery) && program.pO(depth)
+					&& program.mark(end);
+		} else {
+			return program.hP(operand) && operator.render(program, depth + 1);
+		}
 	}
 
 	@Override
