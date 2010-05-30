@@ -7,13 +7,13 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 public class NaturalLogarithm extends Function {
 
 	public NaturalLogarithm(ExpressionRunner runner) {
-		super(runner, "exp", "Raise e to the power of a number.",
+		super(runner, "ln", "Take the natural logarithm of a number.",
 				Type.RealType, Type.RealType);
 	}
 
 	@Override
 	public Object run(Object... parameters) {
-		return Math.exp((Double) parameters[0]);
+		return Math.log((Double) parameters[0]);
 	}
 
 }

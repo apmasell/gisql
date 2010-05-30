@@ -7,13 +7,13 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 public class Exponent extends Function {
 
 	public Exponent(ExpressionRunner runner) {
-		super(runner, "sqrt", "Take the square root of a number.",
+		super(runner, "exp", "Raise e to the power of a number.",
 				Type.RealType, Type.RealType);
 	}
 
 	@Override
 	public Object run(Object... parameters) {
-		return Math.sqrt((Double) parameters[0]);
+		return Math.exp((Double) parameters[0]);
 	}
 
 }

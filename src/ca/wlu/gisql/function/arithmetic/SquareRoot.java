@@ -7,13 +7,13 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 public class SquareRoot extends Function {
 
 	public SquareRoot(ExpressionRunner runner) {
-		super(runner, "ln", "Take the natural logarithm of a number.",
+		super(runner, "sqrt", "Take the square root of a number.",
 				Type.RealType, Type.RealType);
 	}
 
 	@Override
 	public Object run(Object... parameters) {
-		return Math.log((Double) parameters[0]);
+		return Math.sqrt((Double) parameters[0]);
 	}
 
 }

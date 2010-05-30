@@ -37,6 +37,7 @@ import ca.wlu.gisql.function.PullGi;
 import ca.wlu.gisql.function.Range;
 import ca.wlu.gisql.function.SearchGenes;
 import ca.wlu.gisql.function.Venn;
+import ca.wlu.gisql.function.arithmetic.AbsoluteValue;
 import ca.wlu.gisql.function.arithmetic.Exponent;
 import ca.wlu.gisql.function.arithmetic.NaturalLogarithm;
 import ca.wlu.gisql.function.arithmetic.Number2Real;
@@ -141,6 +142,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(new MissingValue());
 		addDefault(new NullDefault());
 
+		addDefault(AbsoluteValue.class);
 		addDefault(AveragePatchFunction.class);
 		addDefault(BigIntersection.class);
 		addDefault(BigUnion.class);
