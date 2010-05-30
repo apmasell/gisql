@@ -192,7 +192,7 @@ public class AstGraph2 extends AstNode {
 							freevars.asList())
 					&& program.g_InvokeMethod(SubgraphMatcher.class.getMethod(
 							"match", GenericFunction.class))
-					&& program.lRhO(resultlist);
+					&& program.lRhO(resultlist) && program.pR(resultlist);
 		} catch (SecurityException e) {
 			log.error("Failed to get method.", e);
 		} catch (NoSuchMethodException e) {
