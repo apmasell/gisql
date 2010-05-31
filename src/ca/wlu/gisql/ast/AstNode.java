@@ -85,20 +85,22 @@ public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
 	 */
 	public final <T> boolean render(Rendering<T> program, int depth) {
 		int parameters = getLeftDepth() - depth;
+		boolean value;
 
 		if (parameters > 0) {
 			String command = toString();
 			Rendering<GenericFunction> subroutine = new RenderingFunction(
 					command, getType(), getType().getParameters());
 			ListOrderedSet<VariableInformation> freevars = this.freeVariables();
-			return subroutine.gF$_CreateFields(freevars.asList())
+			value = subroutine.gF$_CreateFields(freevars.asList())
 					&& renderSelf(subroutine, depth + parameters)
 					&& program.hO_CreateSubroutine(subroutine)
 					&& subroutine.gF$_lVhF$_CopyVariablesFromParent(program,
 							freevars.asList());
 		} else {
-			return renderSelf(program, depth);
+			value = renderSelf(program, depth);
 		}
+		return value;
 
 	}
 
