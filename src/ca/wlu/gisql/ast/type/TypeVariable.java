@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import ca.wlu.gisql.ast.typeclasses.TypeClass;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -14,6 +16,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * belong to one or more {@link TypeClass}es.
  */
 public class TypeVariable extends Type {
+	private static final Logger log = Logger.getLogger(TypeVariable.class);
+
 	private final Set<TypeClass<?>> originaltypeclass = new HashSet<TypeClass<?>>();
 
 	private Type self = null;
@@ -39,6 +43,7 @@ public class TypeVariable extends Type {
 
 	TypeVariable duplicate() {
 		TypeVariable variable = new TypeVariable();
+		variable.originaltypeclass.addAll(originaltypeclass);
 		variable.typeclasses.addAll(typeclasses);
 		return variable;
 	}
@@ -99,7 +104,7 @@ public class TypeVariable extends Type {
 
 	@Override
 	protected boolean occurs(Type needle) {
-		return this == needle || self != null && self.occurs(needle);
+		return self == null ? this == needle : self.occurs(needle);
 	}
 
 	@Override
@@ -172,26 +177,32 @@ public class TypeVariable extends Type {
 	public boolean unify(Type that) {
 		if (this == that) {
 			return true;
-		} else if (that.occurs(this)) {
-			return false;
 		} else if (self == null) {
 			if (that instanceof TypeVariable) {
 				TypeVariable other = (TypeVariable) that;
-				if ((typeclasses.size() > 0 || other.typeclasses.size() > 0)
-						&& other.self == null) {
-					other.typeclasses.addAll(typeclasses);
-					typeclasses.addAll(other.typeclasses);
-					Set<Type> types = TypeClass
-							.matchingTypes(other.typeclasses);
-					if (types.isEmpty()) {
-						return false;
-					} else if (types.size() == 1) {
-						for (Type t : types) {
-							self = t;
-							other.self = t;
-							return true;
+				if (other.self == null) {
+
+					if ((typeclasses.size() > 0 || other.typeclasses.size() > 0)
+							&& other.self == null) {
+						other.typeclasses.addAll(typeclasses);
+						typeclasses.addAll(other.typeclasses);
+						Set<Type> types = TypeClass
+								.matchingTypes(other.typeclasses);
+						if (types.isEmpty()) {
+							return false;
+						} else if (types.size() == 1) {
+							for (Type t : types) {
+								self = t;
+								other.self = t;
+								return true;
+							}
 						}
 					}
+				} else if (other.self instanceof TypeVariable) {
+					return unify(other.self);
+				} else if (that.occurs(this)) {
+					log.debug(this + " occurs in " + that);
+					return false;
 				}
 			}
 
