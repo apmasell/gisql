@@ -14,7 +14,7 @@ public class GenomeSize extends MetricFunction<Totals> {
 
 	@Override
 	protected Object failure() {
-		return 0;
+		return -1L;
 	}
 
 	@Override

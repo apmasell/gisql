@@ -14,7 +14,7 @@ public class GenomeFuzziness extends MetricFunction<Fuzziness> {
 
 	@Override
 	protected Object failure() {
-		return 0.0;
+		return -1.0;
 	}
 
 	@Override

@@ -27,6 +27,8 @@ public abstract class MetricFunction<M extends Metrics> extends Function {
 			MetricsInteractome interactome = new MetricsInteractome(
 					(Interactome) parameters[0], metric);
 			if (interactome.process()) {
+				runner.getEnvironment().assertWarning(
+						"Failed to process interactome.");
 				return failure();
 			} else {
 				return value(metric);
