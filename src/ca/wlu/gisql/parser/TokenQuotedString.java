@@ -60,7 +60,6 @@ public class TokenQuotedString extends Token {
 						formatter = true;
 
 						int value = 0;
-						System.err.println(parser.peek());
 						while (Character.isDigit(parser.peek())) {
 							value = value * 10 + parser.peek() - '0';
 							if (parser.hasMore()) {
