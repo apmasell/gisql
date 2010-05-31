@@ -98,10 +98,17 @@ public class ArrowType extends Type {
 
 	@Override
 	public <T> boolean render(Rendering<T> rendering, int depth) {
-		return rendering.hP(result)
-				&& rendering.hP(operand)
-				&& rendering.pRg$hO_CreateObject(ArrowType.class
-						.getConstructors()[1]);
+		try {
+			return rendering.hP(result)
+					&& rendering.hP(operand)
+					&& rendering.pRg$hO_CreateObject(ArrowType.class
+							.getConstructor(Type.class, Type.class));
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override
