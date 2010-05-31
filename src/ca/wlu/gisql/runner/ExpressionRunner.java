@@ -50,6 +50,11 @@ public class ExpressionRunner {
 		this.listener = listener;
 	}
 
+	public void appendBadTypeError(Type type, Type desired, AstNode node,
+			ExpressionContext context) {
+		appendTypeError(" Probably a bug!", type, desired, node, context);
+	}
+
 	/** Used by {@link AstNode}s during resolution phase to note any errors. */
 	public void appendResolutionError(String message, AstNode node,
 			ExpressionContext context) {
@@ -57,9 +62,9 @@ public class ExpressionRunner {
 				null));
 	}
 
-	/** Used by {@link AstNode}s during type checking phase to note any errors. */
-	public void appendTypeError(Type type, Type desired, AstNode node,
-			ExpressionContext context) {
+	private void appendTypeError(String message, Type type, Type desired,
+			AstNode node, ExpressionContext context) {
+
 		ShowableStringBuilder<List<TypeVariable>> print = new ShowableStringBuilder<List<TypeVariable>>(
 				new ArrayList<TypeVariable>());
 		print.print("Got type \"");
@@ -67,9 +72,16 @@ public class ExpressionRunner {
 		print.print("\" expected \"");
 		print.print(desired);
 		print.print('"');
+		print.print(message);
 		errors.add(new ExpressionError(context.getAstContext(node), print
 				.toString(), null));
 		print.close();
+	}
+
+	/** Used by {@link AstNode}s during type checking phase to note any errors. */
+	public void appendTypeError(Type type, Type desired, AstNode node,
+			ExpressionContext context) {
+		appendTypeError("", type, desired, node, context);
 	}
 
 	public UserEnvironment getEnvironment() {
