@@ -33,9 +33,10 @@ public class InteractionCoreicity implements Interactome {
 	public double calculateMembership(Interaction interaction) {
 		double membership = source.calculateMembership(interaction);
 		if (!Membership.isMissing(membership)) {
-			if ((Boolean) comparison.run(interaction.getGene1(), interaction
-					.getGene1().getCoreicity(), interaction.getGene2(),
-					interaction.getGene2().getCoreicity())) {
+			if ((Boolean) comparison.run(interaction.getGene1(),
+					(long) interaction.getGene1().getCoreicity(), interaction
+							.getGene2(), (long) interaction.getGene2()
+							.getCoreicity())) {
 				return membership;
 			}
 		}
