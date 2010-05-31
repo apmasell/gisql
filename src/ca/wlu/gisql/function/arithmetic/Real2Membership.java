@@ -16,7 +16,7 @@ public class Real2Membership extends Function {
 	@Override
 	public Object run(Object... parameters) {
 		double value = (Double) parameters[0];
-		return (value >= 0 && value <= 1 ? value : null);
+		return value >= 0 && value <= 1 ? value : null;
 	}
 
 }
