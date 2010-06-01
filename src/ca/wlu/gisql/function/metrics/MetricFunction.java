@@ -7,7 +7,7 @@ import ca.wlu.gisql.interactome.metrics.Metrics;
 import ca.wlu.gisql.interactome.metrics.MetricsInteractome;
 import ca.wlu.gisql.runner.ExpressionRunner;
 
-/** Convience wrapper to convert {@link Metrics} into {@link Function}s. */
+/** Convenience wrapper to convert {@link Metrics} into {@link Function}s. */
 public abstract class MetricFunction<M extends Metrics> extends Function {
 
 	private final Class<M> metricclass;
@@ -27,11 +27,11 @@ public abstract class MetricFunction<M extends Metrics> extends Function {
 			MetricsInteractome interactome = new MetricsInteractome(
 					(Interactome) parameters[0], metric);
 			if (interactome.process()) {
+				return value(metric);
+			} else {
 				runner.getEnvironment().assertWarning(
 						"Failed to process interactome.");
 				return failure();
-			} else {
-				return value(metric);
 			}
 		} catch (InstantiationException e) {
 			runner.getEnvironment().assertWarning(e.toString());
