@@ -1,5 +1,6 @@
 package ca.wlu.gisql.graph.biologicalfunctions;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,12 +27,13 @@ public class GeneOntology implements BiologicalFunction {
 	private static final Map<Integer, GeneOntology> library = new HashMap<Integer, GeneOntology>();
 	private static final Logger log = Logger.getLogger(GeneOntology.class);
 	static {
-		SimpleMultiMap map = null;
+		SimpleMultiMap map = EmptyMultiMap.self;
 		try {
 			map = new BackedMultiMap("goterms.bin");
+		} catch (FileNotFoundException e) {
+			log.error("GO terms not included in build.");
 		} catch (IOException e) {
 			log.error("Failed to initialise gene ontology database.", e);
-			map = EmptyMultiMap.self;
 		}
 		hierarchy = map;
 	}
