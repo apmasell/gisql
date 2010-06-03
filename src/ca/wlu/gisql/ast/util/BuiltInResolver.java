@@ -19,7 +19,6 @@ import ca.wlu.gisql.ast.AstNativeConstructor;
 import ca.wlu.gisql.ast.AstNativeGenericFunction;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstParameter;
-import ca.wlu.gisql.ast.functions.Comparison;
 import ca.wlu.gisql.ast.functions.MissingValue;
 import ca.wlu.gisql.ast.functions.NullDefault;
 import ca.wlu.gisql.ast.type.Type;
@@ -139,7 +138,6 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		not.type(ExpressionRunner.empty, null);
 		defaultvalues.put("not", not);
 
-		addDefault(new Comparison());
 		addDefault(new MissingValue());
 		addDefault(new NullDefault());
 
