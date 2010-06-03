@@ -286,23 +286,11 @@ public class AstGraph2 extends AstNode {
 
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		if (!fromexpression.type(runner, context) || whereexpression != null
-				&& !whereexpression.type(runner, context)
-				|| !returnexpression.type(runner, context)) {
-			return false;
-		}
-		if (!fromexpression.getType().unify(Type.InteractomeType)) {
-			runner.appendTypeError(fromexpression.getType(),
-					Type.InteractomeType, this, context);
-			return false;
-		}
-		if (whereexpression != null
-				&& !whereexpression.getType().unify(Type.BooleanType)) {
-			runner.appendTypeError(whereexpression.getType(), Type.BooleanType,
-					this, context);
-			return false;
-		}
-		return true;
+		return returnexpression.type(runner, context)
+				&& runner.typeCheck(fromexpression, Type.InteractomeType,
+						context)
+				&& (whereexpression == null ? true : runner.typeCheck(
+						whereexpression, Type.BooleanType, context));
 	}
 
 }

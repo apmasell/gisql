@@ -102,14 +102,6 @@ public class AstFixedPoint2 extends AstNode {
 
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		if (!expression.type(runner, context)) {
-			return false;
-		}
-		if (!expression.getType().unify(self.getType())) {
-			runner.appendTypeError(self.getType(), expression.getType(), this,
-					context);
-			return false;
-		}
-		return true;
+		return runner.typeCheck(expression, self.getType(), context);
 	}
 }

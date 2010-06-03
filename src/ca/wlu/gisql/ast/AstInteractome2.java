@@ -3,7 +3,7 @@ package ca.wlu.gisql.ast;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.ArrowType;
-import ca.wlu.gisql.ast.type.MaybeType;
+import ca.wlu.gisql.ast.type.OptionalMaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.RenderingInteractome;
@@ -151,46 +151,11 @@ public class AstInteractome2 extends AstNode {
 
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		if (!(geneexpression.type(runner, context)
-				&& interactionexpression.type(runner, context) && membership
-				.type(runner, context))) {
-			return false;
-		}
-		if (!membership.getType().unify(Type.MembershipType)) {
-			runner.appendTypeError(membership.getType(), Type.MembershipType,
-					membership, context);
-			return false;
-		}
-		return typeExpression(geneexpression, runner, context)
-				&& typeExpression(interactionexpression, runner, context);
-	}
-
-	private boolean typeExpression(AstNode expression, ExpressionRunner runner,
-			ExpressionContext context) {
-		if (expression.getType().canUnify(Type.MembershipType)) {
-			if (!expression.getType().unify(Type.MembershipType)) {
-				runner.appendTypeError(expression.getType(),
-						Type.MembershipType, expression, context);
-				return false;
-			} else {
-				return true;
-			}
-		}
-
-		if (expression.getType().canUnify(new MaybeType(Type.MembershipType))) {
-			if (!expression.getType().unify(new MaybeType(Type.MembershipType))) {
-				runner.appendTypeError(expression.getType(), new MaybeType(
-						Type.MembershipType), expression, context);
-				return false;
-			} else {
-				return true;
-			}
-		}
-
-		runner.appendTypeError(expression.getType(), Type.MembershipType,
-				expression, context);
-		return false;
-
+		return runner.typeCheck(membership, Type.MembershipType, context)
+				&& runner.typeCheck(geneexpression, new OptionalMaybeType(
+						Type.MembershipType), context)
+				&& runner.typeCheck(interactionexpression,
+						new OptionalMaybeType(Type.MembershipType), context);
 	}
 
 }

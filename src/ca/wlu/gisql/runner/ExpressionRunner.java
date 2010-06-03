@@ -26,6 +26,9 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /** Utility class to make executing query language programs simple. */
 public class ExpressionRunner {
+	public static final ExpressionRunner empty = new ExpressionRunner(null,
+			null);
+
 	private static final Logger log = Logger.getLogger(ExpressionRunner.class);
 
 	private final UserEnvironment environment;
@@ -221,6 +224,19 @@ public class ExpressionRunner {
 		}
 
 		return true;
+	}
+
+	public boolean typeCheck(AstNode node, Type type, ExpressionContext context) {
+		if (node.type(this, context)) {
+			if (node.getType().unify(type)) {
+				return true;
+			} else {
+				appendTypeError(node.getType(), type, node, context);
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 }

@@ -96,6 +96,7 @@ import ca.wlu.gisql.interactome.output.FileFormat;
 import ca.wlu.gisql.interactome.output.OutputFunction;
 import ca.wlu.gisql.parser.descriptors.HelpDescriptor;
 import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
+import ca.wlu.gisql.runner.ExpressionRunner;
 
 /**
  * All values and functions that are part of the query language should be
@@ -135,7 +136,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		AstParameter notparam = new AstParameter("__not");
 		notparam.getType().unify(Type.InteractomeType);
 		AstNode not = new AstLambda2(notparam, AstLogic.makeNegation(notparam));
-		not.type(null, null);
+		not.type(ExpressionRunner.empty, null);
 		defaultvalues.put("not", not);
 
 		addDefault(new Comparison());

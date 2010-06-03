@@ -8,7 +8,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** The nullable type. */
 public class MaybeType extends Type {
-	private final Type contents;
+	protected final Type contents;
 
 	public MaybeType(Type contents) {
 		super();
@@ -58,6 +58,16 @@ public class MaybeType extends Type {
 	}
 
 	@Override
+	public boolean isNullable() {
+		return true;
+	}
+
+	@Override
+	protected boolean makeNull(Type contents) {
+		return this.contents.unify(contents);
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return contents.occurs(needle);
 	}
@@ -84,9 +94,8 @@ public class MaybeType extends Type {
 	public boolean unify(Type that) {
 		if (this == that) {
 			return true;
-		} else if (that instanceof MaybeType) {
-			MaybeType other = (MaybeType) that;
-			return contents.unify(other.contents);
+		} else if (that.isNullable() || that.isOptionallyNullable()) {
+			return that.makeNull(contents);
 		} else {
 			return super.unify(that);
 		}

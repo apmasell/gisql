@@ -103,6 +103,25 @@ public class TypeVariable extends Type {
 	}
 
 	@Override
+	public boolean isNullable() {
+		return self == null ? false : self.isNullable();
+	}
+
+	@Override
+	public boolean isOptionallyNullable() {
+		return self == null ? false : self.isOptionallyNullable();
+	}
+
+	@Override
+	protected boolean makeNull(Type contents) {
+		if (self == null) {
+			return false;
+		} else {
+			return self.makeNull(contents);
+		}
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return self == null ? this == needle : self.occurs(needle);
 	}

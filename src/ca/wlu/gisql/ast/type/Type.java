@@ -206,6 +206,18 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 		return new MaybeType(this);
 	}
 
+	public boolean isNullable() {
+		return false;
+	}
+
+	public boolean isOptionallyNullable() {
+		return false;
+	}
+
+	protected boolean makeNull(Type contents) {
+		return false;
+	}
+
 	/**
 	 * Determine if a type is inside this type. This is needed to prevent "α →
 	 * β" from unifying with "α", causing an infinite type.
@@ -272,6 +284,8 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 	public boolean unify(Type that) {
 		if (this == that) {
 			return true;
+		} else if (that.isOptionallyNullable()) {
+			return that.unify(this);
 		} else if (that instanceof TypeVariable) {
 			return that.unify(this);
 		} else {

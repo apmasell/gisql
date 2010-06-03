@@ -588,19 +588,8 @@ public class AstLogic extends AstNode {
 	/** Checks that the arguments are well-typed and of type Interactome. */
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		if (!(left.type(runner, context) && (right == null || right.type(
-				runner, context)))) {
-			return false;
-		}
-
-		if (!left.getType().unify(type)) {
-			runner.appendTypeError(left.getType(), type, this, context);
-			return false;
-		}
-		if (!(right == null || right.getType().unify(type))) {
-			runner.appendTypeError(right.getType(), type, this, context);
-			return false;
-		}
-		return true;
+		return runner.typeCheck(left, type, context)
+				&& (right == null ? true : runner.typeCheck(right, type,
+						context));
 	}
 }
