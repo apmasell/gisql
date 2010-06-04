@@ -23,7 +23,7 @@ import ca.wlu.gisql.db.DatabaseEnvironment;
 import ca.wlu.gisql.db.DatabaseManager;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.interactome.output.FileFormat;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
+import ca.wlu.gisql.parser.ExpressionKnowledgebase;
 import ca.wlu.gisql.runner.ExpressionRunner;
 
 /**
@@ -63,7 +63,7 @@ public class GisQL {
 		if (commandline.hasOption('h')) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("gisql", options);
-			System.out.println(new ParserKnowledgebase().getHelp());
+			System.out.println(new ExpressionKnowledgebase().getHelp());
 			return;
 		}
 

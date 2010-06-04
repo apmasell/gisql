@@ -1,6 +1,7 @@
 package ca.wlu.gisql.ast.type;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +16,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * The query language type of an unknown/generic type. A type variable may
  * belong to one or more {@link TypeClass}es.
  */
-public class TypeVariable extends Type {
+public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 	private static final Logger log = Logger.getLogger(TypeVariable.class);
 
 	private final Set<TypeClass<?>> originaltypeclass = new HashSet<TypeClass<?>>();
@@ -110,6 +111,11 @@ public class TypeVariable extends Type {
 	@Override
 	public boolean isOptionallyNullable() {
 		return self == null ? false : self.isOptionallyNullable();
+	}
+
+	@Override
+	public Iterator<TypeClass<?>> iterator() {
+		return typeclasses.iterator();
 	}
 
 	@Override

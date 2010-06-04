@@ -3,8 +3,7 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 import java.util.Set;
 
-import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
@@ -13,7 +12,8 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
  * which may be separated by arbitrary white space. Tokens have access to
  * manipulate the {@link Parser}'s current state.
  */
-public abstract class Token implements Show<Object> {
+public abstract class Token<R, P extends Enum<P> & Nextable<P>> implements
+		Show<Object> {
 
 	/** Find any words that should be barred as variable names. */
 	public abstract void addReservedWords(Set<String> reservedwords);
@@ -29,8 +29,8 @@ public abstract class Token implements Show<Object> {
 	 *            If there is a result, it should be appended to this list.
 	 * @return True is parsing was successful.
 	 */
-	abstract boolean parse(Parser parser, Precedence level,
-			List<AstNode> results);
+	abstract boolean parse(ParserKnowledgebase<R, P> knowledgebase,
+			Parser parser, P level, List<R> results);
 
 	@Override
 	public final String toString() {

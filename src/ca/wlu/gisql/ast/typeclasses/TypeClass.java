@@ -32,6 +32,24 @@ public class TypeClass<T> implements Renderable {
 			"Logic", Object.class, Type.BooleanType, Type.InteractomeType,
 			Type.MembershipType);
 
+	@SuppressWarnings("unchecked")
+	public static <T> TypeClass<T> getTypeClassForName(String name) {
+		for (Field field : TypeClass.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers())
+					&& TypeClass.class.isAssignableFrom(field.getType())) {
+				try {
+
+					if (field.get(null).toString().equals(name)) {
+						return (TypeClass<T>) field.get(null);
+					}
+				} catch (IllegalArgumentException e) {
+				} catch (IllegalAccessException e) {
+				}
+			}
+		}
+		return null;
+	}
+
 	public static boolean hasInstance(Type type, Set<TypeClass<?>> typeclasses) {
 		if (typeclasses.size() > 0) {
 			for (Type t : matchingTypes(typeclasses)) {
@@ -123,5 +141,4 @@ public class TypeClass<T> implements Renderable {
 	public String toString() {
 		return name;
 	}
-
 }

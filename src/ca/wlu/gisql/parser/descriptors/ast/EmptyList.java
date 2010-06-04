@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,13 +22,13 @@ import ca.wlu.gisql.util.Precedence;
  * Parses the empty list written as “[]”. This is handled separately from
  * {@link LiteralList} since {@link TokenListOf} must match at least one item.
  */
-public class EmptyList extends Parseable {
+public class EmptyList extends Parseable<AstNode, Precedence> {
 
-	public static final Parseable descriptor = new EmptyList();
+	public static final Parseable<AstNode, Precedence> descriptor = new EmptyList();
 	private static final Logger log = Logger.getLogger(EmptyList.class);
 
 	private EmptyList() {
-		super(TokenMatchCharacter.get(']'));
+		super(TokenMatchCharacter.<AstNode, Precedence> get(']'));
 	}
 
 	@Override

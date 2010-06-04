@@ -14,7 +14,8 @@ import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
-public abstract class ComputedInteractomeDescriptor extends Parseable {
+public abstract class ComputedInteractomeDescriptor extends
+		Parseable<AstNode, Precedence> {
 	private final String function;
 
 	private final String name;
@@ -27,7 +28,7 @@ public abstract class ComputedInteractomeDescriptor extends Parseable {
 
 	public ComputedInteractomeDescriptor(Precedence nestinglevel,
 			char[] symbols, String name, String function) {
-		super(TokenExpressionChild.self);
+		super(TokenExpressionChild.<AstNode, Precedence> get());
 		this.nestinglevel = nestinglevel;
 		this.symbols = symbols.clone();
 		this.name = name;

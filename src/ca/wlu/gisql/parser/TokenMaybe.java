@@ -3,24 +3,23 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 import java.util.Set;
 
-import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
  * Optionally match a token. If the token is not matched, the result will be
  * null. This is equivalent to the ? operator in regular expressions.
  */
-public class TokenMaybe extends Token {
-	private final Token child;
+public class TokenMaybe<R, P extends Enum<P> & Nextable<P>> extends Token<R, P> {
+	private final Token<R, P> child;
 
-	public TokenMaybe(Token child) {
+	public TokenMaybe(Token<R, P> child) {
 		super();
 		this.child = child;
 	}
 
-	public TokenMaybe(Token... children) {
-		this(new TokenSequence(children));
+	public TokenMaybe(Token<R, P>... children) {
+		this(new TokenSequence<R, P>(children));
 	}
 
 	@Override
@@ -29,10 +28,11 @@ public class TokenMaybe extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<R, P> knowledgebase, Parser parser,
+			P level, List<R> results) {
 		parser.mark();
 		int errorposition = parser.error.size();
-		if (child.parse(parser, level, results)) {
+		if (child.parse(knowledgebase, parser, level, results)) {
 			parser.clearMark();
 			return true;
 		}

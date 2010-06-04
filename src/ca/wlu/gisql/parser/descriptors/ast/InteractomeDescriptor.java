@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.List;
 import java.util.Stack;
@@ -20,26 +20,35 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
 /** Syntax for a FLWOR expression. */
-public class InteractomeDescriptor extends Parseable {
-	public final static Parseable descriptor = new InteractomeDescriptor();
+public class InteractomeDescriptor extends Parseable<AstNode, Precedence> {
+	public final static Parseable<AstNode, Precedence> descriptor = new InteractomeDescriptor();
 
 	private InteractomeDescriptor() {
-		super(new TokenReservedWord("interactome"),
+		super(new TokenReservedWord<AstNode, Precedence>("interactome"),
 
-		new TokenMaybe(new TokenReservedWord("given"), new TokenListOf(
-				TokenName.self, ',')),
+		new TokenMaybe<AstNode, Precedence>(
+				new TokenReservedWord<AstNode, Precedence>("given"),
+				new TokenListOf(TokenName.<AstNode, Precedence> get(), ',')),
 
-		TokenMatchCharacter.get('{'),
+		TokenMatchCharacter.<AstNode, Precedence> get('{'),
 
-		new TokenReservedWord("unknown"), TokenMatchCharacter.get('='),
-				new TokenExpressionFull(';'),
+		new TokenReservedWord<AstNode, Precedence>("unknown"),
+				TokenMatchCharacter.<AstNode, Precedence> get('='),
+				new TokenExpressionFull<AstNode, Precedence>(Precedence
+						.expression(), ';'),
 
-				new TokenReservedWord("gene"), TokenName.self,
-				TokenMatchCharacter.get('='), new TokenExpressionFull(';'),
+				new TokenReservedWord<AstNode, Precedence>("gene"), TokenName
+						.<AstNode, Precedence> get(), TokenMatchCharacter
+						.<AstNode, Precedence> get('='),
+				new TokenExpressionFull<AstNode, Precedence>(Precedence
+						.expression(), ';'),
 
-				new TokenReservedWord("interaction"), TokenName.self,
-				TokenName.self, TokenMatchCharacter.get('='),
-				new TokenExpressionFull('}'));
+				new TokenReservedWord<AstNode, Precedence>("interaction"),
+				TokenName.<AstNode, Precedence> get(), TokenName
+						.<AstNode, Precedence> get(), TokenMatchCharacter
+						.<AstNode, Precedence> get('='),
+				new TokenExpressionFull<AstNode, Precedence>(Precedence
+						.expression(), '}'));
 	}
 
 	@Override

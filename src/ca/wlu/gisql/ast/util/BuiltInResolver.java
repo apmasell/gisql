@@ -93,7 +93,7 @@ import ca.wlu.gisql.interactome.functions.Proximity;
 import ca.wlu.gisql.interactome.functions.Snap;
 import ca.wlu.gisql.interactome.output.FileFormat;
 import ca.wlu.gisql.interactome.output.OutputFunction;
-import ca.wlu.gisql.parser.descriptors.HelpDescriptor;
+import ca.wlu.gisql.parser.descriptors.ast.HelpDescriptor;
 import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
 import ca.wlu.gisql.runner.ExpressionRunner;
 

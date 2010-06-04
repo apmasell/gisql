@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.List;
 import java.util.Stack;
@@ -17,12 +17,13 @@ import ca.wlu.gisql.util.Precedence;
 /**
  * This operator parses anonymous recursive functions.
  */
-public class FixedPointDescriptor extends Parseable {
+public class FixedPointDescriptor extends Parseable<AstNode, Precedence> {
 
-	public static final Parseable descriptor = new FixedPointDescriptor();
+	public static final Parseable<AstNode, Precedence> descriptor = new FixedPointDescriptor();
 
 	private FixedPointDescriptor() {
-		super(TokenName.self, TokenExpressionRight.self);
+		super(TokenName.<AstNode, Precedence> get(), TokenExpressionRight
+				.<AstNode, Precedence> get());
 	}
 
 	@Override

@@ -14,9 +14,10 @@ import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
-final class CutDescriptor extends Parseable {
+final class CutDescriptor extends Parseable<AstNode, Precedence> {
 	public CutDescriptor() {
-		super(TokenReal.self, TokenMatchCharacter.get('}'));
+		super(TokenReal.self, TokenMatchCharacter
+				.<AstNode, Precedence> get('}'));
 	}
 
 	@Override

@@ -13,12 +13,12 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * appear around the delimiter. This must match at least on token. That is, it
  * behaves like the regular expression + operator.
  */
-public class TokenListOf extends Token {
-	private final Token child;
+public class TokenListOf extends Token<AstNode, Precedence> {
+	private final Token<AstNode, Precedence> child;
 
 	private final Character delimiter;
 
-	public TokenListOf(Token child, Character delimiter) {
+	public TokenListOf(Token<AstNode, Precedence> child, Character delimiter) {
 		super();
 		this.child = child;
 		this.delimiter = delimiter;
@@ -30,24 +30,25 @@ public class TokenListOf extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<AstNode, Precedence> knowledgebase,
+			Parser parser, Precedence level, List<AstNode> results) {
 		AstLiteralList items = new AstLiteralList();
 
-		if (!child.parse(parser, level, items)) {
+		if (!child.parse(knowledgebase, parser, level, items)) {
 			return false;
 		}
 
 		parser.consumeWhitespace();
 		while (parser.hasMore()) {
 			if (delimiter == null) {
-				if (!child.parse(parser, level, items)) {
+				if (!child.parse(knowledgebase, parser, level, items)) {
 					results.add(items);
 					return true;
 				}
 			} else if (parser.peek() == delimiter) {
 				parser.next();
 				parser.consumeWhitespace();
-				if (!child.parse(parser, level, items)) {
+				if (!child.parse(knowledgebase, parser, level, items)) {
 					return false;
 				}
 			} else {

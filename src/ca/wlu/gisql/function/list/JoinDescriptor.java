@@ -12,10 +12,10 @@ import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
-public class JoinDescriptor extends Parseable {
+public class JoinDescriptor extends Parseable<AstNode, Precedence> {
 
 	JoinDescriptor() {
-		super(TokenExpressionChild.self);
+		super(TokenExpressionChild.<AstNode, Precedence> get());
 	}
 
 	@Override

@@ -13,7 +13,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 /**
  * Matches a quoted string. Escape sequences are permitted.
  */
-public class TokenQuotedString extends Token {
+public class TokenQuotedString extends Token<AstNode, Precedence> {
 	public static final TokenQuotedString self = new TokenQuotedString();
 
 	private TokenQuotedString() {
@@ -25,7 +25,8 @@ public class TokenQuotedString extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<AstNode, Precedence> knowledgebase,
+			Parser parser, Precedence level, List<AstNode> results) {
 		parser.consumeWhitespace();
 		StringBuilder sb = new StringBuilder();
 		boolean success = false;

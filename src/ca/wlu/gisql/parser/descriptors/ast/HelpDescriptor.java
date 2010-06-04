@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.List;
 import java.util.Stack;
@@ -18,9 +18,9 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
 /** This operator extracts the help information from a function and returns it. */
-public class HelpDescriptor extends Parseable {
+public class HelpDescriptor extends Parseable<AstNode, Precedence> {
 
-	public static final Parseable descriptor = new HelpDescriptor();
+	public static final Parseable<AstNode, Precedence> descriptor = new HelpDescriptor();
 
 	public static void helpFor(StringBuilder sb, String name, Type type,
 			Object value) {
@@ -40,7 +40,7 @@ public class HelpDescriptor extends Parseable {
 	}
 
 	private HelpDescriptor() {
-		super(TokenName.self);
+		super(TokenName.<AstNode, Precedence> get());
 	}
 
 	@Override

@@ -4,23 +4,34 @@ import java.util.List;
 import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.TokenExpressionFull;
+import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.Precedence;
 
 /** Parses a bracketed subexpression. */
-public class BracketedExpressionDescriptor extends Parseable {
-	public static final Parseable descriptor = new BracketedExpressionDescriptor();
+public class BracketedExpressionDescriptor<R, P extends Enum<P> & Nextable<P>>
+		extends Parseable<R, P> {
+	public static final Parseable<AstNode, Precedence> descriptor = new BracketedExpressionDescriptor<AstNode, Precedence>(
+			Precedence.values());
 
-	private BracketedExpressionDescriptor() {
-		super(new TokenExpressionFull(')'));
+	public static final Parseable<Type, TypeNesting> typedescriptor = new BracketedExpressionDescriptor<Type, TypeNesting>(
+			TypeNesting.values());
+
+	private final P[] values;
+
+	private BracketedExpressionDescriptor(P[] values) {
+		super(new TokenExpressionFull<R, P>(values[0], ')'));
+		this.values = values;
 	}
 
 	@Override
-	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
+	public R construct(ExpressionRunner runner, List<R> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
 		return params.get(0);
 	}
@@ -41,8 +52,8 @@ public class BracketedExpressionDescriptor extends Parseable {
 	}
 
 	@Override
-	public Precedence getPrecedence() {
-		return Precedence.Value;
+	public P getPrecedence() {
+		return values[values.length - 1];
 	}
 
 }

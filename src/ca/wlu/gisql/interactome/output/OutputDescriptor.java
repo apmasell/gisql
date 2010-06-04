@@ -17,12 +17,13 @@ import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
-final class OutputDescriptor extends Parseable {
+final class OutputDescriptor extends Parseable<AstNode, Precedence> {
 	private static final Logger log = Logger.getLogger(OutputDescriptor.class);
 
 	public OutputDescriptor() {
-		super(new TokenMaybe(TokenExpressionRight.self),
-				TokenExpressionRight.self);
+		super(new TokenMaybe<AstNode, Precedence>(TokenExpressionRight
+				.<AstNode, Precedence> get()), TokenExpressionRight
+				.<AstNode, Precedence> get());
 	}
 
 	@Override

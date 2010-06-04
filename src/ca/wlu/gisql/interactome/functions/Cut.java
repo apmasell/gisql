@@ -5,6 +5,7 @@ import java.util.Set;
 import ca.wlu.gisql.Membership;
 import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.annotation.GisqlType;
+import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -15,7 +16,7 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
 
 @GisqlConstructorFunction(name = "cut", description = "Filter interactions and genes with a score lower than threshold")
 public class Cut implements Interactome {
-	public static final Parseable descriptor = new CutDescriptor();
+	public static final Parseable<AstNode, Precedence> descriptor = new CutDescriptor();
 
 	private final double cutoff;
 

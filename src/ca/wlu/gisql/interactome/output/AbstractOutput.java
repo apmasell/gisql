@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.ProcessableInteractome;
 import ca.wlu.gisql.parser.Parseable;
@@ -11,7 +12,7 @@ import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public abstract class AbstractOutput extends ProcessableInteractome {
-	public static final Parseable descriptor = new OutputDescriptor();
+	public static final Parseable<AstNode, Precedence> descriptor = new OutputDescriptor();
 
 	protected static final Logger log = Logger.getLogger(OutputGraph.class);
 

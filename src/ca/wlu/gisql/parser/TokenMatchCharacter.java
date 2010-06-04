@@ -5,15 +5,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Find exactly some character. The character is not included in the results. */
-public class TokenMatchCharacter extends Token {
+public class TokenMatchCharacter<R, P extends Enum<P> & Nextable<P>> extends
+		Token<R, P> {
+	@SuppressWarnings("unchecked")
 	private static final Map<Character, TokenMatchCharacter> literals = new HashMap<Character, TokenMatchCharacter>();
 
-	public static TokenMatchCharacter get(char c) {
+	@SuppressWarnings("unchecked")
+	public static <R, P extends Enum<P> & Nextable<P>> TokenMatchCharacter<R, P> get(
+			char c) {
 		TokenMatchCharacter literal = literals.get(c);
 		if (literal == null) {
 			literal = new TokenMatchCharacter(c);
@@ -34,7 +37,8 @@ public class TokenMatchCharacter extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<R, P> knowledgebase, Parser parser,
+			P level, List<R> results) {
 		parser.consumeWhitespace();
 		if (parser.hasMore() && c == parser.peek()) {
 			parser.next();

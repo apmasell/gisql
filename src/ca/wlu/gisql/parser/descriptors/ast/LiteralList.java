@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.List;
 import java.util.Stack;
@@ -13,13 +13,13 @@ import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
-public class LiteralList extends Parseable {
+public class LiteralList extends Parseable<AstNode, Precedence> {
 
-	public static final Parseable descriptor = new LiteralList();
+	public static final Parseable<AstNode, Precedence> descriptor = new LiteralList();
 
 	private LiteralList() {
-		super(new TokenListOf(TokenExpressionRight.self, ','),
-				TokenMatchCharacter.get(']'));
+		super(new TokenListOf(TokenExpressionRight.<AstNode, Precedence> get(),
+				','), TokenMatchCharacter.<AstNode, Precedence> get(']'));
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.List;
 import java.util.Stack;
@@ -18,12 +18,13 @@ import ca.wlu.gisql.util.Precedence;
 /**
  * Allows assignment via (var = expression).
  */
-public final class AssignmentDescriptor extends Parseable {
-	public static final Parseable self = new AssignmentDescriptor();
+public final class AssignmentDescriptor extends Parseable<AstNode, Precedence> {
+	public static final Parseable<AstNode, Precedence> self = new AssignmentDescriptor();
 
 	private AssignmentDescriptor() {
-		super(TokenName.self, TokenMatchCharacter.get('='),
-				TokenExpressionChild.self);
+		super(TokenName.<AstNode, Precedence> get(), TokenMatchCharacter
+				.<AstNode, Precedence> get('='), TokenExpressionChild
+				.<AstNode, Precedence> get());
 	}
 
 	@Override

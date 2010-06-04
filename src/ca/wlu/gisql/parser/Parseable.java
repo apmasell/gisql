@@ -5,11 +5,10 @@ import java.util.List;
 import java.util.Stack;
 
 import name.masella.iterator.ArrayIterator;
-import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.Show;
 import ca.wlu.gisql.util.ShowablePrintWriter;
@@ -23,17 +22,17 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * {@link #construct(ExpressionRunner, List, Stack, ExpressionContext)} with
  * parsed data.
  */
-public abstract class Parseable implements Iterable<Token>,
-		Prioritizable<ParserKnowledgebase, Precedence>,
-		Show<ParserKnowledgebase> {
+public abstract class Parseable<R, P extends Enum<P> & Nextable<P>> implements
+		Iterable<Token<R, P>>, Prioritizable<ParserKnowledgebase<R, P>, P>,
+		Show<ParserKnowledgebase<R, P>> {
 
 	public enum Order {
 		CharacterTokens, ExpressionCharacterTokens, Tokens
 	};
 
-	private final Token[] tokens;
+	private final Token<R, P>[] tokens;
 
-	protected Parseable(Token... tokens) {
+	protected Parseable(Token<R, P>... tokens) {
 		super();
 		if (tokens.length == 0) {
 			throw new IllegalArgumentException();
@@ -56,9 +55,8 @@ public abstract class Parseable implements Iterable<Token>,
 	 *            The current expression context in which to produce an error.
 	 * @return The abstract syntax found or null if there is an error.
 	 * */
-	public abstract AstNode construct(ExpressionRunner runner,
-			List<AstNode> params, Stack<ExpressionError> error,
-			ExpressionContext context);
+	public abstract R construct(ExpressionRunner runner, List<R> params,
+			Stack<ExpressionError> error, ExpressionContext context);
 
 	protected abstract String getInfo();
 
@@ -85,12 +83,12 @@ public abstract class Parseable implements Iterable<Token>,
 	 * {@link #construct(ExpressionRunner, List, Stack, ExpressionContext)}. Not
 	 * all tokens return results though.
 	 */
-	public final Iterator<Token> iterator() {
-		return new ArrayIterator<Token>(tokens);
+	public final Iterator<Token<R, P>> iterator() {
+		return new ArrayIterator<Token<R, P>>(tokens);
 	}
 
 	@Override
-	public final void show(ShowablePrintWriter<ParserKnowledgebase> print) {
+	public final void show(ShowablePrintWriter<ParserKnowledgebase<R, P>> print) {
 		print.print(getInfo());
 		print.print(':');
 
@@ -105,7 +103,7 @@ public abstract class Parseable implements Iterable<Token>,
 			print.print(']');
 		}
 
-		for (Token token : this) {
+		for (Token<R, P> token : this) {
 			print.print(' ');
 			print.print(token);
 		}

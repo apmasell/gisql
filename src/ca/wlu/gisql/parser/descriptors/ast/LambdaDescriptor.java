@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.List;
 import java.util.Stack;
@@ -20,12 +20,13 @@ import ca.wlu.gisql.util.Precedence;
  * -> expression), was not possible and LISP/Scheme (lambda var expression) is
  * bulky.
  */
-public class LambdaDescriptor extends Parseable {
+public class LambdaDescriptor extends Parseable<AstNode, Precedence> {
 
-	public static final Parseable descriptor = new LambdaDescriptor();
+	public static final Parseable<AstNode, Precedence> descriptor = new LambdaDescriptor();
 
 	private LambdaDescriptor() {
-		super(TokenName.self, TokenExpressionRight.self);
+		super(TokenName.<AstNode, Precedence> get(), TokenExpressionRight
+				.<AstNode, Precedence> get());
 	}
 
 	@Override

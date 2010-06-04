@@ -7,7 +7,7 @@ import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.environment.UserEnvironment;
-import ca.wlu.gisql.parser.descriptors.AssignmentDescriptor;
+import ca.wlu.gisql.parser.descriptors.ast.AssignmentDescriptor;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;

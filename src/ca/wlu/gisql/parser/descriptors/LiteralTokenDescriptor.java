@@ -3,22 +3,25 @@ package ca.wlu.gisql.parser.descriptors;
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.Token;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 
-public class LiteralTokenDescriptor extends Parseable {
+public class LiteralTokenDescriptor<R, P extends Enum<P> & Nextable<P>> extends
+		Parseable<R, P> {
 
-	public LiteralTokenDescriptor(Token token) {
+	private final P position;
+
+	public LiteralTokenDescriptor(Token<R, P> token, P position) {
 		super(token);
+		this.position = position;
 	}
 
 	@Override
-	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
+	public R construct(ExpressionRunner runner, List<R> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
 		return params.get(0);
 	}
@@ -38,7 +41,7 @@ public class LiteralTokenDescriptor extends Parseable {
 		return Order.Tokens;
 	}
 
-	public Precedence getPrecedence() {
-		return Precedence.Value;
+	public P getPrecedence() {
+		return position;
 	}
 }

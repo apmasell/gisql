@@ -3,13 +3,19 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 import java.util.Set;
 
-import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Parsers an expression at a precedence level greater than the current level. */
-public class TokenExpressionChild extends Token {
-	public static final TokenExpressionChild self = new TokenExpressionChild();
+public class TokenExpressionChild<R, P extends Enum<P> & Nextable<P>> extends
+		Token<R, P> {
+	@SuppressWarnings("unchecked")
+	private static final TokenExpressionChild self = new TokenExpressionChild();
+
+	@SuppressWarnings("unchecked")
+	public static <R, P extends Enum<P> & Nextable<P>> TokenExpressionChild<R, P> get() {
+		return self;
+	}
 
 	private TokenExpressionChild() {
 		super();
@@ -20,8 +26,9 @@ public class TokenExpressionChild extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
-		AstNode result = parser.parseAutoExpression(level.next());
+	boolean parse(ParserKnowledgebase<R, P> knowledgebase, Parser parser,
+			P level, List<R> results) {
+		R result = parser.parseAutoExpression(knowledgebase, level.next());
 		if (result == null) {
 			return false;
 		}

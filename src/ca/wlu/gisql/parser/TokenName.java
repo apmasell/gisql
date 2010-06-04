@@ -3,15 +3,19 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 import java.util.Set;
 
-import ca.wlu.gisql.ast.AstName;
-import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Matches a valid Java identifier. */
-public class TokenName extends Token {
+public class TokenName<R, P extends Enum<P> & Nextable<P>> extends Token<R, P> {
 
-	public static final Token self = new TokenName();
+	@SuppressWarnings("unchecked")
+	private static final Token self = new TokenName();
+
+	@SuppressWarnings("unchecked")
+	public static <R, P extends Enum<P> & Nextable<P>> Token<R, P> get() {
+		return self;
+	}
 
 	protected TokenName() {
 	}
@@ -21,7 +25,8 @@ public class TokenName extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<R, P> knowledgebase, Parser parser,
+			P level, List<R> results) {
 		StringBuilder sb = new StringBuilder();
 
 		while (parser.hasMore()) {
@@ -44,10 +49,10 @@ public class TokenName extends Token {
 			return false;
 		}
 		String name = sb.toString();
-		if (parser.isReservedWord(name)) {
+		if (knowledgebase.isReservedWord(name)) {
 			return false;
 		} else {
-			results.add(new AstName(name));
+			results.add(knowledgebase.makeName(name));
 			return true;
 		}
 	}

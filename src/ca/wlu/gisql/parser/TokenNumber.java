@@ -10,7 +10,7 @@ import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Matches a whole number. */
-public class TokenNumber extends Token {
+public class TokenNumber extends Token<AstNode, Precedence> {
 	public static final TokenNumber self = new TokenNumber();
 
 	private TokenNumber() {
@@ -22,7 +22,8 @@ public class TokenNumber extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<AstNode, Precedence> knowledgebase,
+			Parser parser, Precedence level, List<AstNode> results) {
 		parser.mark();
 		parser.consumeWhitespace();
 		while (parser.hasMore() && Character.isDigit(parser.peek())) {

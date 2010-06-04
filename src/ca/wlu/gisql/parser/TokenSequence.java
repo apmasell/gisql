@@ -1,35 +1,36 @@
 package ca.wlu.gisql.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import ca.wlu.gisql.ast.AstLiteralList;
-import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class TokenSequence extends Token {
+public class TokenSequence<R, P extends Enum<P> & Nextable<P>> extends
+		Token<R, P> {
 
-	private final Token[] tokens;
+	private final Token<R, P>[] tokens;
 
-	public TokenSequence(Token... tokens) {
+	public TokenSequence(Token<R, P>... tokens) {
 		this.tokens = tokens;
 	}
 
 	@Override
 	public void addReservedWords(Set<String> reservedwords) {
-		for (Token token : tokens) {
+		for (Token<R, P> token : tokens) {
 			token.addReservedWords(reservedwords);
 		}
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<R, P> knowledgebase, Parser parser,
+			P level, List<R> results) {
 
-		AstLiteralList subresults = new AstLiteralList();
-		for (Token token : tokens) {
+		List<R> subresults = new ArrayList<R>();
+		for (Token<R, P> token : tokens) {
 			parser.consumeWhitespace();
-			if (!token.parse(parser, level, subresults)) {
+			if (!token.parse(knowledgebase, parser, level, subresults)) {
 				return false;
 			}
 		}
@@ -41,7 +42,7 @@ public class TokenSequence extends Token {
 	public void show(ShowablePrintWriter<Object> print) {
 		boolean first = true;
 		print.print('(');
-		for (Token token : tokens) {
+		for (Token<R, P> token : tokens) {
 			if (first) {
 				first = false;
 			} else {

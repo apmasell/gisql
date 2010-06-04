@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.BuiltInResolver;
-import ca.wlu.gisql.parser.ParserKnowledgebase;
+import ca.wlu.gisql.parser.ExpressionKnowledgebase;
 
 /**
  * Environment hold defined variables for interactions with the user.
@@ -31,7 +31,7 @@ public abstract class Environment implements EnvironmentListener,
 
 	private final Environment parent;
 
-	private final ParserKnowledgebase parserkb;
+	private final ExpressionKnowledgebase parserkb;
 
 	private final Map<String, Type> types = new HashedMap<String, Type>();
 
@@ -43,7 +43,7 @@ public abstract class Environment implements EnvironmentListener,
 		this.parent = parent;
 		this.mutable = mutable;
 		this.alwaysPropagate = alwaysPropagate;
-		parserkb = new ParserKnowledgebase();
+		parserkb = new ExpressionKnowledgebase();
 
 		if (parent != null) {
 			parent.addListener(this);
@@ -111,7 +111,7 @@ public abstract class Environment implements EnvironmentListener,
 		}
 	}
 
-	public ParserKnowledgebase getParserKb() {
+	public ExpressionKnowledgebase getParserKb() {
 		return parserkb;
 	}
 

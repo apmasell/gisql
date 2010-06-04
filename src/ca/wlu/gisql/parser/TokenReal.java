@@ -12,7 +12,7 @@ import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** Parser a decimal number. It cannot include an exponent. */
-public class TokenReal extends Token {
+public class TokenReal extends Token<AstNode, Precedence> {
 	public static final TokenReal self = new TokenReal();
 
 	private TokenReal() {
@@ -24,7 +24,8 @@ public class TokenReal extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<AstNode, Precedence> knowledgebase,
+			Parser parser, Precedence level, List<AstNode> results) {
 		parser.mark();
 		parser.consumeWhitespace();
 		while (parser.hasMore() && Character.isDigit(parser.peek())) {

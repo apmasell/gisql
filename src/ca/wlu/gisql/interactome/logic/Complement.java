@@ -13,11 +13,11 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
 /** This is a special syntax parseable to handle complemented/negated sets. */
-public class Complement extends Parseable {
-	public static final Parseable descriptor = new Complement();
+public class Complement extends Parseable<AstNode, Precedence> {
+	public static final Parseable<AstNode, Precedence> descriptor = new Complement();
 
 	private Complement() {
-		super(TokenExpressionChild.self);
+		super(TokenExpressionChild.<AstNode, Precedence> get());
 	}
 
 	@Override

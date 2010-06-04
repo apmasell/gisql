@@ -6,9 +6,9 @@ import java.lang.reflect.Constructor;
 import ca.wlu.gisql.annotation.GisqlConstructorFunction;
 import ca.wlu.gisql.annotation.GisqlType;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.ast.type.TypeParser;
 import ca.wlu.gisql.ast.util.BuiltInResolver;
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.parser.Parser;
 
 /**
  * Represents a native function that really corresponds to a Java constructor.
@@ -31,8 +31,11 @@ public final class AstNativeConstructor extends AstNative {
 			for (Annotation annotation : annotations[index]) {
 				if (annotation instanceof GisqlType) {
 					GisqlType gisqltype = (GisqlType) annotation;
-					TypeParser parser = new TypeParser(gisqltype.type());
-					types[index] = parser.parse();
+					types[index] = Parser.parseType(gisqltype.type());
+					if (types[index] == null) {
+						throw new IllegalArgumentException("Malformed type: "
+								+ gisqltype.type());
+					}
 					break;
 				}
 			}

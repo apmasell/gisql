@@ -5,14 +5,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.parser.Parseable.Order;
+import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunListener;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.runner.LineContext;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.Precedence;
 
 /**
@@ -24,6 +26,23 @@ import ca.wlu.gisql.util.Precedence;
  * each Parseable belongs to a specific precedence level.
  */
 public class Parser {
+
+	public static Type parseType(String input) {
+		Parser parser = new Parser(null, new LineContext() {
+
+			@Override
+			public String getLine() {
+				return "0";
+			}
+
+			@Override
+			public String getSource() {
+				return "Internal";
+			}
+		}, input, null);
+		return parser.parseExpression(new TypeKnowledgeBase(), null,
+				TypeNesting.Arrow);
+	}
 
 	private final LineContext context;
 
@@ -90,10 +109,6 @@ public class Parser {
 		return !hasMore();
 	}
 
-	public boolean isReservedWord(String name) {
-		return runner.getEnvironment().getParserKb().isReservedWord(name);
-	}
-
 	/** Place a mark at the current */
 	void mark() {
 		marks.push(position);
@@ -107,7 +122,8 @@ public class Parser {
 	public AstNode parse() {
 		error.clear();
 		position = 0;
-		AstNode result = parseExpression(null, Precedence.statement());
+		AstNode result = parseExpression(runner.getEnvironment().getParserKb(),
+				null, Precedence.statement());
 		if (result == null) {
 			if (error.size() == 0) {
 				listener.reportErrors(Collections
@@ -127,12 +143,13 @@ public class Parser {
 	 * Parse an expression from the current position for a specific precedence
 	 * level.
 	 */
-	AstNode parseAutoExpression(Precedence level) {
+	<R, P extends Enum<P> & Nextable<P>> R parseAutoExpression(
+			ParserKnowledgebase<R, P> knowledgebase, P level) {
 		if (level == null) {
 			return null;
 		}
 
-		AstNode result = null;
+		R result = null;
 		int errorposition = error.size();
 
 		consumeWhitespace(); /* Do this before testing input length. */
@@ -140,8 +157,7 @@ public class Parser {
 		while (matched && hasMore()) {
 			matched = false;
 			/* Consider all the parseables in this precedence level... */
-			for (Parseable operator : runner.getEnvironment().getParserKb()
-					.getOperators(level)) {
+			for (Parseable<R, P> operator : knowledgebase.getOperators(level)) {
 				/* Attempt to determine if it has a matching operator... */
 				int oldposition = position;
 				if (operator.getParsingOrder() == Order.Tokens
@@ -152,8 +168,8 @@ public class Parser {
 					}
 					boolean pop = operator.getParsingOrder() == Order.ExpressionCharacterTokens;
 					/* Then get the result. */
-					AstNode child = processOperator(operator, (pop ? result
-							: null), level);
+					R child = processOperator(knowledgebase, operator,
+							(pop ? result : null), level);
 					/*
 					 * If successful, put the results on the stack and parse the
 					 * next chunk of input.
@@ -162,7 +178,8 @@ public class Parser {
 						if (pop || result == null) {
 							result = child;
 						} else {
-							result = new AstApplication(result, child);
+							result = knowledgebase.makeApplication(result,
+									child);
 						}
 						matched = true;
 						break;
@@ -180,12 +197,12 @@ public class Parser {
 			 * recurse...
 			 */
 			if (!matched) {
-				AstNode child = parseAutoExpression(level.next());
+				R child = parseAutoExpression(knowledgebase, level.next());
 				if (child != null) {
 					if (result == null) {
 						result = child;
 					} else {
-						result = new AstApplication(result, child);
+						result = knowledgebase.makeApplication(result, child);
 					}
 					matched = true;
 				}
@@ -210,8 +227,10 @@ public class Parser {
 	 *            Probably {@link Precedence#statement()} or
 	 *            {@link Precedence#expression()}.
 	 */
-	AstNode parseExpression(Character endofexpression, Precedence start) {
-		AstNode e = parseAutoExpression(start);
+	<R, P extends Enum<P> & Nextable<P>> R parseExpression(
+			ParserKnowledgebase<R, P> knowledgebase, Character endofexpression,
+			P start) {
+		R e = parseAutoExpression(knowledgebase, start);
 
 		if (e == null) {
 			return null;
@@ -245,16 +264,17 @@ public class Parser {
 	 * {@link Parseable#construct(ExpressionRunner, List, Stack, ExpressionContext)}
 	 * .
 	 */
-	private AstNode processOperator(Parseable operator, AstNode left,
-			Precedence level) {
-		List<AstNode> params = new ArrayList<AstNode>();
+	private <R, P extends Enum<P> & Nextable<P>> R processOperator(
+			ParserKnowledgebase<R, P> knowledgebase, Parseable<R, P> operator,
+			R left, P level) {
+		List<R> params = new ArrayList<R>();
 
 		if (left != null) {
 			params.add(left);
 		}
-		for (Token task : operator) {
+		for (Token<R, P> task : operator) {
 			consumeWhitespace();
-			if (!task.parse(this, level, params)) {
+			if (!task.parse(knowledgebase, this, level, params)) {
 				return null;
 			}
 		}

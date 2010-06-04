@@ -3,7 +3,7 @@
  */
 package ca.wlu.gisql.util;
 
-public enum Precedence {
+public enum Precedence implements Nextable<Precedence> {
 	Assignment, Channel, Closure, Difference, Disjunction, Junction, UnaryPostfix, UnaryPrefix, Value;
 	public static Precedence expression() {
 		return Precedence.values()[1];

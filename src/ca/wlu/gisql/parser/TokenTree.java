@@ -8,14 +8,15 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
-public class TokenTree extends Token {
+public class TokenTree extends Token<AstNode, Precedence> {
 
-	private final Token child;
+	private final Token<AstNode, Precedence> child;
 	private final char close;
 	private final char delimiter;
 	private final char open;
 
-	public TokenTree(char delimiter, char open, char close, Token child) {
+	public TokenTree(char delimiter, char open, char close,
+			Token<AstNode, Precedence> child) {
 		this.delimiter = delimiter;
 		this.open = open;
 		this.close = close;
@@ -28,14 +29,15 @@ public class TokenTree extends Token {
 	}
 
 	@Override
-	boolean parse(Parser parser, Precedence level, List<AstNode> results) {
+	boolean parse(ParserKnowledgebase<AstNode, Precedence> knowledgebase,
+			Parser parser, Precedence level, List<AstNode> results) {
 		AstLiteralList items = new AstLiteralList();
 
 		if (!parser.hasMore() || parser.read() != open) {
 			return false;
 		}
 		parser.consumeWhitespace();
-		if (!child.parse(parser, level, items)) {
+		if (!child.parse(knowledgebase, parser, level, items)) {
 			return false;
 		}
 
@@ -43,7 +45,7 @@ public class TokenTree extends Token {
 		while (parser.hasMore()) {
 			if (parser.peek() == open) {
 				parser.consumeWhitespace();
-				if (!parse(parser, level, items)) {
+				if (!parse(knowledgebase, parser, level, items)) {
 					return false;
 				}
 				parser.consumeWhitespace();
@@ -53,7 +55,7 @@ public class TokenTree extends Token {
 			if (parser.peek() == delimiter) {
 				parser.next();
 				parser.consumeWhitespace();
-				if (!child.parse(parser, level, items)) {
+				if (!child.parse(knowledgebase, parser, level, items)) {
 					return false;
 				}
 			} else if (parser.peek() == close) {

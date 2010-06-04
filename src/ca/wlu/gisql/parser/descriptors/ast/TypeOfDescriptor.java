@@ -1,37 +1,45 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.List;
 import java.util.Stack;
 
-import ca.wlu.gisql.ast.AstIf;
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.AstTypeOf;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.TokenExpressionChild;
+import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.parser.TokenReservedWord;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
-/** Syntax for an if expression. */
-public class IfDescriptor extends Parseable {
-	public final static Parseable descriptor = new IfDescriptor();
+/**
+ * This allows the user to introspect the inferred type of an operation. It is
+ * probably not useful to most users, but it is to developers.
+ */
+public class TypeOfDescriptor extends Parseable<AstNode, Precedence> {
 
-	private IfDescriptor() {
-		super(new TokenReservedWord("if"), TokenExpressionChild.self,
-				new TokenReservedWord("then"), TokenExpressionChild.self,
-				new TokenReservedWord("else"), TokenExpressionChild.self);
+	public static final Parseable<AstNode, Precedence> descriptor = new TypeOfDescriptor();
+
+	private TypeOfDescriptor() {
+		super(new TokenReservedWord<AstNode, Precedence>("typeof"),
+				TokenExpressionRight.<AstNode, Precedence> get());
 	}
 
 	@Override
 	public AstNode construct(ExpressionRunner runner, List<AstNode> params,
 			Stack<ExpressionError> error, ExpressionContext context) {
-		return new AstIf(params.get(0), params.get(1), params.get(2));
+		AstNode expression = params.get(0);
+		if (expression == null) {
+			return null;
+		} else {
+			return new AstTypeOf(expression);
+		}
 	}
 
 	@Override
 	protected String getInfo() {
-		return "Conditional evaluation";
+		return "Type of";
 	}
 
 	@Override
@@ -44,8 +52,8 @@ public class IfDescriptor extends Parseable {
 		return Order.Tokens;
 	}
 
-	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}
+
 }

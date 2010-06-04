@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,7 +34,7 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
 /** Syntax for a FLWOR expression. */
-public class GraphDescriptor extends Parseable {
+public class GraphDescriptor extends Parseable<AstNode, Precedence> {
 
 	private class CompleteGraph extends GraphNode {
 
@@ -195,16 +195,22 @@ public class GraphDescriptor extends Parseable {
 
 	}
 
-	public final static Parseable descriptor = new GraphDescriptor();
+	public final static Parseable<AstNode, Precedence> descriptor = new GraphDescriptor();
 
 	private GraphDescriptor() {
-		super(new TokenReservedWord("for"), new TokenTree(',', '(', ')',
-				new TokenSequence(new TokenHasCharacter('!', '¬'),
-						TokenName.self)), new TokenReservedWord("in"),
-				TokenExpressionChild.self, new TokenMaybe(new TokenSequence(
-						new TokenReservedWord("where"),
-						TokenExpressionChild.self)), new TokenReservedWord(
-						"return"), TokenExpressionChild.self);
+		super(new TokenReservedWord<AstNode, Precedence>("for"), new TokenTree(
+				',', '(', ')', new TokenSequence<AstNode, Precedence>(
+						new TokenHasCharacter<AstNode, Precedence>('!', '¬'),
+						TokenName.<AstNode, Precedence> get())),
+				new TokenReservedWord<AstNode, Precedence>("in"),
+				TokenExpressionChild.<AstNode, Precedence> get(),
+				new TokenMaybe<AstNode, Precedence>(
+						new TokenSequence<AstNode, Precedence>(
+								new TokenReservedWord<AstNode, Precedence>(
+										"where"), TokenExpressionChild
+										.<AstNode, Precedence> get())),
+				new TokenReservedWord<AstNode, Precedence>("return"),
+				TokenExpressionChild.<AstNode, Precedence> get());
 	}
 
 	@Override

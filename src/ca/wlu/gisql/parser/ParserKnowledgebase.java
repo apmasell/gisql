@@ -10,33 +10,7 @@ import java.util.Set;
 import org.apache.commons.collections15.OrderedMap;
 import org.apache.commons.collections15.map.ListOrderedMap;
 
-import ca.wlu.gisql.function.list.Cons;
-import ca.wlu.gisql.function.list.Join;
-import ca.wlu.gisql.interactome.functions.Cut;
-import ca.wlu.gisql.interactome.logic.Complement;
-import ca.wlu.gisql.interactome.logic.Difference;
-import ca.wlu.gisql.interactome.logic.Intersection;
-import ca.wlu.gisql.interactome.logic.Residuum;
-import ca.wlu.gisql.interactome.logic.SymmetricDifference;
-import ca.wlu.gisql.interactome.logic.Union;
-import ca.wlu.gisql.interactome.output.AbstractOutput;
-import ca.wlu.gisql.parser.descriptors.AssignmentDescriptor;
-import ca.wlu.gisql.parser.descriptors.BracketedExpressionDescriptor;
-import ca.wlu.gisql.parser.descriptors.ColonOrderDescriptor;
-import ca.wlu.gisql.parser.descriptors.EmptyList;
-import ca.wlu.gisql.parser.descriptors.FixedPointDescriptor;
-import ca.wlu.gisql.parser.descriptors.GraphDescriptor;
-import ca.wlu.gisql.parser.descriptors.HelpDescriptor;
-import ca.wlu.gisql.parser.descriptors.IfDescriptor;
-import ca.wlu.gisql.parser.descriptors.InteractomeDescriptor;
-import ca.wlu.gisql.parser.descriptors.LambdaDescriptor;
-import ca.wlu.gisql.parser.descriptors.LiteralList;
-import ca.wlu.gisql.parser.descriptors.LiteralTokenDescriptor;
-import ca.wlu.gisql.parser.descriptors.RecursiveFunctionDescriptor;
-import ca.wlu.gisql.parser.descriptors.TypeOfDescriptor;
-import ca.wlu.gisql.parser.descriptors.UnitDescriptor;
-import ca.wlu.gisql.parser.util.ComputedInteractomeDescriptor;
-import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /**
@@ -44,123 +18,89 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
  * class has the core syntax, but new syntax may be added to instances of this
  * class.
  */
-public class ParserKnowledgebase {
+public abstract class ParserKnowledgebase<R, P extends Enum<P> & Nextable<P>> {
 
-	private final List<ComputedInteractomeDescriptor> computedInteractomeParsers = new ArrayList<ComputedInteractomeDescriptor>();
+	private final String extrahelp;
 
 	private String help;
+	private final OrderedMap<P, List<Parseable<R, P>>> operators = new ListOrderedMap<P, List<Parseable<R, P>>>();
 
-	private final OrderedMap<Precedence, List<Parseable>> operators = new ListOrderedMap<Precedence, List<Parseable>>();
 	private final Set<String> reservedwords = new HashSet<String>();
 
-	public ParserKnowledgebase() {
-		installOperator(AbstractOutput.descriptor);
-		installOperator(BracketedExpressionDescriptor.descriptor);
-		installOperator(ColonOrderDescriptor.descriptor);
-		installOperator(Cons.descriptor);
-		installOperator(Complement.descriptor);
-		installOperator(Cut.descriptor);
-		installOperator(Difference.descriptor);
-		installOperator(EmptyList.descriptor);
-		installOperator(FixedPointDescriptor.descriptor);
-		installOperator(GraphDescriptor.descriptor);
-		installOperator(IfDescriptor.descriptor);
-		installOperator(Intersection.descriptor);
-		installOperator(HelpDescriptor.descriptor);
-		installOperator(InteractomeDescriptor.descriptor);
-		installOperator(Join.descriptor);
-		installOperator(LambdaDescriptor.descriptor);
-		installOperator(LiteralList.descriptor);
-		installOperator(RecursiveFunctionDescriptor.self);
-		installOperator(Residuum.descriptor);
-		installOperator(SymmetricDifference.descriptor);
-		installOperator(AssignmentDescriptor.self);
-		installOperator(TypeOfDescriptor.descriptor);
-		installOperator(Union.descriptor);
-		installOperator(UnitDescriptor.descriptor);
+	private final P[] values;
 
-		installOperator(new LiteralTokenDescriptor(TokenName.self));
-		installOperator(new LiteralTokenDescriptor(TokenReal.self));
-		installOperator(new LiteralTokenDescriptor(TokenNumber.self));
-		installOperator(new LiteralTokenDescriptor(TokenQuotedString.self));
-
-		buildHelp();
+	public ParserKnowledgebase(P[] values, String extrahelp) {
+		this.values = values;
+		this.extrahelp = extrahelp;
 	}
 
 	/** Add a new syntax element to the current language. */
-	public synchronized void addParseable(Parseable operator) {
+	public final synchronized void addParseable(Parseable<R, P> operator) {
 		installOperator(operator);
 		buildHelp();
 	}
 
-	private void buildHelp() {
-		ShowableStringBuilder<ParserKnowledgebase> print = new ShowableStringBuilder<ParserKnowledgebase>(
+	protected final void buildHelp() {
+		ShowableStringBuilder<ParserKnowledgebase<R, P>> print = new ShowableStringBuilder<ParserKnowledgebase<R, P>>(
 				this);
 		print.println("Syntax Help");
 		print.println();
-		print
-				.println("Each operator and it's membership function is described from lowest precedence to highest.");
-		print.println();
 		/* This also initialises every entry in the maps. */
-		for (Precedence level : Precedence.values()) {
-			for (Parseable operator : getList(operators, level)) {
+		for (P level : values) {
+			for (Parseable<R, P> operator : getList(operators, level)) {
 				print.print(operator);
 			}
 			print.println();
 
 		}
-		print
-				.println("Any other word will be interpreted as a identifier for a species or variable.");
-		print.println("For a list of functions, type \"ls()\".");
+		print.println(extrahelp);
 		help = print.toString();
 
 	}
 
-	public List<ComputedInteractomeDescriptor> getComputedInteractomeParsers() {
-		return computedInteractomeParsers;
-	}
-
 	/** Provide help text collected from the {@link Parseable}s. */
-	public String getHelp() {
+	public final String getHelp() {
 		return help;
 	}
 
-	private synchronized List<Parseable> getList(
-			Map<Precedence, List<Parseable>> map, Precedence level) {
-		List<Parseable> list = map.get(level);
+	private final synchronized List<Parseable<R, P>> getList(
+			Map<P, List<Parseable<R, P>>> map, P level) {
+		List<Parseable<R, P>> list = map.get(level);
 		if (list == null) {
-			list = new ArrayList<Parseable>();
+			list = new ArrayList<Parseable<R, P>>();
 			map.put(level, list);
 		}
 		return list;
 	}
 
-	protected List<Parseable> getOperators(Precedence level) {
+	protected final List<Parseable<R, P>> getOperators(P level) {
 		return operators.get(level);
 	}
 
-	public Set<String> getReservedWords() {
+	public final Set<String> getReservedWords() {
 		return Collections.unmodifiableSet(reservedwords);
 	}
 
-	private void installOperator(Parseable operator) {
-		List<Parseable> list = getList(operators, operator.getPrecedence());
+	protected void installOperator(Parseable<R, P> operator) {
+		List<Parseable<R, P>> list = getList(operators, operator
+				.getPrecedence());
 		if (list.contains(operator)) {
 			return;
 		}
-		list.add(operator);
-		if (operator instanceof ComputedInteractomeDescriptor) {
-			computedInteractomeParsers
-					.add((ComputedInteractomeDescriptor) operator);
-		}
-
-		for (Token token : operator) {
+		for (Token<R, P> token : operator) {
 			token.addReservedWords(reservedwords);
 		}
+
+		list.add(operator);
 	}
 
-	public boolean isReservedWord(String name) {
+	public final boolean isReservedWord(String name) {
 		return reservedwords.contains(name);
 	}
 
+	abstract R makeApplication(R left, R right);
+
+	abstract R makeBoolean(boolean b);
+
+	abstract R makeName(String name);
 }

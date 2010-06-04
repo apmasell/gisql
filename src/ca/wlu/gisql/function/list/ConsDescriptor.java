@@ -12,10 +12,10 @@ import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
 
-public class ConsDescriptor extends Parseable {
+public class ConsDescriptor extends Parseable<AstNode, Precedence> {
 
 	ConsDescriptor() {
-		super(TokenExpressionChild.self);
+		super(TokenExpressionChild.<AstNode, Precedence> get());
 	}
 
 	@Override

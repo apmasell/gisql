@@ -1,4 +1,4 @@
-package ca.wlu.gisql.parser.descriptors;
+package ca.wlu.gisql.parser.descriptors.ast;
 
 import java.util.List;
 import java.util.Stack;
@@ -23,12 +23,15 @@ import ca.wlu.gisql.util.Precedence;
  * Allows assignment of functions with automatic recursion via (fun x y z =
  * expression).
  */
-public final class RecursiveFunctionDescriptor extends Parseable {
-	public static final Parseable self = new RecursiveFunctionDescriptor();
+public final class RecursiveFunctionDescriptor extends
+		Parseable<AstNode, Precedence> {
+	public static final Parseable<AstNode, Precedence> self = new RecursiveFunctionDescriptor();
 
 	private RecursiveFunctionDescriptor() {
-		super(TokenName.self, new TokenListOf(TokenName.self, null),
-				TokenMatchCharacter.get('='), TokenExpressionChild.self);
+		super(TokenName.<AstNode, Precedence> get(), new TokenListOf(TokenName
+				.<AstNode, Precedence> get(), null), TokenMatchCharacter
+				.<AstNode, Precedence> get('='), TokenExpressionChild
+				.<AstNode, Precedence> get());
 	}
 
 	@Override
