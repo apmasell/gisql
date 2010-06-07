@@ -83,7 +83,7 @@ public class HelpDescriptor extends Parseable<AstNode, Precedence> {
 	}
 
 	public Precedence getPrecedence() {
-		return Precedence.Closure;
+		return Precedence.Assignment;
 	}
 
 }

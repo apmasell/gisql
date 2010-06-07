@@ -38,7 +38,7 @@ public class AstTypeOf extends AstNode {
 	}
 
 	public Precedence getPrecedence() {
-		return Precedence.Closure;
+		return Precedence.Assignment;
 	}
 
 	@Override
