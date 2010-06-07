@@ -27,10 +27,11 @@ public class TokenReservedWord<R, P extends Enum<P> & Nextable<P>> extends
 	boolean parse(ParserKnowledgebase<R, P> knowledgebase, Parser parser,
 			P level, List<R> results) {
 		for (int index = 0; index < word.length(); index++) {
-			if (!parser.hasMore() || word.charAt(index) != parser.read()) {
+			if (!parser.hasMore() || word.charAt(index) != parser.peek()) {
 				parser.pushError("Expected " + word + " missing.");
 				return false;
 			}
+			parser.next();
 		}
 		if (parser.hasMore() && Character.isJavaIdentifierPart(parser.peek())) {
 			parser.pushError("Expected " + word
