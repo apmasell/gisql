@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.ListType;
+import ca.wlu.gisql.ast.type.OptionalMaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.Rendering;
@@ -26,7 +27,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  */
 public class AstLiteralList extends AstNode implements List<AstNode> {
 
-	private final TypeVariable contents = new TypeVariable();
+	private final Type contents = new OptionalMaybeType(new TypeVariable());
 
 	private final List<AstNode> list = new ArrayList<AstNode>();
 
