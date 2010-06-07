@@ -29,9 +29,20 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 
 	private final Type contents = new OptionalMaybeType(new TypeVariable());
 
+	private final ExpressionContext context;
+
 	private final List<AstNode> list = new ArrayList<AstNode>();
 
 	private final Type type = new ListType(contents);
+
+	public AstLiteralList() {
+		this(null);
+	}
+
+	public AstLiteralList(ExpressionContext context) {
+		super();
+		this.context = context;
+	}
 
 	public boolean add(AstNode o) {
 		return list.add(o);
@@ -144,8 +155,13 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			ResolutionEnvironment environment) {
 		for (int index = 0; index < list.size(); index++) {
-			list.set(index, list.get(index).resolve(runner, context,
-					environment));
+			AstNode result = list.get(index).resolve(runner,
+					this.context == null ? context : this.context, environment);
+			if (result == null) {
+				return null;
+			} else {
+				list.set(index, result);
+			}
 		}
 		return this;
 	}
