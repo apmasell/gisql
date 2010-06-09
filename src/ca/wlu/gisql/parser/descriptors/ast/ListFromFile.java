@@ -38,8 +38,8 @@ public class ListFromFile extends Parseable<AstNode, Precedence> {
 			File file = new File((String) ((AstLiteral) params.get(0))
 					.getValue());
 			if (!file.canRead()) {
-				error.push(new ExpressionError(context,
-						" is not available for reading.", null));
+				error.push(new ExpressionError(context, file
+						+ " is not available for reading.", null));
 				return null;
 			}
 			FileContext filecontext = new FileContext(file);
