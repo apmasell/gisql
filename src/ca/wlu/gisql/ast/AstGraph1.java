@@ -115,24 +115,31 @@ public class AstGraph1 extends AstNode {
 	@Override
 	public void show(ShowablePrintWriter<AstNode> print) {
 		print.print("for ");
-		boolean first = true;
-		for (MaybeEdge edge : graph.edgeSet()) {
-			if (first) {
-				first = false;
-			} else {
-				print.print(", ");
+		if (graph.vertexSet().size() == 1) {
+			for (String parameter : graph.vertexSet()) {
+				print.print(parameter);
 			}
-			print.print(graph.getEdgeSource(edge));
-			print.print('(');
-			if (!edge.isPresent()) {
-				print.print('¬');
+		} else {
+			boolean first = true;
+			for (MaybeEdge edge : graph.edgeSet()) {
+				if (first) {
+					first = false;
+				} else {
+					print.print(", ");
+				}
+				print.print(graph.getEdgeSource(edge));
+				print.print('(');
+				if (!edge.isPresent()) {
+					print.print('¬');
+				}
+				print.print(graph.getEdgeTarget(edge));
+				print.print(')');
 			}
-			print.print(graph.getEdgeTarget(edge));
-			print.print(')');
 		}
-		print.print(' ');
+		print.print(" in ");
+		print.print(fromexpression);
 		if (whereexpression != null) {
-			print.print("where ");
+			print.print(" where ");
 			print.print(whereexpression);
 		}
 

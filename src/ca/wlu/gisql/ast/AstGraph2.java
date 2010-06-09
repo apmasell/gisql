@@ -117,7 +117,7 @@ public class AstGraph2 extends AstNode {
 	@Override
 	protected <T> boolean renderSelf(Rendering<T> program, int depth) {
 		try {
-			String resultlist = "$" + Integer.toHexString(hashCode());
+			String resultlist = "$graph" + Integer.toHexString(hashCode());
 			/* Create a subroutine that takes the witnesses as arguments. */
 			Type[] arguments = new Type[connections.vertexSet().size()];
 			Arrays.fill(arguments, Type.GeneType);
@@ -252,12 +252,19 @@ public class AstGraph2 extends AstNode {
 	@Override
 	public void show(ShowablePrintWriter<AstNode> print) {
 		print.print("for ");
-		showGraph(disconnections, print, showGraph(connections, print, true,
-				true), false);
+		if (connections.vertexSet().size() == 1) {
+			for (AstParameter parameter : connections.vertexSet()) {
+				print.print(parameter);
+			}
+		} else {
 
-		print.print(' ');
+			showGraph(disconnections, print, showGraph(connections, print,
+					true, true), false);
+		}
+		print.print(" in ");
+		print.print(fromexpression);
 		if (whereexpression != null) {
-			print.print("where ");
+			print.print(" where ");
 			print.print(whereexpression);
 		}
 
