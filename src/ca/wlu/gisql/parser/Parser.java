@@ -46,6 +46,8 @@ public class Parser {
 
 	private final LineContext context;
 
+	private int currenttokens = 0;
+
 	final Stack<ExpressionError> error = new Stack<ExpressionError>();
 
 	private final String input;
@@ -95,6 +97,10 @@ public class Parser {
 		while (hasMore() && Character.isWhitespace(peek())) {
 			position++;
 		}
+	}
+
+	int getCurrentTokens() {
+		return currenttokens;
 	}
 
 	/** Are there more characters available? */
@@ -269,16 +275,20 @@ public class Parser {
 			ParserKnowledgebase<R, P> knowledgebase, Parseable<R, P> operator,
 			R left, P level) {
 		List<R> params = new ArrayList<R>();
-
+		int oldtokens = currenttokens;
+		currenttokens = 0;
 		if (left != null) {
 			params.add(left);
 		}
 		for (Token<R, P> task : operator) {
 			consumeWhitespace();
 			if (!task.parse(knowledgebase, this, level, params)) {
+				currenttokens = oldtokens;
 				return null;
 			}
+			currenttokens++;
 		}
+		currenttokens = oldtokens;
 		return operator.construct(runner, params, error, context);
 	}
 

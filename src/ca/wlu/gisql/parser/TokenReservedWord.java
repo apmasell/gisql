@@ -28,7 +28,9 @@ public class TokenReservedWord<R, P extends Enum<P> & Nextable<P>> extends
 			P level, List<R> results) {
 		for (int index = 0; index < word.length(); index++) {
 			if (!parser.hasMore() || word.charAt(index) != parser.peek()) {
-				parser.pushError("Expected " + word + " missing.");
+				if (parser.getCurrentTokens() > 0) {
+					parser.pushError("Expected " + word + " missing.");
+				}
 				return false;
 			}
 			parser.next();

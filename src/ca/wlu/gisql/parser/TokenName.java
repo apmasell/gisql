@@ -45,7 +45,9 @@ public class TokenName<R, P extends Enum<P> & Nextable<P>> extends Token<R, P> {
 		}
 
 		if (sb.length() == 0) {
-			parser.pushError("Expected name missing.");
+			if (parser.getCurrentTokens() > 0) {
+				parser.pushError("Expected name missing.");
+			}
 			return false;
 		}
 		String name = sb.toString();

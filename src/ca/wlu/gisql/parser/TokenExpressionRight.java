@@ -32,8 +32,12 @@ public class TokenExpressionRight<R, P extends Enum<P> & Nextable<P>> extends
 	@Override
 	boolean parse(ParserKnowledgebase<R, P> knowledgebase, Parser parser,
 			P level, List<R> results) {
+		int olderror = parser.error.size();
 		R result = parser.parseAutoExpression(knowledgebase, level);
 		if (result == null) {
+			if (olderror == parser.error.size()) {
+				parser.pushError("Failed to parse remaining expression.");
+			}
 			return false;
 		}
 		results.add(result);
