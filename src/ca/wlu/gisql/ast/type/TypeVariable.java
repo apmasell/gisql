@@ -145,7 +145,7 @@ public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 	@Override
 	public <T> boolean render(Rendering<T> rendering, int depth) {
 		if (self == null) {
-			String uglyname = "$" + Integer.toHexString(hashCode());
+			String uglyname = "$tvar" + Integer.toHexString(hashCode());
 			if (rendering.hasReference(uglyname)) {
 				return rendering.lRhO(uglyname);
 			} else {
@@ -239,6 +239,9 @@ public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 					log.debug(this + " occurs in " + that);
 					return false;
 				}
+			} else if (that.occurs(this)) {
+				log.debug(this + " occurs in " + that);
+				return false;
 			}
 
 			if (TypeClass.hasInstance(that, typeclasses)) {
