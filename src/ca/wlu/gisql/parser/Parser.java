@@ -7,7 +7,6 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.parser.Parseable.Order;
 import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -166,13 +165,15 @@ public class Parser {
 			for (Parseable<R, P> operator : knowledgebase.getOperators(level)) {
 				/* Attempt to determine if it has a matching operator... */
 				int oldposition = position;
-				if (operator.getParsingOrder() == Order.Tokens
-						|| operator.isMatchingOperator(peek())
-						&& (operator.getParsingOrder() != Order.ExpressionCharacterTokens || result != null)) {
-					if (operator.getParsingOrder() != Order.Tokens) {
-						position++;
+				if ((operator.getParsingOrder().needExpression() ? result != null
+						: true)
+						&& (operator.getParsingOrder().needsCharacters() ? operator
+								.isMatchingOperator(peek())
+								: true)) {
+					if (operator.getParsingOrder().needsCharacters()) {
+						next();
 					}
-					boolean pop = operator.getParsingOrder() == Order.ExpressionCharacterTokens;
+					boolean pop = operator.getParsingOrder().needExpression();
 					/* Then get the result. */
 					R child = processOperator(knowledgebase, operator,
 							(pop ? result : null), level);

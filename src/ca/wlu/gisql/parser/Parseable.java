@@ -27,7 +27,15 @@ public abstract class Parseable<R, P extends Enum<P> & Nextable<P>> implements
 		Show<ParserKnowledgebase<R, P>> {
 
 	public enum Order {
-		CharacterTokens, ExpressionCharacterTokens, Tokens
+		CharacterTokens, ExpressionCharacterTokens, ExpressionTokens, Tokens;
+		public boolean needExpression() {
+			return this == ExpressionCharacterTokens
+					|| this == ExpressionTokens;
+		}
+
+		public boolean needsCharacters() {
+			return this == CharacterTokens || this == ExpressionCharacterTokens;
+		}
 	};
 
 	private final Token<R, P>[] tokens;
@@ -92,10 +100,10 @@ public abstract class Parseable<R, P extends Enum<P> & Nextable<P>> implements
 		print.print(getInfo());
 		print.print(':');
 
-		if (getParsingOrder() == Order.ExpressionCharacterTokens) {
+		if (getParsingOrder().needExpression()) {
 			print.print(" <exp>");
 		}
-		if (getParsingOrder() != Order.Tokens) {
+		if (getParsingOrder().needsCharacters()) {
 			print.print(" [");
 			for (char c : getOperators()) {
 				print.print(c);
