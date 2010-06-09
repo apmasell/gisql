@@ -43,7 +43,7 @@ public class AstTypeOf extends AstNode {
 
 	@Override
 	public Type getType() {
-		return Type.StringType;
+		return Type.TypeType;
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class AstTypeOf extends AstNode {
 
 	@Override
 	public <T> boolean renderSelf(Rendering<T> program, int depth) {
-		return program.hO(parameter.getType().toString());
+		return parameter.getType().render(program, 0);
 	}
 
 	@Override

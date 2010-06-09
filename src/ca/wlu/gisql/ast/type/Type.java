@@ -45,11 +45,12 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 
 	public static final NativeType RealType = new NativeType("real",
 			Double.class);
-
 	private static final Set<NativeType> registeredtypes = new HashSet<NativeType>();
 
 	public static final NativeType StringType = new NativeType("string",
 			String.class);
+
+	public static final NativeType TypeType = new NativeType("type", Type.class);
 
 	public static final NativeType UnitType = new NativeType("unit", Unit.class);
 
