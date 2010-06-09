@@ -25,11 +25,15 @@ public class TokenMatchCharacter<R, P extends Enum<P> & Nextable<P>> extends
 		return literal;
 	}
 
-	private final char c;
+	private final char[] c;
 
-	private TokenMatchCharacter(char c) {
+	private TokenMatchCharacter(char... c) {
 		super();
 		this.c = c;
+	}
+
+	public TokenMatchCharacter(String s) {
+		this(s.toCharArray());
 	}
 
 	@Override
@@ -40,12 +44,16 @@ public class TokenMatchCharacter<R, P extends Enum<P> & Nextable<P>> extends
 	boolean parse(ParserKnowledgebase<R, P> knowledgebase, Parser parser,
 			P level, List<R> results) {
 		parser.consumeWhitespace();
-		if (parser.hasMore() && c == parser.peek()) {
-			parser.next();
-			return true;
+
+		for (int index = 0; index < c.length; index++) {
+			if (parser.hasMore() && c[index] == parser.peek()) {
+				parser.next();
+			} else {
+				parser.pushError("Expected '" + c[index] + "' missing.");
+				return false;
+			}
 		}
-		parser.pushError("Expected '" + c + "' missing.");
-		return false;
+		return true;
 	}
 
 	@Override
