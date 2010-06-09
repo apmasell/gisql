@@ -21,9 +21,12 @@ public class AstLambda1 extends AstNode {
 
 	final String name;
 
-	public AstLambda1(String variable, AstNode expression) {
+	private final Type type;
+
+	public AstLambda1(String variable, AstNode expression, Type type) {
 		name = variable;
 		this.expression = expression;
+		this.type = type;
 	}
 
 	@Override
@@ -58,7 +61,7 @@ public class AstLambda1 extends AstNode {
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			ResolutionEnvironment environment) {
 		MaskedEnvironment<AstParameter> maskedenvironment = new MaskedEnvironment<AstParameter>(
-				new AstParameter(name), environment);
+				new AstParameter(name, type), environment);
 		AstNode resultexpression = expression.resolve(runner, context,
 				maskedenvironment);
 		if (resultexpression == null) {
@@ -70,9 +73,13 @@ public class AstLambda1 extends AstNode {
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {
-		print.print("('");
+		print.print("\\");
 		print.print(name);
-		print.print(' ');
+		if (type != null) {
+			print.print(" :: ");
+			print.print(type);
+		}
+		print.print(" -> ");
 		print.print(expression);
 		print.print(')');
 	}

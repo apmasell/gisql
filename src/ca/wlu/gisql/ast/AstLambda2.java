@@ -77,9 +77,11 @@ public class AstLambda2 extends AstNode {
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {
-		print.print("'");
+		print.print("\\");
 		print.print(variable.name);
-		print.print(' ');
+		print.print(" :: ");
+		print.print(variable.type);
+		print.print(" -> ");
 		print.print(expression, getPrecedence());
 	}
 
