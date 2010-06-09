@@ -18,6 +18,11 @@ public class TokenListOf extends Token<AstNode, Precedence> {
 
 	private final Character delimiter;
 
+	public TokenListOf(Character delimiter,
+			Token<AstNode, Precedence>... tokens) {
+		this(new TokenSequence<AstNode, Precedence>(tokens), delimiter);
+	}
+
 	public TokenListOf(Token<AstNode, Precedence> child, Character delimiter) {
 		super();
 		this.child = child;
