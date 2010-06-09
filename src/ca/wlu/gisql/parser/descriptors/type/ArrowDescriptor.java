@@ -6,7 +6,7 @@ import java.util.Stack;
 import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.TokenExpressionChild;
+import ca.wlu.gisql.parser.TokenExpressionRight;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
@@ -16,7 +16,7 @@ public class ArrowDescriptor extends Parseable<Type, TypeNesting> {
 	public static Parseable<Type, TypeNesting> self = new ArrowDescriptor();
 
 	private ArrowDescriptor() {
-		super(TokenExpressionChild.<Type, TypeNesting> get());
+		super(TokenExpressionRight.<Type, TypeNesting> get());
 	}
 
 	@Override
