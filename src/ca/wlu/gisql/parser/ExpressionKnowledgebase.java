@@ -103,7 +103,7 @@ public class ExpressionKnowledgebase extends
 	}
 
 	@Override
-	AstNode makeApplication(AstNode left, AstNode right) {
+	AstNode makeApplication(Parser parser, AstNode left, AstNode right) {
 		return new AstApplication(left, right);
 	}
 
@@ -113,7 +113,7 @@ public class ExpressionKnowledgebase extends
 	}
 
 	@Override
-	AstNode makeName(String name) {
+	AstNode makeName(Parser parser, String name) {
 		return new AstName(name);
 	}
 }

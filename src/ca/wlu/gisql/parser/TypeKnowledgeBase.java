@@ -30,7 +30,7 @@ public class TypeKnowledgeBase extends
 
 	@SuppressWarnings("deprecation")
 	@Override
-	Type makeApplication(Type left, Type right) {
+	Type makeApplication(Parser parser, Type left, Type right) {
 		if (left instanceof TypeVariable && right instanceof TypeVariable) {
 			TypeVariable destination = (TypeVariable) right;
 			for (TypeClass<?> typeclass : (TypeVariable) left) {
@@ -48,7 +48,7 @@ public class TypeKnowledgeBase extends
 	}
 
 	@Override
-	Type makeName(String name) {
+	Type makeName(Parser parser, String name) {
 		if (name.length() == 1 && name.charAt(0) >= 'α'
 				&& name.charAt(0) <= 'ω') {
 			int index = name.charAt(0) - 'α';
@@ -62,7 +62,12 @@ public class TypeKnowledgeBase extends
 				TypeClass<?> typeclass = TypeClass.getTypeClassForName(name);
 				type = new TypeVariable(typeclass);
 			}
-			return type;
+			if (type == null) {
+				parser.pushError("Unknown type " + name + ".");
+				return null;
+			} else {
+				return type;
+			}
 		}
 	}
 

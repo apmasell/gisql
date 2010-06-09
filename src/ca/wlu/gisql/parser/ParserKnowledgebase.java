@@ -98,9 +98,9 @@ public abstract class ParserKnowledgebase<R, P extends Enum<P> & Nextable<P>> {
 		return reservedwords.contains(name);
 	}
 
-	abstract R makeApplication(R left, R right);
+	abstract R makeApplication(Parser parser, R left, R right);
 
 	abstract R makeBoolean(boolean b);
 
-	abstract R makeName(String name);
+	abstract R makeName(Parser parser, String name);
 }

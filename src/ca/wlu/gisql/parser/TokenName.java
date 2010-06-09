@@ -52,7 +52,7 @@ public class TokenName<R, P extends Enum<P> & Nextable<P>> extends Token<R, P> {
 		if (knowledgebase.isReservedWord(name)) {
 			return false;
 		} else {
-			results.add(knowledgebase.makeName(name));
+			results.add(knowledgebase.makeName(parser, name));
 			return true;
 		}
 	}

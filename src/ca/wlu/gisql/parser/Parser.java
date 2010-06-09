@@ -178,8 +178,8 @@ public class Parser {
 						if (pop || result == null) {
 							result = child;
 						} else {
-							result = knowledgebase.makeApplication(result,
-									child);
+							result = knowledgebase.makeApplication(this,
+									result, child);
 						}
 						matched = true;
 						break;
@@ -202,7 +202,8 @@ public class Parser {
 					if (result == null) {
 						result = child;
 					} else {
-						result = knowledgebase.makeApplication(result, child);
+						result = knowledgebase.makeApplication(this, result,
+								child);
 					}
 					matched = true;
 				}
