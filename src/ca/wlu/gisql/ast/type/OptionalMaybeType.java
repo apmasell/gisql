@@ -8,10 +8,19 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 public class OptionalMaybeType extends MaybeType {
 
-	boolean lifted = false;
+	public static Type wrap(Type type) {
+		if (type.isNullable()) {
+			return type;
+		} else {
+			return new OptionalMaybeType(type);
+		}
+	}
+
+	boolean lifted;
 
 	public OptionalMaybeType(Type contents) {
 		super(contents);
+		lifted = contents.isNullable();
 	}
 
 	@Override
@@ -37,6 +46,10 @@ public class OptionalMaybeType extends MaybeType {
 	@Override
 	public boolean isOptionallyNullable() {
 		return true;
+	}
+
+	public void lift() {
+		lifted = true;
 	}
 
 	@Override

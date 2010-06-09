@@ -15,7 +15,7 @@ public class MaybeType extends Type {
 		if (contents == null) {
 			throw new IllegalArgumentException();
 		}
-		this.contents = contents instanceof MaybeType ? ((MaybeType) contents).contents
+		this.contents = contents.isNullable() ? contents.getContents()
 				: contents;
 
 	}
@@ -40,6 +40,11 @@ public class MaybeType extends Type {
 		}
 		return new MaybeType(freshContents);
 
+	}
+
+	@Override
+	public Type getContents() {
+		return contents;
 	}
 
 	@Override

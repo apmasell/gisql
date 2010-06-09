@@ -76,12 +76,22 @@ public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 	}
 
 	@Override
+	public Type getContents() {
+		return self == null ? null : self.getContents();
+	}
+
+	@Override
 	public Class<?> getRootJavaType() {
 		if (self == null) {
 			return Object.class;
 		} else {
 			return self.getRootJavaType();
 		}
+	}
+
+	@Override
+	public Type getTerminal() {
+		return self == null ? this : self.getTerminal();
 	}
 
 	@Override

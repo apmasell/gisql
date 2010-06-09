@@ -188,6 +188,10 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 		return 0;
 	}
 
+	public Type getContents() {
+		return null;
+	}
+
 	public final Type[] getParameters() {
 		Type[] parameters = new Type[getArrowDepth()];
 		if (parameters.length > 0) {
@@ -198,6 +202,10 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 
 	/** Anything of this type should be castable to the returned Java class. */
 	public abstract Class<?> getRootJavaType();
+
+	public Type getTerminal() {
+		return this;
+	}
 
 	/**
 	 * Returns this type with the terminal-most return value converted to a

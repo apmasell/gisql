@@ -9,6 +9,13 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** The query language type of a function. */
 public class ArrowType extends Type {
+	public static Type make(Type[] arguments, int start, Type result) {
+		for (int index = arguments.length - 1; index >= start; index--) {
+			result = new ArrowType(arguments[index], result);
+		}
+		return result;
+	}
+
 	private final Type operand;
 	private final Type result;
 
@@ -77,8 +84,18 @@ public class ArrowType extends Type {
 	}
 
 	@Override
+	public Type getContents() {
+		return result;
+	}
+
+	@Override
 	public Class<?> getRootJavaType() {
 		return GenericFunction.class;
+	}
+
+	@Override
+	public Type getTerminal() {
+		return result.getTerminal();
 	}
 
 	@Override

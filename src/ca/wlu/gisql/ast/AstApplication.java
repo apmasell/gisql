@@ -5,7 +5,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 
 import ca.wlu.gisql.ast.type.ArrowType;
-import ca.wlu.gisql.ast.type.MaybeType;
+import ca.wlu.gisql.ast.type.OptionalMaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.Function;
@@ -29,7 +29,7 @@ public class AstApplication extends AstNode {
 
 	private final AstNode operator;
 
-	private final TypeVariable returntype = new TypeVariable();
+	private final Type returntype = new TypeVariable();
 
 	public AstApplication(AstNode... arguments) {
 		if (arguments.length < 2) {
@@ -99,7 +99,7 @@ public class AstApplication extends AstNode {
 		if (operandmaybe) {
 			Label nullrecovery = new Label();
 			Label end = new Label();
-			String name = "$" + Integer.toHexString(hashCode());
+			String name = "$notnull" + Integer.toHexString(hashCode());
 			return operand.render(program, 0)
 					&& program.lOhO()
 					&& program.jump(Opcodes.IFNULL, nullrecovery)
@@ -107,8 +107,9 @@ public class AstApplication extends AstNode {
 							.getRootJavaType()) && program.lRhP(name)
 					&& operator.render(program, depth + 1)
 					&& program.jump(Opcodes.GOTO, end)
-					&& program.mark(nullrecovery) && program.pO(depth)
-					&& program.mark(end);
+					&& program.mark(nullrecovery) && program.pO()
+					&& program.hO_AsObject(null) && program.mark(end)
+					&& program.pR(name);
 		} else {
 			return program.hP(operand) && operator.render(program, depth + 1);
 		}
@@ -170,28 +171,39 @@ public class AstApplication extends AstNode {
 	 */
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		if (!(operator.type(runner, context) && operand.type(runner, context))) {
+		if (!operator.type(runner, context)) {
 			return false;
 		}
 
-		if (tryType(new ArrowType(operand.getType(), returntype), runner,
-				context)
-				|| tryType(new ArrowType(new MaybeType(operand.getType()),
-						returntype), runner, context)) {
-			return true;
+		if (operator.getType().getArrowDepth() == 0) {
+			runner.appendTypeError(operator.getType(), new ArrowType(
+					new TypeVariable(), new TypeVariable()), operator, context);
+			return false;
 		}
 
-		Type t = new TypeVariable();
-		Type r = new TypeVariable();
-		if (operator.getType().unify(new ArrowType(t, r))
-				&& operand.getType().unify(new MaybeType(t))
-				&& returntype.unify(r.getTerminalMaybe())) {
-			operandmaybe = true;
-			return true;
-		}
+		Type[] arguments = operator.getType().getParameters();
+		boolean otn = arguments[0].isNullable();
+		arguments[0] = OptionalMaybeType.wrap(arguments[0]);
 
-		runner.appendTypeError(operator.getType(), new ArrowType(operand
-				.getType(), returntype), this, context);
-		return false;
+		Type terminal = OptionalMaybeType
+				.wrap(operator.getType().getTerminal());
+
+		if (runner.typeCheck(operand, arguments[0], context)) {
+			operandmaybe = !otn && arguments[0].isNullable();
+			if (operandmaybe && terminal instanceof OptionalMaybeType) {
+				((OptionalMaybeType) terminal).lift();
+			}
+
+			Type returntype = ArrowType.make(arguments, 1, terminal);
+			if (this.returntype.unify(returntype)) {
+				return true;
+			} else {
+				runner.appendBadTypeError(this.returntype, returntype, this,
+						context);
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 }
