@@ -39,6 +39,11 @@ public class ListType extends Type {
 	}
 
 	@Override
+	public Type getContents() {
+		return contents;
+	}
+
+	@Override
 	public Class<?> getRootJavaType() {
 		return List.class;
 	}
