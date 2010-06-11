@@ -8,10 +8,10 @@ import org.apache.commons.collections15.map.HashedMap;
 
 import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.ListType;
+import ca.wlu.gisql.ast.type.MaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.environment.Environment;
-import ca.wlu.gisql.interactome.EmptyInteractome;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.runner.ExpressionRunner;
 
@@ -19,7 +19,7 @@ public class DatabaseEnvironment extends Environment {
 
 	public static final class Interactome2TaxId implements GenericFunction {
 		private static final Type type = new ArrowType(Type.InteractomeType,
-				Type.NumberType);
+				new MaybeType(Type.NumberType));
 
 		public Interactome2TaxId(ExpressionRunner runner) {
 		}
@@ -38,13 +38,18 @@ public class DatabaseEnvironment extends Environment {
 		public Object run(Object... parameters) {
 			Interactome interactome = (Interactome) parameters[0];
 			return interactome instanceof DbSpecies ? ((DbSpecies) interactome)
-					.getId() : 0L;
+					.getId() : null;
+		}
+
+		@Override
+		public String toString() {
+			return "taxid2species";
 		}
 	}
 
 	public static final class TaxId2Interactome implements GenericFunction {
 		private static final Type type = new ArrowType(Type.NumberType,
-				Type.InteractomeType);
+				new MaybeType(Type.InteractomeType));
 		private final ExpressionRunner runner;
 
 		public TaxId2Interactome(ExpressionRunner runner) {
@@ -72,7 +77,12 @@ public class DatabaseEnvironment extends Environment {
 					return interactome;
 				}
 			}
-			return EmptyInteractome.self;
+			return null;
+		}
+
+		@Override
+		public String toString() {
+			return "interactome2taxid";
 		}
 	}
 
