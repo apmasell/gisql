@@ -32,6 +32,9 @@ import ca.wlu.gisql.runner.ExpressionRunner;
  */
 public class GisQL {
 
+	public static final boolean debug = System.getProperty("gisql.debug",
+			"false").equals("true");
+
 	private static final String HistoryFilename = ".gisql_history";
 
 	private static final Logger log = Logger.getLogger(GisQL.class);

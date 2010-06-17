@@ -3,6 +3,7 @@ package ca.wlu.gisql.ast.type;
 import java.util.List;
 import java.util.Map;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
@@ -72,7 +73,13 @@ public class OptionalMaybeType extends MaybeType {
 		if (lifted) {
 			super.show(print);
 		} else {
+			if (GisQL.debug) {
+				print.print("(");
+			}
 			print.print(contents);
+			if (GisQL.debug) {
+				print.print(")⏚");
+			}
 		}
 	}
 

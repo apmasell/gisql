@@ -26,6 +26,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.ast.type.Unit;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.runner.ExpressionRunner;
@@ -132,8 +133,7 @@ public abstract class Rendering<T> implements Opcodes {
 				Class<? extends T> clazz = (Class<? extends T>) defineClass(
 						name, bytecode, 0, bytecode.length);
 				if (clazz.getConstructors().length == 1) {
-					if (System.getProperty("gisql.debug", "false").equals(
-							"true")) {
+					if (GisQL.debug) {
 						saveClassToFile(name, bytecode, null);
 					}
 					return clazz;
