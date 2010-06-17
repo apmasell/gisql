@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.runner.ExpressionError;
@@ -20,6 +21,11 @@ public class ListFromFileListener implements ExpressionRunListener {
 
 	public List<Object> getList() {
 		return list;
+	}
+
+	@Override
+	public boolean previewAst(AstNode node) {
+		return true;
 	}
 
 	public void processInteractome(Interactome value) {

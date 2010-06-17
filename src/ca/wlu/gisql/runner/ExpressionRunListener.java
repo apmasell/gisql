@@ -2,6 +2,7 @@ package ca.wlu.gisql.runner;
 
 import java.util.Collection;
 
+import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.interactome.Interactome;
 
@@ -10,6 +11,14 @@ import ca.wlu.gisql.interactome.Interactome;
  * an expression being run.
  */
 public interface ExpressionRunListener {
+
+	/**
+	 * If you want to peruse the abstract syntax node before it is executed, you
+	 * may.
+	 * 
+	 * @return TODO
+	 */
+	boolean previewAst(AstNode node);
 
 	/** An interactome result has been computed. */
 	void processInteractome(Interactome value);

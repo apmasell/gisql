@@ -179,6 +179,10 @@ public class ExpressionRunner {
 			return false;
 		}
 
+		if (!listener.previewAst(result)) {
+			return false;
+		}
+
 		Object value = null;
 		try {
 			Constructor<? extends GenericFunction> ctor = (Constructor<? extends GenericFunction>) program

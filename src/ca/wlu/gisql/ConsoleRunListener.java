@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.interactome.Interactome;
@@ -61,6 +62,11 @@ public class ConsoleRunListener implements ExpressionRunListener {
 		} else {
 			sb.append("<unknown>");
 		}
+	}
+
+	@Override
+	public boolean previewAst(AstNode node) {
+		return true;
 	}
 
 	private void print(Object value) {
