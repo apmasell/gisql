@@ -58,6 +58,7 @@ import ca.wlu.gisql.function.comparisons.LessThanOrEqualTo;
 import ca.wlu.gisql.function.comparisons.NotEqual;
 import ca.wlu.gisql.function.comparisons.SortAutomatic;
 import ca.wlu.gisql.function.comparisons.SortManual;
+import ca.wlu.gisql.function.comparisons.SpaceShip;
 import ca.wlu.gisql.function.list.BigIntersection;
 import ca.wlu.gisql.function.list.BigUnion;
 import ca.wlu.gisql.function.list.Cons;
@@ -199,6 +200,7 @@ public class BuiltInResolver implements ResolutionEnvironment {
 		addDefault(Real2Membership.class);
 		addDefault(Real2Number.class);
 		addDefault(RunFunction.class);
+		addDefault(SpaceShip.class);
 		addDefault(SearchGenes.class);
 		addDefault(SilentFunction.class);
 		addDefault(Slice.class);
