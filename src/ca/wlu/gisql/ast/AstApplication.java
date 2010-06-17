@@ -150,21 +150,6 @@ public class AstApplication extends AstNode {
 		}
 	}
 
-	private boolean tryType(Type operatortype, ExpressionRunner runner,
-			ExpressionContext context) {
-		if (operator.getType().canUnify(operatortype)) {
-			operandmaybe = false;
-			if (operator.getType().unify(operatortype)) {
-				return true;
-			} else {
-				runner.appendBadTypeError(operator.getType(), operatortype,
-						this, context);
-				return false;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * Ensure that this node is of type β given the operator is of type (α → β)
 	 * and the operand is of type α.
