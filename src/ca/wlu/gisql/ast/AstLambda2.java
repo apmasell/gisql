@@ -1,5 +1,8 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+
+import org.apache.commons.collections15.iterators.SingletonIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.ArrowType;
@@ -43,6 +46,11 @@ public class AstLambda2 extends AstNode {
 	@Override
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return new SingletonIterator<AstNode>(expression);
 	}
 
 	/**

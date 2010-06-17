@@ -1,5 +1,8 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -92,6 +95,18 @@ public class AstApplication extends AstNode {
 	@Override
 	public Type getType() {
 		return returntype;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		LinkedList<AstNode> nodes = new LinkedList<AstNode>();
+		AstNode node = this;
+		while (node instanceof AstApplication) {
+			nodes.add(0, ((AstApplication) node).operand);
+			node = ((AstApplication) node).operator;
+		}
+		nodes.add(0, node);
+		return nodes.iterator();
 	}
 
 	@Override

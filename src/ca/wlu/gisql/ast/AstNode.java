@@ -25,8 +25,8 @@ import ca.wlu.gisql.util.ShowableStringBuilder;
  * {@link #type(ExpressionRunner, ExpressionContext)}, {@link #render()} to
  * create a final program. Any node in the parse tree abort the process.
  */
-public abstract class AstNode implements Prioritizable<AstNode, Precedence>,
-		Renderable, Show<AstNode> {
+public abstract class AstNode implements Iterable<AstNode>,
+		Prioritizable<AstNode, Precedence>, Renderable, Show<AstNode> {
 
 	/**
 	 * Find the variables which are not bound in this expression node. For

@@ -1,5 +1,8 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+
+import org.apache.commons.collections15.iterators.EmptyIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
@@ -52,6 +55,11 @@ public class AstParameter extends AstNode implements NamedVariable {
 	@Override
 	public String getVariableName() {
 		return name;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return EmptyIterator.getInstance();
 	}
 
 	/**

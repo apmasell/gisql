@@ -1,5 +1,9 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+
+import name.masella.iterator.ArrayIterator;
+
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -42,6 +46,11 @@ public class AstIf extends AstNode {
 	@Override
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return new ArrayIterator<AstNode>(condition, truepart, falsepart);
 	}
 
 	@Override

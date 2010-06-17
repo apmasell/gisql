@@ -2,8 +2,12 @@ package ca.wlu.gisql.ast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
+import name.masella.iterator.ArrayIterator;
+
+import org.apache.commons.collections15.iterators.SingletonIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -293,6 +297,12 @@ public class AstLogic extends AstNode {
 				+ operation.hashCode();
 	}
 
+	@Override
+	public Iterator<AstNode> iterator() {
+		return right == null ? new SingletonIterator<AstNode>(left)
+				: new ArrayIterator<AstNode>(left, right);
+	}
+
 	/**
 	 * Populate a matrix of terms as needed by {@link ComputedInteractome} from
 	 * an expression.
@@ -439,7 +449,7 @@ public class AstLogic extends AstNode {
 			AstLogic normalForm, RawType rawtype) {
 		return normalForm.renderRaw(program, depth, rawtype)
 				&& program.pOhO_PrimitiveToObject(rawtype.getJavaClass());
-	}
+	};
 
 	/**
 	 * Render the logic of something that is not interactomes (i.e., booleans or
@@ -470,7 +480,7 @@ public class AstLogic extends AstNode {
 			}
 		}
 		return rawtype.render(program, operation);
-	};
+	}
 
 	/**
 	 * Render this logical expression. Since logical expressions can be of

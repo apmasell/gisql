@@ -1,7 +1,10 @@
 package ca.wlu.gisql.ast;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+
+import name.masella.iterator.ArrayIterator;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.jgrapht.graph.DefaultEdge;
@@ -54,6 +57,12 @@ public class AstGraph1 extends AstNode {
 	@Override
 	public Type getType() {
 		return raiseIllegalState();
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return new ArrayIterator<AstNode>(fromexpression, whereexpression,
+				returnexpression);
 	}
 
 	@Override

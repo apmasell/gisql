@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import name.masella.iterator.ArrayIterator;
 
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
@@ -112,6 +115,12 @@ public class AstGraph2 extends AstNode {
 	@Override
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return new ArrayIterator<AstNode>(fromexpression, whereexpression,
+				returnexpression);
 	}
 
 	@Override

@@ -1,5 +1,8 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+
+import org.apache.commons.collections15.iterators.SingletonIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
@@ -49,6 +52,11 @@ public class AstTypeOf extends AstNode {
 	@Override
 	public int hashCode() {
 		return parameter.hashCode() * 227;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return new SingletonIterator<AstNode>(parameter);
 	}
 
 	@Override

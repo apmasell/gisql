@@ -1,5 +1,8 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+
+import org.apache.commons.collections15.iterators.EmptyIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
@@ -77,6 +80,11 @@ public class AstFormatter extends AstNode {
 	@Override
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return EmptyIterator.getInstance();
 	}
 
 	@Override

@@ -1,5 +1,8 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+
+import org.apache.commons.collections15.iterators.SingletonIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
@@ -39,6 +42,11 @@ public class AstFixedPoint1 extends AstNode {
 	@Override
 	public Type getType() {
 		return null;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return new SingletonIterator<AstNode>(expression);
 	}
 
 	@Override

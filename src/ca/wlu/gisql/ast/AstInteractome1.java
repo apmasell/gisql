@@ -1,5 +1,9 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+
+import name.masella.iterator.ArrayIterator;
+
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.MaybeType;
@@ -49,6 +53,12 @@ public class AstInteractome1 extends AstNode {
 	@Override
 	public Type getType() {
 		return raiseIllegalState();
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return new ArrayIterator<AstNode>(membership, geneexpression,
+				interactionexpression);
 	}
 
 	@Override

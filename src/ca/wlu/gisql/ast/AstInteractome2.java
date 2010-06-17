@@ -1,5 +1,9 @@
 package ca.wlu.gisql.ast;
 
+import java.util.Iterator;
+
+import name.masella.iterator.ArrayIterator;
+
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.ArrowType;
@@ -69,6 +73,12 @@ public class AstInteractome2 extends AstNode {
 	@Override
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public Iterator<AstNode> iterator() {
+		return new ArrayIterator<AstNode>(membership, geneexpression,
+				interactionexpression);
 	}
 
 	@Override
