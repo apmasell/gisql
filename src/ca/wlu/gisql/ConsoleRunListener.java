@@ -1,5 +1,8 @@
 package ca.wlu.gisql;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -69,27 +72,27 @@ public class ConsoleRunListener implements ExpressionRunListener {
 		return true;
 	}
 
-	private void print(Object value) {
+	private void print(PrintStream out, Object value) {
 		if (value == null) {
-			System.out.print("missing");
+			out.print("missing");
 		} else if (value instanceof String) {
-			System.out.print('"');
-			System.out.print(value);
-			System.out.print('"');
+			out.print('"');
+			out.print(value);
+			out.print('"');
 		} else if (value instanceof List<?>) {
-			System.out.print("[");
+			out.print("[");
 			boolean first = true;
 			for (Object item : (List<?>) value) {
 				if (first) {
 					first = false;
 				} else {
-					System.out.print(", ");
+					out.print(", ");
 				}
-				print(item);
+				print(out, item);
 			}
-			System.out.print("]");
+			out.print("]");
 		} else {
-			System.out.print(value.toString());
+			out.print(value.toString());
 		}
 	}
 
@@ -102,8 +105,22 @@ public class ConsoleRunListener implements ExpressionRunListener {
 	}
 
 	public void processOther(Type type, Object value) {
-		print(value);
-		System.out.println();
+		String filename = environment.getOutput();
+
+		try {
+			if (filename == null) {
+				print(System.out, value);
+				System.out.println();
+			} else {
+				PrintStream print = new PrintStream(new FileOutputStream(
+						filename, true));
+				print(print, value);
+				print.println();
+				print.close();
+			}
+		} catch (IOException e) {
+			log.error("Failed to echo.", e);
+		}
 	}
 
 	public void reportErrors(Collection<ExpressionError> errors) {
