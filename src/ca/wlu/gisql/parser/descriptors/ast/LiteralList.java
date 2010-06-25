@@ -5,7 +5,7 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.parser.Parseable;
-import ca.wlu.gisql.parser.TokenExpressionRight;
+import ca.wlu.gisql.parser.TokenExpressionFull;
 import ca.wlu.gisql.parser.TokenListOf;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -18,8 +18,9 @@ public class LiteralList extends Parseable<AstNode, Precedence> {
 	public static final Parseable<AstNode, Precedence> descriptor = new LiteralList();
 
 	private LiteralList() {
-		super(new TokenListOf(TokenExpressionRight.<AstNode, Precedence> get(),
-				','), TokenMatchCharacter.<AstNode, Precedence> get(']'));
+		super(new TokenListOf(new TokenExpressionFull<AstNode, Precedence>(
+				Precedence.Closure, null), ','), TokenMatchCharacter
+				.<AstNode, Precedence> get(']'));
 	}
 
 	@Override
