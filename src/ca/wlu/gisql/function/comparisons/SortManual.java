@@ -18,8 +18,8 @@ public class SortManual extends Function {
 	private static Type[] makeType() {
 		Type variable = new TypeVariable();
 		Type list = new ListType(variable);
-		return new Type[] { new ArrowType(variable, variable, Type.NumberType),
-				list, list };
+		return new Type[] { list,
+				new ArrowType(variable, variable, Type.NumberType), list };
 	}
 
 	public SortManual(ExpressionRunner runner) {
@@ -33,7 +33,7 @@ public class SortManual extends Function {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object run(Object... parameters) {
-		return sort((List) parameters[1], (GenericFunction) parameters[0]);
+		return sort((List) parameters[0], (GenericFunction) parameters[1]);
 	}
 
 	private <T extends Comparable<T>> List<T> sort(List<T> source,

@@ -22,8 +22,11 @@ public class PhylipOutput extends Function {
 	private static final Logger log = Logger.getLogger(PhylipOutput.class);
 
 	public PhylipOutput(ExpressionRunner runner) {
-		super(runner, "phylip", "produces phylip based phylogenetic tree",
-				Type.StringType, new ListType(Type.InteractomeType),
+		super(
+				runner,
+				"phylip",
+				"Produces input file for PHYLIP package using interactions as binary characters. The string argument provided is the filename.",
+				new ListType(Type.InteractomeType), Type.StringType,
 				Type.StringType);
 	}
 
@@ -46,8 +49,8 @@ public class PhylipOutput extends Function {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object run(Object... parameters) {
-		String filename = (String) parameters[0];
-		List<Interactome> interactomeList = (List<Interactome>) parameters[1];
+		List<Interactome> interactomeList = (List<Interactome>) parameters[0];
+		String filename = (String) parameters[1];
 		Map<Interactome, StringBuilder> builders = new HashMap<Interactome, StringBuilder>();
 		StringBuilder output = new StringBuilder();
 		for (int i = 0; i < interactomeList.size(); i++) {

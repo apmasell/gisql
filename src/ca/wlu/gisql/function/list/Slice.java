@@ -17,7 +17,7 @@ public class Slice extends Function {
 				runner,
 				"slice",
 				"Takes part of a list. If the end index is negative, the counting is done from the end of the list.",
-				Type.NumberType, Type.NumberType, list, list);
+				list, Type.NumberType, Type.NumberType, list);
 	}
 
 	@Override
@@ -29,9 +29,9 @@ public class Slice extends Function {
 		 * inclusive on the start and exclusive on the end. Negative indices on
 		 * the end.
 		 */
-		int start = ((Long) parameters[0]).intValue();
-		int end = ((Long) parameters[1]).intValue();
-		List list = (List) parameters[2];
+		List list = (List) parameters[0];
+		int start = ((Long) parameters[1]).intValue();
+		int end = ((Long) parameters[2]).intValue();
 
 		/* Fix 0-base. */
 		start--;
