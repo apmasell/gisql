@@ -44,7 +44,7 @@ public class MaybeDescriptor extends Parseable<Type, TypeNesting> {
 
 	@Override
 	public TypeNesting getPrecedence() {
-		return TypeNesting.Box;
+		return TypeNesting.Receptacle;
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** The query language type of a function. */
@@ -89,6 +90,11 @@ public class ArrowType extends Type {
 	}
 
 	@Override
+	public TypeNesting getPrecedence() {
+		return TypeNesting.Arrow;
+	}
+
+	@Override
 	public Class<?> getRootJavaType() {
 		return GenericFunction.class;
 	}
@@ -135,16 +141,9 @@ public class ArrowType extends Type {
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
-		boolean brackets = operand.getArrowDepth() > 0;
-		if (brackets) {
-			print.print("(");
-		}
-		print.print(operand);
-		if (brackets) {
-			print.print(")");
-		}
+		print.print(operand, TypeNesting.Couple);
 		print.print(" → ");
-		print.print(result);
+		print.print(result, TypeNesting.Arrow);
 	}
 
 	@Override

@@ -17,14 +17,16 @@ import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.interactome.output.FileFormat;
-import ca.wlu.gisql.util.Show;
+import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
+import ca.wlu.gisql.util.Prioritizable;
 import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /**
  * Representation of a type in the query language. All types in the query
  * language have (non-unique) Java representation.
  */
-public abstract class Type implements Renderable, Show<List<TypeVariable>> {
+public abstract class Type implements Renderable,
+		Prioritizable<List<TypeVariable>, TypeNesting> {
 	public static final NativeType BooleanType = new NativeType("boolean",
 			Boolean.class);
 
@@ -198,6 +200,11 @@ public abstract class Type implements Renderable, Show<List<TypeVariable>> {
 			fillParameters(parameters, 0);
 		}
 		return parameters;
+	}
+
+	@Override
+	public TypeNesting getPrecedence() {
+		return TypeNesting.Type;
 	}
 
 	/** Anything of this type should be castable to the returned Java class. */

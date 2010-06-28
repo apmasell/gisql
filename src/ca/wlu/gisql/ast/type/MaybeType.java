@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** The nullable type. */
@@ -45,6 +46,11 @@ public class MaybeType extends Type {
 	@Override
 	public Type getContents() {
 		return contents;
+	}
+
+	@Override
+	public TypeNesting getPrecedence() {
+		return TypeNesting.Receptacle;
 	}
 
 	@Override

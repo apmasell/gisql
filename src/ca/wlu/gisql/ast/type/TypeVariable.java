@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.typeclasses.TypeClass;
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
@@ -78,6 +79,11 @@ public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 	@Override
 	public Type getContents() {
 		return self == null ? null : self.getContents();
+	}
+
+	@Override
+	public TypeNesting getPrecedence() {
+		return self == null ? TypeNesting.Type : self.getPrecedence();
 	}
 
 	@Override
@@ -259,5 +265,4 @@ public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 	public boolean validate(Object value) {
 		return self == null || self.validate(value);
 	}
-
 }
