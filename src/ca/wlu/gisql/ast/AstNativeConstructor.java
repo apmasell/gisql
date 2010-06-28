@@ -9,6 +9,7 @@ import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.BuiltInResolver;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.parser.Parser;
+import ca.wlu.gisql.parser.TypeKnowledgeBase;
 
 /**
  * Represents a native function that really corresponds to a Java constructor.
@@ -24,6 +25,7 @@ public final class AstNativeConstructor extends AstNative {
 		java.lang.reflect.Type[] parameters = constructor
 				.getGenericParameterTypes();
 		Annotation[][] annotations = constructor.getParameterAnnotations();
+		TypeKnowledgeBase kb = new TypeKnowledgeBase();
 
 		Type[] types = new Type[parameters.length + 1];
 
@@ -31,7 +33,7 @@ public final class AstNativeConstructor extends AstNative {
 			for (Annotation annotation : annotations[index]) {
 				if (annotation instanceof GisqlType) {
 					GisqlType gisqltype = (GisqlType) annotation;
-					types[index] = Parser.parseType(gisqltype.type());
+					types[index] = Parser.parseType(kb, gisqltype.type());
 					if (types[index] == null) {
 						throw new IllegalArgumentException("Malformed type: "
 								+ gisqltype.type());
@@ -43,8 +45,22 @@ public final class AstNativeConstructor extends AstNative {
 				types[index] = Type.convertType(parameters[index]);
 			}
 		}
-		types[types.length - 1] = Type.convertType(constructor
-				.getDeclaringClass());
+		for (Annotation annotation : constructor.getAnnotations()) {
+			if (annotation instanceof GisqlType) {
+				GisqlType gisqltype = (GisqlType) annotation;
+				types[types.length - 1] = Parser
+						.parseType(kb, gisqltype.type());
+				if (types[types.length - 1] == null) {
+					throw new IllegalArgumentException("Malformed type: "
+							+ gisqltype.type());
+				}
+				break;
+			}
+		}
+		if (types[types.length - 1] == null) {
+			types[types.length - 1] = Type.convertType(constructor
+					.getDeclaringClass());
+		}
 		return types;
 	}
 

@@ -27,6 +27,10 @@ import ca.wlu.gisql.util.Precedence;
 public class Parser {
 
 	public static Type parseType(String input) {
+		return parseType(new TypeKnowledgeBase(), input);
+	}
+
+	public static Type parseType(TypeKnowledgeBase kb, String input) {
 		Parser parser = new Parser(null, new LineContext() {
 
 			@Override
@@ -39,8 +43,7 @@ public class Parser {
 				return "Internal";
 			}
 		}, input, null);
-		return parser.parseExpression(new TypeKnowledgeBase(), null,
-				TypeNesting.Arrow);
+		return parser.parseExpression(kb, null, TypeNesting.Arrow);
 	}
 
 	private final LineContext context;
