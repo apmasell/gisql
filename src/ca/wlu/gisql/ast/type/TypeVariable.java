@@ -202,12 +202,12 @@ public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 				index = print.getContext().size();
 				print.getContext().add(this);
 			}
-			if (!typeclasses.isEmpty()) {
-				for (TypeClass<?> typeclass : typeclasses) {
-					print.print(typeclass);
-					print.print(' ');
-				}
+
+			for (TypeClass<?> typeclass : typeclasses) {
+				print.print(typeclass);
+				print.print(' ');
 			}
+
 			print.print((char) ('α' + index));
 		} else {
 			print.print(self);
@@ -219,14 +219,16 @@ public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 		if (this == that) {
 			return true;
 		} else if (self == null) {
+			if (that instanceof OptionalMaybeType) {
+				if (unify(that.getContents())) {
+					return true;
+				}
+			}
 			if (that instanceof TypeVariable) {
 				TypeVariable other = (TypeVariable) that;
 				if (other.self == null) {
-
-					if ((typeclasses.size() > 0 || other.typeclasses.size() > 0)
-							&& other.self == null) {
-						other.typeclasses.addAll(typeclasses);
-						typeclasses.addAll(other.typeclasses);
+					other.typeclasses.addAll(typeclasses);
+					if (other.typeclasses.size() > 0) {
 						Set<Type> types = TypeClass
 								.matchingTypes(other.typeclasses);
 						if (types.isEmpty()) {
