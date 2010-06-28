@@ -32,6 +32,7 @@ import ca.wlu.gisql.parser.descriptors.ast.LambdaDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.ListFromFile;
 import ca.wlu.gisql.parser.descriptors.ast.LiteralList;
 import ca.wlu.gisql.parser.descriptors.ast.NegativeDescriptor;
+import ca.wlu.gisql.parser.descriptors.ast.PairDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.RecursiveFunctionDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.TypeCheckDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.TypeOfDescriptor;
@@ -75,6 +76,7 @@ public class ExpressionKnowledgebase extends
 		installOperator(NegativeDescriptor.realdescriptor);
 		installOperator(RecursiveFunctionDescriptor.self);
 		installOperator(Residuum.descriptor);
+		installOperator(PairDescriptor.descriptor);
 		installOperator(SymmetricDifference.descriptor);
 		installOperator(AssignmentDescriptor.self);
 		installOperator(TypeCheckDescriptor.descriptor);

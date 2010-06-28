@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -96,6 +97,10 @@ public abstract class Type implements Renderable,
 			if (List.class.isAssignableFrom(clazz)) {
 				Type contents = convertType(ptype.getActualTypeArguments()[0]);
 				return new ListType(contents);
+			} else if (Entry.class.isAssignableFrom(clazz)) {
+				Type left = convertType(ptype.getActualTypeArguments()[0]);
+				Type right = convertType(ptype.getActualTypeArguments()[1]);
+				return new PairType(left, right);
 			}
 			throw new IllegalArgumentException("Unknown parameterised type "
 					+ ptype);

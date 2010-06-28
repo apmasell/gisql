@@ -11,6 +11,7 @@ import ca.wlu.gisql.parser.descriptors.LiteralTokenDescriptor;
 import ca.wlu.gisql.parser.descriptors.type.ArrowDescriptor;
 import ca.wlu.gisql.parser.descriptors.type.ListDescriptor;
 import ca.wlu.gisql.parser.descriptors.type.MaybeDescriptor;
+import ca.wlu.gisql.parser.descriptors.type.PairDescriptor;
 import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
 
 public class TypeKnowledgeBase extends
@@ -24,6 +25,7 @@ public class TypeKnowledgeBase extends
 		installOperator(BracketedExpressionDescriptor.typedescriptor);
 		installOperator(ListDescriptor.self);
 		installOperator(MaybeDescriptor.self);
+		installOperator(PairDescriptor.self);
 		installOperator(new LiteralTokenDescriptor<Type, TypeNesting>(TokenName
 				.<Type, TypeNesting> get(), TypeNesting.Type));
 	}
