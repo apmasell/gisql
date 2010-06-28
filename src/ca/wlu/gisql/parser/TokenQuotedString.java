@@ -42,7 +42,7 @@ public class TokenQuotedString extends Token<AstNode, Precedence> {
 			if (codepoint == '"') {
 				/* found final quote. */
 				parser.next();
-				success = sb.length() != 0;
+				success = true;
 				break;
 			} else if (codepoint == '\\') {
 				parser.next();
