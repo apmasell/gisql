@@ -32,12 +32,32 @@ import ca.wlu.gisql.runner.ExpressionRunner;
  */
 public class GisQL {
 
+	private static class Prompt {
+		public final String key;
+		public final String prompt;
+		public final boolean show;
+
+		public Prompt(String key, String prompt, boolean show) {
+			super();
+			this.key = key;
+			this.prompt = prompt;
+			this.show = show;
+		}
+
+	}
+
 	public static final boolean debug = System.getProperty("gisql.debug",
 			"false").equals("true");
 
 	private static final String HistoryFilename = ".gisql_history";
 
 	private static final Logger log = Logger.getLogger(GisQL.class);
+
+	private final static Prompt[] prompts = new Prompt[] {
+			new Prompt("driver", "JDBC Driver", true),
+			new Prompt("url", "JDBC URL", true),
+			new Prompt("user", "Username", true),
+			new Prompt("password", "Password", false) };
 
 	private static final String StartFilename = ".gisqlrc";
 
@@ -73,51 +93,38 @@ public class GisQL {
 		ConsoleReader reader = new ConsoleReader();
 		reader.setBellEnabled(true);
 
+		Properties configuration = DatabaseManager.getPropertiesFromFile();
 		DatabaseManager dm = null;
-		boolean prompt = commandline.hasOption('l');
-		Properties properties = null;
+		if (commandline.hasOption('l') || configuration == null) {
+			dm = GisQL.promptForConnection(new Properties(), reader);
+		} else {
+			Properties properties = new Properties();
 
-		try {
-			properties = DatabaseManager.getPropertiesFromFile();
-		} catch (IOException e) {
-			properties = new Properties();
-			prompt = true;
-		}
-		do {
+			String prefix = commandline.getOptionValue('x');
+			if (prefix == null || prefix.length() == 0) {
+				prefix = "";
+			} else {
+				prefix += '.';
+			}
+			boolean prompt = false;
+			for (String key : new String[] { "driver", "url", "user",
+					"password" }) {
+				String value = configuration.getProperty(prefix + key);
+				prompt |= value == null;
+				properties.setProperty(key, value);
+			}
+
 			if (prompt) {
-				properties.setProperty("url", reader.readLine("JDBC Path: "));
-				if (properties.getProperty("url") == null) {
-					return;
-				}
-
-				properties.setProperty("user", reader.readLine("Username: "));
-				if (properties.getProperty("user") == null) {
-					return;
-				}
-
-				properties.setProperty("password", reader.readLine(
-						"Password: ", '*'));
-				if (properties.getProperty("password") == null) {
-					return;
-				}
-
-			}
-			try {
+				dm = promptForConnection(properties, reader);
+			} else {
 				dm = new DatabaseManager(properties);
-				prompt = false;
-			} catch (SQLException e) {
-				log.error("Failed to connect to database.", e);
-				prompt = true;
-				reader.putString("Try again? (y/n)");
-				int result = reader.readCharacter(new char[] { 'y', 'Y', 'n',
-						'N' });
-				reader.printNewline();
-				if (result > 1) {
-					return;
-				}
 			}
-		} while (prompt);
+		}
 
+		if (dm == null) {
+			log.error("Gave up connecting to database.");
+			return;
+		}
 		UserEnvironment environment = new UserEnvironment(
 				new DatabaseEnvironment(dm));
 
@@ -195,11 +202,60 @@ public class GisQL {
 		Option format = new Option("F", "format", true, "Output result format.");
 		format.setArgName("layout");
 
+		Option context = new Option("x", "context", true,
+				"Open a specific context.");
+		context.setArgName("context");
+
 		options.addOption(help);
 		options.addOption(login);
 		options.addOption(file);
 		options.addOption(output);
 		options.addOption(format);
+		options.addOption(context);
 		return options;
+	}
+
+	private static DatabaseManager promptForConnection(Properties properties,
+			ConsoleReader reader) throws IOException {
+
+		StringBuffer sb = new StringBuffer();
+		while (true) {
+			for (Prompt prompt : prompts) {
+				sb.setLength(0);
+				sb.append(prompt.prompt).append(": ");
+				boolean defined = properties.containsKey(prompt.key)
+						&& properties.getProperty(prompt.key).length() > 0;
+				if (prompt.show && defined) {
+					sb.append("[").append(properties.getProperty(prompt.key))
+							.append("] ");
+				}
+				String value;
+				do {
+					value = prompt.show ? reader.readLine(sb.toString())
+							: reader.readLine(sb.toString(), '*');
+				} while ((value == null || value.length() == 0) && !defined);
+
+				if (value != null && value.length() > 0) {
+					properties.setProperty(prompt.key, value);
+				}
+			}
+
+			try {
+				return new DatabaseManager(properties);
+			} catch (SQLException e) {
+				log.warn("Failed to connect to database.", e);
+			} catch (ClassNotFoundException e) {
+				log.warn("Unknown driver.", e);
+			}
+			reader.printString("Try again? (y/n)");
+			reader.flushConsole();
+			char result = (char) reader.readCharacter(new char[] { 'y', 'Y',
+					'n', 'N' });
+			reader.printNewline();
+			if (result != 'Y' && result != 'y') {
+				return null;
+			}
+
+		}
 	}
 }

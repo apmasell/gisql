@@ -1,5 +1,6 @@
 package ca.wlu.gisql.db;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,17 +34,27 @@ public class DatabaseManager {
 	private static final Map<Integer, Gene> orthogroups = new HashMap<Integer, Gene>();
 
 	public static Properties getPropertiesFromFile() throws IOException {
+		String[] filenames = new String[] {
+				"gisql.properties",
+				System.getProperty("gisql.properties"),
+				System.getProperty("user.home") + File.separator
+						+ ".gisql.properties" };
+
 		Properties properties = new Properties();
-		String filename = System.getProperty("gisql.properties");
-		InputStream is = new FileInputStream(filename == null
-				|| filename.length() == 0 ? "gisql.properties" : filename);
-		if (is == null) {
-			log.fatal("Cannot find gisql.properties.");
-			throw new RuntimeException("Failed to connect to database.");
+		for (String filename : filenames) {
+			if (filename != null) {
+				File file = new File(filename);
+				if (file.canRead()) {
+					InputStream is = new FileInputStream(file);
+					properties.load(is);
+					is.close();
+					return properties;
+				}
+			}
 		}
-		properties.load(is);
-		is.close();
-		return properties;
+
+		log.warn("Cannot find gisql.properties.");
+		return null;
 	}
 
 	private final Set<DbSpecies> all = new HashSet<DbSpecies>();
@@ -52,11 +63,20 @@ public class DatabaseManager {
 
 	public DatabaseManager(Properties properties) throws SQLException,
 			ClassNotFoundException {
-		Class.forName("org.postgresql.Driver");
+		this(properties.getProperty("driver"), properties.getProperty("url"),
+				properties.getProperty("user"), properties
+						.getProperty("password"));
+	}
 
-		log.info("Connecting to " + properties.getProperty("url") + "...");
-		connection = DriverManager.getConnection(properties.getProperty("url"),
-				properties);
+	public DatabaseManager(String driver, String url, String username,
+			String password) throws SQLException, ClassNotFoundException {
+		Properties properties = new Properties();
+		properties.setProperty("user", username);
+		properties.setProperty("password", password);
+
+		Class.forName(driver);
+		log.info("Connecting to " + url + "...");
+		connection = DriverManager.getConnection(url, properties);
 		log.info("Connected.");
 	}
 
