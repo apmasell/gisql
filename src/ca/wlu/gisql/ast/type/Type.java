@@ -58,6 +58,21 @@ public abstract class Type implements Renderable,
 
 	public static final NativeType UnitType = new NativeType("unit", Unit.class);
 
+	static {
+		for (Field field : Type.class.getFields()) {
+			if (Modifier.isStatic(field.getModifiers())
+					&& NativeType.class.isAssignableFrom(field.getType())) {
+				try {
+					registeredtypes.add((NativeType) field.get(null));
+				} catch (IllegalArgumentException e) {
+					log.error("Failed to get native type field.", e);
+				} catch (IllegalAccessException e) {
+					log.error("Failed to get native type field.", e);
+				}
+			}
+		}
+	}
+
 	/** Use reflected Java type to determine the equivalent query language type. */
 	public static Type convertType(java.lang.reflect.Type javatype) {
 		if (javatype instanceof Class<?>) {
@@ -68,46 +83,21 @@ public abstract class Type implements Renderable,
 					return matchtype;
 				}
 			}
-
-			for (Field field : Type.class.getFields()) {
-				if (Modifier.isStatic(field.getModifiers())
-						&& NativeType.class.isAssignableFrom(field.getType())) {
-					NativeType matchtype;
-					try {
-						matchtype = (NativeType) field.get(null);
-					} catch (IllegalArgumentException e) {
-						log.error("Failed to get native type field.", e);
-						return null;
-					} catch (IllegalAccessException e) {
-						log.error("Failed to get native type field.", e);
-						return null;
-					}
-					if (matchtype.handlesNativeType(clazz)) {
-						return matchtype;
-					}
-				}
-			}
-
-			throw new IllegalArgumentException("Class " + clazz.getName()
-					+ " as not compatible representation");
-
 		} else if (javatype instanceof ParameterizedType) {
 			ParameterizedType ptype = (ParameterizedType) javatype;
 			Class<?> clazz = (Class<?>) ptype.getRawType();
 
 			if (List.class.isAssignableFrom(clazz)) {
 				Type contents = convertType(ptype.getActualTypeArguments()[0]);
-				return new ListType(contents);
+				return contents == null ? null : new ListType(contents);
 			} else if (Entry.class.isAssignableFrom(clazz)) {
 				Type left = convertType(ptype.getActualTypeArguments()[0]);
 				Type right = convertType(ptype.getActualTypeArguments()[1]);
-				return new PairType(left, right);
+				return left == null || right == null ? null : new PairType(
+						left, right);
 			}
-			throw new IllegalArgumentException("Unknown parameterised type "
-					+ ptype);
-		} else {
-			throw new IllegalArgumentException("Unknown argument type");
 		}
+		return null;
 	}
 
 	/** Gets the query type with a particular name. */

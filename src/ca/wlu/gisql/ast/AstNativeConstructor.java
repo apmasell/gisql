@@ -17,6 +17,30 @@ import ca.wlu.gisql.parser.TypeKnowledgeBase;
  */
 public final class AstNativeConstructor extends AstNative {
 
+	private static Type convertType(Annotation[] annotations,
+			java.lang.reflect.Type parameter, TypeKnowledgeBase kb) {
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof GisqlType) {
+				GisqlType gisqltype = (GisqlType) annotation;
+				Type type = Parser.parseType(kb, gisqltype.type());
+				if (type == null) {
+					throw new IllegalArgumentException("Malformed type: "
+							+ gisqltype.type());
+				} else {
+					return type;
+				}
+			}
+		}
+		Type type = Type.convertType(parameter);
+		if (type == null) {
+			throw new IllegalArgumentException(
+					"Unable to determine type from Java type: " + parameter);
+		} else {
+			return type;
+		}
+
+	}
+
 	/**
 	 * Construct a list of type (to generate an arrow type) for this function,
 	 * based on the constructor's signature.
@@ -30,37 +54,11 @@ public final class AstNativeConstructor extends AstNative {
 		Type[] types = new Type[parameters.length + 1];
 
 		for (int index = 0; index < parameters.length; index++) {
-			for (Annotation annotation : annotations[index]) {
-				if (annotation instanceof GisqlType) {
-					GisqlType gisqltype = (GisqlType) annotation;
-					types[index] = Parser.parseType(kb, gisqltype.type());
-					if (types[index] == null) {
-						throw new IllegalArgumentException("Malformed type: "
-								+ gisqltype.type());
-					}
-					break;
-				}
-			}
-			if (types[index] == null) {
-				types[index] = Type.convertType(parameters[index]);
-			}
+			types[index] = convertType(annotations[index], parameters[index],
+					kb);
 		}
-		for (Annotation annotation : constructor.getAnnotations()) {
-			if (annotation instanceof GisqlType) {
-				GisqlType gisqltype = (GisqlType) annotation;
-				types[types.length - 1] = Parser
-						.parseType(kb, gisqltype.type());
-				if (types[types.length - 1] == null) {
-					throw new IllegalArgumentException("Malformed type: "
-							+ gisqltype.type());
-				}
-				break;
-			}
-		}
-		if (types[types.length - 1] == null) {
-			types[types.length - 1] = Type.convertType(constructor
-					.getDeclaringClass());
-		}
+		types[types.length - 1] = convertType(constructor.getAnnotations(),
+				constructor.getDeclaringClass(), kb);
 		return types;
 	}
 
