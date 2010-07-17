@@ -23,6 +23,7 @@ import ca.wlu.gisql.parser.descriptors.LiteralTokenDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.AssignmentDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.ColonOrderDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.EmptyList;
+import ca.wlu.gisql.parser.descriptors.ast.EnumerationDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.FixedPointDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.GraphDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.HelpDescriptor;
@@ -62,6 +63,7 @@ public class ExpressionKnowledgebase extends
 		installOperator(Cut.descriptor);
 		installOperator(Difference.descriptor);
 		installOperator(EmptyList.descriptor);
+		installOperator(EnumerationDescriptor.descriptor);
 		installOperator(FixedPointDescriptor.descriptor);
 		installOperator(GraphDescriptor.descriptor);
 		installOperator(IfDescriptor.descriptor);

@@ -1,5 +1,7 @@
 package ca.wlu.gisql.environment;
 
+import org.apache.log4j.Logger;
+
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.interactome.CachedInteractome;
 import ca.wlu.gisql.interactome.EmptyInteractome;
@@ -8,6 +10,8 @@ import ca.wlu.gisql.interactome.output.FileFormat;
 
 /** This environment is where the user should be making definitions. */
 public class UserEnvironment extends Environment {
+	private static final Logger log = Logger.getLogger(UserEnvironment.class);
+
 	private FileFormat format = FileFormat.summary;
 
 	private Interactome last = null;
@@ -19,6 +23,17 @@ public class UserEnvironment extends Environment {
 	public UserEnvironment(Environment parent) {
 		super(parent, true, false);
 		add("last", EmptyInteractome.self, Type.InteractomeType);
+	}
+
+	public <E extends Enum<?>> Type add(String name, Class<E> enumeration) {
+		Type type = Type.convertType(enumeration);
+		if (type == null) {
+			type = Type.installType(name, enumeration);
+		}
+		for (E item : enumeration.getEnumConstants()) {
+			setVariable(item.toString(), item, type);
+		}
+		return type;
 	}
 
 	/**
