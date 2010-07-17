@@ -36,7 +36,7 @@ public class AstEnvironmentStore extends AstNode {
 	}
 
 	public Precedence getPrecedence() {
-		return AssignmentDescriptor.self.getPrecedence();
+		return AssignmentDescriptor.descriptor.getPrecedence();
 	}
 
 	@Override

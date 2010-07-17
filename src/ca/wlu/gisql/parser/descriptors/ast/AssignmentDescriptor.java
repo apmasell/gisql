@@ -19,7 +19,7 @@ import ca.wlu.gisql.util.Precedence;
  * Allows assignment via (var = expression).
  */
 public final class AssignmentDescriptor extends Parseable<AstNode, Precedence> {
-	public static final Parseable<AstNode, Precedence> self = new AssignmentDescriptor();
+	public static final Parseable<AstNode, Precedence> descriptor = new AssignmentDescriptor();
 
 	private AssignmentDescriptor() {
 		super(TokenName.<AstNode, Precedence> get(), TokenMatchCharacter

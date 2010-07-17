@@ -78,7 +78,7 @@ public class ExpressionKnowledgebase extends
 		installOperator(Residuum.descriptor);
 		installOperator(PairDescriptor.descriptor);
 		installOperator(SymmetricDifference.descriptor);
-		installOperator(AssignmentDescriptor.self);
+		installOperator(AssignmentDescriptor.descriptor);
 		installOperator(TypeCheckDescriptor.descriptor);
 		installOperator(TypeOfDescriptor.descriptor);
 		installOperator(Union.descriptor);
