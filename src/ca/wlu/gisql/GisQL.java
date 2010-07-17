@@ -69,6 +69,26 @@ public class GisQL {
 		return new File(userHome);
 	}
 
+	public static boolean isValidIdentifierPart(char c) {
+		return Character.isJavaIdentifierPart(c) && c != '$';
+	}
+
+	public static boolean isValidIdentifierStart(char c) {
+		return Character.isJavaIdentifierStart(c) && c != '$';
+	}
+
+	public static boolean isValidName(String name) {
+		if (name.length() > 0 && isValidIdentifierStart(name.charAt(0))) {
+			for (int index = 1; index < name.length(); index++) {
+				if (!isValidIdentifierPart(name.charAt(index))) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	public static void main(String[] args) throws Exception {
 		ConsoleAppender appender = new ConsoleAppender(new PatternLayout());
 		Logger.getRootLogger().addAppender(appender);

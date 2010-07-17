@@ -7,7 +7,7 @@ public class NonIdentifierArgumentDelimiter extends
 	@Override
 	public boolean isDelimiterChar(String buffer, int pos) {
 		char c = buffer.charAt(pos);
-		return !(Character.isJavaIdentifierStart(c) || Character
-				.isJavaIdentifierPart(c));
+		return !(GisQL.isValidIdentifierStart(c) || GisQL
+				.isValidIdentifierPart(c));
 	}
 }

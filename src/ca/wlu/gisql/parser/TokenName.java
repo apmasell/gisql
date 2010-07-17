@@ -3,6 +3,7 @@ package ca.wlu.gisql.parser;
 import java.util.List;
 import java.util.Set;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.util.Nextable;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
@@ -32,11 +33,8 @@ public class TokenName<R, P extends Enum<P> & Nextable<P>> extends Token<R, P> {
 		while (parser.hasMore()) {
 			char codepoint = parser.peek();
 
-			if (codepoint == '$') {
-				break;
-			} else if (sb.length() == 0 ? Character
-					.isJavaIdentifierStart(codepoint) : Character
-					.isJavaIdentifierPart(codepoint)) {
+			if (sb.length() == 0 ? GisQL.isValidIdentifierStart(codepoint)
+					: GisQL.isValidIdentifierPart(codepoint)) {
 				parser.next();
 				sb.append(codepoint);
 			} else {

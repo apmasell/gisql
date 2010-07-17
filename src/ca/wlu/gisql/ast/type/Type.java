@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.ast.util.Renderable;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.graph.Gene;
@@ -138,22 +139,17 @@ public abstract class Type implements Renderable,
 	}
 
 	/** Add new type to the system. */
-	public static void installType(String name, Class<?> java) {
+	public static Type installType(String name, Class<?> java) {
 		if (getTypeForName(name) != null) {
 			throw new IllegalArgumentException("Type " + name
 					+ " is already in use.");
-		} else if (name.length() > 0
-				&& Character.isJavaIdentifierStart(name.charAt(0))) {
-			for (int index = 1; index < name.length(); index++) {
-				if (!Character.isJavaIdentifierPart(name.charAt(index))) {
-					throw new IllegalArgumentException(
-							"Name contains invalid Java identifier.");
-				}
-			}
-			registeredtypes.add(new NativeType(name, java));
+		} else if (GisQL.isValidName(name)) {
+			NativeType type = new NativeType(name, java);
+			registeredtypes.add(type);
+			return type;
 		} else {
 			throw new IllegalArgumentException(
-					"Name starts with invalid Java identifier.");
+					"Name is invalid Java identifier.");
 		}
 	}
 
