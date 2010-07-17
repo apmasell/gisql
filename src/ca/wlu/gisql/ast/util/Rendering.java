@@ -1,14 +1,9 @@
 package ca.wlu.gisql.ast.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +21,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.ast.type.Unit;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.runner.ExpressionRunner;
@@ -122,49 +116,6 @@ public abstract class Rendering<T> implements Opcodes {
 			}
 		}
 
-	}
-
-	/** The dynamic class loader. */
-	private static class ClassCreator extends ClassLoader {
-		@SuppressWarnings("unchecked")
-		<T> Class<? extends T> load(String name, ClassWriter writer) {
-			byte[] bytecode = writer.toByteArray();
-			try {
-				Class<? extends T> clazz = (Class<? extends T>) defineClass(
-						name, bytecode, 0, bytecode.length);
-				if (clazz.getConstructors().length == 1) {
-					if (GisQL.debug) {
-						saveClassToFile(name, bytecode, null);
-					}
-					return clazz;
-				} else {
-					saveClassToFile(name, bytecode, null);
-				}
-			} catch (VerifyError e) {
-				saveClassToFile(name, bytecode, e);
-			}
-			return null;
-		}
-
-		private void saveClassToFile(String name, byte[] bytecode, Throwable t) {
-			String file = System.getProperty("java.io.tmpdir") + File.separator
-					+ name + ".class";
-			if (t == null) {
-				log.warn("Saving byte code to " + file + ".");
-			} else {
-				log.error(
-						"Failed to generate valid byte code. Saving bad byte code to "
-								+ file + " for analysis.", t);
-			}
-			try {
-				FileOutputStream fos;
-				fos = new FileOutputStream(file);
-				fos.write(bytecode);
-				fos.close();
-			} catch (IOException x) {
-				log.error("Failed to save class.", x);
-			}
-		}
 	}
 
 	/**
@@ -344,13 +295,6 @@ public abstract class Rendering<T> implements Opcodes {
 		<T> boolean store(Rendering<T> source);
 	}
 
-	private static final ClassCreator creator = AccessController
-			.doPrivileged(new PrivilegedAction<ClassCreator>() {
-				public ClassCreator run() {
-					return new ClassCreator();
-				}
-			});
-
 	protected static final String FieldRunner = "$runner";
 
 	protected static final Logger log = Logger.getLogger(Rendering.class);
@@ -493,7 +437,7 @@ public abstract class Rendering<T> implements Opcodes {
 			cleanupMethod();
 			endMethod();
 		}
-		return creator.load(name, writer);
+		return ClassCreator.load(name, writer);
 
 	}
 
