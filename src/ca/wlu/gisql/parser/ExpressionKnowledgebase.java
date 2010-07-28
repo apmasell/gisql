@@ -8,7 +8,6 @@ import ca.wlu.gisql.ast.AstLiteral;
 import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.function.list.Cons;
 import ca.wlu.gisql.function.list.Join;
 import ca.wlu.gisql.interactome.functions.Cut;
 import ca.wlu.gisql.interactome.logic.Complement;
@@ -58,7 +57,6 @@ public class ExpressionKnowledgebase extends
 		installOperator(AbstractOutput.descriptor);
 		installOperator(BracketedExpressionDescriptor.descriptor);
 		installOperator(ColonOrderDescriptor.descriptor);
-		installOperator(Cons.descriptor);
 		installOperator(Complement.descriptor);
 		installOperator(Cut.descriptor);
 		installOperator(Difference.descriptor);
