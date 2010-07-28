@@ -30,7 +30,7 @@ class OutputText extends AbstractOutput {
 
 			if (!Membership.isMissing(membership)) {
 
-				if (format == FileFormat.genome) {
+				if (format == FileFormat.genetbl) {
 					print.print(gene);
 					print.print("; ");
 					print.print(membership);
@@ -48,7 +48,7 @@ class OutputText extends AbstractOutput {
 			interaction.setMembership(this, membership);
 
 			if (!Membership.isMissing(membership)) {
-				if (format == FileFormat.interactome) {
+				if (format == FileFormat.interactiontbl) {
 					print.print(interaction.getGene1());
 					print.print("; ");
 					print.print(interaction.getGene2());

@@ -155,7 +155,7 @@ public class GisQL {
 			FileFormat fileformat = FileFormat.valueOf(commandline
 					.getOptionValue('F'));
 			if (fileformat == null) {
-				fileformat = FileFormat.interactome;
+				fileformat = FileFormat.interactiontbl;
 			}
 			environment.setFormat(fileformat);
 		}

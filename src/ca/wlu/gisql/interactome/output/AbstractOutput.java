@@ -30,8 +30,8 @@ public abstract class AbstractOutput extends ProcessableInteractome {
 		}
 
 		switch (format) {
-		case genome:
-		case interactome:
+		case genetbl:
+		case interactiontbl:
 		case summary:
 			return new OutputText(interactome, name, format, filename);
 		default:
