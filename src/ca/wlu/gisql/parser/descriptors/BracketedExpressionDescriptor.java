@@ -5,6 +5,7 @@ import java.util.Stack;
 
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.ParameterDeclaration;
 import ca.wlu.gisql.parser.Parseable;
 import ca.wlu.gisql.parser.TokenExpressionFull;
 import ca.wlu.gisql.parser.descriptors.type.TypeNesting;
@@ -17,6 +18,9 @@ import ca.wlu.gisql.util.Precedence;
 /** Parses a bracketed subexpression. */
 public class BracketedExpressionDescriptor<R, P extends Enum<P> & Nextable<P>>
 		extends Parseable<R, P> {
+	public static final Parseable<ParameterDeclaration, DeclarationNesting> declarationdescriptor = new BracketedExpressionDescriptor<ParameterDeclaration, DeclarationNesting>(
+			DeclarationNesting.values());
+
 	public static final Parseable<AstNode, Precedence> descriptor = new BracketedExpressionDescriptor<AstNode, Precedence>(
 			Precedence.values());
 

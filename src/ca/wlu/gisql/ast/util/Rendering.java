@@ -295,6 +295,9 @@ public abstract class Rendering<T> implements Opcodes {
 		<T> boolean store(Rendering<T> source);
 	}
 
+	private static final String entryClazz = Type
+			.getInternalName(Map.Entry.class);
+
 	protected static final String FieldRunner = "$runner";
 
 	protected static final Logger log = Logger.getLogger(Rendering.class);
@@ -654,6 +657,22 @@ public abstract class Rendering<T> implements Opcodes {
 	public boolean lRhO(String name) {
 		Variable reference = getReferenceByName(name);
 		return reference != null && reference.load();
+	}
+
+	public boolean lRhO_PairAccess(String parent, Class<?> clazz,
+			boolean... keyvalueselectors) {
+		if (lRhO(parent)) {
+			for (boolean selector : keyvalueselectors) {
+				method.visitTypeInsn(CHECKCAST, entryClazz);
+				method.visitMethodInsn(INVOKEINTERFACE, entryClazz,
+						selector ? "getKey" : "getValue",
+						"()Ljava/lang/Object;");
+			}
+			method.visitTypeInsn(CHECKCAST, Type.getInternalName(clazz));
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/** Load the value of a variable on to the parameter stack. */

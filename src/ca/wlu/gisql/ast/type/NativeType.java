@@ -6,6 +6,13 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /** A query language type that is exactly the same as a Java type. */
 public class NativeType extends Type {
+	/**
+	 * Do no use this in an query. This is meant for passing parsed objects as
+	 * AstLiterals.
+	 */
+	public static final Type AmbiguousJavaType = new NativeType("ANY",
+			Object.class);
+
 	private final Class<?> java;
 
 	private final String name;

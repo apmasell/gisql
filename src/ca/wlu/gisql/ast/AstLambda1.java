@@ -6,7 +6,7 @@ import org.apache.commons.collections15.iterators.SingletonIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.ast.util.MaskedEnvironment;
+import ca.wlu.gisql.ast.util.ParameterDeclaration;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
@@ -20,16 +20,13 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * resolution and replaced with phase 2 lambda expressions.
  */
 public class AstLambda1 extends AstNode {
+	final ParameterDeclaration declaration;
+
 	private final AstNode expression;
 
-	final String name;
-
-	private final Type type;
-
-	public AstLambda1(String variable, AstNode expression, Type type) {
-		name = variable;
+	public AstLambda1(ParameterDeclaration declaration, AstNode expression) {
+		this.declaration = declaration;
 		this.expression = expression;
-		this.type = type;
 	}
 
 	@Override
@@ -68,24 +65,22 @@ public class AstLambda1 extends AstNode {
 	@Override
 	public AstNode resolve(ExpressionRunner runner, ExpressionContext context,
 			ResolutionEnvironment environment) {
-		MaskedEnvironment<AstParameter> maskedenvironment = new MaskedEnvironment<AstParameter>(
-				new AstParameter(name, type), environment);
+		AstParameter parameter = declaration.synthesize();
 		AstNode resultexpression = expression.resolve(runner, context,
-				maskedenvironment);
+				parameter.createEnvironment(environment));
 		if (resultexpression == null) {
 			return null;
 		} else {
-			return new AstLambda2(maskedenvironment.getVariable(),
-					resultexpression);
+			return new AstLambda2(parameter, resultexpression);
 		}
 	}
 
 	public void show(ShowablePrintWriter<AstNode> print) {
 		print.print("\\");
-		print.print(name);
-		if (type != null) {
+		print.print(declaration);
+		if (declaration.hasType()) {
 			print.print(" :: ");
-			print.print(type);
+			print.print(declaration.hasType());
 		}
 		print.print(" -> ");
 		print.print(expression);

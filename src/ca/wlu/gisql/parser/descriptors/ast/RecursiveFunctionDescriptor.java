@@ -1,5 +1,6 @@
 package ca.wlu.gisql.parser.descriptors.ast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,7 +14,9 @@ import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.AstTypeCheck;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
+import ca.wlu.gisql.ast.util.ParameterDeclaration;
 import ca.wlu.gisql.parser.Parseable;
+import ca.wlu.gisql.parser.TokenDeclaration;
 import ca.wlu.gisql.parser.TokenExpressionChild;
 import ca.wlu.gisql.parser.TokenListOf;
 import ca.wlu.gisql.parser.TokenMatchCharacter;
@@ -24,6 +27,7 @@ import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionError;
 import ca.wlu.gisql.runner.ExpressionRunner;
 import ca.wlu.gisql.util.Precedence;
+import ca.wlu.gisql.util.ShowableStringBuilder;
 
 /**
  * Allows assignment of functions with automatic recursion via (fun x y z =
@@ -34,8 +38,8 @@ public final class RecursiveFunctionDescriptor extends
 	public static final Parseable<AstNode, Precedence> self = new RecursiveFunctionDescriptor();
 
 	private RecursiveFunctionDescriptor() {
-		super(TokenName.<AstNode, Precedence> get(), new TokenListOf(TokenName
-				.<AstNode, Precedence> get(), null),
+		super(TokenName.<AstNode, Precedence> get(), new TokenListOf(
+				TokenDeclaration.self, null),
 				new TokenMaybe<AstNode, Precedence>(
 						new TokenMatchCharacter<AstNode, Precedence>("::"),
 						TokenType.self), TokenMatchCharacter
@@ -70,8 +74,22 @@ public final class RecursiveFunctionDescriptor extends
 		}
 
 		for (int index = arguments.size() - 1; index >= 0; index--) {
-			expression = new AstLambda1(((AstName) arguments.get(index))
-					.getName(), expression, argumenttypes[index]);
+			ParameterDeclaration declaration = (ParameterDeclaration) ((AstLiteral) arguments
+					.get(index)).getValue();
+			if (argumenttypes[index] != null
+					&& !argumenttypes[index].unify(declaration.getType())) {
+				ShowableStringBuilder<List<TypeVariable>> print = new ShowableStringBuilder<List<TypeVariable>>(
+						new ArrayList<TypeVariable>());
+				print.print("Got type \"");
+				print.print(argumenttypes[index]);
+				print.print("\" expected \"");
+				print.print(declaration.getType());
+				print.print("'' when specifying type explicitly.");
+				error.add(new ExpressionError(context, print.toString(), null));
+				print.close();
+				return null;
+			}
+			expression = new AstLambda1(declaration, expression);
 		}
 
 		if (type != null) {

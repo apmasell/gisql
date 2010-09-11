@@ -1,13 +1,11 @@
 package ca.wlu.gisql.ast;
 
 import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.commons.collections15.iterators.EmptyIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.MaskedEnvironment;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
@@ -18,49 +16,33 @@ import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
 /**
- * The variable represented by a lambda expression (i.e., the <b>x</b> in
- * <tt>(λ x. f <b>x</b> y)</tt>.), or the witness in a graph.
+ * A variable which is really an index into a tuple.
  */
-public class AstParameter extends NamedVariable {
+public class AstPairAccessor extends NamedVariable {
 
 	final String name;
 
-	private final Set<NamedVariable> subordinates;
+	private final String parent;
+
+	private final boolean[] selectors;
 
 	final Type type;
 
-	final VariableInformation variableInformation;
-
-	public AstParameter(String name) {
-		this(name, new TypeVariable());
-	}
-
-	public AstParameter(String name, Type type) {
-		this(name, type, null);
-	}
-
-	public AstParameter(String name, Type type, Set<NamedVariable> subordinates) {
+	public AstPairAccessor(String parent, String name, Type type,
+			boolean... selectors) {
+		this.parent = parent;
 		this.name = name;
 		this.type = type;
-		this.subordinates = subordinates;
-		variableInformation = new VariableInformation(name, type);
+		this.selectors = selectors;
 	}
 
 	@Override
 	ResolutionEnvironment createEnvironment(ResolutionEnvironment original) {
-		ResolutionEnvironment environment = new MaskedEnvironment<AstParameter>(
-				this, original);
-		if (subordinates != null) {
-			for (NamedVariable parameter : subordinates) {
-				environment = parameter.createEnvironment(environment);
-			}
-		}
-		return environment;
+		return new MaskedEnvironment<AstPairAccessor>(this, original);
 	}
 
 	@Override
 	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
-		variables.add(variableInformation);
 	}
 
 	public Precedence getPrecedence() {
@@ -88,7 +70,8 @@ public class AstParameter extends NamedVariable {
 	 */
 	@Override
 	public <T> boolean renderSelf(Rendering<T> program, int depth) {
-		return program.lRhO(name);
+		return program.lRhO_PairAccess(parent, type.getRootJavaType(),
+				selectors);
 	}
 
 	@Override
