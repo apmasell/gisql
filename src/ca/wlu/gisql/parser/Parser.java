@@ -185,13 +185,19 @@ public class Parser {
 					 * next chunk of input.
 					 */
 					if (child != null) {
+						matched = true;
 						if (pop || result == null) {
 							result = child;
 						} else {
-							result = knowledgebase.makeApplication(this,
+							R application = knowledgebase.makeApplication(this,
 									result, child);
+							if (application == null) {
+								position = oldposition;
+								return result;
+							} else {
+								result = application;
+							}
 						}
-						matched = true;
 						break;
 					}
 					/*
@@ -207,13 +213,20 @@ public class Parser {
 			 * recurse...
 			 */
 			if (!matched) {
+				int oldposition = position;
 				R child = parseAutoExpression(knowledgebase, level.next());
 				if (child != null) {
 					if (result == null) {
 						result = child;
 					} else {
-						result = knowledgebase.makeApplication(this, result,
-								child);
+						R application = knowledgebase.makeApplication(this,
+								result, child);
+						if (application == null) {
+							position = oldposition;
+							return result;
+						} else {
+							result = application;
+						}
 					}
 					matched = true;
 				}
