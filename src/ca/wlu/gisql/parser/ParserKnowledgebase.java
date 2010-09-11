@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections15.OrderedMap;
@@ -32,6 +31,9 @@ public abstract class ParserKnowledgebase<R, P extends Enum<P> & Nextable<P>> {
 	public ParserKnowledgebase(P[] values, String extrahelp) {
 		this.values = values;
 		this.extrahelp = extrahelp;
+		for (P value : values) {
+			operators.put(value, new ArrayList<Parseable<R, P>>());
+		}
 	}
 
 	/** Add a new syntax element to the current language. */
@@ -47,7 +49,7 @@ public abstract class ParserKnowledgebase<R, P extends Enum<P> & Nextable<P>> {
 		print.println();
 		/* This also initialises every entry in the maps. */
 		for (P level : values) {
-			for (Parseable<R, P> operator : getList(operators, level)) {
+			for (Parseable<R, P> operator : operators.get(level)) {
 				print.print(operator);
 			}
 			print.println();
@@ -63,16 +65,6 @@ public abstract class ParserKnowledgebase<R, P extends Enum<P> & Nextable<P>> {
 		return help;
 	}
 
-	private final synchronized List<Parseable<R, P>> getList(
-			Map<P, List<Parseable<R, P>>> map, P level) {
-		List<Parseable<R, P>> list = map.get(level);
-		if (list == null) {
-			list = new ArrayList<Parseable<R, P>>();
-			map.put(level, list);
-		}
-		return list;
-	}
-
 	protected final List<Parseable<R, P>> getOperators(P level) {
 		return operators.get(level);
 	}
@@ -82,8 +74,7 @@ public abstract class ParserKnowledgebase<R, P extends Enum<P> & Nextable<P>> {
 	}
 
 	protected void installOperator(Parseable<R, P> operator) {
-		List<Parseable<R, P>> list = getList(operators, operator
-				.getPrecedence());
+		List<Parseable<R, P>> list = operators.get(operator.getPrecedence());
 		if (list.contains(operator)) {
 			return;
 		}
