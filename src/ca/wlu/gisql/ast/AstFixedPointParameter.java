@@ -10,7 +10,7 @@ import ca.wlu.gisql.ast.type.ArrowType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.GenericFunction;
-import ca.wlu.gisql.ast.util.NamedVariable;
+import ca.wlu.gisql.ast.util.MaskedEnvironment;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
@@ -23,7 +23,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * The self-reference represented by a fixed-point expression. (i.e., the
  * <b>f</b> in <tt>Y (λ f. (λ x. if (gt x 0) (<b>f</b> (sub x 1)) 0))</tt>.
  */
-public class AstFixedPointParameter extends AstNode implements NamedVariable {
+public class AstFixedPointParameter extends NamedVariable {
 
 	private static final Logger log = Logger
 			.getLogger(AstFixedPointParameter.class);
@@ -37,6 +37,11 @@ public class AstFixedPointParameter extends AstNode implements NamedVariable {
 	public AstFixedPointParameter(String name) {
 		this.name = name;
 		variableInformation = new VariableInformation(name, type);
+	}
+
+	@Override
+	ResolutionEnvironment createEnvironment(ResolutionEnvironment environment) {
+		return new MaskedEnvironment<AstFixedPointParameter>(this, environment);
 	}
 
 	@Override

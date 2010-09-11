@@ -1,9 +1,10 @@
 package ca.wlu.gisql.ast.util;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.NamedVariable;
 import ca.wlu.gisql.environment.Environment;
 
-public class MaskedEnvironment<T extends AstNode & NamedVariable> implements
+public class MaskedEnvironment<T extends NamedVariable> implements
 		ResolutionEnvironment {
 	private final ResolutionEnvironment parent;
 	private boolean used = false;

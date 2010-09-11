@@ -1,13 +1,14 @@
 package ca.wlu.gisql.ast;
 
 import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.commons.collections15.iterators.EmptyIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
-import ca.wlu.gisql.ast.util.NamedVariable;
+import ca.wlu.gisql.ast.util.MaskedEnvironment;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
@@ -20,7 +21,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * The variable represented by a lambda expression (i.e., the <b>x</b> in
  * <tt>(λ x. f <b>x</b> y)</tt>.), or the witness in a graph.
  */
-public class AstParameter extends AstNode implements NamedVariable {
+public class AstParameter extends NamedVariable {
 
 	final String name;
 
@@ -36,6 +37,13 @@ public class AstParameter extends AstNode implements NamedVariable {
 		this.name = name;
 		this.type = type;
 		variableInformation = new VariableInformation(name, type);
+	}
+
+	@Override
+	ResolutionEnvironment createEnvironment(ResolutionEnvironment original) {
+		ResolutionEnvironment environment = new MaskedEnvironment<AstParameter>(
+				this, original);
+		return environment;
 	}
 
 	@Override
