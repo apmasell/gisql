@@ -10,7 +10,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class OptionalMaybeType extends MaybeType {
 
 	public static Type wrap(Type type) {
-		if (type.isNullable()) {
+		if (type.isOptionallyNullable() || type.isNullable()) {
 			return type;
 		} else {
 			return new OptionalMaybeType(type);

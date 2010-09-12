@@ -16,7 +16,8 @@ public class MaybeType extends Type {
 		if (contents == null) {
 			throw new IllegalArgumentException();
 		}
-		this.contents = contents.isNullable() ? contents.getContents()
+		this.contents = contents.isNullable()
+				|| contents.isOptionallyNullable() ? contents.getContents()
 				: contents;
 
 	}
