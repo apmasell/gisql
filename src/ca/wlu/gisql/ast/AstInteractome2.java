@@ -21,8 +21,8 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class AstInteractome2 extends AstNode {
 
 	private final AstParameter gene;
-	private final AstParameter gene1;
-	private final AstParameter gene2;
+	private final AstInteractomeInteractionGene gene1;
+	private final AstInteractomeInteractionGene gene2;
 	private final AstNode geneexpression;
 	private final AstNode interactionexpression;
 	private final AstNode membership;
@@ -32,7 +32,8 @@ public class AstInteractome2 extends AstNode {
 
 	public AstInteractome2(AstParameter[] variables,
 			AstParameter[] unknownvariables, AstParameter gene,
-			AstParameter gene1, AstParameter gene2, AstNode membership,
+			AstInteractomeInteractionGene gene1,
+			AstInteractomeInteractionGene gene2, AstNode membership,
 			AstNode geneexpression, AstNode interactionexpression) {
 		this.unknownvariables = unknownvariables.clone();
 		this.variables = variables.clone();
@@ -61,8 +62,6 @@ public class AstInteractome2 extends AstNode {
 			variables.remove(variable.variableInformation);
 		}
 		variables.remove(gene.variableInformation);
-		variables.remove(gene1.variableInformation);
-		variables.remove(gene2.variableInformation);
 	}
 
 	@Override
@@ -91,10 +90,13 @@ public class AstInteractome2 extends AstNode {
 		RenderingInteractome subprogram = new RenderingInteractome(membership,
 				toString(), variablenames);
 		ListOrderedSet<VariableInformation> freevariables = freeVariables();
+		gene1.setInteractionName(subprogram.getInteractionName());
+		gene2.setInteractionName(subprogram.getInteractionName());
+
 		return subprogram.gF$_CreateFields(freevariables.asList(), program)
-				&& subprogram.createGeneMethod(gene, geneexpression)
-				&& subprogram.createInteractomeMethod(gene1, gene2,
-						interactionexpression)
+				&& subprogram.createGeneMethod(gene.getVariableName(),
+						geneexpression)
+				&& subprogram.createInteractionMethod(interactionexpression)
 				&& program.hO_CreateSubroutine(subprogram)
 				&& subprogram.gF$_lVhF$_CopyVariablesFromParent(program,
 						freevariables.asList());

@@ -95,14 +95,17 @@ public class AstInteractome1 extends AstNode {
 		}
 
 		AstParameter gene = new AstParameter(genename, Type.GeneType);
-		AstParameter gene1 = new AstParameter(gene1name, Type.GeneType);
-		AstParameter gene2 = new AstParameter(gene2name, Type.GeneType);
+		AstInteractomeInteractionGene gene1 = new AstInteractomeInteractionGene(
+				gene1name, true);
+		AstInteractomeInteractionGene gene2 = new AstInteractomeInteractionGene(
+				gene2name, false);
 		AstNode resultgeneexpression = geneexpression.resolve(runner, context,
 				new MaskedEnvironment<AstParameter>(gene, boundenvironment));
 		AstNode resultinteractionexpression = interactionexpression.resolve(
-				runner, context, new MaskedEnvironment<AstParameter>(gene1,
-						new MaskedEnvironment<AstParameter>(gene2,
-								boundenvironment)));
+				runner, context,
+				new MaskedEnvironment<AstInteractomeInteractionGene>(gene1,
+						new MaskedEnvironment<AstInteractomeInteractionGene>(
+								gene2, boundenvironment)));
 		AstNode resultmembership = membership.resolve(runner, context,
 				unknownboundenvironment);
 		if (resultgeneexpression == null || resultinteractionexpression == null

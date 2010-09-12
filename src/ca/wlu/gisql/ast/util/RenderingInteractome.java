@@ -5,7 +5,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.ast.AstParameter;
 import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.interactome.Interactome;
@@ -13,6 +12,8 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class RenderingInteractome extends Rendering<UserDefinedInteractome> {
 
+	private final String interactionparametername = "$" + hashCode();
+	private final String interactomearrayname = "$" + (hashCode() * 19);
 	private final String[] variables;
 
 	public RenderingInteractome(AstNode membership, String descriptor,
@@ -66,23 +67,27 @@ public class RenderingInteractome extends Rendering<UserDefinedInteractome> {
 		throw new IllegalStateException();
 	}
 
-	public boolean createGeneMethod(AstParameter gene, AstNode expression) {
+	public boolean createGeneMethod(String gene, AstNode expression) {
 		return createMethod(expression, Gene.class, gene);
 	}
 
-	public boolean createInteractomeMethod(AstParameter gene1,
-			AstParameter gene2, AstNode expression) {
-		return createMethod(expression, Interaction.class, gene1, gene2);
+	public boolean createInteractionMethod(AstNode expression) {
+		return createMethod(expression, Interaction.class,
+				interactionparametername);
 	}
 
 	private boolean createMethod(AstNode expression, Class<?> clazz,
-			AstParameter... parameters) {
+			String... parameters) {
 		startMethod(ACC_PUBLIC, "calculateMembership", double.class, clazz);
 		String signature = makeSignature(double.class, clazz);
 		String interactomeinterface = Type.getInternalName(Interactome.class);
 		method.visitVarInsn(ALOAD, 0);
 		method.visitFieldInsn(GETFIELD, name, "$interactomes", Type
 				.getInternalName(Interactome[].class));
+
+		method.visitInsn(DUP);
+		hR_CreateLocal(getInteractomeArray(), Interactome[].class);
+
 		for (int index = 0; index < variables.length; index++) {
 			Label objectify = new Label();
 			Label end = new Label();
@@ -106,11 +111,11 @@ public class RenderingInteractome extends Rendering<UserDefinedInteractome> {
 		}
 		method.visitInsn(POP);
 		int index = 1;
-		for (AstParameter parameter : parameters) {
-			references.push(new StackVariable(index++, parameter
-					.getVariableName(), parameter.getType().getRootJavaType()));
 
+		for (String parameter : parameters) {
+			references.push(new StackVariable(index++, parameter, clazz));
 		}
+
 		if (!expression.render(this, 0)) {
 			return false;
 		}
@@ -125,5 +130,13 @@ public class RenderingInteractome extends Rendering<UserDefinedInteractome> {
 		method.visitInsn(DRETURN);
 		endMethod();
 		return true;
+	}
+
+	public String getInteractionName() {
+		return interactionparametername;
+	}
+
+	public String getInteractomeArray() {
+		return interactomearrayname;
 	}
 }
