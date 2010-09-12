@@ -33,9 +33,11 @@ public class TokenTree extends Token<AstNode, Precedence> {
 			Parser parser, Precedence level, List<AstNode> results) {
 		AstLiteralList items = new AstLiteralList();
 
-		if (!parser.hasMore() || parser.read() != open) {
+		if (!parser.hasMore() || parser.peek() != open) {
+			parser.pushError("Expected " + open);
 			return false;
 		}
+		parser.next();
 		parser.consumeWhitespace();
 		if (!child.parse(knowledgebase, parser, level, items)) {
 			return false;
@@ -74,6 +76,9 @@ public class TokenTree extends Token<AstNode, Precedence> {
 
 	@Override
 	public void show(ShowablePrintWriter<Object> print) {
+		print.print('[');
+		print.print(open);
+		print.print(']');
 		print.print(child);
 		print.print('[');
 		print.print(open);
@@ -82,5 +87,8 @@ public class TokenTree extends Token<AstNode, Precedence> {
 		print.print("] [");
 		print.print(delimiter);
 		print.print("] ...");
+		print.print('[');
+		print.print(close);
+		print.print(']');
 	}
 }
