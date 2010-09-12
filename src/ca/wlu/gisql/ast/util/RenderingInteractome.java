@@ -12,8 +12,8 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 
 public class RenderingInteractome extends Rendering<UserDefinedInteractome> {
 
-	private final String interactionparametername = "$" + hashCode();
-	private final String interactomearrayname = "$" + (hashCode() * 19);
+	private final String interactionparametername = "$interaction" + hashCode();
+	private final String interactomearrayname = "$interactomes" + hashCode();
 	private final String[] variables;
 
 	public RenderingInteractome(AstNode membership, String descriptor,
