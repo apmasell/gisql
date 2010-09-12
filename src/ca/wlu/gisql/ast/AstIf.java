@@ -85,6 +85,8 @@ public class AstIf extends AstNode {
 		if (condition == this.condition && truepart == this.truepart
 				&& falsepart == this.falsepart) {
 			return this;
+		} else if (condition == null || truepart == null || falsepart == null) {
+			return null;
 		} else {
 			return new AstIf(condition, truepart, falsepart);
 		}
