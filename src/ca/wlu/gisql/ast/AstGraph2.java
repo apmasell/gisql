@@ -1,6 +1,6 @@
 package ca.wlu.gisql.ast;
 
-import java.lang.reflect.Method;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -15,17 +15,14 @@ import org.apache.commons.collections15.set.ListOrderedSet;
 import org.apache.log4j.Logger;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
 
 import ca.wlu.gisql.ast.type.ListType;
 import ca.wlu.gisql.ast.type.Type;
-import ca.wlu.gisql.ast.util.GenericFunction;
+import ca.wlu.gisql.ast.util.Renderable;
 import ca.wlu.gisql.ast.util.Rendering;
-import ca.wlu.gisql.ast.util.RenderingFunction;
+import ca.wlu.gisql.ast.util.RenderingGraphMatcher;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
-import ca.wlu.gisql.graph.Gene;
 import ca.wlu.gisql.graph.SubgraphMatcher;
 import ca.wlu.gisql.interactome.Interactome;
 import ca.wlu.gisql.runner.ExpressionContext;
@@ -70,6 +67,14 @@ public class AstGraph2 extends AstNode {
 	}
 
 	private static final Logger log = Logger.getLogger(AstGraph2.class);
+
+	private static final Renderable trueexpression = new Renderable() {
+
+		@Override
+		public <C> boolean render(Rendering<C> rendering, int depth) {
+			return rendering.hO_AsObject(true);
+		}
+	};
 
 	private final SimpleGraph<AstParameter, DefaultEdge> connections;
 
@@ -125,83 +130,51 @@ public class AstGraph2 extends AstNode {
 
 	@Override
 	protected <T> boolean renderSelf(Rendering<T> program, int depth) {
+		/* Sort the witnesses so that the highest degree witness is first. */
+		AstParameter[] variables = connections.vertexSet().toArray(
+				new AstParameter[0]);
+		for (int start = 0; start < variables.length - 1; start++) {
+			Arrays.sort(variables, start, variables.length,
+					new ConnectionComparator(variables, start));
+		}
+
+		/* Build index of variables. */
+		String[] nodenames = new String[variables.length];
+		Map<AstParameter, Integer> indicies = new HashMap<AstParameter, Integer>();
+		for (int index = 0; index < variables.length; index++) {
+			nodenames[index] = variables[index].getVariableName();
+			indicies.put(variables[index], index);
+		}
+
+		StringBuffer sb = new StringBuffer();
+		sb.append("In ").append(this).append(
+				" variables have been assigned as follows: ").append(indicies);
+
+		RenderingGraphMatcher subprogram = new RenderingGraphMatcher(nodenames,
+				setupMatcher(connections, indicies, sb.append(" Connected:")),
+				setupMatcher(disconnections, indicies, sb
+						.append(" Disconnected:")), toString());
+
+		log.debug(sb.toString());
+
+		/* Pass along required variables.. */
+		ListOrderedSet<VariableInformation> freevars = this.freeVariables();
+
+		/* Create a matcher */
+
 		try {
-			String resultlist = "$graph" + Integer.toHexString(hashCode());
-			/* Create a subroutine that takes the witnesses as arguments. */
-			Type[] arguments = new Type[connections.vertexSet().size()];
-			Arrays.fill(arguments, Type.GeneType);
-			Rendering<GenericFunction> subroutine = new RenderingFunction(
-					toString(), Type.UnitType, arguments);
-
-			/* This will be our resultant list. */
-			if (!(program.pRg$hO_CreateObject(ArrayList.class.getConstructor()) && program
-					.hR_CreateLocal(resultlist, List.class))) {
-				return false;
-			}
-
-			ListOrderedSet<VariableInformation> freevars = this.freeVariables();
-			freevars.add(new VariableInformation(resultlist, type));
-			if (!subroutine.gF$_CreateFields(freevars.asList(), program)) {
-				return false;
-			}
-
-			/* Sort the witnesses so that the highest degree witness is first. */
-			final AstParameter[] variables = connections.vertexSet().toArray(
-					new AstParameter[0]);
-			for (int start = 0; start < variables.length - 1; start++) {
-				Arrays.sort(variables, start, variables.length,
-						new ConnectionComparator(variables, start));
-			}
-
-			/* Relocate the anonymous arguments into named local variables. */
-			Map<AstParameter, Integer> indicies = new HashMap<AstParameter, Integer>();
-			for (int index = 0; index < variables.length; index++) {
-				if (!(subroutine.pPg() && subroutine.hR_CreateLocal(
-						variables[index].getVariableName(), Gene.class))) {
-					return false;
-				}
-				indicies.put(variables[index], index);
-			}
-
-			StringBuffer sb = new StringBuffer();
-			sb.append("In ").append(this).append(
-					" variables have been assigned as follows: ").append(
-					indicies);
-			/* Create a matcher */
-			if (!(program.hP(variables.length)
-					&& program.hP(new Rendering.Cast(fromexpression,
-							Interactome.class))
-					&& program.pRg$hO_CreateObject(SubgraphMatcher.class
-							.getConstructors()[0])
-					&& setupMatcher(program, connections, indicies,
-							SubgraphMatcher.class.getMethod("connect",
-									int.class, int.class), sb
-									.append(" Connected:")) && setupMatcher(
-					program, disconnections, indicies, SubgraphMatcher.class
-							.getMethod("disconnect", int.class, int.class), sb
-							.append(" Disconnected:")))) {
-				return false;
-			}
-			log.debug(sb.toString());
-
-			Label skip = new Label();
-			return (whereexpression == null ? true : whereexpression.render(
-					subroutine, depth + arguments.length)
-					&& subroutine.pOhO_ObjectToPrimitive(Boolean.class)
-					&& subroutine.jump(Opcodes.IFEQ, skip))
-					&& subroutine.lRhO(resultlist)
-					&& returnexpression.render(subroutine, depth
-							+ arguments.length)
-					&& subroutine.g_InvokeMethod(List.class.getMethod("add",
-							Object.class))
-					&& subroutine.mark(skip)
-					&& subroutine.hO_AsObject(0)
-					&& program.hO_CreateSubroutine(subroutine)
-					&& subroutine.gF$_lVhF$_CopyVariablesFromParent(program,
+			return subprogram.gF$_CreateFields(freevars.asList(), program)
+					&& subprogram
+							.createWhereMethod(whereexpression == null ? trueexpression
+									: whereexpression)
+					&& subprogram.createReturnMethod(returnexpression)
+					&& program.hO_CreateSubroutine(subprogram)
+					&& subprogram.gF$_lVhF$_CopyVariablesFromParent(program,
 							freevars.asList())
+					&& program.lOhO()
+					&& fromexpression.render(program, 0)
 					&& program.g_InvokeMethod(SubgraphMatcher.class.getMethod(
-							"match", GenericFunction.class))
-					&& program.lRhO(resultlist) && program.pR(resultlist);
+							"match", Interactome.class));
 		} catch (SecurityException e) {
 			log.error("Failed to get method.", e);
 		} catch (NoSuchMethodException e) {
@@ -240,22 +213,21 @@ public class AstGraph2 extends AstNode {
 		}
 	}
 
-	private <T> boolean setupMatcher(Rendering<T> program,
+	private <T> List<Point> setupMatcher(
 			SimpleGraph<AstParameter, DefaultEdge> graph,
-			Map<AstParameter, Integer> indicies, Method method, StringBuffer sb) {
+			Map<AstParameter, Integer> indicies, StringBuffer sb) {
+
+		List<Point> results = new ArrayList<Point>();
+
 		for (DefaultEdge edge : graph.edgeSet()) {
 			int source = indicies.get(graph.getEdgeSource(edge));
 			int target = indicies.get(graph.getEdgeTarget(edge));
 
 			sb.append(" (").append(source).append(", ").append(target).append(
 					')');
-
-			if (!(program.lOhO() && program.hO(source) && program.hO(target) && program
-					.g_InvokeMethod(method))) {
-				return false;
-			}
+			results.add(new Point(source, target));
 		}
-		return true;
+		return results;
 	}
 
 	@Override
