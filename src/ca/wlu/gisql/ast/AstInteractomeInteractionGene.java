@@ -12,7 +12,8 @@ public class AstInteractomeInteractionGene extends SyntheticAccessor {
 	private static final Method gene1;
 
 	private static final Method gene2;
-	private static final Logger log = Logger.getLogger(AstGraph2.class);
+	private static final Logger log = Logger
+			.getLogger(AstInteractomeInteractionGene.class);
 	static {
 		Method gene1method = null;
 		Method gene2method = null;
