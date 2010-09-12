@@ -88,7 +88,7 @@ public class DatabaseEnvironment extends Environment {
 
 	public DatabaseEnvironment(DatabaseManager databaseManager) {
 		super(null, false, false);
-		Map<Long, Interactome> speciesById = new HashedMap<Long, Interactome>();
+		Map<Long, TaxonomicInteractome> speciesById = new HashedMap<Long, TaxonomicInteractome>();
 		for (DbSpecies interactome : databaseManager.getSpecies()) {
 			add(interactome.toString(), interactome, Type.InteractomeType);
 			speciesById.put(interactome.getId(), interactome);

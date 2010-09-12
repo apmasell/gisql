@@ -8,7 +8,7 @@ import ca.wlu.gisql.graph.Interaction;
 import ca.wlu.gisql.graph.Ubergraph;
 import ca.wlu.gisql.interactome.NamedInteractome;
 
-public class DbSpecies extends NamedInteractome {
+public class DbSpecies extends NamedInteractome implements TaxonomicInteractome {
 
 	private DatabaseManager databaseManager;
 

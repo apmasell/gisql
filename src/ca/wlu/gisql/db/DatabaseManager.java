@@ -102,7 +102,7 @@ public class DatabaseManager {
 	}
 
 	protected void populateArrays(DatabaseEnvironment environment,
-			Map<Long, Interactome> speciesById) {
+			Map<Long, TaxonomicInteractome> speciesById) {
 		try {
 			PreparedStatement arrayStatement = connection
 					.prepareStatement("SELECT id, name FROM userarray");
