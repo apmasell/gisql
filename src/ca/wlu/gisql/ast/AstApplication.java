@@ -8,6 +8,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 
 import ca.wlu.gisql.ast.type.ArrowType;
+import ca.wlu.gisql.ast.type.MaybeType;
 import ca.wlu.gisql.ast.type.OptionalMaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
@@ -191,7 +192,7 @@ public class AstApplication extends AstNode {
 		if (runner.typeCheck(operand, arguments[0], context)) {
 			operandmaybe = !otn && arguments[0].isNullable();
 			if (operandmaybe && terminal instanceof OptionalMaybeType) {
-				((OptionalMaybeType) terminal).lift();
+				terminal = new MaybeType(terminal);
 			}
 
 			Type returntype = ArrowType.make(arguments, 1, terminal);
