@@ -21,6 +21,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
+import ca.wlu.gisql.GisQL;
 import ca.wlu.gisql.ast.type.Unit;
 import ca.wlu.gisql.environment.UserEnvironment;
 import ca.wlu.gisql.runner.ExpressionRunner;
@@ -61,6 +62,11 @@ public abstract class Rendering<T> implements Opcodes {
 		@Override
 		public String getName() {
 			return "$" + offset;
+		}
+
+		@Override
+		public String getType() {
+			return type;
 		}
 
 		@Override
@@ -146,6 +152,11 @@ public abstract class Rendering<T> implements Opcodes {
 		}
 
 		@Override
+		public String getType() {
+			return type;
+		}
+
+		@Override
 		public boolean load() {
 			method.visitVarInsn(ALOAD, 0);
 			method.visitFieldInsn(GETFIELD, Rendering.this.name, name, Type
@@ -191,6 +202,11 @@ public abstract class Rendering<T> implements Opcodes {
 		@Override
 		public String getName() {
 			return name;
+		}
+
+		@Override
+		public String getType() {
+			return Rendering.this.name;
 		}
 
 		@Override
@@ -248,6 +264,11 @@ public abstract class Rendering<T> implements Opcodes {
 		}
 
 		@Override
+		public String getType() {
+			return type;
+		}
+
+		@Override
 		public boolean load() {
 			method.visitVarInsn(ALOAD, index);
 			return true;
@@ -282,6 +303,8 @@ public abstract class Rendering<T> implements Opcodes {
 		boolean finish();
 
 		String getName();
+
+		String getType();
 
 		/** Put contents on the operand stack. */
 		boolean load();
@@ -453,7 +476,8 @@ public abstract class Rendering<T> implements Opcodes {
 		return null;
 	}
 
-	public boolean gF$_CreateFields(List<VariableInformation> variables) {
+	public <X> boolean gF$_CreateFields(List<VariableInformation> variables,
+			Rendering<X> parent) {
 		Set<String> names = new HashSet<String>();
 
 		for (int index = variables.size() - 1; index >= 0; index--) {
@@ -464,6 +488,17 @@ public abstract class Rendering<T> implements Opcodes {
 						.getName(), variables.get(index).getInternalName()));
 			}
 		}
+
+		for (int index = parent.references.size() - 1; index >= 0; index--) {
+			String name = parent.references.get(index).getName();
+			if (!GisQL.isValidName(name) && !names.contains(name)) {
+				names.add(name);
+				references.push(new ExternalVariable(parent.references.get(
+						index).getName(), parent.references.get(index)
+						.getType()));
+			}
+		}
+
 		return true;
 	}
 

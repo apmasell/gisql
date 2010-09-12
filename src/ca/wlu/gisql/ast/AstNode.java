@@ -92,7 +92,7 @@ public abstract class AstNode implements Iterable<AstNode>,
 			Rendering<GenericFunction> subroutine = new RenderingFunction(
 					command, getType(), getType().getParameters());
 			ListOrderedSet<VariableInformation> freevars = this.freeVariables();
-			value = subroutine.gF$_CreateFields(freevars.asList())
+			value = subroutine.gF$_CreateFields(freevars.asList(), program)
 					&& renderSelf(subroutine, depth + parameters)
 					&& program.hO_CreateSubroutine(subroutine)
 					&& subroutine.gF$_lVhF$_CopyVariablesFromParent(program,

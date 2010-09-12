@@ -67,7 +67,7 @@ public class AstFixedPoint2 extends AstNode {
 
 		ListOrderedSet<VariableInformation> freevars = this.freeVariables();
 		try {
-			return subroutine.gF$_CreateFields(freevars.asList())
+			return subroutine.gF$_CreateFields(freevars.asList(), program)
 					&& subroutine.hR_CreateSelfReference(self.name)
 					&& expression.render(subroutine, depth)
 					&& program.hO_CreateSubroutine(subroutine)

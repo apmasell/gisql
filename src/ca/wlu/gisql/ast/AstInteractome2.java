@@ -91,7 +91,7 @@ public class AstInteractome2 extends AstNode {
 		RenderingInteractome subprogram = new RenderingInteractome(membership,
 				toString(), variablenames);
 		ListOrderedSet<VariableInformation> freevariables = freeVariables();
-		return subprogram.gF$_CreateFields(freevariables.asList())
+		return subprogram.gF$_CreateFields(freevariables.asList(), program)
 				&& subprogram.createGeneMethod(gene, geneexpression)
 				&& subprogram.createInteractomeMethod(gene1, gene2,
 						interactionexpression)

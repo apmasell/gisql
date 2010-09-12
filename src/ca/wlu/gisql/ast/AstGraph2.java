@@ -141,7 +141,7 @@ public class AstGraph2 extends AstNode {
 
 			ListOrderedSet<VariableInformation> freevars = this.freeVariables();
 			freevars.add(new VariableInformation(resultlist, type));
-			if (!subroutine.gF$_CreateFields(freevars.asList())) {
+			if (!subroutine.gF$_CreateFields(freevars.asList(), program)) {
 				return false;
 			}
 
