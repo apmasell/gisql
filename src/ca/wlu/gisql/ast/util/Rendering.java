@@ -526,6 +526,20 @@ public abstract class Rendering<T> implements Opcodes {
 				}
 			}
 		}
+
+		for (int index = source.references.size() - 1; index >= 0; index--) {
+			Variable variable = source.references.get(index);
+			String name = variable.getName();
+			System.err.print("considering " + name);
+			if (!GisQL.isValidName(name) && !names.contains(name)) {
+				names.add(name);
+				if (!(source.lRhO(name) && getReferenceByName(name).store(
+						source))) {
+					return false;
+				}
+			}
+		}
+
 		return true;
 	}
 
