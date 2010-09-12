@@ -19,11 +19,11 @@ public class TypeClass<T> implements Renderable {
 	@SuppressWarnings("unchecked")
 	public static final TypeClass<Comparable> Comparable = new TypeClass<Comparable>(
 			"Orderable", Comparable.class, Type.BooleanType, Type.NumberType,
-			Type.RealType, Type.StringType);
+			Type.MembershipType, Type.RealType, Type.StringType);
 
 	public static final TypeClass<Object> Equalable = new TypeClass<Object>(
-			"Comparable", Object.class, Comparable, Type.MembershipType,
-			Type.FormatType, Type.GeneType);
+			"Comparable", Object.class, Comparable, Type.FormatType,
+			Type.GeneType);
 
 	public static final TypeClass<Double> Fractional = new TypeClass<Double>(
 			"Fractional", Double.class, Type.MembershipType, Type.RealType);
