@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -78,6 +80,50 @@ public class DatabaseManager {
 		log.info("Connecting to " + url + "...");
 		connection = DriverManager.getConnection(url, properties);
 		log.info("Connected.");
+	}
+
+	public Collection<Partition> getPartitions(
+			Map<Long, TaxonomicInteractome> speciesById) {
+
+		try {
+			Set<Partition> partitions = new HashSet<Partition>();
+
+			PreparedStatement partitionStatement = connection
+					.prepareStatement("SELECT id, species, name FROM partition");
+			ResultSet partitionrs = partitionStatement.executeQuery();
+			while (partitionrs.next()) {
+				final long partitionid = partitionrs.getLong(1);
+				final long speciesid = partitionrs.getLong(2);
+				String name = partitionrs.getString(3);
+
+				TaxonomicInteractome parent = speciesById.get(speciesid);
+				Set<Gene> genes = new LazySqlSet<Gene>() {
+
+					@Override
+					protected void prepare(Set<Gene> set) throws SQLException {
+						PreparedStatement genesStatement = connection
+								.prepareStatement("SELECT id FROM genes WHERE species = ? AND partition = ?");
+						genesStatement.setLong(1, speciesid);
+						genesStatement.setLong(2, partitionid);
+						ResultSet geners = genesStatement.executeQuery();
+						while (geners.next()) {
+							set.addAll(Ubergraph.getInstance().findGenes(
+									geners.getLong(1)));
+						}
+						geners.close();
+						genesStatement.close();
+
+					}
+				};
+				partitions.add(new Partition(parent, name, genes));
+			}
+			partitionrs.close();
+			partitionStatement.close();
+			return partitions;
+		} catch (SQLException e) {
+			log.error("Error processing partitions. ", e);
+		}
+		return Collections.emptySet();
 	}
 
 	public Set<DbSpecies> getSpecies() {

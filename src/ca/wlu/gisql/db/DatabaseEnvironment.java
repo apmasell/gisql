@@ -22,6 +22,9 @@ public class DatabaseEnvironment extends Environment {
 		}
 		putArray("all", new ArrayList<Interactome>(speciesById.values()));
 		databaseManager.populateArrays(this, speciesById);
+		for (Partition interactome : databaseManager.getPartitions(speciesById)) {
+			add(interactome.toString(), interactome, Type.InteractomeType);
+		}
 		add("taxid2species", new TaxId2Interactome(null),
 				TaxId2Interactome.type);
 		add("interactome2taxid", new Interactome2TaxId(null),
