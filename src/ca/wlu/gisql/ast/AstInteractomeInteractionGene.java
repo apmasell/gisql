@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.graph.Interaction;
 
 public class AstInteractomeInteractionGene extends SyntheticAccessor {
@@ -32,6 +33,12 @@ public class AstInteractomeInteractionGene extends SyntheticAccessor {
 	protected AstInteractomeInteractionGene(String name, boolean first) {
 		super(name, Type.GeneType);
 		this.first = first;
+	}
+
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return environment;
 	}
 
 	@Override

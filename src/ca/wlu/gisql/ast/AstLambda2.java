@@ -39,6 +39,12 @@ public class AstLambda2 extends AstNode {
 		variables.remove(variable.variableInformation);
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return expression.getModifiedEnvironment(environment);
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}

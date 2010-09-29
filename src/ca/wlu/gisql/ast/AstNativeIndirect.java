@@ -38,6 +38,12 @@ public class AstNativeIndirect extends AstNode {
 		return self.getLeftDepth();
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return self.getModifiedEnvironment(environment);
+	}
+
 	public final Precedence getPrecedence() {
 		return Precedence.Value;
 	}

@@ -30,6 +30,12 @@ public class AstTypeCheck extends AstNode {
 	}
 
 	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return parameter.getModifiedEnvironment(environment);
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return parameter.getPrecedence();
 	}

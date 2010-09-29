@@ -65,6 +65,14 @@ public class AstInteractome2 extends AstNode {
 	}
 
 	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return interactionexpression.getModifiedEnvironment(geneexpression
+				.getModifiedEnvironment(membership
+						.getModifiedEnvironment(environment)));
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}

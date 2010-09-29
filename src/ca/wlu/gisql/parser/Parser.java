@@ -52,7 +52,7 @@ public class Parser {
 
 	final Stack<ExpressionError> error = new Stack<ExpressionError>();
 
-	private final String input;
+	private final CharSequence input;
 
 	private final ExpressionRunListener listener;
 
@@ -62,8 +62,8 @@ public class Parser {
 
 	private final ExpressionRunner runner;
 
-	public Parser(ExpressionRunner runner, LineContext context, String input,
-			ExpressionRunListener listener) {
+	public Parser(ExpressionRunner runner, LineContext context,
+			CharSequence input, ExpressionRunListener listener) {
 		this.runner = runner;
 		this.context = context;
 		this.input = input;
@@ -74,13 +74,13 @@ public class Parser {
 		if (hasMore()) {
 			if (position > 0) {
 				sb.append('“');
-				sb.append(input.substring(0, position));
+				sb.append(input.subSequence(0, position));
 				sb.append('”');
 			}
 			sb.append(" ›").append(peek()).append("‹ ");
 			if (position < input.length() - 1) {
 				sb.append('“');
-				sb.append(input.substring(position + 1));
+				sb.append(input.subSequence(position + 1, input.length()));
 				sb.append('”');
 			}
 		} else {
@@ -332,7 +332,7 @@ public class Parser {
 	 * position.
 	 */
 	String stringFromMark() {
-		return input.substring(marks.pop(), position);
+		return input.subSequence(marks.pop(), position).toString();
 	}
 
 	@Override

@@ -29,6 +29,12 @@ public class AstName extends AstNode {
 		raiseIllegalState();
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return raiseIllegalState();
+	}
+
 	public String getName() {
 		return name;
 	}

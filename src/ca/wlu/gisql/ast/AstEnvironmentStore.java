@@ -6,6 +6,7 @@ import org.apache.commons.collections15.iterators.EmptyIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.util.MaskedEnvironment;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
@@ -21,7 +22,9 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  */
 public class AstEnvironmentStore extends AstNode {
 	private final Type currenttype;
+
 	private final String name;
+
 	private AstNode node;
 
 	public AstEnvironmentStore(AstNode node, String name, Type currenttype) {
@@ -33,6 +36,13 @@ public class AstEnvironmentStore extends AstNode {
 	@Override
 	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 		node.freeVariables(variables);
+	}
+
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return new MaskedEnvironment<NamedVariable>(new AstEnvironmentLoad(
+				name, node.getType()), node.getModifiedEnvironment(environment));
 	}
 
 	public Precedence getPrecedence() {

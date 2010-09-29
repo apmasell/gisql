@@ -21,6 +21,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public abstract class AstNative extends AstNode {
 
 	protected final String description;
+
 	protected final String name;
 	protected final Type type;
 
@@ -44,6 +45,12 @@ public abstract class AstNative extends AstNode {
 
 	public String getDescription() {
 		return description;
+	}
+
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return environment;
 	}
 
 	public final Precedence getPrecedence() {

@@ -50,6 +50,9 @@ public abstract class AstNode implements Iterable<AstNode>,
 		return getType().getArrowDepth();
 	}
 
+	public abstract ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment);
+
 	/**
 	 * This is the {@link Type} of this node and it must return the same object
 	 * every time it is called, even if the underlying type changes due to

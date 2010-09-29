@@ -89,6 +89,13 @@ public class AstApplication extends AstNode {
 		return operator.getLeftDepth() - 1;
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return operator.getModifiedEnvironment(operand
+				.getModifiedEnvironment(environment));
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}

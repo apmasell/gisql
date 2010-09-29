@@ -63,6 +63,12 @@ public class AstParameter extends NamedVariable {
 		variables.add(variableInformation);
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return environment;
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}

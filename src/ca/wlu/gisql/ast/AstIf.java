@@ -39,6 +39,14 @@ public class AstIf extends AstNode {
 	}
 
 	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return falsepart.getModifiedEnvironment(truepart
+				.getModifiedEnvironment(condition
+						.getModifiedEnvironment(environment)));
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}

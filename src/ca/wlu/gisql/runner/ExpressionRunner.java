@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import ca.wlu.gisql.ast.AstNode;
+import ca.wlu.gisql.ast.AstSequence;
 import ca.wlu.gisql.ast.type.MaybeType;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.type.TypeVariable;
@@ -95,81 +96,24 @@ public class ExpressionRunner {
 		return listener;
 	}
 
-	/**
-	 * Execute all commands in a file, formatted one entry per line.
-	 * 
-	 * @param file
-	 *            File containing commands.
-	 * @param type
-	 *            The expected type of all commands in the file. It may be null
-	 *            if any type is acceptable.
-	 * @return True if execution was successful.
-	 * */
-	public boolean run(File file, Type type) {
-		FileContext context = new FileContext(file);
-		try {
-			BufferedReader input = new BufferedReader(new FileReader(file));
-			String line;
-			int linenumber = 0;
-			while ((line = input.readLine()) != null) {
-				linenumber++;
-				if (!run(line, type, context
-						.getContextForLine(linenumber, line))) {
-					input.close();
-					return false;
-				}
-			}
-			input.close();
-			return true;
-		} catch (IOException e) {
-			listener.reportErrors(Collections
-					.singletonList(new ExpressionError(context,
-							"Script error.", e)));
-		}
-		return true;
-	}
-
-	/**
-	 * Execute a supplied commands.
-	 * 
-	 * @param command
-	 *            The query language command to execute.
-	 * @param type
-	 *            The expected type of the command. It may be null if any type
-	 *            is acceptable.
-	 * @return True if execution was successful.
-	 * */
-	public boolean run(String command, Type type) {
-		return run(command, type, new SingleLineContext(command));
-	}
-
 	@SuppressWarnings("unchecked")
-	private boolean run(String command, Type type, LineContext context) {
-		Parser parser = new Parser(this, context, command, listener);
-		if (parser.isEmpty()) {
-			return true;
-		}
-		AstNode result = parser.parse();
-		if (result == null) {
-			return false;
-		}
-
-		result = result.resolve(this, context, new BuiltInResolver(
+	private boolean run(AstNode node, Type type, ExpressionContext context) {
+		node = node.resolve(this, context, new BuiltInResolver(
 				new EnvironmentResolver(environment)));
-		if (result == null || !result.type(this, context)) {
+		if (node == null || !node.type(this, context)) {
 			listener.reportErrors(new ArrayList<ExpressionError>(errors));
 			errors.clear();
 			return false;
 		}
 
-		if (type != null && !type.unify(result.getType())) {
-			appendTypeError(result.getType(), type, result, context);
+		if (type != null && !type.unify(node.getType())) {
+			appendTypeError(node.getType(), type, node, context);
 			listener.reportErrors(new ArrayList<ExpressionError>(errors));
 			errors.clear();
 			return false;
 		}
 
-		Class<? extends GenericFunction> program = result.render();
+		Class<? extends GenericFunction> program = node.render();
 		if (program == null) {
 			listener.reportErrors(errors.isEmpty() ? Collections
 					.singletonList(new ExpressionError(context,
@@ -179,7 +123,7 @@ public class ExpressionRunner {
 			return false;
 		}
 
-		if (!listener.previewAst(result)) {
+		if (!listener.previewAst(node)) {
 			return false;
 		}
 
@@ -224,10 +168,121 @@ public class ExpressionRunner {
 				listener.processOther(type, value);
 			}
 		} else {
-			listener.processOther(result.getType(), value);
+			listener.processOther(node.getType(), value);
 		}
 
 		return true;
+	}
+
+	/**
+	 * Execute all commands in a file, formatted one entry per line.
+	 * 
+	 * @param file
+	 *            File containing commands.
+	 * @param type
+	 *            The expected type of all commands in the file. It may be null
+	 *            if any type is acceptable.
+	 * @return True if execution was successful.
+	 * */
+	public boolean run(File file, Type type) {
+		FileContext context = new FileContext(file);
+		AstNode node = null;
+		StringBuilder sb = new StringBuilder();
+		MultiLineContext linecontext = null;
+		try {
+			BufferedReader input = new BufferedReader(new FileReader(file));
+			String line;
+			int linenumber = 0;
+			while ((line = input.readLine()) != null) {
+				linenumber++;
+				if (line.isEmpty()) {
+					/* Ignore. */
+				} else if (Character.isWhitespace(line.charAt(0))) {
+					if (linecontext == null) {
+						listener
+								.reportErrors(Collections
+										.singletonList(new ExpressionError(
+												context.getContextForLine(
+														linenumber, line),
+												"Line starts with white space, but it is not continuing the previous line.",
+												null)));
+						return false;
+					} else {
+						linecontext.append(context.getContextForLine(
+								linenumber, line));
+						sb.append(line);
+					}
+				} else {
+					if (linecontext != null) {
+						Parser parser = new Parser(this, linecontext, sb,
+								listener);
+						if (!parser.isEmpty()) {
+							AstNode result = parser.parse();
+							if (result == null) {
+								return false;
+							}
+							if (node == null) {
+								node = result;
+							} else {
+								node = new AstSequence(node, result);
+							}
+						}
+					}
+					linecontext = new MultiLineContext(context
+							.getContextForLine(linenumber, line));
+					sb.setLength(0);
+					sb.append(line);
+				}
+			}
+			input.close();
+		} catch (IOException e) {
+			listener.reportErrors(Collections
+					.singletonList(new ExpressionError(context,
+							"Script error.", e)));
+			return false;
+		}
+		if (linecontext != null) {
+			Parser parser = new Parser(this, linecontext, sb, listener);
+			if (!parser.isEmpty()) {
+				AstNode result = parser.parse();
+				if (result == null) {
+					return false;
+				}
+				if (node == null) {
+					node = result;
+				} else {
+					node = new AstSequence(node, result);
+				}
+			}
+		}
+		return run(node, type, context);
+	}
+
+	/**
+	 * Execute a supplied commands.
+	 * 
+	 * @param command
+	 *            The query language command to execute.
+	 * @param type
+	 *            The expected type of the command. It may be null if any type
+	 *            is acceptable.
+	 * @return True if execution was successful.
+	 * */
+	public boolean run(String command, Type type) {
+		return run(command, type, new SingleLineContext(command));
+	}
+
+	private boolean run(String command, Type type, LineContext context) {
+		Parser parser = new Parser(this, context, command, listener);
+		if (parser.isEmpty()) {
+			return true;
+		}
+		AstNode result = parser.parse();
+		if (result == null) {
+			return false;
+		}
+
+		return run(result, type, context);
 	}
 
 	public boolean typeCheck(AstNode node, Type type, ExpressionContext context) {

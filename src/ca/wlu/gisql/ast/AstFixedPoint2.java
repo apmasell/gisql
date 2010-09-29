@@ -40,6 +40,12 @@ public class AstFixedPoint2 extends AstNode {
 		variables.remove(self.variableInformation);
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return expression.getModifiedEnvironment(environment);
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}

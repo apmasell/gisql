@@ -19,7 +19,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * The {@link AstNode} of an known symbol in the environment. This will fetch a
  * symbol during execution.
  */
-public class AstEnvironmentLoad extends AstNode {
+public class AstEnvironmentLoad extends NamedVariable {
 
 	private final String name;
 	private final Type type;
@@ -35,11 +35,22 @@ public class AstEnvironmentLoad extends AstNode {
 	}
 
 	@Override
+	ResolutionEnvironment createEnvironment(ResolutionEnvironment environment) {
+		return environment;
+	}
+
+	@Override
 	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 		/*
 		 * This variable is considered bound in the environment, even though, by
 		 * classical reasoning, this would be considered a free variable.
 		 */
+	}
+
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return environment;
 	}
 
 	public Precedence getPrecedence() {
@@ -49,6 +60,11 @@ public class AstEnvironmentLoad extends AstNode {
 	@Override
 	public Type getType() {
 		return type;
+	}
+
+	@Override
+	public String getVariableName() {
+		return name;
 	}
 
 	@Override

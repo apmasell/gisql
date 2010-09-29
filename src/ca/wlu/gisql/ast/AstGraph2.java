@@ -113,6 +113,17 @@ public class AstGraph2 extends AstNode {
 	}
 
 	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		ResolutionEnvironment fromenvironment = fromexpression
+				.getModifiedEnvironment(environment);
+		return returnexpression
+				.getModifiedEnvironment(whereexpression == null ? fromenvironment
+						: whereexpression
+								.getModifiedEnvironment(fromenvironment));
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}

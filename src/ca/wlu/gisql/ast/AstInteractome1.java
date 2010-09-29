@@ -46,6 +46,12 @@ public class AstInteractome1 extends AstNode {
 	}
 
 	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return raiseIllegalState();
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}

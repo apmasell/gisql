@@ -34,6 +34,12 @@ public class AstLambda1 extends AstNode {
 		raiseIllegalState();
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return raiseIllegalState();
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Closure;
 	}

@@ -2,6 +2,7 @@ package ca.wlu.gisql.ast;
 
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.Rendering;
+import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 
 /**
  * A variable which is really an index into a tuple.
@@ -17,6 +18,12 @@ public class AstPairAccessor extends SyntheticAccessor {
 		super(name, type);
 		this.parent = parent;
 		this.selectors = selectors;
+	}
+
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return environment;
 	}
 
 	@Override

@@ -273,6 +273,13 @@ public class AstLogic extends AstNode {
 
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return left.getModifiedEnvironment(right == null ? environment : right
+				.getModifiedEnvironment(environment));
+	}
+
 	public Precedence getPrecedence() {
 		switch (operation) {
 		case Negation:
@@ -449,7 +456,7 @@ public class AstLogic extends AstNode {
 			AstLogic normalForm, RawType rawtype) {
 		return normalForm.renderRaw(program, depth, rawtype)
 				&& program.pOhO_PrimitiveToObject(rawtype.getJavaClass());
-	};
+	}
 
 	/**
 	 * Render the logic of something that is not interactomes (i.e., booleans or

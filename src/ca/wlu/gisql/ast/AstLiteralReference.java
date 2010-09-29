@@ -42,6 +42,12 @@ public class AstLiteralReference extends AstNode {
 	protected void freeVariables(ListOrderedSet<VariableInformation> variables) {
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return environment;
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}

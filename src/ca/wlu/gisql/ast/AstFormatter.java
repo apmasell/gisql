@@ -73,6 +73,12 @@ public class AstFormatter extends AstNode {
 	}
 
 	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return environment;
+	}
+
+	@Override
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}

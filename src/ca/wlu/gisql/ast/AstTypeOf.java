@@ -49,6 +49,12 @@ public class AstTypeOf extends AstNode {
 		parameter.freeVariables(variables);
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		return environment;
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Assignment;
 	}

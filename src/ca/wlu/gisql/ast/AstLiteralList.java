@@ -88,6 +88,15 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 		return list.get(index);
 	}
 
+	@Override
+	public ResolutionEnvironment getModifiedEnvironment(
+			ResolutionEnvironment environment) {
+		for (AstNode node : this) {
+			environment = node.getModifiedEnvironment(environment);
+		}
+		return environment;
+	}
+
 	public Precedence getPrecedence() {
 		return Precedence.Value;
 	}
