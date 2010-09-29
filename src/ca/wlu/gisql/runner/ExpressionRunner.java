@@ -9,6 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -94,6 +95,78 @@ public class ExpressionRunner {
 
 	public ExpressionRunListener getListener() {
 		return listener;
+	}
+
+	public Entry<AstNode, FileContext> parseFile(File file) {
+		FileContext context = new FileContext(file);
+		AstNode node = null;
+		StringBuilder sb = new StringBuilder();
+		MultiLineContext linecontext = null;
+		try {
+			BufferedReader input = new BufferedReader(new FileReader(file));
+			String line;
+			int linenumber = 0;
+			while ((line = input.readLine()) != null) {
+				linenumber++;
+				if (line.isEmpty()) {
+					/* Ignore. */
+				} else if (Character.isWhitespace(line.charAt(0))) {
+					if (linecontext == null) {
+						errors
+								.add(new ExpressionError(
+										context.getContextForLine(linenumber,
+												line),
+										"Line starts with white space, but it is not continuing the previous line.",
+										null));
+						return null;
+					} else {
+						linecontext.append(context.getContextForLine(
+								linenumber, line));
+						sb.append(line);
+					}
+				} else {
+					if (linecontext != null) {
+						Parser parser = new Parser(this, linecontext, sb,
+								listener);
+						if (!parser.isEmpty()) {
+							AstNode result = parser.parse();
+							if (result == null) {
+								return null;
+							}
+							if (node == null) {
+								node = result;
+							} else {
+								node = new AstSequence(node, result);
+							}
+						}
+					}
+					linecontext = new MultiLineContext(context
+							.getContextForLine(linenumber, line));
+					sb.setLength(0);
+					sb.append(line);
+				}
+			}
+			input.close();
+		} catch (IOException e) {
+			errors.add(new ExpressionError(context, "Script error.", e));
+			return null;
+		}
+		if (linecontext != null) {
+			Parser parser = new Parser(this, linecontext, sb, listener);
+			if (!parser.isEmpty()) {
+				AstNode result = parser.parse();
+				if (result == null) {
+					return null;
+				}
+				if (node == null) {
+					node = result;
+				} else {
+					node = new AstSequence(node, result);
+				}
+			}
+		}
+		return new ca.wlu.gisql.function.pair.Pair<AstNode, FileContext>(node,
+				context);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -185,77 +258,13 @@ public class ExpressionRunner {
 	 * @return True if execution was successful.
 	 * */
 	public boolean run(File file, Type type) {
-		FileContext context = new FileContext(file);
-		AstNode node = null;
-		StringBuilder sb = new StringBuilder();
-		MultiLineContext linecontext = null;
-		try {
-			BufferedReader input = new BufferedReader(new FileReader(file));
-			String line;
-			int linenumber = 0;
-			while ((line = input.readLine()) != null) {
-				linenumber++;
-				if (line.isEmpty()) {
-					/* Ignore. */
-				} else if (Character.isWhitespace(line.charAt(0))) {
-					if (linecontext == null) {
-						listener
-								.reportErrors(Collections
-										.singletonList(new ExpressionError(
-												context.getContextForLine(
-														linenumber, line),
-												"Line starts with white space, but it is not continuing the previous line.",
-												null)));
-						return false;
-					} else {
-						linecontext.append(context.getContextForLine(
-								linenumber, line));
-						sb.append(line);
-					}
-				} else {
-					if (linecontext != null) {
-						Parser parser = new Parser(this, linecontext, sb,
-								listener);
-						if (!parser.isEmpty()) {
-							AstNode result = parser.parse();
-							if (result == null) {
-								return false;
-							}
-							if (node == null) {
-								node = result;
-							} else {
-								node = new AstSequence(node, result);
-							}
-						}
-					}
-					linecontext = new MultiLineContext(context
-							.getContextForLine(linenumber, line));
-					sb.setLength(0);
-					sb.append(line);
-				}
-			}
-			input.close();
-		} catch (IOException e) {
-			listener.reportErrors(Collections
-					.singletonList(new ExpressionError(context,
-							"Script error.", e)));
+		Entry<AstNode, FileContext> result = parseFile(file);
+		if (result == null) {
+			listener.reportErrors(errors);
 			return false;
+		} else {
+			return run(result.getKey(), type, result.getValue());
 		}
-		if (linecontext != null) {
-			Parser parser = new Parser(this, linecontext, sb, listener);
-			if (!parser.isEmpty()) {
-				AstNode result = parser.parse();
-				if (result == null) {
-					return false;
-				}
-				if (node == null) {
-					node = result;
-				} else {
-					node = new AstSequence(node, result);
-				}
-			}
-		}
-		return run(node, type, context);
 	}
 
 	/**

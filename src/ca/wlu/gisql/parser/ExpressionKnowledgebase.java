@@ -27,6 +27,7 @@ import ca.wlu.gisql.parser.descriptors.ast.FixedPointDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.GraphDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.HelpDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.IfDescriptor;
+import ca.wlu.gisql.parser.descriptors.ast.ImportFile;
 import ca.wlu.gisql.parser.descriptors.ast.InteractomeDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.LambdaDescriptor;
 import ca.wlu.gisql.parser.descriptors.ast.ListFromFile;
@@ -65,6 +66,7 @@ public class ExpressionKnowledgebase extends
 		installOperator(FixedPointDescriptor.descriptor);
 		installOperator(GraphDescriptor.descriptor);
 		installOperator(IfDescriptor.descriptor);
+		installOperator(ImportFile.descriptor);
 		installOperator(Intersection.descriptor);
 		installOperator(HelpDescriptor.descriptor);
 		installOperator(InteractomeDescriptor.descriptor);
