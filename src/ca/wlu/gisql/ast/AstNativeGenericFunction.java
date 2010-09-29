@@ -1,5 +1,6 @@
 package ca.wlu.gisql.ast;
 
+import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.ast.util.Function;
 import ca.wlu.gisql.ast.util.GenericFunction;
 import ca.wlu.gisql.ast.util.Rendering;
@@ -7,6 +8,19 @@ import ca.wlu.gisql.runner.ExpressionRunner;
 
 /** Represents a function implementing {@link GenericFunction}. */
 public class AstNativeGenericFunction extends AstNative {
+	public static <T> boolean renderSelf(Type type, Rendering<T> program,
+			int depth) {
+		try {
+			return program.pPg$hO_BoxArguments(type.getArrowDepth())
+					&& program.g_InvokeMethod(GenericFunction.class
+							.getDeclaredMethod("run", Object[].class));
+		} catch (SecurityException e) {
+			return false;
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
+
 	private final GenericFunction function;
 
 	public AstNativeGenericFunction(Function function) {
@@ -27,17 +41,8 @@ public class AstNativeGenericFunction extends AstNative {
 
 	@Override
 	public <T> boolean renderSelf(Rendering<T> program, int depth) {
-		try {
-			return program.pRg$hO_CreateObject(function.getClass()
-					.getConstructors()[0])
-					&& program.pPg$hO_BoxArguments(type.getArrowDepth())
-					&& program.g_InvokeMethod(GenericFunction.class
-							.getDeclaredMethod("run", Object[].class));
-		} catch (SecurityException e) {
-			return false;
-		} catch (NoSuchMethodException e) {
-			return false;
-		}
+		return program.pRg$hO_CreateObject(function.getClass()
+				.getConstructors()[0])
+				&& renderSelf(type, program, depth);
 	}
-
 }

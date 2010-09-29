@@ -3,7 +3,6 @@ package ca.wlu.gisql.ast.util;
 import ca.wlu.gisql.ast.AstEnvironmentLoad;
 import ca.wlu.gisql.ast.AstNativeGenericFunction;
 import ca.wlu.gisql.ast.AstNode;
-import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.environment.Environment;
 
 /**
@@ -30,11 +29,10 @@ public class EnvironmentResolver implements ResolutionEnvironment {
 		if (value == null) {
 			return null;
 		}
-		Type type = environment.getTypeOf(name).fresh();
 		if (value instanceof GenericFunction) {
 			return new AstNativeGenericFunction(name, (GenericFunction) value);
 		} else {
-			return new AstEnvironmentLoad(name, type);
+			return new AstEnvironmentLoad(name, environment.getTypeOf(name));
 		}
 	}
 }

@@ -6,6 +6,7 @@ import org.apache.commons.collections15.iterators.EmptyIterator;
 import org.apache.commons.collections15.set.ListOrderedSet;
 
 import ca.wlu.gisql.ast.type.Type;
+import ca.wlu.gisql.ast.type.TypeVariable;
 import ca.wlu.gisql.ast.util.Function;
 import ca.wlu.gisql.ast.util.Rendering;
 import ca.wlu.gisql.ast.util.ResolutionEnvironment;
@@ -22,6 +23,7 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
 public class AstEnvironmentLoad extends NamedVariable {
 
 	private final String name;
+	private final Type shadowtype = new TypeVariable();
 	private final Type type;
 
 	public AstEnvironmentLoad(Function function) {
@@ -59,7 +61,7 @@ public class AstEnvironmentLoad extends NamedVariable {
 
 	@Override
 	public Type getType() {
-		return type;
+		return shadowtype;
 	}
 
 	@Override
@@ -74,7 +76,11 @@ public class AstEnvironmentLoad extends NamedVariable {
 
 	@Override
 	public <T> boolean renderSelf(Rendering<T> program, int depth) {
-		return program.lEhO(name) && program.g_Cast(type.getRootJavaType());
+		return program.lEhO(name)
+				&& program.g_Cast(type.getRootJavaType())
+				&& (depth > 0 && shadowtype.getArrowDepth() == depth ? AstNativeGenericFunction
+						.renderSelf(shadowtype, program, depth)
+						: true);
 	}
 
 	@Override
@@ -94,6 +100,6 @@ public class AstEnvironmentLoad extends NamedVariable {
 
 	@Override
 	public boolean type(ExpressionRunner runner, ExpressionContext context) {
-		return true;
+		return shadowtype.unify(type.fresh());
 	}
 }
