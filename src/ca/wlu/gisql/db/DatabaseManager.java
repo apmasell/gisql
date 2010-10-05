@@ -102,7 +102,7 @@ public class DatabaseManager {
 					@Override
 					protected void prepare(Set<Gene> set) throws SQLException {
 						PreparedStatement genesStatement = connection
-								.prepareStatement("SELECT id FROM genes WHERE species = ? AND partition = ?");
+								.prepareStatement("SELECT id FROM gene WHERE species = ? AND partition = ?");
 						genesStatement.setLong(1, speciesid);
 						genesStatement.setLong(2, partitionid);
 						ResultSet geners = genesStatement.executeQuery();
