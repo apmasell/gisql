@@ -23,34 +23,30 @@ public class AstSequence extends AstNode {
 	enum Handling {
 		ProcessInteractome {
 			@Override
-			public <C> boolean process(Rendering<C> program, int depth,
-					AstNode node) {
+			public <C> boolean process(Rendering<C> program, AstNode node) {
 				return program.lNhO() && program.g_InvokeMethod(getListener)
-						&& node.render(program, depth)
+						&& node.render(program, 0)
 						&& program.g_Cast(Interactome.class)
 						&& program.g_InvokeMethod(processInteractome);
 			}
 		},
 		ProcessOther {
 			@Override
-			public <C> boolean process(Rendering<C> program, int depth,
-					AstNode node) {
+			public <C> boolean process(Rendering<C> program, AstNode node) {
 				return program.lNhO() && program.g_InvokeMethod(getListener)
 						&& node.getType().render(program, 0)
-						&& node.render(program, depth)
+						&& node.render(program, 0)
 						&& program.g_InvokeMethod(processOther);
 			}
 		},
 		ThrowAway {
 			@Override
-			public <C> boolean process(Rendering<C> program, int depth,
-					AstNode node) {
-				return node.render(program, depth) && program.pO();
+			public <C> boolean process(Rendering<C> program, AstNode node) {
+				return node.render(program, 0) && program.pO();
 			}
 		};
 
-		abstract <C> boolean process(Rendering<C> program, int depth,
-				AstNode node);
+		abstract <C> boolean process(Rendering<C> program, AstNode node);
 	}
 
 	private final static Method getListener;
@@ -127,7 +123,7 @@ public class AstSequence extends AstNode {
 			handling = Handling.ProcessOther;
 		}
 
-		return handling.process(program, depth, first)
+		return handling.process(program, first)
 				&& second.render(program, depth);
 	}
 
