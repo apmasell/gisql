@@ -17,6 +17,7 @@ import ca.wlu.gisql.ast.util.ResolutionEnvironment;
 import ca.wlu.gisql.ast.util.VariableInformation;
 import ca.wlu.gisql.runner.ExpressionContext;
 import ca.wlu.gisql.runner.ExpressionRunner;
+import ca.wlu.gisql.runner.FileContext;
 import ca.wlu.gisql.util.Precedence;
 import ca.wlu.gisql.util.ShowablePrintWriter;
 
@@ -29,7 +30,7 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 
 	private final Type contents = new OptionalMaybeType(new TypeVariable());
 
-	private final ExpressionContext context;
+	private final FileContext context;
 
 	private final List<AstNode> list = new ArrayList<AstNode>();
 
@@ -39,7 +40,7 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 		this(null);
 	}
 
-	public AstLiteralList(ExpressionContext context) {
+	public AstLiteralList(FileContext context) {
 		super();
 		this.context = context;
 	}
@@ -185,18 +186,24 @@ public class AstLiteralList extends AstNode implements List<AstNode> {
 
 	public void show(ShowablePrintWriter<AstNode> print) {
 		print.print("[");
-		boolean first = true;
-		for (AstNode node : this) {
-			if (first) {
-				first = false;
-			} else {
-				print.print(", ");
+		if (context == null) {
+			boolean first = true;
+			for (AstNode node : this) {
+				if (first) {
+					first = false;
+				} else {
+					print.print(", ");
+				}
+				if (node == null) {
+					print.print("missing");
+				} else {
+					print.print(node);
+				}
 			}
-			if (node == null) {
-				print.print("∅");
-			} else {
-				print.print(node);
-			}
+		} else {
+			print.print("from \"");
+			print.print(context.getFile().getName());
+			print.print('"');
 		}
 		print.print("]");
 	}
