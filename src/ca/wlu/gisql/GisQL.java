@@ -131,7 +131,9 @@ public class GisQL {
 					"password" }) {
 				String value = configuration.getProperty(prefix + key);
 				prompt |= value == null;
-				properties.setProperty(key, value);
+				if (value != null) {
+					properties.setProperty(key, value);
+				}
 			}
 
 			if (prompt) {
