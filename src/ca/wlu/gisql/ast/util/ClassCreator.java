@@ -36,6 +36,8 @@ final class ClassCreator extends ClassLoader {
 			} else {
 				saveClassToFile(name, bytecode, null);
 			}
+		} catch (ClassFormatError e) {
+			saveClassToFile(name, bytecode, e);
 		} catch (VerifyError e) {
 			saveClassToFile(name, bytecode, e);
 		}
