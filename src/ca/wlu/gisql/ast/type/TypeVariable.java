@@ -120,6 +120,11 @@ public class TypeVariable extends Type implements Iterable<TypeClass<?>> {
 	}
 
 	@Override
+	public boolean isInformational() {
+		return self == null ? true : self.isInformational();
+	}
+
+	@Override
 	public boolean isNullable() {
 		return self == null ? false : self.isNullable();
 	}

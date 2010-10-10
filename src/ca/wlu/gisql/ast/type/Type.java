@@ -56,7 +56,8 @@ public abstract class Type implements Renderable,
 
 	public static final NativeType TypeType = new NativeType("type", Type.class);
 
-	public static final NativeType UnitType = new NativeType("unit", Unit.class);
+	public static final NativeType UnitType = new NativeType("unit", false,
+			Unit.class);
 
 	static {
 		for (Field field : Type.class.getFields()) {
@@ -212,6 +213,12 @@ public abstract class Type implements Renderable,
 	public Type getTerminalMaybe() {
 		return new MaybeType(this);
 	}
+
+	/**
+	 * Determines if this type is actually carrying useful information (as
+	 * opposed to full of units).
+	 */
+	public abstract boolean isInformational();
 
 	public boolean isNullable() {
 		return false;

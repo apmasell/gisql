@@ -115,6 +115,11 @@ public class ArrowType extends Type {
 	}
 
 	@Override
+	public boolean isInformational() {
+		return true;
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return operand.occurs(needle) || result.occurs(needle);
 	}

@@ -59,6 +59,11 @@ public class PairType extends Type {
 	}
 
 	@Override
+	public boolean isInformational() {
+		return left.isInformational() || right.isInformational();
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return left.occurs(needle) || right.occurs(needle);
 	}

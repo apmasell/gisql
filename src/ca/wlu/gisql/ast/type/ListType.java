@@ -60,6 +60,11 @@ public class ListType extends Type {
 	}
 
 	@Override
+	public boolean isInformational() {
+		return contents.isInformational();
+	}
+
+	@Override
 	protected boolean occurs(Type needle) {
 		return contents.occurs(needle);
 	}

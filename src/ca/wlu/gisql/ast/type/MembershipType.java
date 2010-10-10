@@ -12,6 +12,11 @@ public class MembershipType extends Type {
 		return Double.class;
 	}
 
+	@Override
+	public boolean isInformational() {
+		return true;
+	}
+
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
 		print.print("membership");
 	}

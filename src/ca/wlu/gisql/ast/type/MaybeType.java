@@ -70,6 +70,11 @@ public class MaybeType extends Type {
 	}
 
 	@Override
+	public boolean isInformational() {
+		return contents.isInformational();
+	}
+
+	@Override
 	public boolean isNullable() {
 		return true;
 	}

@@ -105,6 +105,9 @@ public class ConsoleRunListener implements ExpressionRunListener {
 	}
 
 	public void processOther(Type type, Object value) {
+		if (!type.isInformational()) {
+			return;
+		}
 		String filename = environment.getOutput();
 
 		try {

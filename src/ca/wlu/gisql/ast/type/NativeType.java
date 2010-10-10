@@ -13,14 +13,21 @@ public class NativeType extends Type {
 	public static final Type AmbiguousJavaType = new NativeType("ANY",
 			Object.class);
 
+	private final boolean informational;
+
 	private final Class<?> java;
 
 	private final String name;
 
-	NativeType(String name, Class<?> java) {
+	NativeType(String name, boolean informational, Class<?> java) {
 		super();
 		this.name = name;
+		this.informational = informational;
 		this.java = java;
+	}
+
+	NativeType(String name, Class<?> java) {
+		this(name, true, java);
 	}
 
 	@Override
@@ -30,6 +37,11 @@ public class NativeType extends Type {
 
 	public boolean handlesNativeType(Class<?> clazz) {
 		return java.isAssignableFrom(clazz);
+	}
+
+	@Override
+	public boolean isInformational() {
+		return informational;
 	}
 
 	public void show(ShowablePrintWriter<List<TypeVariable>> print) {
