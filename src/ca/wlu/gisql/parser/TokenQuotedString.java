@@ -1,10 +1,17 @@
 package ca.wlu.gisql.parser;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
+import name.masella.iterator.StringIterable;
+import ca.wlu.gisql.GisQL;
+import ca.wlu.gisql.ast.AstApplication;
 import ca.wlu.gisql.ast.AstFormatter;
 import ca.wlu.gisql.ast.AstLiteral;
+import ca.wlu.gisql.ast.AstName;
 import ca.wlu.gisql.ast.AstNode;
 import ca.wlu.gisql.ast.type.Type;
 import ca.wlu.gisql.util.Precedence;
@@ -14,6 +21,119 @@ import ca.wlu.gisql.util.ShowablePrintWriter;
  * Matches a quoted string. Escape sequences are permitted.
  */
 public class TokenQuotedString extends Token<AstNode, Precedence> {
+	private static abstract class FormatterBuilder {
+		protected final FormatterBuilder preceeding;
+
+		protected FormatterBuilder(FormatterBuilder preceeding) {
+			super();
+			this.preceeding = preceeding;
+		}
+
+		AstNode build() {
+			Map<String, Integer> namedarguments = new HashMap<String, Integer>();
+			prepare(namedarguments);
+
+			StringBuilder sb = new StringBuilder();
+			this.build(sb, namedarguments);
+			AstNode result = new AstFormatter(sb.toString());
+			if (namedarguments.size() > 0) {
+				AstNode[] arguments = new AstNode[namedarguments.size() + 1];
+				arguments[0] = result;
+				for (Entry<String, Integer> entry : namedarguments.entrySet()) {
+					arguments[entry.getValue()] = new AstName(entry.getKey());
+				}
+				result = new AstApplication(arguments);
+			}
+			return result;
+		}
+
+		protected abstract void build(StringBuilder sb,
+				Map<String, Integer> namedarguments);
+
+		protected void prepare(Map<String, Integer> namedarguments) {
+			if (preceeding != null) {
+				preceeding.prepare(namedarguments);
+			}
+		}
+
+	}
+
+	private static class IndexArgumentBuilder extends FormatterBuilder {
+
+		private final int offset;
+
+		IndexArgumentBuilder(FormatterBuilder preceeding, int offset) {
+			super(preceeding);
+			this.offset = offset;
+
+		}
+
+		@Override
+		protected void build(StringBuilder sb,
+				Map<String, Integer> namedarguments) {
+			if (preceeding != null) {
+				preceeding.build(sb, namedarguments);
+			}
+			sb.append('%').append(namedarguments.size() + offset).append("$s");
+		}
+
+	}
+
+	private static class LiteralBuilder extends FormatterBuilder {
+		private final StringIterable value;
+
+		LiteralBuilder(FormatterBuilder preceeding, String value) {
+			super(preceeding);
+			this.value = new StringIterable(value);
+		}
+
+		@Override
+		protected void build(StringBuilder sb,
+				Map<String, Integer> namedarguments) {
+			if (preceeding != null) {
+				preceeding.build(sb, namedarguments);
+			}
+
+			for (char c : value) {
+				if (c == '%') {
+					sb.append("%%");
+				} else {
+					sb.append(c);
+				}
+			}
+		}
+	}
+
+	private static class NamedVariableBuilder extends FormatterBuilder {
+
+		private final String name;
+
+		NamedVariableBuilder(FormatterBuilder preceeding, String name) {
+			super(preceeding);
+			this.name = name;
+		}
+
+		@Override
+		protected void build(StringBuilder sb,
+				Map<String, Integer> namedarguments) {
+			if (preceeding != null) {
+				preceeding.build(sb, namedarguments);
+			}
+			sb.append('%').append(namedarguments.get(name)).append("$s");
+		}
+
+		@Override
+		protected void prepare(Map<String, Integer> namedarguments) {
+			if (preceeding != null) {
+				preceeding.prepare(namedarguments);
+			}
+
+			if (!namedarguments.containsKey(name)) {
+				namedarguments.put(name, namedarguments.size() + 1);
+			}
+		}
+	}
+
 	public static final TokenQuotedString self = new TokenQuotedString();
 
 	private TokenQuotedString() {
@@ -28,13 +148,14 @@ public class TokenQuotedString extends Token<AstNode, Precedence> {
 	boolean parse(ParserKnowledgebase<AstNode, Precedence> knowledgebase,
 			Parser parser, Precedence level, List<AstNode> results) {
 		parser.consumeWhitespace();
-		StringBuilder sb = new StringBuilder();
-		boolean success = false;
-		boolean formatter = false;
 
 		if (!parser.hasMore() || parser.read() != '"') {
 			return false;
 		}
+
+		StringBuilder sb = new StringBuilder();
+		boolean success = false;
+		FormatterBuilder formatter = null;
 
 		while (parser.hasMore()) {
 			char codepoint = parser.peek();
@@ -50,39 +171,45 @@ public class TokenQuotedString extends Token<AstNode, Precedence> {
 					char c = parser.read();
 					switch (c) {
 					case '{':
-						if (formatter == false) {
-							int offset = 0;
-							while (offset < sb.length()
-									&& (offset = sb.indexOf("%", offset)) > 0) {
-								sb.insert(offset + 1, '%');
-								offset += 2;
-							}
-						}
-						formatter = true;
+						formatter = new LiteralBuilder(formatter, sb.toString());
+						sb = new StringBuilder();
 
-						int value = 0;
-						while (Character.isDigit(parser.peek())) {
-							value = value * 10 + parser.peek() - '0';
-							if (parser.hasMore()) {
-								parser.next();
-							} else {
+						while (true) {
+							if (!parser.hasMore() || parser.peek() == '"') {
 								parser
 										.pushError("End of string without matching }.");
 								return false;
 							}
-						}
-						if (parser.peek() != '}') {
-							parser.pushError("Invalid character "
-									+ parser.peek() + " in place holder.");
-							return false;
-						}
-						parser.next();
-						if (value == 0) {
-							parser.pushError("\\{0} not allowed in strings.");
-							return false;
+							if (parser.peek() == '}') {
+								parser.next();
+								break;
+							}
+							sb.append(parser.peek());
+							parser.next();
 						}
 
-						sb.append('%').append(value).append("$s");
+						String identifier = sb.toString();
+						if (GisQL.isValidName(identifier)) {
+							formatter = new NamedVariableBuilder(formatter,
+									identifier);
+						} else {
+							try {
+								int offset = Integer.parseInt(identifier);
+								if (offset < 1) {
+									parser.pushError("Invalid index " + offset
+											+ " in place holder.");
+									return false;
+								}
+								formatter = new IndexArgumentBuilder(formatter,
+										offset);
+							} catch (NumberFormatException e) {
+								parser.pushError("Invalid identifier "
+										+ identifier + " in place holder.");
+								return false;
+							}
+						}
+
+						sb = new StringBuilder();
 						break;
 					case 'a':
 						sb.append('\u0007');
@@ -145,14 +272,8 @@ public class TokenQuotedString extends Token<AstNode, Precedence> {
 					break;
 				}
 			} else {
-				if (sb == null) {
-					success = false;
-					break;
-				} else {
-					parser.next();
-
-					sb.append(codepoint);
-				}
+				sb.append(codepoint);
+				parser.next();
 			}
 		}
 
@@ -160,10 +281,10 @@ public class TokenQuotedString extends Token<AstNode, Precedence> {
 			parser.pushError("Failed to parse quoted string.");
 			return false;
 		}
-		if (formatter) {
-			results.add(new AstFormatter(sb.toString()));
-		} else {
+		if (formatter == null) {
 			results.add(new AstLiteral(Type.StringType, sb.toString()));
+		} else {
+			results.add(new LiteralBuilder(formatter, sb.toString()).build());
 		}
 		return true;
 	}
